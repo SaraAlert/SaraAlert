@@ -73,7 +73,7 @@ class RelatedPersonTest < ApiControllerTestCase
     end
 
     # Verify that the JSON response matches the original as FHIR
-    assert_equal JSON.parse(@close_contact_1.as_fhir.to_json).except('meta'), json_response.except('id', 'meta')
+    assert_equal JSON.parse(created_cc.as_fhir.to_json).except('meta', 'id'), json_response.except('id', 'meta')
 
     histories = History.where(patient: created_cc.patient_id)
     assert_equal(1, histories.count)

@@ -70,7 +70,7 @@ class ImmunizationTest < ApiControllerTestCase
     end
 
     # Verify that the JSON response matches the original as FHIR
-    assert_equal JSON.parse(@vaccine_1.as_fhir.to_json).except('id', 'meta'), json_response.except('id', 'meta')
+    assert_equal JSON.parse(created_vac.as_fhir.to_json).except('id', 'meta'), json_response.except('id', 'meta')
 
     histories = History.where(patient: created_vac.patient_id)
     assert_equal(1, histories.count)

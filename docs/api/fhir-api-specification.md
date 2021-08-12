@@ -427,10 +427,40 @@ Get a monitoree via an id, e.g.:
 
 ```json
 {
-  "id": 5,
+  "id": 43,
   "meta": {
-    "lastUpdated": "2020-05-29T00:19:18+00:00"
+    "lastUpdated": "2021-07-27T15:31:08+00:00"
   },
+  "contained": [
+    {
+      "target": [
+        {
+          "reference": "/fhir/r4/Patient/43"
+        }
+      ],
+      "recorded": "2021-06-23T09:03:19+00:00",
+      "activity": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+            "code": "CREATE",
+            "display": "create"
+          }
+        ]
+      },
+      "agent": [
+        {
+          "who": {
+            "identifier": {
+              "value": 6
+            },
+            "display": "locals2c4_enroller@example.com"
+          }
+        }
+      ],
+      "resourceType": "Provenance"
+    }
+  ],
   "extension": [
     {
       "extension": [
@@ -438,13 +468,37 @@ Get a monitoree via an id, e.g.:
           "url": "ombCategory",
           "valueCoding": {
             "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2054-5",
-            "display": "Black or African American"
+            "code": "2106-3",
+            "display": "White"
+          }
+        },
+        {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "1002-5",
+            "display": "American Indian or Alaska Native"
+          }
+        },
+        {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2076-8",
+            "display": "Native Hawaiian or Other Pacific Islander"
+          }
+        },
+        {
+          "url": "detailed",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2131-1",
+            "display": "Other Race"
           }
         },
         {
           "url": "text",
-          "valueString": "Black or African American"
+          "valueString": "White, American Indian or Alaska Native, Native Hawaiian or Other Pacific Islander, Other"
         }
       ],
       "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
@@ -471,16 +525,157 @@ Get a monitoree via an id, e.g.:
       "valueCode": "M"
     },
     {
+      "extension": [
+        {
+          "url": "id",
+          "valuePositiveInt": 18
+        },
+        {
+          "url": "updated-at",
+          "valueDateTime": "2021-06-26T11:12:46+00:00"
+        },
+        {
+          "url": "created-at",
+          "valueDateTime": "2021-06-26T11:12:46+00:00"
+        },
+        {
+          "url": "who-initiated-transfer",
+          "valueString": "state1_epi@example.com"
+        },
+        {
+          "url": "from-jurisdiction",
+          "valueString": "USA, State 1, County 1"
+        },
+        {
+          "url": "to-jurisdiction",
+          "valueString": "USA, State 2"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/transfer"
+    },
+    {
+      "extension": [
+        {
+          "url": "id",
+          "valuePositiveInt": 211
+        },
+        {
+          "url": "updated-at",
+          "valueDateTime": "2021-07-04T19:11:57+00:00"
+        },
+        {
+          "url": "created-at",
+          "valueDateTime": "2021-07-04T19:11:57+00:00"
+        },
+        {
+          "url": "who-initiated-transfer",
+          "valueString": "state2_epi@example.com"
+        },
+        {
+          "url": "from-jurisdiction",
+          "valueString": "USA, State 2"
+        },
+        {
+          "url": "to-jurisdiction",
+          "valueString": "USA, State 1"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/transfer"
+    },
+    {
+      "extension": [
+        {
+          "extension": [
+            {
+              "url": "contact-of-known-case",
+              "valueBoolean": true
+            },
+            {
+              "url": "contact-of-known-case-id",
+              "valueString": "00929074, 01304440, 00162388"
+            }
+          ],
+          "url": "http://saraalert.org/StructureDefinition/contact-of-known-case"
+        },
+        {
+          "extension": [
+            {
+              "url": "was-in-health-care-facility-with-known-cases",
+              "valueBoolean": true
+            },
+            {
+              "url": "was-in-health-care-facility-with-known-cases-facility-name",
+              "valueString": "Facility123"
+            }
+          ],
+          "url": "http://saraalert.org/StructureDefinition/was-in-health-care-facility-with-known-cases"
+        },
+        {
+          "extension": [
+            {
+              "url": "laboratory-personnel",
+              "valueBoolean": true
+            },
+            {
+              "url": "laboratory-personnel-facility-name",
+              "valueString": "Facility123"
+            }
+          ],
+          "url": "http://saraalert.org/StructureDefinition/laboratory-personnel"
+        },
+        {
+          "extension": [
+            {
+              "url": "healthcare-personnel",
+              "valueBoolean": true
+            },
+            {
+              "url": "healthcare-personnel-facility-name",
+              "valueString": "Facility123"
+            }
+          ],
+          "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
+        },
+        {
+          "extension": [
+            {
+              "url": "member-of-a-common-exposure-cohort",
+              "valueBoolean": true
+            },
+            {
+              "url": "member-of-a-common-exposure-cohort-type",
+              "valueString": "Cruiseline cohort"
+            }
+          ],
+          "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+        },
+        {
+          "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
+          "valueBoolean": false
+        },
+        {
+          "url": "http://saraalert.org/StructureDefinition/crew-on-passenger-or-cargo-flight",
+          "valueBoolean": false
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/exposure-risk-factors"
+    },
+    {
+      "extension": [
+        {
+          "url": "source-of-report",
+          "valueString": "Surveillance Screening"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/source-of-report"
+    },
+    {
       "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
       "valueString": "E-mailed Web Link"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
-      "valueDate": "2020-05-23"
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
-      "valueDate": "2020-05-18"
+      "valueDate": "2021-06-24"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/isolation",
@@ -491,82 +686,189 @@ Get a monitoree via an id, e.g.:
       "valueString": "USA, State 1"
     },
     {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Daily active monitoring"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/assigned-user",
+      "valuePositiveInt": 1234
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+      "valueDate": "2021-06-24"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-end-date",
+      "valueDate": "2021-06-25"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+      "valueString": "New Charleyhaven"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/port-of-entry-into-usa",
+      "valueString": "South Anamaria"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+      "valueDate": "2021-06-23"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-number",
+      "valueString": "V595"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-carrier",
+      "valueString": "Clora Airlines"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+      "valueDate": "2021-06-23"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+      "valueString": "Pleasure in the job puts perfection in the work."
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+      "valueString": "Chuck Norris hosting is 101% uptime guaranteed."
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/continuous-exposure",
+      "valueBoolean": false
+    },
+    {
       "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
-      "valueString": "2020-05-29"
+      "valueString": "2021-07-07"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/expected-purge-date",
+      "valueDateTime": "2021-08-10T15:31:08+00:00"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
-      "valueString": "Low"
+      "valueString": "No Identified Risk"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/public-health-action",
-      "valueString": "Document results of medical evaluation"
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
-      "valueBoolean": true
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
-      "valueString": "case1"
+      "valueString": "None"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
-      "valueString": "Collierview"
+      "valueString": "Arronton"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
-      "valueString": "Angola"
+      "valueString": "Brazil"
     },
     {
       "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+      "valueBoolean": false
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/reason-for-closure",
+      "valueString": "Meets Case Definition"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination",
+      "valueString": "Pourosside"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-state",
+      "valueString": "District of Columbia"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure",
+      "valueString": "New Natalia"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-type",
+      "valueString": "Domestic"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/case-status",
+      "valueString": "Confirmed"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/closed-at",
+      "valueDateTime": "2021-07-27T15:29:34+00:00"
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/gender-identity",
+            "code": "transgender-female"
+          }
+        ],
+        "text": "Transgender Female (Male-to-Female [MTF])"
+      }
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/head-of-household",
       "valueBoolean": true
     },
     {
-      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-reason",
-      "valueString": "Duplicate"
+      "url": "http://saraalert.org/StructureDefinition/id-of-reporter",
+      "valuePositiveInt": 43
     },
     {
-      "url": "http://hl7.org/fhir/StructureDefinition/follow-up-note",
-      "valueString": "This is a duplicate."
+      "url": "http://saraalert.org/StructureDefinition/last-assessment-reminder-sent",
+      "valueDateTime": "2021-06-20T04:00:00+00:00"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/paused-notifications",
+      "valueBoolean": false
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/status",
+      "valueString": "closed"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/user-defined-symptom-onset",
+      "valueBoolean": false
     }
   ],
-  "active": true,
+  "identifier": [
+    {
+      "system": "http://saraalert.org/SaraAlert/cdc-id",
+      "value": "0952379687"
+    }
+  ],
+  "active": false,
   "name": [
     {
-      "family": "O'Kon89",
-      "given": [
-        "Malcolm94",
-        "Bogan39"
-      ]
+      "family": "Johns78",
+      "given": ["Gerardo58", "Reinger57"]
     }
   ],
   "telecom": [
     {
-      "system": "phone",
-      "value": "(333) 333-3333",
-      "rank": 1
-    },
-    {
-      "system": "phone",
-      "value": "(333) 333-3333",
-      "rank": 2
-    },
-    {
       "system": "email",
-      "value": "2966977816fake@example.com",
+      "value": "3822316898fake@example.com",
       "rank": 1
     }
   ],
-  "birthDate": "1981-03-30",
+  "birthDate": "1981-10-15",
   "address": [
     {
-      "line": [
-        "22424 Daphne Key"
+      "line": ["8181 Diana Lodge"],
+      "district": "Royal Creek",
+      "state": "New Jersey",
+      "postalCode": "94336"
+    },
+    {
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/address-type",
+          "valueString": "Monitored"
+        }
       ],
-      "city": "West Gabrielmouth",
-      "state": "Maine",
-      "postalCode": "24683"
+      "line": ["8181 Diana Lodge"],
+      "district": "Royal Creek",
+      "state": "New Jersey",
+      "postalCode": "94336"
     }
   ],
   "communication": [
@@ -579,7 +881,20 @@ Get a monitoree via an id, e.g.:
             "display": "English"
           }
         ]
-      }
+      },
+      "preferred": true
+    },
+    {
+      "language": {
+        "coding": [
+          {
+            "system": "urn:ietf:bcp:47",
+            "code": "bho",
+            "display": "Bhojpuri"
+          }
+        ]
+      },
+      "preferred": false
     }
   ],
   "resourceType": "Patient"
@@ -587,6 +902,310 @@ Get a monitoree via an id, e.g.:
 ```
   </div>
 </details>
+
+#### Read-Only Patient Extensions
+
+The `http://saraalert.org/StructureDefinition/end-of-monitoring` extension represents the system calculated end of monitoring period. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
+  "valueDate": "2021-06-15"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/expected-purge-date` extension represents the date and time that the monitoree's identifiers will be eligible to be purged from the system. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/expected-purge-date",
+  "valueDateTime": "2021-06-29T21:04:08+00:00"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/reason-for-closure` extension represents the reason a monitoree was closed by the user or system. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/reason-for-closure",
+  "valueString": "Completed Monitoring"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-end-date` extension represents the end date for a monitoree's additional planned travel. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-end-date",
+  "valueDate": "2021-06-25"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination` extension represents the destination for a monitoree's additional planned travel. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination",
+  "valueString": "Pourosside"
+}
+```
+
+
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination-state` extension represents the destination state for a monitoree's additional planned travel. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-state",
+  "valueString": "District of Columbia"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination-country` extension represents the destination country for a monitoree's additional planned travel. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-country",
+  "valueString": "Albania"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure` extension represents the port of departure for a monitoree's additional planned travel. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure",
+  "valueString": "New Natalia"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-type` extension represents the type of a monitoree's additional planned travel. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-type",
+  "valueString": "International"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/case-status` extension represents the case status of a monitoree. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/case-status",
+  "valueString": "Confirmed"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/closed-at` extension represents the time at which a monitoree was closed. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/closed-at",
+  "valueDateTime": "2021-07-07T18:10:47+00:00"
+}
+```
+
+The `http://hl7.org/fhir/StructureDefinition/patient-genderIdentity` extension represents the gender identity of a monitoree. This field is read-only.
+```json
+{
+  "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/gender-identity",
+        "code": "transgender-female"
+      }
+    ],
+    "text": "Transgender Female (Male-to-Female [MTF])"
+  }
+}
+```
+
+The `http://saraalert.org/StructureDefinition/sexual-orientation` extension represents the sexual orientation of a monitoree. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/sexual-orientation",
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "38628009"
+      }
+    ],
+    "text": "Lesbian, Gay, or Homosexual"
+  }
+}
+```
+
+The `http://saraalert.org/StructureDefinition/head-of-household` extension represents whether the monitoree is the head of a household. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/head-of-household",
+  "valueBoolean": true
+}
+```
+
+The `http://saraalert.org/StructureDefinition/id-of-reporter` extension represents the ID of the monitoree responsible for reporting for this monitoree. If the monitoree is responsible for their own reporting, this will just be the monitoree's ID. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/id-of-reporter",
+  "valuePositiveInt": 43
+}
+```
+
+The `http://saraalert.org/StructureDefinition/last-assessment-reminder-sent` extension indicates the time at which the monitoree was last sent an assessment reminder. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/last-assessment-reminder-sent",
+  "valueDateTime": "2021-06-20T04:00:00+00:00"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/paused-notifications` extension represents whether notifications to the monitoree are paused. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/paused-notifications",
+  "valueBoolean": false
+}
+```
+
+The `http://saraalert.org/StructureDefinition/status` extension represents the current status of the monitoree. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/status",
+  "valueString": "symptomatic"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/user-defined-symptom-onset` extension indicates whether the symptom onset for this monitoree is user defined. This field is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/user-defined-symptom-onset",
+  "valueBoolean": false
+}
+```
+
+The complex `http://saraalert.org/StructureDefinition/transfer` extension represents a transfer that occurred for the monitoree. This field is read-only.
+```json
+{
+  "extension": [
+    {
+      "url": "id",
+      "valuePositiveInt": 18
+    },
+    {
+      "url": "updated-at",
+      "valueDateTime": "2021-06-26T11:12:46+00:00"
+    },
+    {
+      "url": "created-at",
+      "valueDateTime": "2021-06-26T11:12:46+00:00"
+    },
+    {
+      "url": "who-initiated-transfer",
+      "valueString": "state1_epi@example.com"
+    },
+    {
+      "url": "from-jurisdiction",
+      "valueString": "USA, State 1, County 1"
+    },
+    {
+      "url": "to-jurisdiction",
+      "valueString": "USA, State 2"
+    }
+  ],
+  "url": "http://saraalert.org/StructureDefinition/transfer"
+}
+```
+
+The complex `http://saraalert.org/StructureDefinition/exposure-risk-factors` extension represents the exposure risk factors that apply for the monitoree. This field is read-only.
+```json
+{
+  "extension": [
+    {
+      "extension": [
+        {
+          "url": "contact-of-known-case",
+          "valueBoolean": true
+        },
+        {
+          "url": "contact-of-known-case-id",
+          "valueString": "00929074, 01304440, 00162388"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case"
+    },
+    {
+      "extension": [
+        {
+          "url": "was-in-health-care-facility-with-known-cases",
+          "valueBoolean": true
+        },
+        {
+          "url": "was-in-health-care-facility-with-known-cases-facility-name",
+          "valueString": "Facility123"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/was-in-health-care-facility-with-known-cases"
+    },
+    {
+      "extension": [
+        {
+          "url": "laboratory-personnel",
+          "valueBoolean": true
+        },
+        {
+          "url": "laboratory-personnel-facility-name",
+          "valueString": "Facility123"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/laboratory-personnel"
+    },
+    {
+      "extension": [
+        {
+          "url": "healthcare-personnel",
+          "valueBoolean": true
+        },
+        {
+          "url": "healthcare-personnel-facility-name",
+          "valueString": "Facility123"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
+    },
+    {
+      "extension": [
+        {
+          "url": "member-of-a-common-exposure-cohort",
+          "valueBoolean": true
+        },
+        {
+          "url": "member-of-a-common-exposure-cohort-type",
+          "valueString": "Cruiseline cohort"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
+      "valueBoolean": false
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/crew-on-passenger-or-cargo-flight",
+      "valueBoolean": false
+    }
+  ],
+  "url": "http://saraalert.org/StructureDefinition/exposure-risk-factors"
+}
+```
+
+The complex `http://saraalert.org/StructureDefinition/source-of-report` extension represents the source of the report for a monitoree's arrival information. This field is read-only.
+```json
+{
+  "extension": [
+    {
+      "url": "source-of-report",
+      "valueString": "Other"
+    },
+    {
+      "url": "specify",
+      "valueString": "Pipey"
+    }
+  ],
+  "url": "http://saraalert.org/StructureDefinition/source-of-report"
+}
+```
+
 
 
 <a name="read-get-obs"/>
@@ -601,10 +1220,16 @@ Get a monitoree lab result via an id, e.g.:
 
 ```json
 {
-  "id": 11,
+  "id": 34,
   "meta": {
-    "lastUpdated": "2021-05-06T12:44:19+00:00"
+    "lastUpdated": "2021-06-23T13:25:48+00:00"
   },
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/created-at",
+      "valueDateTime": "2021-06-23T13:25:48+00:00"
+    }
+  ],
   "status": "final",
   "category": [
     {
@@ -619,17 +1244,17 @@ Get a monitoree lab result via an id, e.g.:
   "code": {
     "coding": [
       {
-        "system": "http://loinc.org",
-        "code": "94564-2"
+        "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+        "code": "OTH"
       }
     ],
-    "text": "IgM Antibody"
+    "text": "Other"
   },
   "subject": {
-    "reference": "Patient/1"
+    "reference": "Patient/12"
   },
-  "effectiveDateTime": "2021-05-06",
-  "issued": "2021-05-07T00:00:00+00:00",
+  "effectiveDateTime": "2021-06-19",
+  "issued": "2021-06-23T00:00:00+00:00",
   "valueCodeableConcept": {
     "coding": [
       {
@@ -645,6 +1270,16 @@ Get a monitoree lab result via an id, e.g.:
   </div>
 </details>
 
+#### Read-Only Observation Extensions
+
+The `http://saraalert.org/StructureDefinition/created-at` extension indicates the time at which the laboratory was created. This extension is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/created-at",
+  "valueDateTime": "2021-06-23T23:34:35+00:00"
+}
+```
+
 
 <a name="read-get-que"/>
 
@@ -658,13 +1293,27 @@ Get a monitoree daily report via an id, e.g.:
 
 ```json
 {
-  "id": 3,
+  "id": 1,
   "meta": {
-    "lastUpdated": "2020-05-29T00:42:54+00:00"
+    "lastUpdated": "2021-06-27T20:51:51+00:00"
   },
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/symptomatic",
+      "valueBoolean": false
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/created-at",
+      "valueDateTime": "2021-06-23T13:34:09+00:00"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/who-reported",
+      "valueString": "Monitoree"
+    }
+  ],
   "status": "completed",
   "subject": {
-    "reference": "Patient/3"
+    "reference": "Patient/20"
   },
   "item": [
     {
@@ -681,13 +1330,13 @@ Get a monitoree daily report via an id, e.g.:
       "text": "difficulty-breathing",
       "answer": [
         {
-          "valueBoolean": true
+          "valueBoolean": false
         }
       ]
     },
     {
       "linkId": "2",
-      "text": "fever",
+      "text": "new-loss-of-smell",
       "answer": [
         {
           "valueBoolean": false
@@ -696,16 +1345,16 @@ Get a monitoree daily report via an id, e.g.:
     },
     {
       "linkId": "3",
-      "text": "used-a-fever-reducer",
+      "text": "new-loss-of-taste",
       "answer": [
         {
-          "valueBoolean": true
+          "valueBoolean": false
         }
       ]
     },
     {
       "linkId": "4",
-      "text": "chills",
+      "text": "shortness-of-breath",
       "answer": [
         {
           "valueBoolean": false
@@ -714,16 +1363,16 @@ Get a monitoree daily report via an id, e.g.:
     },
     {
       "linkId": "5",
-      "text": "repeated-shaking-with-chills",
+      "text": "fever",
       "answer": [
         {
-          "valueBoolean": true
+          "valueBoolean": false
         }
       ]
     },
     {
       "linkId": "6",
-      "text": "muscle-pain",
+      "text": "used-a-fever-reducer",
       "answer": [
         {
           "valueBoolean": false
@@ -732,7 +1381,7 @@ Get a monitoree daily report via an id, e.g.:
     },
     {
       "linkId": "7",
-      "text": "headache",
+      "text": "chills",
       "answer": [
         {
           "valueBoolean": false
@@ -741,7 +1390,7 @@ Get a monitoree daily report via an id, e.g.:
     },
     {
       "linkId": "8",
-      "text": "sore-throat",
+      "text": "repeated-shaking-with-chills",
       "answer": [
         {
           "valueBoolean": false
@@ -750,19 +1399,100 @@ Get a monitoree daily report via an id, e.g.:
     },
     {
       "linkId": "9",
-      "text": "new-loss-of-taste-or-smell",
+      "text": "muscle-pain",
       "answer": [
         {
-          "valueBoolean": true
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "10",
+      "text": "headache",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "11",
+      "text": "sore-throat",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "12",
+      "text": "nausea-or-vomiting",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "13",
+      "text": "diarrhea",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "14",
+      "text": "fatigue",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "15",
+      "text": "congestion-or-runny-nose",
+      "answer": [
+        {
+          "valueBoolean": false
         }
       ]
     }
   ],
   "resourceType": "QuestionnaireResponse"
 }
+
 ```
   </div>
 </details>
+
+#### Read-Only QuestionnaireResponse Extensions
+
+The `http://saraalert.org/StructureDefinition/created-at` extension indicates the time at which the assessment was created. This extension is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/created-at",
+  "valueDateTime": "2021-06-23T23:34:35+00:00"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/symptomatic` extension indicates whether an assessment indicates a symptomatic monitoree. This extension is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/symptomatic",
+  "valueBoolean": true
+}
+```
+
+The `http://saraalert.org/StructureDefinition/who-reported` extension indicates who reported the assessment. This extension is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/who-reported",
+  "valueString": "epi_enroller_all@example.com"
+}
+```
 
 <a name="read-get-related"/>
 
@@ -776,38 +1506,44 @@ Get a monitoree close contact via an id, e.g.:
 
 ```json
 {
-  "id": 950,
+  "id": 1,
   "meta": {
-    "lastUpdated": "2021-01-31T18:23:16+00:00"
+    "lastUpdated": "2021-06-23T23:34:35+00:00"
   },
   "extension": [
     {
-      "url": "http://saraalert.org/StructureDefinition/contact-attempts",
-      "valueUnsignedInt": 5
+      "url": "http://saraalert.org/StructureDefinition/notes",
+      "valueString": "Try to back up the EXE alarm, maybe it will override the virtual interface!"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/notes",
-      "valueString": "Parsing the panel won't do anything, we need to program the optical ib array!"
+      "url": "http://saraalert.org/StructureDefinition/enrolled-patient",
+      "valueReference": {
+        "reference": "Patient/9"
+      }
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/created-at",
+      "valueDateTime": "2021-06-23T23:34:35+00:00"
     }
   ],
   "patient": {
-    "reference": "Patient/222"
+    "reference": "Patient/23"
   },
   "name": [
     {
-      "family": "Pollich97",
-      "given": ["Nam32"]
+      "family": "Marvin72",
+      "given": ["Chris91"]
     }
   ],
   "telecom": [
     {
       "system": "phone",
-      "value": "+15555550104",
+      "value": "+15555550110",
       "rank": 1
     },
     {
       "system": "email",
-      "value": "1845823000fake@example.com",
+      "value": "3068326388fake@example.com",
       "rank": 1
     }
   ],
@@ -816,6 +1552,26 @@ Get a monitoree close contact via an id, e.g.:
 ```
   </div>
 </details>
+
+#### Read-Only RelatedPerson Extensions
+
+The `http://saraalert.org/StructureDefinition/created-at` extension indicates the time at which the close contact was created. This extension is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/created-at",
+  "valueDateTime": "2021-06-23T23:34:35+00:00"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/enrolled-patient` extension is used to reference the full Patient resource that corresponds to the close contact, if such a Patient exists. This extension is read-only. This field may only be updated by manually enrolling a new Patient for this close contact via the user interface.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/enrolled-patient",
+  "valueReference": {
+    "reference": "Patient/567"
+  }
+}
+```
 
 
 <a name="read-get-immunization"/>
@@ -830,29 +1586,35 @@ Get a monitoree vaccination via an id, e.g.:
 
 ```json
 {
-  "id": 32,
+  "id": 1,
   "meta": {
-    "lastUpdated": "2021-04-01T22:09:11+00:00"
+    "lastUpdated": "2021-06-23T10:40:04+00:00"
   },
+  "extension": [
+    {
+      "url": "http://saraalert.org/StructureDefinition/created-at",
+      "valueDateTime": "2021-06-23T10:40:04+00:00"
+    }
+  ],
   "status": "completed",
   "vaccineCode": [
     {
       "coding": [
         {
           "system": "http://hl7.org/fhir/sid/cvx",
-          "code": "207"
+          "code": "212"
         }
       ],
-      "text": "Moderna COVID-19 Vaccine"
+      "text": "Janssen (J&J) COVID-19 Vaccine"
     }
   ],
   "patient": {
-    "reference": "Patient/1"
+    "reference": "Patient/6"
   },
-  "occurrenceDateTime": "2021-03-30",
+  "occurrenceDateTime": "2021-06-19",
   "note": [
     {
-      "text": "Notes here"
+      "text": "Defy Noxus and taste your own blood."
     }
   ],
   "protocolApplied": [
@@ -867,15 +1629,25 @@ Get a monitoree vaccination via an id, e.g.:
           ],
           "text": "COVID-19"
         }
-      ],
-      "doseNumberString": "1"
+      ]
     }
   ],
   "resourceType": "Immunization"
 }
+
 ```
   </div>
 </details>
+
+#### Read-Only Immunization Extensions
+
+The `http://saraalert.org/StructureDefinition/created-at` extension indicates the time at which the vaccination was created. This extension is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/created-at",
+  "valueDateTime": "2021-06-23T23:34:35+00:00"
+}
+```
 
 <a name="read-get-provenance"/>
 
@@ -889,52 +1661,115 @@ Get a monitoree history via an id, e.g.:
 
 ```json
 {
-  "id": 2006, 
+  "id": 12554,
   "meta": {
-    "lastUpdated": "2021-05-20T02:09:38+00:00"
+    "lastUpdated": "2021-07-21T00:07:30+00:00"
   },
+  "contained": [
+    {
+      "id": "c1f6be4f-32ff-4fb8-b803-7bb8be7cb77b",
+      "target": [
+        {
+          "reference": "Provenance/12554"
+        }
+      ],
+      "recorded": "2021-07-21T00:07:30+00:00",
+      "reason": [
+        {
+          "text": "Entered in error"
+        }
+      ],
+      "activity": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+            "code": "DELETE",
+            "display": "delete"
+          }
+        ]
+      },
+      "agent": [
+        {
+          "who": {
+            "identifier": {
+              "value": "state1_epi_enroller@example.com"
+            }
+          }
+        }
+      ],
+      "resourceType": "Provenance"
+    }
+  ],
   "extension": [
     {
-      "url": "http://saraalert.org/StructureDefinition/comment", 
-      "valueString": "User changed latest public health action to \"Recommended medical evaluation of symptoms\". Reason: Lost to follow-up during monitoring period, details"
-    }, 
+      "url": "http://saraalert.org/StructureDefinition/comment",
+      "valueString": "test"
+    },
     {
-      "url": "http://saraalert.org/StructureDefinition/history_type", 
-      "valueString": "Monitoring Change"
+      "url": "http://saraalert.org/StructureDefinition/history-type",
+      "valueString": "Comment"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/original-id",
+      "valuePositiveInt": 12554
     }
-  ], 
+  ],
   "target": [
     {
-      "reference": "Patient/6"
+      "reference": "Patient/82"
     }
-  ], 
-  "recorded": "2021-05-20T02:09:38+00:00", 
+  ],
+  "recorded": "2021-07-21T00:07:18+00:00",
   "agent": [
     {
       "who": {
         "identifier": {
           "value": "state1_epi_enroller@example.com"
         }
-      }, 
+      },
       "onBehalfOf": {
-        "reference": "Patient/6"
+        "reference": "Patient/82"
       }
     }
-  ], 
+  ],
   "resourceType": "Provenance"
 }
 ```
   </div>
 </details>
 
+#### Read-Only Provenance Extensions
 
+The `http://saraalert.org/StructureDefinition/comment` extension represents the comment for a history. This extension is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/comment", 
+  "valueString": "User changed latest public health action to \"Recommended medical evaluation of symptoms\". Reason: Lost to follow-up during monitoring period, details"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/history-type` extension indicates the type of history that was created. This extension is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/history-type", 
+  "valueString": "Monitoring Change"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/original-id` extension indicates the original ID of a history that has been edited. This extension is read-only.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/original-id",
+  "valuePositiveInt": 12572
+}
+```
 
 
 <a name="read-get-all"/>
 
 ### GET `[base]/Patient/[:id]/$everything`
 
-Use this route to retrieve a FHIR Bundle containing the monitoree and all their lab results, daily reports, vaccinations, close contacts, and histories
+Use this route to retrieve a FHIR Bundle containing the monitoree and all their lab results, daily reports, vaccinations, close contacts, and histories. Note that the example below has had resources removed for brevity.
 
 <details>
   <summary>Click to expand JSON snippet</summary>
@@ -942,20 +1777,50 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
 
 ```json
 {
-  "id": "96d2ff15-8c55-4d3e-bf04-d3f46064a7cd",
+  "id": "d8691bbb-e8b0-4ee9-8da1-b0a59f5e8030",
   "meta": {
-    "lastUpdated": "2020-05-28T20:52:15-04:00"
+    "lastUpdated": "2021-07-22T15:07:06-04:00"
   },
   "type": "searchset",
-  "total": 2,
+  "total": 67,
   "entry": [
     {
-      "fullUrl": "http://localhost:3000/fhir/r4/Patient/3",
+      "fullUrl": "http://localhost:3000/fhir/r4/Patient/43",
       "resource": {
-        "id": 3,
+        "id": 43,
         "meta": {
-          "lastUpdated": "2020-05-29T00:42:54+00:00"
+          "lastUpdated": "2021-07-22T18:18:28+00:00"
         },
+        "contained": [
+          {
+            "target": [
+              {
+                "reference": "/fhir/r4/Patient/43"
+              }
+            ],
+            "recorded": "2021-06-23T09:03:19+00:00",
+            "activity": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                  "code": "CREATE",
+                  "display": "create"
+                }
+              ]
+            },
+            "agent": [
+              {
+                "who": {
+                  "identifier": {
+                    "value": 6
+                  },
+                  "display": "locals2c4_enroller@example.com"
+                }
+              }
+            ],
+            "resourceType": "Provenance"
+          }
+        ],
         "extension": [
           {
             "extension": [
@@ -963,13 +1828,37 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
                 "url": "ombCategory",
                 "valueCoding": {
                   "system": "urn:oid:2.16.840.1.113883.6.238",
-                  "code": "2028-9",
-                  "display": "Asian"
+                  "code": "2106-3",
+                  "display": "White"
+                }
+              },
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "1002-5",
+                  "display": "American Indian or Alaska Native"
+                }
+              },
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2076-8",
+                  "display": "Native Hawaiian or Other Pacific Islander"
+                }
+              },
+              {
+                "url": "detailed",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2131-1",
+                  "display": "Other Race"
                 }
               },
               {
                 "url": "text",
-                "valueString": "Asian"
+                "valueString": "White, American Indian or Alaska Native, Native Hawaiian or Other Pacific Islander, Other"
               }
             ],
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
@@ -980,20 +1869,165 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
                 "url": "ombCategory",
                 "valueCoding": {
                   "system": "urn:oid:2.16.840.1.113883.6.238",
-                  "code": "2135-2",
-                  "display": "Hispanic or Latino"
+                  "code": "2186-5",
+                  "display": "Not Hispanic or Latino"
                 }
               },
               {
                 "url": "text",
-                "valueString": "Hispanic or Latino"
+                "valueString": "Not Hispanic or Latino"
               }
             ],
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
           },
           {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
+            "valueCode": "M"
+          },
+          {
+            "extension": [
+              {
+                "url": "id",
+                "valuePositiveInt": 18
+              },
+              {
+                "url": "updated-at",
+                "valueDateTime": "2021-06-26T11:12:46+00:00"
+              },
+              {
+                "url": "created-at",
+                "valueDateTime": "2021-06-26T11:12:46+00:00"
+              },
+              {
+                "url": "who-initiated-transfer",
+                "valueString": "state1_epi@example.com"
+              },
+              {
+                "url": "from-jurisdiction",
+                "valueString": "USA, State 1, County 1"
+              },
+              {
+                "url": "to-jurisdiction",
+                "valueString": "USA, State 2"
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/transfer"
+          },
+          {
+            "extension": [
+              {
+                "url": "id",
+                "valuePositiveInt": 211
+              },
+              {
+                "url": "updated-at",
+                "valueDateTime": "2021-07-04T19:11:57+00:00"
+              },
+              {
+                "url": "created-at",
+                "valueDateTime": "2021-07-04T19:11:57+00:00"
+              },
+              {
+                "url": "who-initiated-transfer",
+                "valueString": "state2_epi@example.com"
+              },
+              {
+                "url": "from-jurisdiction",
+                "valueString": "USA, State 2"
+              },
+              {
+                "url": "to-jurisdiction",
+                "valueString": "USA, State 1"
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/transfer"
+          },
+          {
+            "extension": [
+              {
+                "extension": [
+                  {
+                    "url": "contact-of-known-case",
+                    "valueBoolean": true
+                  },
+                  {
+                    "url": "contact-of-known-case-id",
+                    "valueString": "00929074, 01304440, 00162388"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/contact-of-known-case"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "was-in-health-care-facility-with-known-cases",
+                    "valueBoolean": true
+                  },
+                  {
+                    "url": "was-in-health-care-facility-with-known-cases-facility-name",
+                    "valueString": "Facility123"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/was-in-health-care-facility-with-known-cases"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "laboratory-personnel",
+                    "valueBoolean": true
+                  },
+                  {
+                    "url": "laboratory-personnel-facility-name",
+                    "valueString": "Facility123"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/laboratory-personnel"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "healthcare-personnel",
+                    "valueBoolean": true
+                  },
+                  {
+                    "url": "healthcare-personnel-facility-name",
+                    "valueString": "Facility123"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "member-of-a-common-exposure-cohort",
+                    "valueBoolean": true
+                  },
+                  {
+                    "url": "member-of-a-common-exposure-cohort-type",
+                    "valueString": "Cruiseline cohort"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+              },
+              {
+                "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
+                "valueBoolean": false
+              },
+              {
+                "url": "http://saraalert.org/StructureDefinition/crew-on-passenger-or-cargo-flight",
+                "valueBoolean": false
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/exposure-risk-factors"
+          },
+          {
+            "extension": [
+              {
+                "url": "source-of-report",
+                "valueString": "Surveillance Screening"
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/source-of-report"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
@@ -1001,89 +2035,188 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
           },
           {
             "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
-            "valueDate": "2020-05-16"
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
-            "valueDate": "2020-05-11"
+            "valueDate": "2021-06-24"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/isolation",
-            "valueBoolean": true
+            "valueBoolean": false
           },
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
           },
           {
+            "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+            "valueString": "Daily active monitoring"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/assigned-user",
+            "valuePositiveInt": 205610
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+            "valueDate": "2021-06-24"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-end-date",
+            "valueDate": "2021-06-25"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+            "valueString": "New Charleyhaven"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/port-of-entry-into-usa",
+            "valueString": "South Anamaria"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+            "valueDate": "2021-06-23"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-number",
+            "valueString": "V595"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-carrier",
+            "valueString": "Clora Airlines"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+            "valueDate": "2021-06-23"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+            "valueString": "Pleasure in the job puts perfection in the work."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+            "valueString": "Chuck Norris hosting is 101% uptime guaranteed."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/continuous-exposure",
+            "valueBoolean": true
+          },
+          {
             "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
-            "valueString": "2020-05-29"
+            "valueString": "Continuous Exposure"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
-            "valueString": "Low"
+            "valueString": "No Identified Risk"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/public-health-action",
-            "valueString": "Document results of medical evaluation"
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
-            "valueBoolean": true
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
-            "valueString": "case1"
+            "valueString": "None"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
-            "valueString": "Collierview"
+            "valueString": "Arronton"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
-            "valueString": "Angola"
+            "valueString": "Brazil"
           },
           {
             "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+            "valueBoolean": false
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination",
+            "valueString": "Pourosside"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-state",
+            "valueString": "District of Columbia"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure",
+            "valueString": "New Natalia"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-type",
+            "valueString": "Domestic"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/case-status",
+            "valueString": "Confirmed"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/gender-identity",
+                  "code": "transgender-female"
+                }
+              ],
+              "text": "Transgender Female (Male-to-Female [MTF])"
+            }
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/head-of-household",
             "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/id-of-reporter",
+            "valuePositiveInt": 43
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/last-assessment-reminder-sent",
+            "valueDateTime": "2021-06-20T04:00:00+00:00"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/paused-notifications",
+            "valueBoolean": false
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/status",
+            "valueString": "symptomatic"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/user-defined-symptom-onset",
+            "valueBoolean": false
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://saraalert.org/SaraAlert/cdc-id",
+            "value": "0952379687"
           }
         ],
         "active": true,
         "name": [
           {
-            "family": "Jakubowski48",
-            "given": [
-              "Lakeesha28",
-              "Bartell13"
-            ]
+            "family": "Johns78",
+            "given": ["Gerardo58", "Reinger57"]
           }
         ],
         "telecom": [
           {
-            "system": "phone",
-            "value": "(333) 333-3333",
-            "rank": 1
-          },
-          {
-            "system": "phone",
-            "value": "(333) 333-3333",
-            "rank": 2
-          },
-          {
             "system": "email",
-            "value": "7858879250fake@example.com",
+            "value": "3822316898fake@example.com",
             "rank": 1
           }
         ],
-        "birthDate": "1971-01-21",
+        "birthDate": "1981-10-15",
         "address": [
           {
-            "line": [
-              "3718 Nestor Unions"
+            "line": ["8181 Diana Lodge"],
+            "district": "Royal Creek",
+            "state": "New Jersey",
+            "postalCode": "94336"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/address-type",
+                "valueString": "Monitored"
+              }
             ],
-            "city": "Port Leigh",
-            "state": "Massachusetts",
-            "postalCode": "00423-5596"
+            "line": ["8181 Diana Lodge"],
+            "district": "Royal Creek",
+            "state": "New Jersey",
+            "postalCode": "94336"
           }
         ],
         "communication": [
@@ -1096,60 +2229,49 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
                   "display": "English"
                 }
               ]
-            }
+            },
+            "preferred": true
+          },
+          {
+            "language": {
+              "coding": [
+                {
+                  "system": "urn:ietf:bcp:47",
+                  "code": "bho",
+                  "display": "Bhojpuri"
+                }
+              ]
+            },
+            "preferred": false
           }
         ],
         "resourceType": "Patient"
       }
     },
     {
-      "fullUrl": "http://localhost:3000/fhir/r4/Provenance/1262",
+      "fullUrl": "http://localhost:3000/fhir/r4/QuestionnaireResponse/21",
       "resource": {
-        "id": 1262,
+        "id": 21,
         "meta": {
-          "lastUpdated": "2021-05-19T02:13:54+00:00"
+          "lastUpdated": "2021-07-06T16:10:01+00:00"
         },
         "extension": [
           {
-            "url": "http://saraalert.org/StructureDefinition/comment",
-            "valueString": "User enrolled monitoree."
+            "url": "http://saraalert.org/StructureDefinition/symptomatic",
+            "valueBoolean": true
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/history-type",
-            "valueString": "Enrollment"
+            "url": "http://saraalert.org/StructureDefinition/created-at",
+            "valueDateTime": "2021-06-24T11:51:44+00:00"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/who-reported",
+            "valueString": "Monitoree"
           }
         ],
-       "target": [
-         {
-            "reference": "Patient/3"
-          }
-        ],
-        "recorded": "2021-05-19T02:13:54+00:00",
-        "agent": [
-         {
-           "who": {
-             "identifier": {
-               "value": "state1_enroller@example.com"
-             }
-           },
-           "onBehalfOf": {
-              "reference": "Patient/3"
-           }
-          }
-        ],
-        "resourceType": "Provenance"
-      }
-    },
-    {
-      "fullUrl": "http://localhost:3000/fhir/r4/QuestionnaireResponse/3",
-      "resource": {
-        "id": 3,
-        "meta": {
-          "lastUpdated": "2020-05-29T00:42:54+00:00"
-        },
         "status": "completed",
         "subject": {
-          "reference": "Patient/3"
+          "reference": "Patient/43"
         },
         "item": [
           {
@@ -1172,16 +2294,16 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
           },
           {
             "linkId": "2",
-            "text": "fever",
+            "text": "new-loss-of-smell",
             "answer": [
               {
-                "valueBoolean": false
+                "valueBoolean": true
               }
             ]
           },
           {
             "linkId": "3",
-            "text": "used-a-fever-reducer",
+            "text": "new-loss-of-taste",
             "answer": [
               {
                 "valueBoolean": true
@@ -1190,7 +2312,7 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
           },
           {
             "linkId": "4",
-            "text": "chills",
+            "text": "shortness-of-breath",
             "answer": [
               {
                 "valueBoolean": false
@@ -1199,7 +2321,7 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
           },
           {
             "linkId": "5",
-            "text": "repeated-shaking-with-chills",
+            "text": "fever",
             "answer": [
               {
                 "valueBoolean": true
@@ -1208,7 +2330,7 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
           },
           {
             "linkId": "6",
-            "text": "muscle-pain",
+            "text": "used-a-fever-reducer",
             "answer": [
               {
                 "valueBoolean": false
@@ -1217,7 +2339,7 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
           },
           {
             "linkId": "7",
-            "text": "headache",
+            "text": "chills",
             "answer": [
               {
                 "valueBoolean": false
@@ -1226,7 +2348,7 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
           },
           {
             "linkId": "8",
-            "text": "sore-throat",
+            "text": "repeated-shaking-with-chills",
             "answer": [
               {
                 "valueBoolean": false
@@ -1235,15 +2357,255 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
           },
           {
             "linkId": "9",
-            "text": "new-loss-of-taste-or-smell",
+            "text": "muscle-pain",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "10",
+            "text": "headache",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "11",
+            "text": "sore-throat",
             "answer": [
               {
                 "valueBoolean": true
               }
             ]
+          },
+          {
+            "linkId": "12",
+            "text": "nausea-or-vomiting",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "13",
+            "text": "diarrhea",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "14",
+            "text": "fatigue",
+            "answer": [
+              {
+                "valueBoolean": true
+              }
+            ]
+          },
+          {
+            "linkId": "15",
+            "text": "congestion-or-runny-nose",
+            "answer": [
+              {
+                "valueBoolean": true
+              }
+            ]
+          },
+          {
+            "linkId": "16",
+            "text": "pulse-ox",
+            "answer": [
+              {
+                "valueDecimal": 6.0
+              }
+            ]
           }
         ],
         "resourceType": "QuestionnaireResponse"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/Observation/134",
+      "resource": {
+        "id": 134,
+        "meta": {
+          "lastUpdated": "2021-06-25T14:50:13+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/created-at",
+            "valueDateTime": "2021-06-25T14:50:13+00:00"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94564-2"
+            }
+          ],
+          "text": "IgM Antibody"
+        },
+        "subject": {
+          "reference": "Patient/43"
+        },
+        "effectiveDateTime": "2021-06-24",
+        "issued": "2021-06-25T00:00:00+00:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "10828004"
+            }
+          ],
+          "text": "positive"
+        },
+        "resourceType": "Observation"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/RelatedPerson/13",
+      "resource": {
+        "id": 13,
+        "meta": {
+          "lastUpdated": "2021-06-24T14:28:06+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/created-at",
+            "valueDateTime": "2021-06-24T14:28:06+00:00"
+          }
+        ],
+        "patient": {
+          "reference": "Patient/43"
+        },
+        "name": [
+          {
+            "family": "Sipes28",
+            "given": ["Jeffrey23"]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+15555550150",
+            "rank": 1
+          },
+          {
+            "system": "email",
+            "value": "5842094680fake@example.com",
+            "rank": 1
+          }
+        ],
+        "resourceType": "RelatedPerson"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/Immunization/57",
+      "resource": {
+        "id": 57,
+        "meta": {
+          "lastUpdated": "2021-06-27T19:54:16+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/created-at",
+            "valueDateTime": "2021-06-27T19:54:16+00:00"
+          }
+        ],
+        "status": "completed",
+        "vaccineCode": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/sid/cvx",
+                "code": "208"
+              }
+            ],
+            "text": "Pfizer-BioNTech COVID-19 Vaccine"
+          }
+        ],
+        "patient": {
+          "reference": "Patient/43"
+        },
+        "occurrenceDateTime": "2021-06-25",
+        "note": [
+          {
+            "text": "My profession?! You know, now that I think of it, I've always wanted to be a baker."
+          }
+        ],
+        "protocolApplied": [
+          {
+            "targetDisease": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/sid/cvx",
+                    "code": "213"
+                  }
+                ],
+                "text": "COVID-19"
+              }
+            ]
+          }
+        ],
+        "resourceType": "Immunization"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/Provenance/141",
+      "resource": {
+        "id": 141,
+        "meta": {
+          "lastUpdated": "2021-06-23T09:03:19+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/comment",
+            "valueString": "User enrolled monitoree."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/history-type",
+            "valueString": "Enrollment"
+          }
+        ],
+        "target": [
+          {
+            "reference": "Patient/43"
+          }
+        ],
+        "recorded": "2021-06-23T09:03:19+00:00",
+        "agent": [
+          {
+            "who": {
+              "identifier": {
+                "value": "locals2c3_enroller@example.com"
+              }
+            },
+            "onBehalfOf": {
+              "reference": "Patient/43"
+            }
+          }
+        ],
+        "resourceType": "Provenance"
       }
     }
   ],
@@ -1339,14 +2701,6 @@ To create a new monitoree, simply POST a FHIR Patient resource.
     {
       "url": "http://saraalert.org/StructureDefinition/public-health-action",
       "valueString": "Document results of medical evaluation"
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
-      "valueBoolean": true
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
-      "valueString": "case1"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
@@ -1511,14 +2865,6 @@ On success, the server will return the newly created resource with an id. This i
     {
       "url": "http://saraalert.org/StructureDefinition/public-health-action",
       "valueString": "Document results of medical evaluation"
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
-      "valueBoolean": true
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
-      "valueString": "case1"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
@@ -1756,30 +3102,6 @@ Use `http://saraalert.org/StructureDefinition/public-health-action` to specify t
 }
 ```
 
-Use `http://saraalert.org/StructureDefinition/contact-of-known-case` to specify if a monitoree has a known exposure to a confirmed or probable case.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
-  "valueBoolean": true
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/contact-of-known-case-id` to specify the case ID of the probable or confirmed case that a monitoree had exposure to. Any sort of identifier can be used here.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
-  "valueString": "1"
-}
-```
-
-Use `http://saraalert.org/StructureDefinition/common-exposure-cohort-name` to specify the name of a cohort that a monitoree shares common exposure with.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort-name",
-  "valueString": "Example Cohort"
-}
-```
-
 Use `http://saraalert.org/StructureDefinition/potential-exposure-location` to specify a description of the location where the monitoree was potentially last exposed to a case.
 ```json
 {
@@ -1843,7 +3165,7 @@ Use `http://saraalert.org/StructureDefinition/phone-type` to specify the type of
 ]
 ```
 
-Use `http://saraalert.org/StructureDefinition/address-type` to specify the type of an address (options are: `USA` and `Foreign`). Note that this extension should be placed on an element in the `Patient.address` array. If this extension is not present on an address in the `Patient.address` array, the address is assumed to be a `USA` address.
+Use `http://saraalert.org/StructureDefinition/address-type` to specify the type of an address (options are: `USA`, `Foreign`, `Monitored`, and `ForeignMonitored`). Note that this extension should be placed on an element in the `Patient.address` array. If this extension is not present on an address in the `Patient.address` array, the address is assumed to be a `USA` address. Addresses of type `Monitored` or `ForeignMonitored` are read-only.
 ```json
 "address": [
   {
@@ -1867,48 +3189,6 @@ Use `http://saraalert.org/StructureDefinition/address-type` to specify the type 
     "postalCode": "05657",
   }
 ]
-```
-
-The `http://saraalert.org/StructureDefinition/end-of-monitoring` extension represents the system calculated end of monitoring period. This field is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
-  "valueDate": "2021-06-15"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/expected-purge-date` extension represents the date and time that the monitoree's identifiers will be eligible to be purged from the system. This field is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/expected-purge-date",
-  "valueDateTime": "2021-06-29T21:04:08+00:00"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/reason-for-closure` extension represents the reason a monitoree was closed by the user or system. This field is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/reason-for-closure",
-  "valueString": "Completed Monitoring"
-}
-```
-
-The complex `http://saraalert.org/StructureDefinition/latest-transfer` extension represents the latest transfer that occurred for the monitoree. This field is read-only.
-```json
-
-{
-  "extension": [
-    {
-      "url": "http://saraalert.org/StructureDefinition/transferred-at",
-      "valueDateTime": "2021-05-20T22:54:57+00:00"
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/transferred-from",
-      "valueString": "USA, State 1, County 1"
-    }
-  ],
-  "url": "http://saraalert.org/StructureDefinition/latest-transfer"
-}
 ```
 
 ### POST `[base]/RelatedPerson`
@@ -2000,15 +3280,6 @@ Use `http://saraalert.org/StructureDefinition/contact-attempts` to specify the n
 }
 ```
 
-The `http://saraalert.org/StructureDefinition/enrolled-patient` extension is used to reference the full Patient resource that corresponds to the close contact, if such a Patient exists. Note that this extension is read-only. This field may only be updated by manually enrolling a new Patient for this close contact via the user interface.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/enrolled-patient",
-  "valueReference": {
-    "reference": "Patient/567"
-  }
-}
-```
 
 ### POST `[base]/Immunization`
 
@@ -2196,14 +3467,6 @@ An update request creates a new current version for an existing resource.
       "valueString": "Document results of medical evaluation"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
-      "valueBoolean": true
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
-      "valueString": "case1"
-    },
-    {
       "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
       "valueString": "Collierview"
     },
@@ -2366,14 +3629,6 @@ On success, the server will update the existing resource given the id.
     {
       "url": "http://saraalert.org/StructureDefinition/public-health-action",
       "valueString": "Document results of medical evaluation"
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
-      "valueBoolean": true
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
-      "valueString": "case1"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
@@ -2700,14 +3955,6 @@ On success, the server will update the attributes indicated by the request.
       "valueString": "Document results of medical evaluation"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
-      "valueBoolean": true
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
-      "valueString": "case1"
-    },
-    {
       "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
       "valueString": "Collierview"
     },
@@ -2862,20 +4109,50 @@ GET `[base]/Patient?given=john&family=doe`
 
 ```json
 {
-  "id": "8d4291fa-4d32-4136-be28-9cbdd2461378",
+  "id": "aa7c4d39-a256-4c77-b7f9-6b0931134449",
   "meta": {
-    "lastUpdated": "2020-05-28T21:07:11-04:00"
+    "lastUpdated": "2021-07-22T15:11:17-04:00"
   },
   "type": "searchset",
   "total": 1,
   "entry": [
     {
-      "fullUrl": "http://localhost:3000/fhir/r4/Patient/3",
+      "fullUrl": "http://localhost:3000/fhir/r4/Patient/43",
       "resource": {
-        "id": 3,
+        "id": 43,
         "meta": {
-          "lastUpdated": "2020-05-29T00:42:54+00:00"
+          "lastUpdated": "2021-07-22T18:18:28+00:00"
         },
+        "contained": [
+          {
+            "target": [
+              {
+                "reference": "/fhir/r4/Patient/43"
+              }
+            ],
+            "recorded": "2021-06-23T09:03:19+00:00",
+            "activity": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                  "code": "CREATE",
+                  "display": "create"
+                }
+              ]
+            },
+            "agent": [
+              {
+                "who": {
+                  "identifier": {
+                    "value": 6
+                  },
+                  "display": "locals2c4_enroller@example.com"
+                }
+              }
+            ],
+            "resourceType": "Provenance"
+          }
+        ],
         "extension": [
           {
             "extension": [
@@ -2883,13 +4160,37 @@ GET `[base]/Patient?given=john&family=doe`
                 "url": "ombCategory",
                 "valueCoding": {
                   "system": "urn:oid:2.16.840.1.113883.6.238",
-                  "code": "2028-9",
-                  "display": "Asian"
+                  "code": "2106-3",
+                  "display": "White"
+                }
+              },
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "1002-5",
+                  "display": "American Indian or Alaska Native"
+                }
+              },
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2076-8",
+                  "display": "Native Hawaiian or Other Pacific Islander"
+                }
+              },
+              {
+                "url": "detailed",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2131-1",
+                  "display": "Other Race"
                 }
               },
               {
                 "url": "text",
-                "valueString": "Asian"
+                "valueString": "White, American Indian or Alaska Native, Native Hawaiian or Other Pacific Islander, Other"
               }
             ],
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
@@ -2900,20 +4201,165 @@ GET `[base]/Patient?given=john&family=doe`
                 "url": "ombCategory",
                 "valueCoding": {
                   "system": "urn:oid:2.16.840.1.113883.6.238",
-                  "code": "2135-2",
-                  "display": "Hispanic or Latino"
+                  "code": "2186-5",
+                  "display": "Not Hispanic or Latino"
                 }
               },
               {
                 "url": "text",
-                "valueString": "Hispanic or Latino"
+                "valueString": "Not Hispanic or Latino"
               }
             ],
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
           },
           {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
+            "valueCode": "M"
+          },
+          {
+            "extension": [
+              {
+                "url": "id",
+                "valuePositiveInt": 18
+              },
+              {
+                "url": "updated-at",
+                "valueDateTime": "2021-06-26T11:12:46+00:00"
+              },
+              {
+                "url": "created-at",
+                "valueDateTime": "2021-06-26T11:12:46+00:00"
+              },
+              {
+                "url": "who-initiated-transfer",
+                "valueString": "state1_epi@example.com"
+              },
+              {
+                "url": "from-jurisdiction",
+                "valueString": "USA, State 1, County 1"
+              },
+              {
+                "url": "to-jurisdiction",
+                "valueString": "USA, State 2"
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/transfer"
+          },
+          {
+            "extension": [
+              {
+                "url": "id",
+                "valuePositiveInt": 211
+              },
+              {
+                "url": "updated-at",
+                "valueDateTime": "2021-07-04T19:11:57+00:00"
+              },
+              {
+                "url": "created-at",
+                "valueDateTime": "2021-07-04T19:11:57+00:00"
+              },
+              {
+                "url": "who-initiated-transfer",
+                "valueString": "state2_epi@example.com"
+              },
+              {
+                "url": "from-jurisdiction",
+                "valueString": "USA, State 2"
+              },
+              {
+                "url": "to-jurisdiction",
+                "valueString": "USA, State 1"
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/transfer"
+          },
+          {
+            "extension": [
+              {
+                "extension": [
+                  {
+                    "url": "contact-of-known-case",
+                    "valueBoolean": true
+                  },
+                  {
+                    "url": "contact-of-known-case-id",
+                    "valueString": "00929074, 01304440, 00162388"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/contact-of-known-case"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "was-in-health-care-facility-with-known-cases",
+                    "valueBoolean": true
+                  },
+                  {
+                    "url": "was-in-health-care-facility-with-known-cases-facility-name",
+                    "valueString": "Facility123"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/was-in-health-care-facility-with-known-cases"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "laboratory-personnel",
+                    "valueBoolean": true
+                  },
+                  {
+                    "url": "laboratory-personnel-facility-name",
+                    "valueString": "Facility123"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/laboratory-personnel"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "healthcare-personnel",
+                    "valueBoolean": true
+                  },
+                  {
+                    "url": "healthcare-personnel-facility-name",
+                    "valueString": "Facility123"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "member-of-a-common-exposure-cohort",
+                    "valueBoolean": true
+                  },
+                  {
+                    "url": "member-of-a-common-exposure-cohort-type",
+                    "valueString": "Cruiseline cohort"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+              },
+              {
+                "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
+                "valueBoolean": false
+              },
+              {
+                "url": "http://saraalert.org/StructureDefinition/crew-on-passenger-or-cargo-flight",
+                "valueBoolean": false
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/exposure-risk-factors"
+          },
+          {
+            "extension": [
+              {
+                "url": "source-of-report",
+                "valueString": "Surveillance Screening"
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/source-of-report"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
@@ -2921,89 +4367,188 @@ GET `[base]/Patient?given=john&family=doe`
           },
           {
             "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
-            "valueDate": "2020-05-16"
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
-            "valueDate": "2020-05-11"
+            "valueDate": "2021-06-24"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/isolation",
-            "valueBoolean": true
+            "valueBoolean": false
           },
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
           },
           {
+            "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+            "valueString": "Daily active monitoring"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/assigned-user",
+            "valuePositiveInt": 205610
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+            "valueDate": "2021-06-24"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-end-date",
+            "valueDate": "2021-06-25"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+            "valueString": "New Charleyhaven"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/port-of-entry-into-usa",
+            "valueString": "South Anamaria"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+            "valueDate": "2021-06-23"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-number",
+            "valueString": "V595"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-carrier",
+            "valueString": "Clora Airlines"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+            "valueDate": "2021-06-23"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+            "valueString": "Pleasure in the job puts perfection in the work."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+            "valueString": "Chuck Norris hosting is 101% uptime guaranteed."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/continuous-exposure",
+            "valueBoolean": true
+          },
+          {
             "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
-            "valueString": "2020-05-29"
+            "valueString": "Continuous Exposure"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
-            "valueString": "Low"
+            "valueString": "No Identified Risk"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/public-health-action",
-            "valueString": "Document results of medical evaluation"
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
-            "valueBoolean": true
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
-            "valueString": "case1"
+            "valueString": "None"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
-            "valueString": "Collierview"
+            "valueString": "Arronton"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
-            "valueString": "Angola"
+            "valueString": "Brazil"
           },
           {
             "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+            "valueBoolean": false
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination",
+            "valueString": "Pourosside"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-state",
+            "valueString": "District of Columbia"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure",
+            "valueString": "New Natalia"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-type",
+            "valueString": "Domestic"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/case-status",
+            "valueString": "Confirmed"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/gender-identity",
+                  "code": "transgender-female"
+                }
+              ],
+              "text": "Transgender Female (Male-to-Female [MTF])"
+            }
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/head-of-household",
             "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/id-of-reporter",
+            "valuePositiveInt": 43
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/last-assessment-reminder-sent",
+            "valueDateTime": "2021-06-20T04:00:00+00:00"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/paused-notifications",
+            "valueBoolean": false
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/status",
+            "valueString": "symptomatic"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/user-defined-symptom-onset",
+            "valueBoolean": false
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://saraalert.org/SaraAlert/cdc-id",
+            "value": "0952379687"
           }
         ],
         "active": true,
         "name": [
           {
-            "family": "mctest",
-            "given": [
-              "Lakeesha28",
-              "testy"
-            ]
+            "family": "Johns78",
+            "given": ["Gerardo58", "Reinger57"]
           }
         ],
         "telecom": [
           {
-            "system": "phone",
-            "value": "(333) 333-3333",
-            "rank": 1
-          },
-          {
-            "system": "phone",
-            "value": "(333) 333-3333",
-            "rank": 2
-          },
-          {
             "system": "email",
-            "value": "7858879250fake@example.com",
+            "value": "3822316898fake@example.com",
             "rank": 1
           }
         ],
-        "birthDate": "1971-01-21",
+        "birthDate": "1981-10-15",
         "address": [
           {
-            "line": [
-              "3718 Nestor Unions"
+            "line": ["8181 Diana Lodge"],
+            "district": "Royal Creek",
+            "state": "New Jersey",
+            "postalCode": "94336"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/address-type",
+                "valueString": "Monitored"
+              }
             ],
-            "city": "Port Leigh",
-            "state": "Massachusetts",
-            "postalCode": "00423-5596"
+            "line": ["8181 Diana Lodge"],
+            "district": "Royal Creek",
+            "state": "New Jersey",
+            "postalCode": "94336"
           }
         ],
         "communication": [
@@ -3016,7 +4561,20 @@ GET `[base]/Patient?given=john&family=doe`
                   "display": "English"
                 }
               ]
-            }
+            },
+            "preferred": true
+          },
+          {
+            "language": {
+              "coding": [
+                {
+                  "system": "urn:ietf:bcp:47",
+                  "code": "bho",
+                  "display": "Bhojpuri"
+                }
+              ]
+            },
+            "preferred": false
           }
         ],
         "resourceType": "Patient"
@@ -3042,170 +4600,189 @@ GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
 
 ```json
 {
-  "id": 1,
+  "id": "1b4158ff-d68c-4bbc-b808-3a395cbaef3a",
   "meta": {
-      "lastUpdated": "2020-10-05T21:48:43+00:00"
+    "lastUpdated": "2021-07-22T15:22:46-04:00"
   },
-  "status": "completed",
-  "subject": {
-      "reference": "Patient/231"
-  },
-  "item": [
+  "type": "searchset",
+  "total": 1,
+  "entry": [
     {
-      "linkId": "0",
-      "text": "cough",
-      "answer": [
-        {
-          "valueBoolean": false
-        }
-      ]
-    },
-    {
-      "linkId": "1",
-      "text": "difficulty-breathing",
-      "answer": [
-        {
-          "valueBoolean": true
-        }
-      ]
-    },
-    {
-      "linkId": "2",
-      "text": "new-loss-of-smell",
-      "answer": [
-        {
-          "valueBoolean": false
-        }
-      ]
-    },
-    {
-      "linkId": "3",
-      "text": "new-loss-of-taste",
-      "answer": [
-        {
-          "valueBoolean": false
-        }
-      ]
-    },
-    {
-      "linkId": "4",
-      "text": "shortness-of-breath",
-      "answer": [
-        {
-          "valueBoolean": true
-        }
-      ]
-    },
-    {
-      "linkId": "5",
-      "text": "fever",
-      "answer": [
-        {
-          "valueBoolean": false
-        }
-      ]
-    },
-    {
-      "linkId": "6",
-      "text": "used-a-fever-reducer",
-      "answer": [
-        {
-          "valueBoolean": false
-        }
-      ]
-    },
-    {
-      "linkId": "7",
-      "text": "chills",
-      "answer": [
-        {
-          "valueBoolean": true
-        }
-      ]
-    },
-    {
-      "linkId": "8",
-      "text": "repeated-shaking-with-chills",
-      "answer": [
-        {
-          "valueBoolean": false
-        }
-      ]
-    },
-    {
-      "linkId": "9",
-      "text": "muscle-pain",
-      "answer": [
-        {
-          "valueBoolean": true
-        }
-      ]
-    },
-    {
-      "linkId": "10",
-      "text": "headache",
-      "answer": [
-        {
-          "valueBoolean": true
-        }
-      ]
-    },
-    {
-      "linkId": "11",
-      "text": "sore-throat",
-      "answer": [
-        {
-          "valueBoolean": true
-        }
-      ]
-    },
-    {
-      "linkId": "12",
-      "text": "nausea-or-vomiting",
-      "answer": [
-        {
-          "valueBoolean": true
-        }
-      ]
-    },
-    {
-      "linkId": "13",
-      "text": "diarrhea",
-      "answer": [
-        {
-          "valueBoolean": true
-        }
-      ]
-    },
-    {
-      "linkId": "14",
-      "text": "fatigue",
-      "answer": [
-        {
-          "valueBoolean": true
-        }
-      ]
-    },
-    {
-      "linkId": "15",
-      "text": "congestion-or-runny-nose",
-      "answer": [
-        {
-          "valueBoolean": true
-        }
-      ]
-    },
-    {
-      "linkId": "16",
-      "text": "pulse-ox",
-      "answer": [
-        {
-          "valueDecimal": -4.0
-        }
-      ]
+      "fullUrl": "http://localhost:3000/fhir/r4/QuestionnaireResponse/1",
+      "resource": {
+        "id": 1,
+        "meta": {
+          "lastUpdated": "2021-06-27T20:51:51+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/symptomatic",
+            "valueBoolean": false
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/created-at",
+            "valueDateTime": "2021-06-23T13:34:09+00:00"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/who-reported",
+            "valueString": "Monitoree"
+          }
+        ],
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/20"
+        },
+        "item": [
+          {
+            "linkId": "0",
+            "text": "cough",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "1",
+            "text": "difficulty-breathing",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "2",
+            "text": "new-loss-of-smell",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "3",
+            "text": "new-loss-of-taste",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "4",
+            "text": "shortness-of-breath",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "5",
+            "text": "fever",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "6",
+            "text": "used-a-fever-reducer",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "7",
+            "text": "chills",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "8",
+            "text": "repeated-shaking-with-chills",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "9",
+            "text": "muscle-pain",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "10",
+            "text": "headache",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "11",
+            "text": "sore-throat",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "12",
+            "text": "nausea-or-vomiting",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "13",
+            "text": "diarrhea",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "14",
+            "text": "fatigue",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "15",
+            "text": "congestion-or-runny-nose",
+            "answer": [
+              {
+                "valueBoolean": false
+              }
+            ]
+          }
+        ],
+        "resourceType": "QuestionnaireResponse"
+      }
     }
   ],
-  "resourceType": "QuestionnaireResponse"
+  "resourceType": "Bundle"
 }
 ```
   </div>
@@ -3225,20 +4802,26 @@ GET `[base]/Observation?subject=Patient/[:id]`
 
 ```json
 {
-  "id": "6b62097c-eb38-4098-ae2b-6f56a20ec658",
+  "id": "eb4abf5e-7c66-40be-875a-e42359202dc2",
   "meta": {
-    "lastUpdated": "2020-05-28T21:09:07-04:00"
+    "lastUpdated": "2021-07-22T15:19:00-04:00"
   },
   "type": "searchset",
   "total": 1,
   "entry": [
     {
-      "fullUrl": "http://localhost:3000/fhir/r4/Observation/11",
+      "fullUrl": "http://localhost:3000/fhir/r4/Observation/34",
       "resource": {
-        "id": 11,
+        "id": 34,
         "meta": {
-          "lastUpdated": "2021-05-06T12:44:19+00:00"
+          "lastUpdated": "2021-06-23T13:25:48+00:00"
         },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/created-at",
+            "valueDateTime": "2021-06-23T13:25:48+00:00"
+          }
+        ],
         "status": "final",
         "category": [
           {
@@ -3253,17 +4836,17 @@ GET `[base]/Observation?subject=Patient/[:id]`
         "code": {
           "coding": [
             {
-              "system": "http://loinc.org",
-              "code": "94564-2"
+              "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+              "code": "OTH"
             }
           ],
-          "text": "IgM Antibody"
+          "text": "Other"
         },
         "subject": {
-          "reference": "Patient/1"
+          "reference": "Patient/12"
         },
-        "effectiveDateTime": "2021-05-06",
-        "issued": "2021-05-07T00:00:00+00:00",
+        "effectiveDateTime": "2021-06-19",
+        "issued": "2021-06-23T00:00:00+00:00",
         "valueCodeableConcept": {
           "coding": [
             {
@@ -3297,48 +4880,47 @@ GET `[base]/RelatedPerson?patient=Patient/[:id]`
 
 ```json
 {
-  "id": "f37cc7ac-3543-4ded-8902-841d0076a9bd",
+  "id": "667f6d14-0abb-405e-8a28-04310bfae922",
   "meta": {
-    "lastUpdated": "2021-03-04T17:04:29-05:00"
+    "lastUpdated": "2021-07-22T15:15:40-04:00"
   },
   "type": "searchset",
   "total": 1,
   "entry": [
     {
-      "fullUrl": "http://localhost:3000/fhir/r4/RelatedPerson/950",
+      "fullUrl": "http://localhost:3000/fhir/r4/RelatedPerson/7",
       "resource": {
-        "id": 950,
+        "id": 7,
         "meta": {
-          "lastUpdated": "2021-01-31T18:23:16+00:00"
+          "lastUpdated": "2021-06-23T21:11:57+00:00"
         },
         "extension": [
           {
             "url": "http://saraalert.org/StructureDefinition/contact-attempts",
-            "valueUnsignedInt": 5
+            "valueUnsignedInt": 2
           },
           {
             "url": "http://saraalert.org/StructureDefinition/notes",
-            "valueString": "Parsing the panel won't do anything, we need to program the optical ib array!"
+            "valueString": "You can't back up the alarm without parsing the cross-platform SSL capacitor!"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/created-at",
+            "valueDateTime": "2021-06-23T21:11:57+00:00"
           }
         ],
         "patient": {
-          "reference": "Patient/222"
+          "reference": "Patient/9"
         },
         "name": [
           {
-            "family": "Pollich97",
-            "given": ["Nam32"]
+            "family": "Heller03",
+            "given": ["Betsy81"]
           }
         ],
         "telecom": [
           {
-            "system": "phone",
-            "value": "+15555550104",
-            "rank": 1
-          },
-          {
             "system": "email",
-            "value": "1845823000fake@example.com",
+            "value": "8089736791fake@example.com",
             "rank": 1
           }
         ],
@@ -3366,39 +4948,45 @@ GET `[base]/Immunization?patient=Patient/[:id]`
 
 ```json
 {
-  "id": "18dca7c0-692e-4819-b70b-2b342741567c",
+  "id": "59a223a8-1724-4217-8c15-c02fdc3838ec",
   "meta": {
-    "lastUpdated": "2021-04-01T18:17:29-04:00"
+    "lastUpdated": "2021-07-22T15:17:16-04:00"
   },
   "type": "searchset",
   "total": 1,
   "entry": [
     {
-      "fullUrl": "http://localhost:3000/fhir/r4/Immunization/35",
+      "fullUrl": "http://localhost:3000/fhir/r4/Immunization/1",
       "resource": {
-        "id": 35,
+        "id": 1,
         "meta": {
-          "lastUpdated": "2021-04-01T22:17:14+00:00"
+          "lastUpdated": "2021-06-23T10:40:04+00:00"
         },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/created-at",
+            "valueDateTime": "2021-06-23T10:40:04+00:00"
+          }
+        ],
         "status": "completed",
         "vaccineCode": [
           {
             "coding": [
               {
                 "system": "http://hl7.org/fhir/sid/cvx",
-                "code": "207"
+                "code": "212"
               }
             ],
-            "text": "Moderna COVID-19 Vaccine"
+            "text": "Janssen (J&J) COVID-19 Vaccine"
           }
         ],
         "patient": {
-          "reference": "Patient/111"
+          "reference": "Patient/6"
         },
-        "occurrenceDateTime": "2021-03-30",
+        "occurrenceDateTime": "2021-06-19",
         "note": [
           {
-            "text": "Notes here"
+            "text": "Defy Noxus and taste your own blood."
           }
         ],
         "protocolApplied": [
@@ -3413,8 +5001,7 @@ GET `[base]/Immunization?patient=Patient/[:id]`
                 ],
                 "text": "COVID-19"
               }
-            ],
-            "doseNumberString": "1"
+            ]
           }
         ],
         "resourceType": "Immunization"
@@ -3423,7 +5010,6 @@ GET `[base]/Immunization?patient=Patient/[:id]`
   ],
   "resourceType": "Bundle"
 }
-
 ```
   </div>
 </details>
@@ -3442,55 +5028,54 @@ GET `[base]/Provenance?patient=Patient/[:id]`
 
 ```json
 {
-    "id": "83890c54-0871-4801-bbdf-b4b29f6c400a",
-    "meta": {
-        "lastUpdated": "2021-05-28T16:37:43-04:00"
-    },
-    "type": "searchset",
-    "total": 1,
-    "entry": [
-        {
-            "fullUrl": "http://localhost:3000/fhir/r4/Provenance/10183",
-            "resource": {
-                "id": 10183,
-                "meta": {
-                    "lastUpdated": "2021-05-26T15:51:19+00:00"
-                },
-                "extension": [
-                    {
-                        "url": "http://saraalert.org/StructureDefinition/comment",
-                        "valueString": "User enrolled monitoree."
-                    },
-                    {
-                        "url": "http://saraalert.org/StructureDefinition/history-type",
-                        "valueString": "Enrollment"
-                    }
-                ],
-                "target": [
-                    {
-                        "reference": "Patient/954"
-                    }
-                ],
-                "recorded": "2021-05-26T15:51:19+00:00",
-                "agent": [
-                    {
-                        "who": {
-                            "identifier": {
-                                "value": "locals2c4_enroller@example.com"
-                            }
-                        },
-                        "onBehalfOf": {
-                            "reference": "Patient/954"
-                        }
-                    }
-                ],
-                "resourceType": "Provenance"
+  "id": "6004987d-775b-4d4b-9f9a-7c19bd432e4a",
+  "meta": {
+    "lastUpdated": "2021-07-22T15:20:57-04:00"
+  },
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/Provenance/326",
+      "resource": {
+        "id": 326,
+        "meta": {
+          "lastUpdated": "2021-06-24T23:17:02+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/comment",
+            "valueString": "User enrolled monitoree."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/history-type",
+            "valueString": "Enrollment"
+          }
+        ],
+        "target": [
+          {
+            "reference": "Patient/82"
+          }
+        ],
+        "recorded": "2021-06-24T23:17:02+00:00",
+        "agent": [
+          {
+            "who": {
+              "identifier": {
+                "value": "state2_enroller@example.com"
+              }
+            },
+            "onBehalfOf": {
+              "reference": "Patient/82"
             }
-        }
-    ],
-    "resourceType": "Bundle"
+          }
+        ],
+        "resourceType": "Provenance"
+      }
+    }
+  ],
+  "resourceType": "Bundle"
 }
-
 ```
   </div>
 </details>
@@ -3509,12 +5094,12 @@ GET `[base]/Patient?_count=2`
 
 ```json
 {
-  "id": "803eeebb-be5b-44e8-8430-0021d122cb77",
+  "id": "e4d8973c-2e50-4416-84e0-6c4930048654",
   "meta": {
-    "lastUpdated": "2020-05-28T21:03:28-04:00"
+    "lastUpdated": "2021-07-22T15:12:34-04:00"
   },
   "type": "searchset",
-  "total": 472,
+  "total": 1048,
   "link": [
     {
       "relation": "next",
@@ -3522,31 +5107,447 @@ GET `[base]/Patient?_count=2`
     },
     {
       "relation": "last",
-      "url": "http://localhost:3000/fhir/r4/Patient?_count=2&page=236"
+      "url": "http://localhost:3000/fhir/r4/Patient?_count=2&page=524"
     }
   ],
   "entry": [
     {
-      "fullUrl": "http://localhost:3000/fhir/r4/Patient/12",
+      "fullUrl": "http://localhost:3000/fhir/r4/Patient/1",
       "resource": {
-        "id": 12,
+        "id": 1,
         "meta": {
-          "lastUpdated": "2020-05-29T00:43:06+00:00"
+          "lastUpdated": "2021-07-20T21:53:24+00:00"
         },
+        "contained": [
+          {
+            "target": [
+              {
+                "reference": "/fhir/r4/Patient/1"
+              }
+            ],
+            "recorded": "2021-06-22T21:47:14+00:00",
+            "activity": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                  "code": "CREATE",
+                  "display": "create"
+                }
+              ]
+            },
+            "agent": [
+              {
+                "who": {
+                  "identifier": {
+                    "value": 6
+                  },
+                  "display": "locals2c4_enroller@example.com"
+                }
+              }
+            ],
+            "resourceType": "Provenance"
+          }
+        ],
         "extension": [
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                "valueCode": "asked-declined"
+              },
+              {
+                "url": "text",
+                "valueString": "Refused to Answer"
+              }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+          },
           {
             "extension": [
               {
                 "url": "ombCategory",
                 "valueCoding": {
                   "system": "urn:oid:2.16.840.1.113883.6.238",
-                  "code": "2106-3",
-                  "display": "White"
+                  "code": "2135-2",
+                  "display": "Hispanic or Latino"
                 }
               },
               {
                 "url": "text",
-                "valueString": "White"
+                "valueString": "Hispanic or Latino"
+              }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+          },
+          {
+            "extension": [
+              {
+                "url": "id",
+                "valuePositiveInt": 30
+              },
+              {
+                "url": "updated-at",
+                "valueDateTime": "2021-06-27T12:35:55+00:00"
+              },
+              {
+                "url": "created-at",
+                "valueDateTime": "2021-06-27T12:35:55+00:00"
+              },
+              {
+                "url": "who-initiated-transfer",
+                "valueString": "locals2c4_epi@example.com"
+              },
+              {
+                "url": "from-jurisdiction",
+                "valueString": "USA, State 2"
+              },
+              {
+                "url": "to-jurisdiction",
+                "valueString": "USA, State 1"
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/transfer"
+          },
+          {
+            "extension": [
+              {
+                "extension": [
+                  {
+                    "url": "contact-of-known-case",
+                    "valueBoolean": true
+                  },
+                  {
+                    "url": "contact-of-known-case-id",
+                    "valueString": "08716266, 07336309"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/contact-of-known-case"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "was-in-health-care-facility-with-known-cases",
+                    "valueBoolean": true
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/was-in-health-care-facility-with-known-cases"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "laboratory-personnel",
+                    "valueBoolean": false
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/laboratory-personnel"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "healthcare-personnel",
+                    "valueBoolean": false
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "member-of-a-common-exposure-cohort",
+                    "valueBoolean": false
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+              },
+              {
+                "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
+                "valueBoolean": false
+              },
+              {
+                "url": "http://saraalert.org/StructureDefinition/crew-on-passenger-or-cargo-flight",
+                "valueBoolean": false
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/exposure-risk-factors"
+          },
+          {
+            "extension": [
+              {
+                "url": "source-of-report",
+                "valueString": "Other"
+              },
+              {
+                "url": "specify",
+                "valueString": "Audacious"
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/source-of-report"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
+            "valueString": "Telephone call"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+            "valueString": "Evening"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/isolation",
+            "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+            "valueString": "USA, State 2"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/assigned-user",
+            "valuePositiveInt": 976134
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+            "valueDate": "2021-06-26"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-end-date",
+            "valueDate": "2021-06-27"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+            "valueString": "Eufemiamouth"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/port-of-entry-into-usa",
+            "valueString": "Murazikfurt"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+            "valueDate": "2021-06-22"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-number",
+            "valueString": "H420"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-carrier",
+            "valueString": "Frances Airlines"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+            "valueDate": "2021-06-22"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+            "valueString": "The mind is not a vessel to be filled but a fire to be kindled."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+            "valueString": "Chuck Norris' beard is immutable."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/continuous-exposure",
+            "valueBoolean": false
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
+            "valueString": "2021-07-06"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
+            "valueString": "High"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/public-health-action",
+            "valueString": "None"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
+            "valueString": "Huelville"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
+            "valueString": "United Arab Emirates"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+            "valueBoolean": false
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/follow-up-reason",
+            "valueString": "Deceased"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination",
+            "valueString": "West Raymundo"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-country",
+            "valueString": "Marshall Islands"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure",
+            "valueString": "Gradychester"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-type",
+            "valueString": "International"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/case-status",
+            "valueString": "Probable"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/gender-identity",
+                  "code": "transgender-female"
+                }
+              ],
+              "text": "Transgender Female (Male-to-Female [MTF])"
+            }
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/sexual-orientation",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "38628009"
+                }
+              ],
+              "text": "Lesbian, Gay, or Homosexual"
+            }
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/id-of-reporter",
+            "valuePositiveInt": 1
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/paused-notifications",
+            "valueBoolean": false
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/status",
+            "valueString": "asymp non test based"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://saraalert.org/SaraAlert/state-local-id",
+            "value": "EX-773460"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "McCullough24",
+            "given": ["Eulah20"]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+15555550162",
+            "rank": 1
+          }
+        ],
+        "birthDate": "1969-09-19",
+        "address": [
+          {
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/address-type",
+                "valueString": "Foreign"
+              }
+            ],
+            "line": ["2224 Jerrod Extension", "Suite 257"],
+            "city": "Bishkek",
+            "postalCode": "03602-0784",
+            "country": "Hungary"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/address-type",
+                "valueString": "ForeignMonitored"
+              }
+            ],
+            "line": ["97299 Schroeder Loop"],
+            "city": "Praia Bangui",
+            "district": "Vernon",
+            "state": "Wisconsin",
+            "postalCode": "72075"
+          }
+        ],
+        "communication": [
+          {
+            "language": {
+              "coding": [
+                {
+                  "system": "urn:ietf:bcp:47",
+                  "code": "en",
+                  "display": "English"
+                }
+              ]
+            },
+            "preferred": true
+          }
+        ],
+        "resourceType": "Patient"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/fhir/r4/Patient/2",
+      "resource": {
+        "id": 2,
+        "meta": {
+          "lastUpdated": "2021-07-06T16:10:55+00:00"
+        },
+        "contained": [
+          {
+            "target": [
+              {
+                "reference": "/fhir/r4/Patient/2"
+              }
+            ],
+            "recorded": "2021-06-22T22:24:58+00:00",
+            "activity": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                  "code": "CREATE",
+                  "display": "create"
+                }
+              ]
+            },
+            "agent": [
+              {
+                "who": {
+                  "identifier": {
+                    "value": 5
+                  },
+                  "display": "locals2c3_enroller@example.com"
+                }
+              }
+            ],
+            "resourceType": "Provenance"
+          }
+        ],
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                "valueCode": "asked-declined"
+              },
+              {
+                "url": "text",
+                "valueString": "Refused to Answer"
               }
             ],
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
@@ -3570,31 +5571,154 @@ GET `[base]/Patient?_count=2`
           },
           {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "M"
+            "valueCode": "UNK"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
-            "valueString": "E-mailed Web Link"
+            "extension": [
+              {
+                "url": "id",
+                "valuePositiveInt": 186
+              },
+              {
+                "url": "updated-at",
+                "valueDateTime": "2021-07-04T02:04:33+00:00"
+              },
+              {
+                "url": "created-at",
+                "valueDateTime": "2021-07-04T02:04:33+00:00"
+              },
+              {
+                "url": "who-initiated-transfer",
+                "valueString": "locals2c3_epi@example.com"
+              },
+              {
+                "url": "from-jurisdiction",
+                "valueString": "USA"
+              },
+              {
+                "url": "to-jurisdiction",
+                "valueString": "USA, State 1, County 1"
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/transfer"
+          },
+          {
+            "extension": [
+              {
+                "extension": [
+                  {
+                    "url": "contact-of-known-case",
+                    "valueBoolean": false
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/contact-of-known-case"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "was-in-health-care-facility-with-known-cases",
+                    "valueBoolean": false
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/was-in-health-care-facility-with-known-cases"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "laboratory-personnel",
+                    "valueBoolean": false
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/laboratory-personnel"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "healthcare-personnel",
+                    "valueBoolean": false
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "member-of-a-common-exposure-cohort",
+                    "valueBoolean": false
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+              },
+              {
+                "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
+                "valueBoolean": false
+              },
+              {
+                "url": "http://saraalert.org/StructureDefinition/crew-on-passenger-or-cargo-flight",
+                "valueBoolean": false
+              }
+            ],
+            "url": "http://saraalert.org/StructureDefinition/exposure-risk-factors"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+            "valueString": "Afternoon"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
-            "valueDate": "2020-05-18"
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
-            "valueDate": "2020-05-12"
+            "valueDate": "2021-07-03"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/isolation",
-            "valueBoolean": false
+            "valueBoolean": true
           },
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
-            "valueString": "USA, State 1"
+            "valueString": "USA, State 1, County 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/assigned-user",
+            "valuePositiveInt": 232046
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+            "valueString": "North Pearliechester"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/port-of-entry-into-usa",
+            "valueString": "Januaryfurt"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/date-of-departure",
+            "valueDate": "2021-06-22"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-number",
+            "valueString": "I280"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-carrier",
+            "valueString": "Emery Airlines"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
+            "valueDate": "2021-06-22"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+            "valueString": "Tonight we hunt!"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
+            "valueString": "Most people would rather give than get affection."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/continuous-exposure",
+            "valueBoolean": false
           },
           {
             "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
-            "valueString": "2020-05-29"
+            "valueString": "2021-07-06"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
@@ -3602,65 +5726,113 @@ GET `[base]/Patient?_count=2`
           },
           {
             "url": "http://saraalert.org/StructureDefinition/public-health-action",
-            "valueString": "Document results of medical evaluation"
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case",
-            "valueBoolean": true
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/contact-of-known-case-id",
-            "valueString": "case1"
+            "valueString": "None"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
-            "valueString": "Collierview"
+            "valueString": "Port Edisonberg"
           },
           {
             "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
-            "valueString": "Angola"
+            "valueString": "Guinea"
           },
           {
             "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
+            "valueBoolean": false
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/follow-up-reason",
+            "valueString": "In Need of Follow-up"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/follow-up-note",
+            "valueString": "Most people would rather give than get affection."
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/case-status",
+            "valueString": "Confirmed"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/sexual-orientation",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "38628009"
+                }
+              ],
+              "text": "Lesbian, Gay, or Homosexual"
+            }
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/id-of-reporter",
+            "valuePositiveInt": 2
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/paused-notifications",
+            "valueBoolean": false
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/status",
+            "valueString": "symp non test based"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/user-defined-symptom-onset",
             "valueBoolean": true
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://saraalert.org/SaraAlert/state-local-id",
+            "value": "EX-066922"
           }
         ],
         "active": true,
         "name": [
           {
-            "family": "Waelchi90",
-            "given": [
-              "Dwight94",
-              "Schulist42"
-            ]
+            "family": "Konopelski65",
+            "given": ["Kirby47", "Batz46"]
           }
         ],
         "telecom": [
           {
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Plain Cell"
+              }
+            ],
             "system": "phone",
-            "value": "(333) 333-3333",
+            "value": "+15555550172",
             "rank": 1
           },
           {
             "system": "phone",
-            "value": "(333) 333-3333",
+            "value": "+15555550182",
             "rank": 2
-          },
-          {
-            "system": "email",
-            "value": "3898888718fake@example.com",
-            "rank": 1
           }
         ],
-        "birthDate": "1946-12-05",
+        "birthDate": "2008-09-12",
         "address": [
           {
-            "line": [
-              "2338 Letisha Center"
+            "line": ["78342 Howell View"],
+            "city": "Wildermanmouth",
+            "district": "Paradise Place",
+            "state": "Vermont",
+            "postalCode": "58562"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/address-type",
+                "valueString": "Monitored"
+              }
             ],
-            "city": "Hegmannside",
-            "state": "Arizona",
-            "postalCode": "33245-0671"
+            "line": ["78342 Howell View"],
+            "city": "Wildermanmouth",
+            "district": "Paradise Place",
+            "state": "Vermont",
+            "postalCode": "58562"
           }
         ],
         "communication": [
@@ -3673,128 +5845,8 @@ GET `[base]/Patient?_count=2`
                   "display": "English"
                 }
               ]
-            }
-          }
-        ],
-        "resourceType": "Patient"
-      }
-    },
-    {
-      "fullUrl": "http://localhost:3000/fhir/r4/Patient/26",
-      "resource": {
-        "id": 26,
-        "meta": {
-          "lastUpdated": "2020-05-29T00:43:14+00:00"
-        },
-        "extension": [
-          {
-            "extension": [
-              {
-                "url": "ombCategory",
-                "valueCoding": {
-                  "system": "urn:oid:2.16.840.1.113883.6.238",
-                  "code": "2076-8",
-                  "display": "Native Hawaiian or Other Pacific Islander"
-                }
-              },
-              {
-                "url": "text",
-                "valueString": "Native Hawaiian or Other Pacific Islander"
-              }
-            ],
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
-          },
-          {
-            "extension": [
-              {
-                "url": "ombCategory",
-                "valueCoding": {
-                  "system": "urn:oid:2.16.840.1.113883.6.238",
-                  "code": "2186-5",
-                  "display": "Not Hispanic or Latino"
-                }
-              },
-              {
-                "url": "text",
-                "valueString": "Not Hispanic or Latino"
-              }
-            ],
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
-          },
-          {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "M"
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
-            "valueString": "E-mailed Web Link"
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
-            "valueDate": "2020-05-19"
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
-            "valueDate": "2020-05-15"
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/isolation",
-            "valueBoolean": true
-          },
-          {
-            "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
-            "valueString": "USA, State 1"
-          }
-        ],
-        "active": true,
-        "name": [
-          {
-            "family": "Connelly52",
-            "given": [
-              "Kenton63",
-              "Kuhlman78"
-            ]
-          }
-        ],
-        "telecom": [
-          {
-            "system": "phone",
-            "value": "(333) 333-3333",
-            "rank": 1
-          },
-          {
-            "system": "phone",
-            "value": "(333) 333-3333",
-            "rank": 2
-          },
-          {
-            "system": "email",
-            "value": "8065771328fake@example.com",
-            "rank": 1
-          }
-        ],
-        "birthDate": "2014-10-04",
-        "address": [
-          {
-            "line": [
-              "7842 Luke Fork"
-            ],
-            "city": "Millshaven",
-            "state": "Rhode Island",
-            "postalCode": "79857"
-          }
-        ],
-        "communication": [
-          {
-            "language": {
-              "coding": [
-                {
-                  "system": "urn:ietf:bcp:47",
-                  "code": "en",
-                  "display": "English"
-                }
-              ]
-            }
+            },
+            "preferred": true
           }
         ],
         "resourceType": "Patient"

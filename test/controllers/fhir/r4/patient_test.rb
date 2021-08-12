@@ -290,7 +290,7 @@ class ApiControllerTest < ApiControllerTestCase
     json_response = JSON.parse(response.body)
     issues = json_response['issue']
 
-    assert_equal 19, issues.length
+    assert_equal 18, issues.length
     monitoring_plan_iss = issues.find { |e| /Invalid.*Monitoring Plan/.match(e['diagnostics']) }
     assert(FHIRPath.evaluate(monitoring_plan_iss['expression'].first, json_patient) == 'Invalid')
     state_iss = issues.find { |e| /Old York.*State/.match(e['diagnostics']) }
@@ -669,8 +669,8 @@ class ApiControllerTest < ApiControllerTestCase
   end
 
   test 'should differentiate USA and Foreign addresses in update' do
-    @patient_1.address << FHIR::Address.new(line: ['123 First Ave', 'Unit 22', 'Sector B'], city: 'Northland', state: 'Quebec', postalCode: '77658-0950',
-                                            country: 'Canada')
+    @patient_1.address[1] = FHIR::Address.new(line: ['123 First Ave', 'Unit 22', 'Sector B'], city: 'Northland', state: 'Quebec', postalCode: '77658-0950',
+                                              country: 'Canada')
     @patient_1.address[1].extension << FHIR::Extension.new(url: 'http://saraalert.org/StructureDefinition/address-type', valueString: 'Foreign')
 
     put(
@@ -698,7 +698,8 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal @patient_1.address[1].country, patient.foreign_address_country
 
     # Test that the response is as expected
-    assert_equal JSON.parse(@patient_1.address.to_json), json_response['address']
+    assert_equal JSON.parse(@patient_1.address[0].to_json), json_response['address'][0]
+    assert_equal JSON.parse(@patient_1.address[1].to_json), json_response['address'][1]
   end
 
   test 'should update address fields from an explicit USA address' do
@@ -770,7 +771,7 @@ class ApiControllerTest < ApiControllerTestCase
 
     # Test that the response is as expected
     assert_equal JSON.parse(@patient_1.address[0].to_json), json_response['address'][0]
-    assert_nil json_response['address'][1]
+    assert_nil(json_response['address'].find { |a| a['extension'] && a['extension'][0]['valueString'] == 'Foreign' })
   end
 
   test 'should be unprocessable entity via update with validation errors' do
@@ -785,7 +786,7 @@ class ApiControllerTest < ApiControllerTestCase
     json_response = JSON.parse(response.body)
     issues = json_response['issue']
 
-    assert_equal 19, issues.length
+    assert_equal 18, issues.length
     monitoring_plan_iss = issues.find { |e| /Invalid.*Monitoring Plan/.match(e['diagnostics']) }
     assert(FHIRPath.evaluate(monitoring_plan_iss['expression'].first, json_patient) == 'Invalid')
     state_iss = issues.find { |e| /Old York.*State/.match(e['diagnostics']) }

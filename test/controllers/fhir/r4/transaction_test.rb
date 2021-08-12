@@ -19,7 +19,7 @@ class TransactionTest < ApiControllerTestCase
   end
 
   def patient_entry(first_name, last_name)
-    patient_as_fhir = create(
+    patient = create(
       :patient,
       address_state: 'Oregon',
       date_of_birth: 25.years.ago,
@@ -28,7 +28,8 @@ class TransactionTest < ApiControllerTestCase
       last_date_of_exposure: 4.days.ago.to_date,
       symptom_onset: 4.days.ago.to_date,
       creator: User.find_by(id: @system_everything_app.user_id)
-    ).as_fhir
+    )
+    patient.responder_id = nil
 
     FHIR::Bundle::Entry.new(
       fullUrl: "urn:uuid:#{SecureRandom.uuid}",
@@ -36,7 +37,7 @@ class TransactionTest < ApiControllerTestCase
         method: 'POST',
         url: 'Patient'
       ),
-      resource: patient_as_fhir
+      resource: patient.as_fhir
     )
   end
 
@@ -202,11 +203,13 @@ class TransactionTest < ApiControllerTestCase
 
     patient_json = json_response['entry'][0]['resource']
     original_json = JSON.parse(@bundle.to_json)['entry'][0]['resource']
-    assert_equal original_json.except('id', 'meta', 'contained'), patient_json.except('id', 'meta', 'contained')
+    assert_equal original_json.except('id', 'meta', 'contained', 'extension'), patient_json.except('id', 'meta', 'contained', 'extension')
+    # Response JSON may include additional extensions, but should contain every original extension
+    assert(original_json['extension'].all? { |e| patient_json['extension'].include?(e) })
 
     observation_json = json_response['entry'][1]['resource']
     original_json = JSON.parse(@bundle.to_json)['entry'][1]['resource']
-    assert_equal original_json.except('id', 'meta', 'subject'), observation_json.except('id', 'meta', 'subject')
+    assert_equal original_json.except('id', 'meta', 'subject', 'extension'), observation_json.except('id', 'meta', 'subject', 'extension')
 
     created_patient_id = patient_json['id']
     created_lab_id = observation_json['id']
@@ -229,7 +232,9 @@ class TransactionTest < ApiControllerTestCase
 
     patient_json = json_response['entry'][0]['resource']
     original_json = JSON.parse(@bundle.to_json)['entry'][0]['resource']
-    assert_equal original_json.except('id', 'meta', 'contained'), patient_json.except('id', 'meta', 'contained')
+    assert_equal original_json.except('id', 'meta', 'contained', 'extension'), patient_json.except('id', 'meta', 'contained', 'extension')
+    # Response JSON may include additional extensions, but should contain every original extension
+    assert(original_json['extension'].all? { |e| patient_json['extension'].include?(e) })
 
     created_patient_id = patient_json['id']
     created_patient = Patient.find_by(id: created_patient_id.to_i)
