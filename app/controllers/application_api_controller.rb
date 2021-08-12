@@ -50,5 +50,12 @@ class ApplicationApiController < ActionController::API
     end
   end
 
+  # Generic 202 accepted response
+  def status_accepted
+    respond_to do |format|
+      format.any { head :accepted }
+    end
+  end
+
   class ClientError < StandardError; end
 end

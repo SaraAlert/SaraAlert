@@ -1,11 +1,17 @@
 # frozen_string_literal: true
 
-require 'test_helper'
-require 'rspec/mocks/minitest_integration'
-require 'controllers/fhir/r4/api_controller_test'
+require 'api_controller_test_case'
 
 # rubocop:disable Metrics/ClassLength
-class ApiControllerTest < ActionDispatch::IntegrationTest
+class ApiControllerTest < ApiControllerTestCase
+  setup do
+    setup_system_applications
+    setup_system_tokens
+    setup_user_applications
+    setup_patients
+    setup_logger
+  end
+
   #----- show tests -----
 
   test 'should get patient via show' do

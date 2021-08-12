@@ -426,6 +426,140 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_ok(bundle) && return
   end
 
+  # Kick off async generation of bulk FHIR data for all accessible patients
+  #
+  # GET /fhir/r4/Patient/$export
+  def bulk_data_export
+    # Require all scopes for all possible resources being returned
+    return if doorkeeper_authorize!(*PATIENT_READ_SCOPES)
+    return if doorkeeper_authorize!(*OBSERVATION_READ_SCOPES)
+    return if doorkeeper_authorize!(*QUESTIONNAIRE_RESPONSE_READ_SCOPES)
+    return if doorkeeper_authorize!(*RELATED_PERSON_READ_SCOPES)
+    return if doorkeeper_authorize!(*IMMUNIZATION_READ_SCOPES)
+    return if doorkeeper_authorize!(*PROVENANCE_READ_SCOPES)
+
+    unless accept_header?
+      status_not_acceptable_with_custom_errors(["'Accept' header must have a value of 'application/fhir+json'," \
+        " or the '_format' parameter must be one of 'json', 'application/json' or 'application/fhir+json'"]) && return
+    end
+
+    unless prefer_header?
+      status_unprocessable_entity_with_custom_errors(["'Prefer' header must have value of 'respond-async'"],
+                                                     '') && return
+    end
+
+    unless @m2m_workflow
+      status_unauthorized_with_custom_errors(['Bulk export requires a client application registered for the Backend Services Workflow']) && return
+    end
+
+    if params.key?(:_type) || params.key?(:_outputFormat)
+      status_unprocessable_entity_with_custom_errors(['The _type and _outputFormat parameters are unsupported'], '') && return
+    end
+
+    begin
+      since = params.permit(:_since)[:_since]
+      since = DateTime.strptime(since, '%Y-%m-%dT%H:%M:%S%z') unless since.blank?
+    rescue Date::Error
+      status_unprocessable_entity_with_custom_errors(['Invalid Date in _since parameter. Please use the FHIR instant datatype'], '') && return
+    end
+
+    client_app = current_client_application
+    if client_app.exported_recently?
+      response['Retry-After'] = client_app.retry_bulk_export_after.httpdate
+      status_too_many_requests_with_custom_errors(
+        ["Client already initiated an export of this type in the last #{Rails.configuration.api['bulk_export_retry_after_minutes']} minutes. " \
+        'Please try again later']
+      ) && return
+    end
+
+    # Create the download to uniquely id this request, and queue the ExportFhirJob
+    download = ApiDownload.create(application_id: client_app.id, url: request.url)
+    export_job = ExportFhirJob.perform_later(client_app, download, { since: since })
+    # Add the job_id of the job to the download for reference in status requests
+    download.update(job_id: export_job.provider_job_id)
+
+    respond_to do |format|
+      format.any { head(:accepted, content_location: "#{root_url}fhir/r4/ExportStatus/#{download.id}") }
+    end
+  end
+
+  # Give an update on the status of a bulk FHIR data request
+  #
+  # GET /fhir/r4/ExportStatus/[:id]
+  def export_status
+    id = params.require(:id)
+    download = ApiDownload.where(application_id: doorkeeper_token&.application_id).find_by_id(id)
+    status = Sidekiq::Status.status(download&.job_id)
+    case status
+    when :complete
+      begin
+        transaction_time = DateTime.parse(Sidekiq::Status.get(download.job_id, :transaction_time))
+      rescue Date::Error
+        status_server_error(['Export failed']) && return
+      end
+
+      response_json = {
+        transactionTime: transaction_time.utc.strftime('%FT%T%:z'),
+        request: download.url,
+        requiresAccessToken: true,
+        errors: [],
+        output: download.files.blobs.pluck(:filename).map do |file|
+          resource_type = file.split('.').first
+          {
+            type: resource_type,
+            url: "#{root_url}fhir/r4/ExportFiles/#{id}/#{resource_type}"
+          }
+        end
+      }
+      render json: response_json.to_json, status: :ok
+    when :failed
+      status_server_error(['Export failed']) && return
+    when :working, :queued, :retrying
+      response.headers['X-Progress'] = if status == :working
+                                         "#{Sidekiq::Status.pct_complete(download.job_id)} %"
+                                       else
+                                         status.to_s
+                                       end
+      response['Retry-After'] = Rails.configuration.api['bulk_export_status_retry_after_seconds'].to_s
+      head :accepted
+    else
+      status_not_found_with_custom_errors([
+                                            'Export for this ID either does not exist, or was too large and had to be cancelled. ' \
+                                            'Exports are cancelled if they take longer than '\
+                                            "#{Rails.configuration.api['bulk_export_expiration_minutes']} minutes."
+                                          ]) && return
+    end
+  end
+
+  # Return an bulk exported ndjson file
+  #
+  # GET /ExportFiles/[:id]/[:resource_type]
+  def export_files
+    unless request.headers['Accept'].nil? || request.headers['Accept'] == 'application/fhir+ndjson'
+      status_not_acceptable_with_custom_errors(["'Accept' header must have a value of 'application/fhir+ndjson'"]) && return
+    end
+
+    id = params.require(:id)
+    resource_type = params.require(:resource_type)&.downcase
+    authorize_resource_type_read(resource_type)
+
+    download = current_client_application&.api_downloads&.find_by_id(id)
+    status_not_found_with_custom_errors(['No file found at this URL']) && return if download.nil?
+
+    # Find and return the specific attachment associated with the given filename
+    attachment = download.files.blobs.where(filename: "#{resource_type}.ndjson").first
+    status_not_found_with_custom_errors(['No file found at this URL']) && return if attachment.nil?
+
+    # Set the headers before streaming the returned content
+    response.headers['Content-Type'] = 'application/fhir+ndjson'
+
+    attachment.download do |chunk|
+      response.stream.write chunk
+    end
+  ensure
+    response.stream.close
+  end
+
   # Return a FHIR::CapabilityStatement
   #
   # GET /fhir/r4/metadata
@@ -751,6 +885,11 @@ class Fhir::R4::ApiController < ApplicationApiController
     ['json', 'application/json', 'application/fhir+json'].include?(params.permit(:_format)[:_format]&.downcase)
   end
 
+  # Check prefer header for correct value
+  def prefer_header?
+    request.headers['Prefer']&.include?('respond-async')
+  end
+
   # Check content type header for correct mime type
   def content_type_header?(header)
     request.content_type == header
@@ -767,6 +906,43 @@ class Fhir::R4::ApiController < ApplicationApiController
   def status_not_found(errors = [])
     respond_to do |format|
       format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :not_found }
+    end
+  end
+
+  # 406 not acceptable status with custom error messages
+  def status_not_acceptable_with_custom_errors(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :not_acceptable }
+    end
+  end
+
+  # 401 unauthorized with custom error messages
+  def status_unauthorized_with_custom_errors(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :unauthorized }
+    end
+  end
+
+  # 404 not found with custom error messages
+  def status_not_found_with_custom_errors(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :not_found }
+    end
+  end
+
+  # 429 too many requests with custom error messages
+  def status_too_many_requests_with_custom_errors(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :too_many_requests }
+    end
+  end
+
+  # 500 server error status with custom error messages
+  def status_server_error(errors = [])
+    respond_to do |format|
+      format.any do
+        render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :internal_server_error
+      end
     end
   end
 
@@ -1137,6 +1313,26 @@ class Fhir::R4::ApiController < ApplicationApiController
     end
     param_str += "#{index.zero? ? '?' : '&'}page=#{target_page}"
     "#{root_url}fhir/r4/#{resource_type}#{param_str}"
+  end
+
+  # Check if the client application is authorized to read a given resource_type
+  def authorize_resource_type_read(resource_type)
+    case resource_type
+    when 'patient'
+      (raise ClientError) if doorkeeper_authorize!(*PATIENT_READ_SCOPES)
+    when 'observation'
+      (raise ClientError) if doorkeeper_authorize!(*OBSERVATION_READ_SCOPES)
+    when 'questionnaireresponse'
+      (raise ClientError) if doorkeeper_authorize!(*QUESTIONNAIRE_RESPONSE_READ_SCOPES)
+    when 'relatedperson'
+      (raise ClientError) if doorkeeper_authorize!(*RELATED_PERSON_READ_SCOPES)
+    when 'immunization'
+      (raise ClientError) if doorkeeper_authorize!(*IMMUNIZATION_READ_SCOPES)
+    when 'provenance'
+      (raise ClientError) if doorkeeper_authorize!(*PROVENANCE_READ_SCOPES)
+    else
+      status_not_found_with_custom_errors(["Invalid ResourceType '#{resource_type}'"]) && (raise ClientError)
+    end
   end
 
   # Operation outcome response

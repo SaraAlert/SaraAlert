@@ -39,6 +39,7 @@ class PurgeJob < ApplicationJob
     # Additional cleanup
     # Destroy all must be called on the downloads because the after destroy callback must be executed to remove the blobs from object storage
     Download.where('created_at < ?', 24.hours.ago).destroy_all
+    ApiDownload.where('created_at < ?', 24.hours.ago).destroy_all
     AssessmentReceipt.where('created_at < ?', 24.hours.ago).delete_all
     Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: Patient.where(purged: true).ids).ids).ids).delete_all
     ReportedCondition.where(assessment_id: Assessment.where(patient_id: Patient.where(purged: true).ids).ids).delete_all

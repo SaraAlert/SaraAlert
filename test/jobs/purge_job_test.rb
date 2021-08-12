@@ -68,6 +68,12 @@ class PurgeJobTest < ActiveSupport::TestCase
     assert(Download.count.zero?)
   end
 
+  test 'cleans up ApiDownloads' do
+    create(:api_download, created_at: 25.hours.ago)
+    PurgeJob.perform_now
+    assert(ApiDownload.count.zero?)
+  end
+
   test 'cleans up assessment receipts' do
     create(:patient, monitoring: false, purged: false)
     create(:assessment_receipt, created_at: 25.hours.ago)
