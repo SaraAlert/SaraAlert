@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
-require 'test_helper'
-require 'rspec/mocks/minitest_integration'
-require 'controllers/fhir/r4/api_controller_test'
+require 'api_controller_test_case'
 
-class ApiControllerTest < ActionDispatch::IntegrationTest
+class QuestionnaireResponseTest < ApiControllerTestCase
+  setup do
+    setup_system_applications
+    setup_system_tokens
+    setup_logger
+  end
   #----- show tests -----
 
   test 'should get QuestionnaireResponse via show' do

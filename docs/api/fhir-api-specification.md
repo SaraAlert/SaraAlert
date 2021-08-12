@@ -4214,3 +4214,101 @@ See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) docum
 ```
   </div>
 </details>
+
+
+## Bulk Data Export
+The API supports exporting monitoree data in bulk according the the [FHIR Bulk Data Access](https://hl7.org/fhir/uv/bulkdata/export/index.html) specification. Instead of making individual requests to gather information, bulk data export supports exporting all available monitoree data at once. The bulk data request flow includes a kick-off request, status requests, and file requests, all of which are described in subsequent sections. This documentation focuses on how bulk data export works in Sara Alert, and for details not included here, please see the 
+[specification](https://hl7.org/fhir/uv/bulkdata/export/index.html).
+<a name="bulk-data-kick-off"/>
+
+### Kick-off Request - GET `[base]/Patient/$export`
+This request begins the asynchronous generation of bulk data. The generated bulk data will include all monitorees for which the client has access, along with the lab results, daily reports, close contacts, immunizations, and history items of those monitorees. Since the client is requesting access to all this data, they must have the correct read scopes for Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization, and Provenance. A client can begin one bulk data export every 15 minutes. Additionally, kicking off a new request will delete the content of old requests, so a new request should not be started until the content of an old request is no longer needed.
+
+#### Request Headers
+* The `Accept` header must be set to `application/fhir+json`.
+* The `Prefer` header must be set to `respond-async`.
+
+#### Parameters
+* The API supports only the `_since` parameter. If this parameter is specified, only resources for which `meta.lastUpdated` is later than the `_since` time will be included in the response. This parameter should have a [FHIR instant](https://www.hl7.org/fhir/datatypes.html#instant) as its value.
+  * **Example:** Get only resources changed since 2021 began: `[base]/Patient/$export?_since=2021-01-01T00:00:00Z`
+
+#### Response on Success
+* `202 Accepted` status
+* The `Content-Location` header will contain a URL of the form `[base]/ExportStatus/[:id]` which can be used to request the status of the bulk data export.
+
+#### Response on Error
+* Error status
+  * `403 Forbidden` - The client does not have access to all of the required read scopes, or there is some other issue with their token.
+  * `406 Not Acceptable` - Incorrect value for `Accept` header.
+  * `422 Unprocessable Entity` - Incorrect format for `_since` parameter, or incorrect value for `Prefer` header.
+  * `401 Unauthorized` - The client's API application is not registered for us in the backend services workflow.
+  * `429 Too Many Requests` - The client already initiated an export within the last 15 minutes.
+* The body of the response will include a FHIR OperationOutcome with an error message indicating the issue.
+
+
+<a name="bulk-data-status">
+
+### Status Request - GET `[base]/ExportStatus/[:id]`
+After a bulk data request has successfully started, the client can use the polling URL returned in the `Content-Location` header of the response to the kick-off request. The `[:id]` in this URL uniquely identifies the client's request. The response will indicate the current status of the export.
+
+#### In Progress
+If the generation of data is still in progress, the export will return a `202 Accepted` status.
+
+#### Error
+If an error prevents the bulk data export for completing, a `500 Internal Server Error` will indicate this.
+
+#### Complete
+Once the export is complete, the status request will return a `200 OK` response. The body of the response will follow the JSON format described in [section 5.3.4](https://hl7.org/fhir/uv/bulkdata/export/index.html#response---complete-status) of the bulk data access specification. An example response is shown below:
+
+```json
+{
+    "transactionTime": "2021-07-07T21:08:19+00:00",
+    "request": "https://demo.saraalert.org/fhir/r4/Patient/$export?_since=2021-07-05T12:02:02Z",
+    "requiresAccessToken": true,
+    "output": [
+        {
+            "type": "Patient",
+            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Patient.ndjson"
+        },
+        {
+            "type": "QuestionnaireResponse",
+            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/QuestionnaireResponse.ndjson"
+        },
+        {
+            "type": "Provenance",
+            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Provenance.ndjson"
+        },
+        {
+            "type": "Observation",
+            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Observation.ndjson"
+        },
+        {
+            "type": "Immunization",
+            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Immunization.ndjson"
+        },
+        {
+            "type": "RelatedPerson",
+            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/RelatedPerson.ndjson"
+        }
+    ]
+}
+```
+The `url` values listed on each element of the `output` array can be used to access the generated exports.
+
+
+<a name="bulk-data-files">
+
+### File Request - GET `[base]/ExportFiles/[:id]/[:filename]`
+Once a client's export is complete, the completed files will be available at this endpoint, where the `[:id]` is the same unique identifier used in the status requests, and the `[:filename]` is of the form `<resourceType>.ndjson`. A valid authorization token with read access to the type of resource being requested is required.
+
+#### Response on Success
+The response will have a `200 OK` status, and the body will include the requested resources as a [newline delimited JSON](http://ndjson.org/) file. The example below shows the format of an ndjson file:
+```
+{"id":1,"name":[{"family":"McCullough24","given":["Eulah20"]}],"resourceType":"Patient"}
+{"id":4,"name":[{"family":"Konopelski65","given":["Kirby47"]}],"resourceType":"Patient"}
+{"id":6,"name":[{"family":"Herman26","given":["Barton43"]}],"resourceType":"Patient"}
+```
+Note that the Patients shown in this example are not valid Sara Alert Patients, most elements have been removed for brevity.
+
+#### Response on Error
+The response will have a `404 Not Found` status, indicating that either the `[:filename]` parameter does not correspond to a supported FHIR Resource, or that no file of the type indicated by `[:filename]` exists for that `[:id]`.

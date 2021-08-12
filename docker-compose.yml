@@ -42,6 +42,11 @@ services:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
       - REDIS_URL=redis://redis-enrollment:6379/1
+      - ACTIVE_STORAGE_DRIVER=minio
+      - MINIO_ACCESS_KEY=minio123
+      - MINIO_SECRET_KEY=minio456
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_BUCKET=sara
     env_file:
       - .env-prod-enrollment
     restart: unless-stopped
@@ -50,6 +55,7 @@ services:
     depends_on:
       - redis-enrollment
       - mysql-enrollment
+      - minio
     command: "bin/bundle exec rails s -u puma -p 3000 -b 0.0.0.0"
     volumes:
       - '~/tls:/app/disease-trakker/tls:ro'
