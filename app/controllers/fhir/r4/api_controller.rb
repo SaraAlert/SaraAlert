@@ -1031,7 +1031,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
   # Search for patients
   def search_patients(options)
-    query = accessible_patients
+    query = accessible_patients.includes(:jurisdiction, :creator, { transfers: %i[from_jurisdiction to_jurisdiction who] })
     options.each do |option, search|
       next unless search.present?
 
@@ -1050,7 +1050,7 @@ class Fhir::R4::ApiController < ApplicationApiController
         query = query.where(monitoring: search == 'true')
       end
     end
-    query.includes(:jurisdiction, :creator)
+    query
   end
 
   # Search for laboratories
