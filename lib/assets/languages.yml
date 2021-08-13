@@ -1790,7 +1790,6 @@
   :supported:
     :sms: true
     :email: true
-    :phone: true
 
 :vot:
   :display: 'Votic'
