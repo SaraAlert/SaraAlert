@@ -87,7 +87,6 @@ class PublicHealthController < ApplicationController
 
   def set_all_assigned_users
     # Get all assigned users of current user's jurisdiction
-    patients = current_user.patients&.where(jurisdiction_id: current_user.jurisdiction.subtree_ids)
-    @all_assigned_users = patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
+    @all_assigned_users = current_user.patients.where.not(assigned_user: nil).pluck(:assigned_user).uniq.sort
   end
 end
