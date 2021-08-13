@@ -28,7 +28,7 @@ class HistoryList extends React.Component {
     this.creatorFilterData = [
       {
         label: 'History Creator',
-        options: _.orderBy(_.uniq(props.histories.map(h => h[0].created_by)), x => x, 'asc').map(x => {
+        options: _.orderBy(_.uniq(props.histories.map(h => h[0].created_by)), x => _.toLower(x), 'asc').map(x => {
           return { value: x, label: x };
         }),
       },
