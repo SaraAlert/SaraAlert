@@ -21,7 +21,8 @@ class UserFiltersController < ApplicationController
       {
         filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :allowRange, :tooltip,
                                                            options: [], fields: [:name, :title, :type, { options: [] }]),
-        value: filter.permit(:value, value: [])[:value] || filter.require(:value) || false,
+        value: filter[:value].nil? && filter[:filterOption][:type].eql?('multi') ? [] : filter.permit(:value,
+                                                                                                      value: [])[:value] || filter.require(:value) || false,
         numberOption: filter.permit(:numberOption)[:numberOption],
         dateOption: filter.permit(:dateOption)[:dateOption],
         relativeOption: filter.permit(:relativeOption)[:relativeOption],
@@ -37,7 +38,8 @@ class UserFiltersController < ApplicationController
       {
         filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :allowRange, :tooltip,
                                                            options: [], fields: [:name, :title, :type, { options: [] }]),
-        value: filter.permit(:value, value: [])[:value] || filter.require(:value) || false,
+        value: filter[:value].nil? && filter[:filterOption][:type].eql?('multi') ? [] : filter.permit(:value,
+                                                                                                      value: [])[:value] || filter.require(:value) || false,
         numberOption: filter.permit(:numberOption)[:numberOption],
         dateOption: filter.permit(:dateOption)[:dateOption],
         relativeOption: filter.permit(:relativeOption)[:relativeOption],

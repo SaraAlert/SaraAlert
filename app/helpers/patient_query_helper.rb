@@ -80,7 +80,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :tooltip,
                                                              options: [], fields: [:name, :title, :type, { options: [] }]),
-          value: permitted_filter_params[:value] || filter.require(:value) || false,
+          value: filter[:value].nil? && filter[:filterOption][:type].eql?('multi') ? [] : filter.permit(:value,
+                                                                                                        value: [])[:value] || filter.require(:value) || false,
           numberOption: permitted_filter_params[:numberOption],
           dateOption: permitted_filter_params[:dateOption],
           relativeOption: permitted_filter_params[:relativeOption],
