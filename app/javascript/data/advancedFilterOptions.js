@@ -203,6 +203,22 @@ export const advancedFilterOptions = [
     tooltip: 'This will return monitorees that are flagged for follow-up for the selected reason. To return all montitorees flagged for follow-up, select the “Any Reason” option.'
   },
 
+  /* MULTI-SELECT OPTIONS */
+  {
+    name: 'assigned-user',
+    title: 'Assigned User (Multi-select)',
+    description: 'Monitorees who have a specific assigned user',
+    type: 'multi',
+    options: [], // Populated asynchronously in the AdvancedFilter component
+  },
+  {
+    name: 'jurisdiction',
+    title: 'Jurisdiction (Multi-select)',
+    description: 'Monitorees of a specific jurisdiction',
+    type: 'multi',
+    options: [], // Populated in the AdvancedFilter component
+  },
+
   /* NUMBER FILTER OPTIONS */
   {
     name: 'age',
@@ -275,12 +291,12 @@ export const advancedFilterOptions = [
     hasTimestamp: false,
   },
 
-  /* MULTI FILTER OPTIONS */
+  /* COMBINATION OPTIONS */
   {
     name: 'lab-result',
-    title: 'Lab Result (Multi-select)',
+    title: 'Lab Result (Combination)',
     description: 'Monitorees with specified Lab Result criteria',
-    type: 'multi',
+    type: 'combination',
     tooltip:
       'Returns records that contain at least one Lab Result entry that meets all user-specified criteria (e.g., searching for a specific Lab Test Type and Report Date will only return records containing at least one Lab Result entry with matching values in both fields).',
     fields: [
@@ -310,9 +326,9 @@ export const advancedFilterOptions = [
   },
   {
     name: 'vaccination',
-    title: 'Vaccination (Multi-select)',
+    title: 'Vaccination (Combination)',
     description: 'Monitorees with specified Vaccination criteria',
-    type: 'multi',
+    type: 'combination',
     tooltip:
       'Returns records that contain at least one Vaccination entry that meets all user-specified criteria (e.g., searching for a specific Vaccination Product Name and Administration Date will only return records containing at least one Vaccination entry with matching values in both fields).',
     fields: [
