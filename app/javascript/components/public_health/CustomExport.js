@@ -253,6 +253,17 @@ class CustomExport extends React.Component {
                               {['search', 'select', 'number'].includes(filter.filterOption?.type) && (
                                 <span>{filter.value === '' ? '<blank>' : filter.value}</span>
                               )}
+                              {filter.filterOption?.type === 'multi' && (
+                                <div style={{ display: 'inline-grid' }}>
+                                  {filter.value?.map((elem, i) => {
+                                    return (
+                                      <span key={`filter-${index}-${i}`} className="mb-0">
+                                        {elem.label}
+                                      </span>
+                                    );
+                                  })}
+                                </div>
+                              )}
                               {filter.filterOption?.type === 'boolean' && <span>{filter.value ? 'True' : 'False'}</span>}
                               {filter.filterOption?.type === 'date' && (
                                 <span>
@@ -272,7 +283,7 @@ class CustomExport extends React.Component {
                                     : filter.relativeOption}
                                 </span>
                               )}
-                              {filter.filterOption?.type === 'multi' && (
+                              {filter.filterOption?.type === 'combination' && (
                                 <div style={{ display: 'inline-grid' }}>
                                   {filter.value?.map((f, i) => {
                                     return (
@@ -333,6 +344,7 @@ class CustomExport extends React.Component {
                     <PatientsFilters
                       authenticity_token={this.props.authenticity_token}
                       jurisdiction_paths={this.props.jurisdiction_paths}
+                      all_assigned_users={this.props.all_assigned_users}
                       jurisdiction={this.props.jurisdiction}
                       query={this.state.custom_patient_query}
                       onQueryChange={(field, value, cb) =>
@@ -577,6 +589,7 @@ class CustomExport extends React.Component {
 CustomExport.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
+  all_assigned_users: PropTypes.array,
   jurisdiction: PropTypes.object,
   tabs: PropTypes.object,
   preset: PropTypes.object,

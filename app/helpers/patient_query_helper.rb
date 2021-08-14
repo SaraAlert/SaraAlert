@@ -37,7 +37,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries,
                                      :page, :order, :direction, :tz_offset, :exclude_patient_id,
                                      filter: [:value, :numberOption, :dateOption, :relativeOption,
-                                              :additionalFilterOption, { filterOption: {}, value: {} }])
+                                              :additionalFilterOption, { filterOption: {}, value: {} },
+                                              { value: %i[label value] }])
 
     # Validate workflow
     workflow = query[:workflow]&.to_sym || :global
@@ -74,11 +75,13 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       raise InvalidQueryError.new(:tz_offset, tz_offset) unless tz_offset.to_i.to_s == tz_offset.to_s
 
       query[:filter] = unsanitized_query[:filter].collect do |filter|
-        permitted_filter_params = filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption, filterOption: {}, value: {})
+        permitted_filter_params = filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption,
+                                                filterOption: {}, value: filter[:value].is_a?(Array) ? [] : {})
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :tooltip,
                                                              options: [], fields: [:name, :title, :type, { options: [] }]),
-          value: permitted_filter_params[:value] || filter.require(:value) || false,
+          value: filter[:value].nil? && filter[:filterOption][:type].eql?('multi') ? [] : filter.permit(:value,
+                                                                                                        value: [])[:value] || filter.require(:value) || false,
           numberOption: permitted_filter_params[:numberOption],
           dateOption: permitted_filter_params[:dateOption],
           relativeOption: permitted_filter_params[:relativeOption],
@@ -485,6 +488,29 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                                patients.where_assoc_exists(:laboratories, "laboratories.result = 'positive' AND laboratories.specimen_collection IS NOT NULL")
                              )
                    end
+      when 'assigned-user'
+        if filter[:value].present?
+          # Map multi-select type filter from { label, value } to values
+          filter_assigned_users = filter[:value].map { |p| p[:value] }
+
+          # Get patients where assigned_user is any of the assigned users specified in the filter
+          patients = patients.where(assigned_user: filter_assigned_users)
+        end
+      when 'jurisdiction'
+        if filter[:value].present?
+          # Map multi-select type filter from { label, value } to jurisdictions
+          # For example, filter[:value] that looks like
+          #     [{"label": "USA", "value": "1"}, {"label": "USA, State 1", "value": "2"}],
+          #   would map to
+          #     Jurisdiction.where([1, 2])
+          filter_jurisdictions = Jurisdiction.where(id: filter[:value].map(&:values).map(&:second).map(&:to_i))
+
+          # Get subset of jurisdictions
+          subjurisdictions = filter_jurisdictions.map(&:subtree_ids).flatten.uniq
+
+          # Get patients where jurisdiction is any of the jurisdictions or subjurisdictions of the filter
+          patients = patients.where(jurisdiction_id: subjurisdictions)
+        end
       end
     end
     patients

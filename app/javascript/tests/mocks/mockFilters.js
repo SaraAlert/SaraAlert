@@ -39,6 +39,25 @@ const mockFilterPreferredContactTime = {
   value: 'Morning',
 };
 
+/* MULTI-SELECT TYPE MOCK FILTERS */
+const mockFilterAssignedUser = {
+  additionalFilterOption: null,
+  dateOption: null,
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'assigned-user'),
+  numberOption: null,
+  relativeOption: null,
+  value: [],
+};
+
+const mockFilterJurisdiction = {
+  additionalFilterOption: null,
+  dateOption: null,
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'jurisdiction'),
+  numberOption: null,
+  relativeOption: null,
+  value: [],
+};
+
 /* NUMBER TYPE MOCK FILTERS */
 const mockFilterAgeEqual = {
   additionalFilterOption: null,
@@ -196,7 +215,7 @@ const mockFilterAddressForeign = {
   value: '42 Wallaby Way',
 };
 
-/* MULTI TYPE MOCK FILTERS */
+/* COMBINATION TYPE MOCK FILTERS */
 const mockFilterLabResults = {
   additionalFilterOption: null,
   dateOption: null,
@@ -248,6 +267,8 @@ export {
   mockFilterAddressForeignEmpty,
   mockFilterAddressForeign,
   mockFilterLabResults,
+  mockFilterAssignedUser,
+  mockFilterJurisdiction,
   mockFilter1,
   mockFilter2,
   mockSavedFilters,
