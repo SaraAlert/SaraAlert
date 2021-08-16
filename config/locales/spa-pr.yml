@@ -11,13 +11,13 @@ spa-pr:
         name: 'Fiebre'
         notes: 'Se siente que tiene fiebre o tiene una temperatura igual o superior a 100.4°F/38°C'
       used-a-fever-reducer:
-        name: 'Tomó medicina para reducir la fiebre'
-        notes: 'En las últimas 24 horas, ¿ha tomado algún medicamento para reducir la fiebre?'
+        name: 'Tomo medicina para reducir la fiebre'
+        notes: 'En las ultimas 24 horas, ¿ha tomado algun medicamento para reducir la fiebre?'
       chills:
-        name: 'Escalofrío'
+        name: 'Escalofrio'
         notes: ''
       repeated-shaking-with-chills:
-        name: 'Tiembla repetidamente y tiene escalofríos'
+        name: 'Tiembla repetidamente y tiene escalofrios'
         notes: ''
       muscle-pain:
         name: 'Dolor muscular'
@@ -29,22 +29,22 @@ spa-pr:
         name: 'Dolor de garganta'
         notes: ''
       new-loss-of-taste-or-smell:
-        name: 'Perdió recientemente el sentido del olfato y de gusto'
+        name: 'Perdio recientemente el sentido del olfato y de gusto'
         notes: ''
       pulse-ox:
-        name: 'oxímetro de pulso'
-        notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
+        name: 'oximetro de pulso'
+        notes: 'Ingrese la lectura mas baja del oximetro de pulso en las ultimas 24 horas'
       fatigue:
         name: 'Fatiga'
         notes: ''
       nausea-or-vomiting:
-        name: 'Náuseas o vómitos'
+        name: 'Nauseas o vomitos'
         notes: ''
       diarrhea:
         name: 'Diarrea'
         notes: ''
       nasal-congestion:
-        name: 'Congestión nasal'
+        name: 'Congestion nasal'
         notes: ''
       runny-nose:
         name: 'Exceso de moco en la nariz'
@@ -54,19 +54,19 @@ spa-pr:
         notes: 'Por favor ingrese su temperatura actual en grados Fahrenheit'
       other:
         name: 'Otro'
-        notes: 'Me gustaría que alguien me llamara para hacer un seguimiento de otros síntomas o necesidades adicionales'
-      no-symptoms: 'No tengo ningún síntoma.'
+        notes: 'Me gustaria que alguien me llamara para hacer un seguimiento de otros sintomas o necesidades adicionales'
+      no-symptoms: 'No tengo ningun sintoma.'
       new-loss-of-smell:
-        name: 'Pérdida reciente el olfato'
+        name: 'Perdida reciente el olfato'
         notes: ''
       new-loss-of-taste:
-        name: 'Pérdida reciente del gusto'
+        name: 'Perdida reciente del gusto'
         notes: ''
       shortness-of-breath:
         name: 'Falta de aire'
         notes: ''
       congestion-or-runny-nose:
-        name: 'Congestión nasal o un exceso de moco en la nariz'
+        name: 'Congestion nasal o un exceso de moco en la nariz'
         notes: ''
     threshold-op:
       less-than: 'Menos que'
@@ -118,20 +118,20 @@ spa-pr:
     sms:
       prompt:
         intro1: 'Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para'
-        intro2: 'a este número de teléfono. Para privacidad y más información, visite saraalert.org.'
-        reminder: 'Este es el sistema Sara Alert recordándole que por favor responda a nuestros mensajes de reporte diario.'
+        intro2: 'a este numero de telefono. Para privacidad y mas informacion, visite saraalert.org.'
+        reminder: 'Este es el sistema Sara Alert recordandole que por favor responda a nuestros mensajes de reporte diario.'
         daily1: 'Este es el informe diario de Sara Alert para: '
         daily2-p: ' ¿Esta alguna de estas personas '
-        daily2-s: ' ¿Está usted '
-        daily3: 'sintiendo uno o más de los siguientes síntomas hoy?: '
-        daily4: ' Responda con "Sí" o "No"'
-        try-again: "Lo siento, no entendí. Responda con \"Sí\" o \"No\""
-        max_retries_message: "Lo siento, ha alcanzado el número máximo de intentos de respuesta. Si tiene una emergencia médica, llame al 911."
+        daily2-s: ' ¿Esta usted '
+        daily3: 'sintiendo uno o mas de los siguientes sintomas hoy?: '
+        daily4: ' Responda con "Si" o "No"'
+        try-again: "Lo siento, no entendi. Responda con \"Si\" o \"No\""
+        max_retries_message: "Lo siento, ha alcanzado el numero maximo de intentos de respuesta. Si tiene una emergencia medica, llame al 911."
         thanks: '¡Gracias por completar su informe diario!'
       weblink:
         intro: 'Complete el Informe diario de Sara Alert para'
       closed:
-        thank-you: "La supervisión de Sara Alert para %{initials_age} se completó el %{complete_date}. Gracias por su participación"
+        thank-you: "La supervision de Sara Alert para %{initials_age} se completo el %{complete_date}. Gracias por su participacion"
     phone:
       intro: 'Hola, soy Sara, la asistente de salud pública automatizada que solicita su informe diario.'
       try-again: "Lo siento, no entendí. Intentemoslo de nuevo."
