@@ -342,7 +342,12 @@ export const advancedFilterOptions = [
         name: 'product-name',
         title: 'product name',
         type: 'select',
-        options: ['Moderna COVID-19 Vaccine', 'Pfizer-BioNTech COVID-19 Vaccine', 'Janssen (J&J) COVID-19 Vaccine', 'Unknown'],
+        options: [
+          'Moderna COVID-19 Vaccine',
+          'Pfizer-BioNTech COVID-19 Vaccine',
+          'Janssen (J&J) COVID-19 Vaccine',
+          'AstraZeneca COVID-19 Vaccine (non-US)',
+          'Unknown'],
       },
       {
         name: 'administration-date',
