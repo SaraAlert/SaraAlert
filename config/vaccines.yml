@@ -21,3 +21,8 @@
       product_codes:
         - system: 'http://hl7.org/fhir/sid/cvx'
           code: '212'
+    - product_name: 'AstraZeneca COVID-19 Vaccine (non-US)'
+      num_doses: 2
+      product_codes:
+        - system: 'http://hl7.org/fhir/sid/cvx'
+          code: '210'
