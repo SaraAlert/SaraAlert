@@ -45,12 +45,11 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
       { last_date_of_exposure: default_days_ago(11), created_at: default_days_ago(20) }
     ].map do |eligible_params|
       create(
-        :patient,
+        :patient_with_submission_token,
         {
           email: 'example@example.com',
           preferred_contact_method: 'E-mailed Web Link',
-          last_date_of_exposure: 1.day.ago,
-          submission_token: SecureRandom.urlsafe_base64[0, 10]
+          last_date_of_exposure: 1.day.ago
         }.merge(eligible_params)
       )
     end
@@ -102,12 +101,11 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
       { last_date_of_exposure: 50.days.ago, created_at: 50.days.ago }
     ].map do |ineligible_params|
       create(
-        :patient,
+        :patient_with_submission_token,
         {
           email: 'example@example.com',
           preferred_contact_method: 'E-mailed Web Link',
-          last_date_of_exposure: 1.day.ago,
-          submission_token: SecureRandom.urlsafe_base64[0, 10]
+          last_date_of_exposure: 1.day.ago
         }.merge(ineligible_params)
       )
     end
