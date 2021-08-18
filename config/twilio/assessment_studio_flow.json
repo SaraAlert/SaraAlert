@@ -95,7 +95,7 @@
                 "{{widgets.sms_assessment_prompt.inbound.Body}}"
               ],
               "type": "matches_any_of",
-              "value": "yes,Yes,YES,Yes.,“Yes”,yes”,“Yes.“,yeah,YEAH,Yeah,“yeah”,“Yeah”,si,Si,sí,SI,SÍ,oui,OUI,Oui, oui.,OUI.,Oui.,Haa, HAA,Haa.,HAA."
+              "value": "yes,Yes,YES,Yes.,“Yes”,yes”,“Yes.“,yeah,YEAH,Yeah,“yeah”,“Yeah”,si,Si,sí,SI,SÍ,oui,OUI,Oui,oui.,OUI.,Oui.,Haa, HAA,Haa.,HAA.,네,네.,Co,Co.,co,co.,Да,Да.,да,да.,ДA,ДA.,Da,Da.,da,da.,نعم,نعم."
             }
           ]
         },
@@ -109,7 +109,7 @@
                 "{{widgets.sms_assessment_prompt.inbound.Body}}"
               ],
               "type": "matches_any_of",
-              "value": "no,No,NO.,No.,“No”,“no”,“No.“,nope,NOPE,“nope”,“Nope”,Nope,“Nope”,Non,non,NON,Non. NON.,non.,Maya,MAYA,maya,Maya.,maya.,MAYA."
+              "value": "no,No,NO.,No.,“No”,“no”,“No.“,nope,NOPE,“nope”,“Nope”,Nope,“Nope”,Non,non,NON,Non. NON.,non.,Maya,MAYA,maya,Maya.,maya.,MAYA.,아니요,아니요.,Không,Không.,không,không.,Khong,Khong.,khong,khong.,Ko,Ko.ko,ko.,Нет,Нет.,нет,нет.,НЕТ,НЕТ.,niet,niet.,nyet,nyet.,لا,لا."
             }
           ]
         }
@@ -192,7 +192,7 @@
                 "{{widgets.bad_response.inbound.Body}}"
               ],
               "type": "matches_any_of",
-              "value": "yes,Yes,YES,Yes.,“Yes”,yes”,“Yes.“,yeah,YEAH,Yeah,“yeah”,“Yeah”,si,Si,sí,SI,SÍ,oui,OUI,Oui, oui.,OUI.,Oui.,Haa, HAA,Haa.,HAA."
+              "value": "yes,Yes,YES,Yes.,“Yes”,yes”,“Yes.“,yeah,YEAH,Yeah,“yeah”,“Yeah”,si,Si,sí,SI,SÍ,oui,OUI,Oui,oui.,OUI.,Oui.,Haa, HAA,Haa.,HAA.,네,네.,Co,Co.,co,co.,Да,Да.,да,да.,ДA,ДA.,Da,Da.,da,da.,نعم,نعم."
             }
           ]
         },
@@ -206,7 +206,7 @@
                 "{{widgets.bad_response.inbound.Body}}"
               ],
               "type": "matches_any_of",
-              "value": "no,No,NO.,No.,“No”,“no”,“No.“,nope,NOPE,“nope”,“Nope”,Nope,“Nope”,Non,non,NON,Non. NON.,non.,Maya,MAYA,maya,Maya.,maya.,MAYA."
+              "value": "no,No,NO.,No.,“No”,“no”,“No.“,nope,NOPE,“nope”,“Nope”,Nope,“Nope”,Non,non,NON,Non. NON.,non.,Maya,MAYA,maya,Maya.,maya.,MAYA.,아니요,아니요.,Không,Không.,không,không.,Khong,Khong.,khong,khong.,Ko,Ko.ko,ko.,Нет,Нет.,нет,нет.,НЕТ,НЕТ.,niet,niet.,nyet,nyet.,لا,لا."
             }
           ]
         }
@@ -1072,7 +1072,7 @@
       ],
       "properties": {
         "offset": {
-          "x": -1680,
+          "x": -1640,
           "y": 1710
         },
         "method": "POST",
@@ -1177,8 +1177,8 @@
       "properties": {
         "input": "{{flow.data.language}}",
         "offset": {
-          "x": 950,
-          "y": -190
+          "x": 1190,
+          "y": -210
         }
       }
     },
@@ -1203,7 +1203,7 @@
           }
         ],
         "offset": {
-          "x": 720,
+          "x": 640,
           "y": 80
         }
       }
@@ -1229,7 +1229,7 @@
           }
         ],
         "offset": {
-          "x": 1030,
+          "x": 950,
           "y": 80
         }
       }
@@ -1255,7 +1255,7 @@
           }
         ],
         "offset": {
-          "x": 1340,
+          "x": 1260,
           "y": 80
         }
       }
@@ -1275,12 +1275,12 @@
       ],
       "properties": {
         "offset": {
-          "x": 3540,
-          "y": 370
+          "x": 2980,
+          "y": 80
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
-        "body": "{\"response_status\": \"error_sms\", \"error_code\": \"{{widgets.send_single_message.outbound.ErrorCode}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\", \"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "body": "{% assign i=flow.variables.iterator | plus:0 %}\n{\"response_status\": \"error_sms\", \"error_code\": \"{{widgets.send_single_message.outbound.ErrorCode}}\", \"patient_submission_token\": \"{{flow.data.messages_array[i].patient_submission_token}}\", \"threshold_hash\": \"{{flow.data.messages_array[i].threshold_hash}}\"}",
         "url": "FILL_WITH_CUSTOM_CALLBACK_URL"
       }
     },
@@ -1303,8 +1303,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 3320,
-          "y": 40
+          "x": 2710,
+          "y": -230
         },
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
@@ -1325,8 +1325,8 @@
       "properties": {
         "variables": [],
         "offset": {
-          "x": 3190,
-          "y": 380
+          "x": 2550,
+          "y": 120
         }
       }
     },
@@ -1355,8 +1355,8 @@
       "properties": {
         "input": "{{flow.variables.iterator}}",
         "offset": {
-          "x": 3090,
-          "y": -240
+          "x": 2710,
+          "y": -520
         }
       }
     },
@@ -1377,8 +1377,8 @@
           }
         ],
         "offset": {
-          "x": 3440,
-          "y": 740
+          "x": 2798,
+          "y": 415
         }
       }
     },
@@ -1403,7 +1403,7 @@
           }
         ],
         "offset": {
-          "x": 1650,
+          "x": 1570,
           "y": 80
         }
       }
@@ -1429,7 +1429,7 @@
           }
         ],
         "offset": {
-          "x": 1960,
+          "x": 1880,
           "y": 80
         }
       }
@@ -1455,7 +1455,7 @@
           }
         ],
         "offset": {
-          "x": 2270,
+          "x": 2190,
           "y": 80
         }
       }
