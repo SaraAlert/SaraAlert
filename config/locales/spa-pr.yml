@@ -51,20 +51,20 @@ spa-pr:
         experiencing_symptoms_s: '¿Está usted sintiendo uno o más de los siguientes síntomas hoy?: %{symptom_names}.'
         experiencing_symptoms_p: '¿Esta alguna de estas personas sintiendo uno o más de los siguientes síntomas hoy?: %{symptom_names}.'
         max_retries_message: 'Lo siento, ha alcanzado el número máximo de intentos de respuesta. Si tiene una emergencia médica, llame al 911.'
-    sms:
-      prompt:
-        intro: >-
-          'Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para %{name} a este número de teléfono. Para privacidad y más información,
-          visite saraalert.org.'
-        reminder: 'Este es el sistema Sara Alert recordándole que por favor responda a nuestros mensajes de reporte diario.'
-        name: '%{name}'
-        daily: 'Este es el informe diario de Sara Alert para: %{names}. %{experiencing_symptoms} Responda con "Sí" o "No"'
-        try_again: 'Lo siento, no entendí. Responda con "Sí" o "No"'
-        thanks: '¡Gracias por completar su informe diario!'
-      weblink:
-        intro: 'Complete el Informe diario de Sara Alert para %{initials_age}: %{url}'
-      closed:
-        thank_you: 'La supervisión de Sara Alert para %{initials_age} se completó el %{completed_date}. Gracias por su participación'
+      sms:
+        prompt:
+          intro: >-
+            'Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para %{name} a este número de teléfono. Para privacidad y más información,
+            visite saraalert.org.'
+          reminder: 'Este es el sistema Sara Alert recordándole que por favor responda a nuestros mensajes de reporte diario.'
+          name: '%{name}'
+          daily: 'Este es el informe diario de Sara Alert para: %{names}. %{experiencing_symptoms} Responda con "Sí" o "No"'
+          try_again: 'Lo siento, no entendí. Responda con "Sí" o "No"'
+          thanks: '¡Gracias por completar su informe diario!'
+        weblink:
+          intro: 'Complete el Informe diario de Sara Alert para %{initials_age}: %{url}'
+        closed:
+          thank_you: 'La supervisión de Sara Alert para %{initials_age} se completó el %{completed_date}. Gracias por su participación'
     voice:
       intro: 'Hola, soy Sara, la asistente de salud pública automatizada que solicita su informe diario.'
       initials_age: '%{initials}, años %{age}'
