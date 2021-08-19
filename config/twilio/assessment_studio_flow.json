@@ -294,7 +294,7 @@
       "properties": {
         "voice": "{{flow.variables.voice}}",
         "offset": {
-          "x": 1490,
+          "x": 1480,
           "y": 870
         },
         "loop": 1,
@@ -355,7 +355,7 @@
                 "{{widgets.voice_reply_to_prompt.SpeechResult}}"
               ],
               "type": "matches_any_of",
-              "value": "no,No.,NO,nope,Nope.,nope.,Non, non, NON, Non. NON., non."
+              "value": "no,No.,NO,nope,Nope.,nope.,Non, non, NON, Non. NON., non.,아니요,아니요.,Không,Không.,không,không.,Khong,Khong.,khong,khong.,Ko,Ko.ko,ko.,Нет,Нет.,нет,нет.,НЕТ,НЕТ.,niet,niet.,nyet,nyet.,لا,لا."
             }
           ]
         },
@@ -369,7 +369,7 @@
                 "{{widgets.voice_reply_to_prompt.SpeechResult}}"
               ],
               "type": "matches_any_of",
-              "value": "yes,Yes,Yes.,Yeah,yeah,Yeah.,si, Si,oui, OUI, Oui, oui.,OUI.,Oui."
+              "value": "yes,Yes,Yes.,Yeah,yeah,Yeah.,si, Si,oui, OUI, Oui, oui.,OUI.,Oui.,네,네.,Có,Có.,có,có.,Co,Co.,co,co.,Да,Да.,да,да.,ДA,ДA.,Da,Da.,da,da.,نعم,نعم."
             }
           ]
         }
@@ -377,7 +377,7 @@
       "properties": {
         "input": "{{widgets.voice_reply_to_prompt.SpeechResult}}",
         "offset": {
-          "x": 1670,
+          "x": 1690,
           "y": 1630
         }
       }
@@ -394,8 +394,8 @@
       "properties": {
         "voice": "{{flow.variables.voice}}",
         "offset": {
-          "x": 2070,
-          "y": 1380
+          "x": 2120,
+          "y": 1440
         },
         "loop": 1,
         "say": "{{flow.data.try_again}}",
@@ -415,7 +415,7 @@
       ],
       "properties": {
         "offset": {
-          "x": 2070,
+          "x": 1950,
           "y": 830
         },
         "method": "POST",
@@ -512,8 +512,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 2150,
-          "y": 570
+          "x": 2030,
+          "y": 580
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -552,8 +552,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 1730,
-          "y": 2000
+          "x": 2090,
+          "y": 1910
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -573,7 +573,7 @@
         "voice": "{{flow.variables.voice}}",
         "offset": {
           "x": 1980,
-          "y": 2320
+          "y": 2200
         },
         "loop": 1,
         "say": "{{flow.data.thanks}}",
@@ -594,8 +594,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 2200,
-          "y": 1990
+          "x": 1760,
+          "y": 1910
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
@@ -991,7 +991,7 @@
         ],
         "offset": {
           "x": 1050,
-          "y": 1270
+          "y": 1240
         }
       }
     },
@@ -1007,8 +1007,8 @@
       "properties": {
         "voice": "{{flow.variables.voice}}",
         "offset": {
-          "x": 1110,
-          "y": 1760
+          "x": 1090,
+          "y": 1720
         },
         "loop": 1,
         "say": "{{flow.data.max_retries_message}}",
@@ -1028,8 +1028,8 @@
       ],
       "properties": {
         "offset": {
-          "x": 1140,
-          "y": 2030
+          "x": 1130,
+          "y": 1960
         },
         "method": "POST",
         "content_type": "application/json;charset=utf-8",
