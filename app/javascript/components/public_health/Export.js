@@ -158,12 +158,9 @@ Export.propTypes = {
   jurisdiction: PropTypes.object,
   available_workflows: PropTypes.array,
   available_line_lists: PropTypes.object,
-  available_workflows: PropTypes.array,
   current_monitorees_count: PropTypes.number,
   custom_export_options: PropTypes.object,
   export_options: PropTypes.object,
-  jurisdiction: PropTypes.object,
-  jurisdiction_paths: PropTypes.object,
   tabs: PropTypes.object,
   query: PropTypes.object,
 };

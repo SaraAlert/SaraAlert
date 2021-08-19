@@ -6,6 +6,7 @@ class DashboardController < ApplicationController
 
   before_action :authenticate_user!
   before_action :authenticate_user_role
+  before_action :set_jurisdiction_paths, :set_all_assigned_users
 
   def dashboard
     @path_params = request.path_parameters
@@ -54,4 +55,14 @@ class DashboardController < ApplicationController
 
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
   end
+
+  def set_jurisdiction_paths
+    @possible_jurisdiction_paths = current_user.jurisdiction.subtree.pluck(:id, :path).to_h
+  end
+
+  def set_all_assigned_users
+    # Get all assigned users of current user's jurisdiction
+    @all_assigned_users = current_user.patients.where.not(assigned_user: nil).pluck(:assigned_user).uniq.sort
+  end
+
 end
