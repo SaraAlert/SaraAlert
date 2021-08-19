@@ -210,7 +210,7 @@ export const advancedFilterOptions = [
     description: 'Monitorees who have a specific assigned user',
     type: 'multi',
     options: [], // Populated asynchronously in the AdvancedFilter component
-    tooltip: 'If multiple Assigned Users are selected, records assigned to any of those users will be returned. Leaving this field blank will not filter out any monitorees.'
+    tooltip: 'If multiple Assigned Users are selected, records assigned to any of those users will be returned. Only Assigned User values currently listed in a record are selectable. Leaving this field blank will not filter out any monitorees.'
   },
   {
     name: 'jurisdiction',
@@ -218,7 +218,7 @@ export const advancedFilterOptions = [
     description: 'Monitorees of a specific jurisdiction',
     type: 'multi',
     options: [], // Populated in the AdvancedFilter component,
-    tooltip: 'If multiple Jurisdictions are selected, records assigned to any of those Jurisdictions will be returned. Leaving this field blank will not filter out any monitorees.'
+    tooltip: 'If multiple Jurisdictions are selected, records assigned to any of those Jurisdictions will be returned. Only Jurisdiction values currently listed in a record are selectable. Leaving this field blank will not filter out any monitorees.'
   },
 
   /* NUMBER FILTER OPTIONS */
