@@ -32,6 +32,27 @@ class Patient < ApplicationRecord
     message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:exposure_risk_assessment].reject(&:blank?).join("', '")}'"
   }
 
+  validates :case_status,
+            on: :api,
+            inclusion: {
+              in: VALID_ISOLATION_ENUMS[:case_status] + [nil, ''],
+              message: "is not an acceptable value in the isolation workflow, acceptable values are: '#{VALID_ISOLATION_ENUMS[:case_status].join("', '")}'"
+            },
+            if: -> { isolation }
+
+  validates :case_status,
+            on: :api,
+            inclusion: {
+              in: VALID_EXPOSURE_ENUMS[:case_status] + [nil, ''],
+              message: "is not an acceptable value in the exposure workflow, acceptable values are: '#{VALID_EXPOSURE_ENUMS[:case_status].join("', '")}'"
+            },
+            if: -> { !isolation }
+
+  validates :source_of_report, on: :api, inclusion: {
+    in: VALID_PATIENT_ENUMS[:source_of_report],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:source_of_report].reject(&:blank?).join("', '")}'"
+  }
+
   %i[address_state
      monitored_address_state
      foreign_monitored_address_state
@@ -90,6 +111,11 @@ class Patient < ApplicationRecord
             on: :api,
             absence: { message: "cannot be 'true' when 'Last Date of Exposure' is specified" },
             if: -> { last_date_of_exposure.present? }
+
+  validates :source_of_report_specify,
+            on: :api,
+            absence: { message: "can only be present when 'Source of Report' is 'Other'" },
+            unless: -> { source_of_report == 'Other' }
 
   validates :follow_up_reason,
             on: %i[api import],

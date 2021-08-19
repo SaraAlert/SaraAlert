@@ -183,7 +183,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
     preferred_contact_time: TIME_OPTIONS.keys.map(&:to_s) + [nil, ''],
     # arrival
-    source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other'],
+    source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other', nil, ''],
     # additional planned travel
     additional_planned_travel_type: ['Domestic', 'International', nil, ''],
     additional_planned_travel_destination_state: [*VALID_STATES, nil, ''],
@@ -244,6 +244,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     primary_language: { label: 'Primary Language', checks: [:lang] },
     secondary_language: { label: 'Secondary Language', checks: [:lang] },
     interpretation_required: { label: 'Interpretation Required?', checks: [:bool] },
+    gender_identity: { label: 'Gender Identity', checks: [] },
+    sexual_orientation: { label: 'Sexual Orientation', checks: [] },
     # address
     address_state: { label: 'State', checks: %i[required state] },
     monitored_address_state: { label: 'Monitored Address State', checks: [:state] },
@@ -259,6 +261,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     # arrival info
     date_of_departure: { label: 'Date of Departure', checks: [:date] },
     date_of_arrival: { label: 'Date of Arrival', checks: [:date] },
+    source_of_report: { label: 'Source of Report', checks: [:enum] },
+    source_of_report_specify: { label: 'Source of Report Specify', checks: [:enum] },
     # additional planned travel
     additional_planned_travel_type: { label: 'Additional Planned Travel Type', checks: [:enum] },
     additional_planned_travel_destination_state: { label: 'Additional Planned Travel Destination State', checks: [:state] },

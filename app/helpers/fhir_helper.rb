@@ -7,6 +7,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   OMB_URL = 'ombCategory'
   DETAILED_URL = 'detailed'
   INTERPRETER_URL = 'http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired'
+  GENDER_IDENTITY_TO_FHIR = Rails.configuration.api['gender_identity'].freeze
+  GENDER_IDENTITY_FROM_FHIR = GENDER_IDENTITY_TO_FHIR.invert.freeze
+  SEXUAL_ORIENTATION_TO_FHIR = Rails.configuration.api['sexual_orientation'].freeze
+  SEXUAL_ORIENTATION_FROM_FHIR = SEXUAL_ORIENTATION_TO_FHIR.invert.freeze
 
   # Switch the context of the paths on a fhir_map from old_context to new_context. For example
   # A Patient resource may have paths such as Patient.birthDate, but if that Patient resource
@@ -164,10 +168,16 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # }
   def patient_from_fhir(patient, default_jurisdiction_id)
     symptom_onset = from_date_extension(patient, 'Patient', ['symptom-onset-date'])
+
     foreign_address = from_address_by_type_extension(patient, 'Foreign')
     foreign_address_index = patient&.address&.index(foreign_address)
+    foreign_monitored_address = from_address_by_type_extension(patient, 'ForeignMonitored')
+    foreign_monitored_address_index = patient&.address&.index(foreign_monitored_address)
+    monitored_address = from_address_by_type_extension(patient, 'Monitored')
+    monitored_address_index = patient&.address&.index(monitored_address)
     address = from_address_by_type_extension(patient, 'USA')
     address_index = patient&.address&.index(address) || foreign_address_index || 0
+
     primary_phone = patient&.telecom&.find { |t| t&.system == 'phone' }
     secondary_phone = patient&.telecom&.select { |t| t&.system == 'phone' }&.second
     email = patient&.telecom&.find { |t| t&.system == 'email' }
@@ -196,6 +206,18 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       address_county: { value: address&.district, path: "Patient.address[#{address_index}].district" },
       address_state: { value: address&.state, path: "Patient.address[#{address_index}].state" },
       address_zip: { value: address&.postalCode, path: "Patient.address[#{address_index}].postalCode" },
+      foreign_monitored_address_line_1: { value: foreign_monitored_address&.line&.first, path: "Patient.address[#{foreign_monitored_address_index}].line[0]" },
+      foreign_monitored_address_line_2: { value: foreign_monitored_address&.line&.second, path: "Patient.address[#{foreign_monitored_address_index}].line[1]" },
+      foreign_monitored_address_city: { value: foreign_monitored_address&.city, path: "Patient.address[#{foreign_monitored_address_index}].city" },
+      foreign_monitored_address_county: { value: foreign_monitored_address&.district, path: "Patient.address[#{foreign_monitored_address_index}].district" },
+      foreign_monitored_address_state: { value: foreign_monitored_address&.state, path: "Patient.address[#{foreign_monitored_address_index}].state" },
+      foreign_monitored_address_zip: { value: foreign_monitored_address&.postalCode, path: "Patient.address[#{foreign_monitored_address_index}].postalCode" },
+      monitored_address_line_1: { value: monitored_address&.line&.first, path: "Patient.address[#{monitored_address_index}].line[0]" },
+      monitored_address_line_2: { value: monitored_address&.line&.second, path: "Patient.address[#{monitored_address_index}].line[1]" },
+      monitored_address_city: { value: monitored_address&.city, path: "Patient.address[#{monitored_address_index}].city" },
+      monitored_address_county: { value: monitored_address&.district, path: "Patient.address[#{monitored_address_index}].district" },
+      monitored_address_state: { value: monitored_address&.state, path: "Patient.address[#{monitored_address_index}].state" },
+      monitored_address_zip: { value: monitored_address&.postalCode, path: "Patient.address[#{monitored_address_index}].postalCode" },
       primary_language: from_communication(patient&.communication, 0),
       secondary_language: from_communication(patient&.communication, 1),
       white: race_code?(patient, '2106-3', OMB_URL),
@@ -222,6 +244,12 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       monitoring_plan: from_string_extension(patient, 'Patient', 'monitoring-plan'),
       assigned_user: from_positive_integer_extension(patient, 'Patient', 'assigned-user'),
       additional_planned_travel_start_date: from_date_extension(patient, 'Patient', ['additional-planned-travel-start-date']),
+      additional_planned_travel_end_date: from_date_extension(patient, 'Patient', ['additional-planned-travel-end-date']),
+      additional_planned_travel_destination: from_string_extension(patient, 'Patient', 'additional-planned-travel-destination'),
+      additional_planned_travel_destination_state: from_string_extension(patient, 'Patient', 'additional-planned-travel-destination-state'),
+      additional_planned_travel_destination_country: from_string_extension(patient, 'Patient', 'additional-planned-travel-destination-country'),
+      additional_planned_travel_port_of_departure: from_string_extension(patient, 'Patient', 'additional-planned-travel-port-of-departure'),
+      additional_planned_travel_type: from_string_extension(patient, 'Patient', 'additional-planned-travel-type'),
       port_of_origin: from_string_extension(patient, 'Patient', 'port-of-origin'),
       date_of_departure: from_date_extension(patient, 'Patient', ['date-of-departure']),
       flight_or_vessel_number: from_string_extension(patient, 'Patient', 'flight-or-vessel-number'),
@@ -239,7 +267,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       potential_exposure_country: from_string_extension(patient, 'Patient', 'potential-exposure-country'),
       extended_isolation: from_date_extension(patient, 'Patient', ['extended-isolation']),
       follow_up_reason: from_string_extension(patient, 'Patient', 'follow-up-reason'),
-      follow_up_note: from_string_extension(patient, 'Patient', 'follow-up-note')
+      follow_up_note: from_string_extension(patient, 'Patient', 'follow-up-note'),
+      port_of_entry_into_usa: from_string_extension(patient, 'Patient', 'port-of-entry-into-usa'),
+      case_status: from_string_extension(patient, 'Patient', 'case-status'),
+      gender_identity: from_gender_identity_extension(patient, 'Patient'),
+      sexual_orientation: from_sexual_orientation_extension(patient, 'Patient'),
+      **from_exposure_risk_factors_extension(patient),
+      **from_report_source_extension(patient)
     }
   end
 
@@ -966,6 +1000,69 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
+  # Map an exposure-risk-factors extension to a hash of fields on a Patient.
+  # Hash is of the form:
+  # {
+  #  attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element> }
+  # }
+  def from_exposure_risk_factors_extension(patient)
+    ext = patient&.extension&.find { |e| e.url == "#{SA_EXT_BASE_URL}exposure-risk-factors" }
+    return {} if ext.nil?
+
+    ext_idx = patient.extension.index(ext)
+    risk_factors =
+      {
+        travel_to_affected_country_or_area: from_bool_extension_false_default(ext, "Patient.extension[#{ext_idx}]", 'travel-from-affected-country-or-area'),
+        crew_on_passenger_or_cargo_flight: from_bool_extension_false_default(ext, "Patient.extension[#{ext_idx}]", 'crew-on-passenger-or-cargo-flight')
+      }
+    ext.extension&.each_with_index do |sub_ext, sub_ext_idx|
+      case sub_ext.url
+      when "#{SA_EXT_BASE_URL}contact-of-known-case"
+        sub_ext_risk_factors =
+          {
+            contact_of_known_case: from_bool_extension_false_default(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
+                                                                     'contact-of-known-case'),
+            contact_of_known_case_id: from_string_extension(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]", 'contact-of-known-case-id')
+          }
+      when "#{SA_EXT_BASE_URL}was-in-health-care-facility-with-known-cases"
+        sub_ext_risk_factors =
+          {
+            was_in_health_care_facility_with_known_cases: from_bool_extension_false_default(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
+                                                                                            'was-in-health-care-facility-with-known-cases'),
+            was_in_health_care_facility_with_known_cases_facility_name: from_string_extension(sub_ext,
+                                                                                              "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
+                                                                                              'was-in-health-care-facility-with-known-cases-facility-name')
+          }
+      when "#{SA_EXT_BASE_URL}laboratory-personnel"
+        sub_ext_risk_factors =
+          {
+            laboratory_personnel: from_bool_extension_false_default(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]", 'laboratory-personnel'),
+            laboratory_personnel_facility_name: from_string_extension(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
+                                                                      'laboratory-personnel-facility-name')
+          }
+      when "#{SA_EXT_BASE_URL}healthcare-personnel"
+        sub_ext_risk_factors =
+          {
+            healthcare_personnel: from_bool_extension_false_default(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]", 'healthcare-personnel'),
+            healthcare_personnel_facility_name: from_string_extension(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
+                                                                      'healthcare-personnel-facility-name')
+          }
+      when "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort"
+        sub_ext_risk_factors =
+          {
+            member_of_a_common_exposure_cohort: from_bool_extension_false_default(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
+                                                                                  'member-of-a-common-exposure-cohort'),
+            member_of_a_common_exposure_cohort_type: from_string_extension(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
+                                                                           'member-of-a-common-exposure-cohort-type')
+          }
+      else
+        next
+      end
+      risk_factors.merge!(sub_ext_risk_factors.transform_values { |v| { value: v[:value], path: v[:path].sub(SA_EXT_BASE_URL, '') } })
+    end
+    risk_factors
+  end
+
   # Return an extension which represents the source of report for a monitoree
   def to_report_source_extension(patient)
     return nil if patient.source_of_report.blank?
@@ -985,33 +1082,34 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  def to_gender_identity_extension(gender_identity)
-    return nil if gender_identity.blank?
+  # Map a source-of-report extension to a hash of fields on a Patient.
+  # Hash is of the form:
+  # {
+  #  attribute_name: { value: <converted-value>, path: <fhirpath-to-corresponding-fhir-element> }
+  # }
+  def from_report_source_extension(patient)
+    ext = patient&.extension&.find { |e| e.url == "#{SA_EXT_BASE_URL}source-of-report" }
+    return {} if ext.nil?
 
-    case gender_identity
-    when 'Male (Identifies as male)'
-      fhir_gender_identity = 'male'
-    when 'Female (Identifies as female)'
-      fhir_gender_identity = 'female'
-    when 'Transgender Male (Female-to-Male [FTM])'
-      fhir_gender_identity = 'transgender-male'
-    when 'Transgender Female (Male-to-Female [MTF])'
-      fhir_gender_identity = 'transgender-female'
-    when 'Genderqueer / gender nonconforming (neither exclusively male nor female)'
-      fhir_gender_identity = 'non-binary'
-    when 'Another'
-      fhir_gender_identity = 'other'
-    when 'Chose not to disclose'
-      fhir_gender_identity = 'non-disclose'
-    end
+    ext_idx = patient.extension.index(ext)
+    {
+      source_of_report: from_string_extension(ext, "Patient.extension[#{ext_idx}]", 'source-of-report'),
+      source_of_report_specify: from_string_extension(ext, "Patient.extension[#{ext_idx}]", 'specify')
+    }.compact.transform_values { |v| { value: v[:value], path: v[:path].sub(SA_EXT_BASE_URL, '') } }
+  end
+
+  def to_gender_identity_extension(gender_identity)
+    fhir_gender_identity = GENDER_IDENTITY_TO_FHIR[gender_identity]
+
+    return nil if fhir_gender_identity.blank?
 
     FHIR::Extension.new(
       url: 'http://hl7.org/fhir/StructureDefinition/patient-genderIdentity',
       valueCodeableConcept: FHIR::CodeableConcept.new(
         coding: [
           FHIR::Coding.new(
-            system: 'http://hl7.org/fhir/gender-identity',
-            code: fhir_gender_identity
+            system: fhir_gender_identity['system'],
+            code: fhir_gender_identity['code']
           )
         ],
         text: gender_identity
@@ -1019,49 +1117,81 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  def to_sexual_orientation_extension(sexual_orientation)
-    return nil if sexual_orientation.blank?
+  def from_gender_identity_extension(patient, base_path)
+    ext_url = 'http://hl7.org/fhir/StructureDefinition/patient-genderIdentity'
+    ext = patient&.extension&.find { |e| e.url == ext_url }
 
-    case sexual_orientation
-    when 'Straight or Heterosexual'
-      sexual_orientation_coding = FHIR::Coding.new(
-        system: 'http://snomed.info/sct',
-        code: '20430005'
-      )
-    when 'Lesbian, Gay, or Homosexual'
-      sexual_orientation_coding = FHIR::Coding.new(
-        system: 'http://snomed.info/sct',
-        code: '38628009'
-      )
-    when 'Bisexual'
-      sexual_orientation_coding = FHIR::Coding.new(
-        system: 'http://snomed.info/sct',
-        code: '42035005'
-      )
-    when 'Another'
-      sexual_orientation_coding = FHIR::Coding.new(
-        system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-        code: 'OTH'
-      )
-    when 'Choose not to disclose'
-      sexual_orientation_coding = FHIR::Coding.new(
-        system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-        code: 'ASKU'
-      )
-    when 'Don’t know'
-      sexual_orientation_coding = FHIR::Coding.new(
-        system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-        code: 'UNK'
-      )
+    gender_identity = GENDER_IDENTITY_FROM_FHIR[
+      {
+        'system' => ext&.valueCodeableConcept&.coding&.first&.system,
+        'code' => ext&.valueCodeableConcept&.coding&.first&.code
+      }
+    ]
+    if !ext.nil? && gender_identity.nil?
+      {
+        errors:
+          [
+            'is not an acceptable value, acceptable values are: '\
+            "#{GENDER_IDENTITY_FROM_FHIR.keys.map do |c|
+                 pretty_print_code_from_fhir(c)
+               end.join(', ')}"
+          ],
+        path: "#{base_path}.extension('#{ext_url}').valueCodeableConcept"
+      }
+    else
+      {
+        value: gender_identity,
+        path: "#{base_path}.extension('#{ext_url}').valueCodeableConcept"
+      }
     end
+  end
+
+  def to_sexual_orientation_extension(sexual_orientation)
+    fhir_sexual_orientation = SEXUAL_ORIENTATION_TO_FHIR[sexual_orientation]
+
+    return nil if fhir_sexual_orientation.blank?
 
     FHIR::Extension.new(
       url: 'http://saraalert.org/StructureDefinition/sexual-orientation',
       valueCodeableConcept: FHIR::CodeableConcept.new(
-        coding: [sexual_orientation_coding],
+        coding: [
+          FHIR::Coding.new(
+            system: fhir_sexual_orientation['system'],
+            code: fhir_sexual_orientation['code']
+          )
+        ],
         text: sexual_orientation
       )
     )
+  end
+
+  def from_sexual_orientation_extension(patient, base_path)
+    ext_url = 'http://saraalert.org/StructureDefinition/sexual-orientation'
+    ext = patient&.extension&.find { |e| e.url == ext_url }
+
+    sexual_orientation = SEXUAL_ORIENTATION_FROM_FHIR[
+      {
+        'system' => ext&.valueCodeableConcept&.coding&.first&.system,
+        'code' => ext&.valueCodeableConcept&.coding&.first&.code
+      }
+    ]
+    if !ext.nil? && sexual_orientation.nil?
+      {
+        errors:
+          [
+            'is not an acceptable value, acceptable values are: '\
+            "#{SEXUAL_ORIENTATION_FROM_FHIR.keys.map do |c|
+                 pretty_print_code_from_fhir(c)
+               end.join(', ')}"
+          ],
+        path: "#{base_path}.extension('#{ext_url}').valueCodeableConcept"
+      }
+    else
+      {
+        value: sexual_orientation,
+        path: "#{base_path}.extension('#{ext_url}').valueCodeableConcept"
+      }
+    end
   end
 
   def str_ext_path(base_path, ext_id)
