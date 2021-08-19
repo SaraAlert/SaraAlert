@@ -17,13 +17,13 @@ const nextMock = jest.fn();
 const setEnrollmentStateMock = jest.fn();
 const caseStatusOptions = ['', 'Confirmed', 'Probable'];
 
-function getWrapper(patient, hideBtn) {
+function getWrapper(patient, showBtn) {
   const current = {
     isolation: true,
     patient: patient,
     propagatedFields: {},
   };
-  return shallow(<CaseInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} hidePreviousButton={hideBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} first_positive_lab={mockLaboratory1} authenticity_token={'123'} />);
+  return shallow(<CaseInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} first_positive_lab={mockLaboratory1} authenticity_token={'123'} />);
 }
 
 afterEach(() => {
@@ -32,7 +32,7 @@ afterEach(() => {
 
 describe('CaseInformation', () => {
   it('Properly renders all main components', () => {
-    const wrapper = getWrapper(blankIsolationMockPatient);
+    const wrapper = getWrapper(blankIsolationMockPatient, true);
     expect(wrapper.find('.sr-only').exists()).toBe(true);
     expect(wrapper.find('.sr-only').text()).toEqual('Monitoree Case Information');
     expect(wrapper.find(Card).exists()).toBe(true);
@@ -97,32 +97,6 @@ describe('CaseInformation', () => {
     expect(notesFormGroup.find('.character-limit-text').exists()).toBe(true);
     expect(notesFormGroup.find('.character-limit-text').text()).toEqual(`${2000 - mockPatient1.exposure_notes.length} characters remaining`);
     expect(wrapper.find(PublicHealthManagement).exists()).toBe(true);
-  });
-
-  it('Hides "Previous" and "Next" buttons if requisite functions are not passed in via props', () => {
-    const wrapper = shallow(<CaseInformation currentState={{ isolation: true, patient: blankIsolationMockPatient, propagatedFields: {} }} patient={blankIsolationMockPatient} hidePreviousButton={false} jurisdiction_paths={mockJurisdictionPaths} />);
-    expect(wrapper.find(Button).length).toEqual(0);
-  });
-
-  it('Hides the "Previous" button when props.hidePreviousButton is true', () => {
-    const wrapper = getWrapper(blankIsolationMockPatient, true);
-    expect(wrapper.find(Button).length).toEqual(1);
-    expect(wrapper.find(Button).at(0).text()).toEqual('Next');
-  });
-
-  it('Clicking the "Previous" button calls props.previous', () => {
-    const wrapper = getWrapper(blankIsolationMockPatient);
-    expect(previousMock).not.toHaveBeenCalled();
-    wrapper.find(Button).at(0).simulate('click');
-    expect(previousMock).toHaveBeenCalled();
-  });
-
-  it('Clicking the "Next" button calls validate method', () => {
-    const wrapper = getWrapper(blankIsolationMockPatient);
-    const validateSpy = jest.spyOn(wrapper.instance(), 'validate');
-    expect(validateSpy).not.toHaveBeenCalled();
-    wrapper.find(Button).at(1).simulate('click');
-    expect(validateSpy).toHaveBeenCalled();
   });
 
   it('Changing Symptom Onset properly updates state and calls props.setEnrollmentState', () => {
@@ -209,5 +183,31 @@ describe('CaseInformation', () => {
     expect(wrapper.state('modified').patient.exposure_notes).toEqual(note);
     expect(wrapper.find(Form.Control).at(1).prop('value')).toEqual(note);
     expect(wrapper.find('.character-limit-text').text()).toEqual(`${2000 - note.length} characters remaining`);
+  });
+
+  it('Hides "Previous" and "Next" buttons if requisite functions are not passed in via props', () => {
+    const wrapper = shallow(<CaseInformation currentState={{ isolation: true, patient: blankIsolationMockPatient, propagatedFields: {} }} patient={blankIsolationMockPatient} showPreviousButton={true} jurisdiction_paths={mockJurisdictionPaths} />);
+    expect(wrapper.find(Button).length).toEqual(0);
+  });
+
+  it('Hides the "Previous" button when props.showPreviousButton is false', () => {
+    const wrapper = getWrapper(blankIsolationMockPatient);
+    expect(wrapper.find(Button).length).toEqual(1);
+    expect(wrapper.find(Button).at(0).text()).toEqual('Next');
+  });
+
+  it('Clicking the "Previous" button calls props.previous', () => {
+    const wrapper = getWrapper(blankIsolationMockPatient, true);
+    expect(previousMock).not.toHaveBeenCalled();
+    wrapper.find(Button).at(0).simulate('click');
+    expect(previousMock).toHaveBeenCalled();
+  });
+
+  it('Clicking the "Next" button calls validate method', () => {
+    const wrapper = getWrapper(blankIsolationMockPatient);
+    const validateSpy = jest.spyOn(wrapper.instance(), 'validate');
+    expect(validateSpy).not.toHaveBeenCalled();
+    wrapper.find(Button).simulate('click');
+    expect(validateSpy).toHaveBeenCalled();
   });
 });

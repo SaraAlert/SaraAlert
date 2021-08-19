@@ -590,7 +590,7 @@ class Address extends React.Component {
                 </Form>
               </Tab>
             </Tabs>
-            {this.props.previous && !this.props.hidePreviousButton && (
+            {this.props.previous && this.props.showPreviousButton && (
               <Button id="enrollment-previous-button" variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -661,7 +661,7 @@ Address.propTypes = {
   setEnrollmentState: PropTypes.func,
   previous: PropTypes.func,
   next: PropTypes.func,
-  hidePreviousButton: PropTypes.bool,
+  showPreviousButton: PropTypes.bool,
 };
 
 export default Address;

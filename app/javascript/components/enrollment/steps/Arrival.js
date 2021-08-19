@@ -227,7 +227,7 @@ class Arrival extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && !this.props.hidePreviousButton && (
+            {this.props.previous && this.props.showPreviousButton && (
               <Button id="enrollment-previous-button" variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -273,7 +273,7 @@ Arrival.propTypes = {
   setEnrollmentState: PropTypes.func,
   previous: PropTypes.func,
   next: PropTypes.func,
-  hidePreviousButton: PropTypes.bool,
+  showPreviousButton: PropTypes.bool,
 };
 
 export default Arrival;

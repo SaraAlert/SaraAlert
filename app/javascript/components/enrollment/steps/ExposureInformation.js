@@ -500,7 +500,7 @@ class ExposureInformation extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && !this.props.hidePreviousButton && (
+            {this.props.previous && this.props.showPreviousButton && (
               <Button id="enrollment-previous-button" variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
@@ -554,7 +554,7 @@ ExposureInformation.propTypes = {
   has_dependents: PropTypes.bool,
   jurisdiction_paths: PropTypes.object,
   assigned_users: PropTypes.array,
-  hidePreviousButton: PropTypes.bool,
+  showPreviousButton: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };
 

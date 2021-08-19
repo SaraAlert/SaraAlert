@@ -182,17 +182,17 @@ class Enrollment extends React.Component {
     window.scroll(0, 0);
     let index = this.state.index;
     let lastIndex = this.state.lastIndex;
-    let step = this.state.enrollmentState.patient.isolation && 4 === index ? 2 : 1;
-    let maxSteps = this.state.enrollmentState.patient.isolation ? 7 : 6;
+    let delta = this.state.enrollmentState.patient.isolation && 4 === index ? 2 : 1; // number of enrollment steps to skip (1 unless in isolation skipping exposure info on initial enrollment)
+    let maxIndex = this.state.enrollmentState.patient.isolation ? 7 : 6; // max number of enrollment steps in the carosel (6 for exposure and 7 for isolation)
 
     if (lastIndex) {
       this.setState({ index: lastIndex, lastIndex: null });
     } else {
       this.setState({
         direction: 'next',
-        index: index + step,
+        index: index + delta,
         lastIndex: null,
-        review_mode: index + step === maxSteps,
+        review_mode: index + delta === maxIndex,
       });
     }
   };
@@ -200,8 +200,8 @@ class Enrollment extends React.Component {
   previous = () => {
     window.scroll(0, 0);
     let index = this.state.index;
-    let step = this.state.enrollmentState.patient.isolation && index === 6 ? 2 : 1;
-    this.setState({ direction: 'prev', index: index - step, lastIndex: null });
+    let delta = this.state.enrollmentState.patient.isolation && index === 6 ? 2 : 1;
+    this.setState({ direction: 'prev', index: index - delta, lastIndex: null }); // number of enrollment steps to skip (1 unless in isolation skipping exposure info on initial enrollment)
   };
 
   goto = targetIndex => {
@@ -241,7 +241,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
+              showPreviousButton={!this.props.edit_mode && !this.state.review_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -250,7 +250,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
+              showPreviousButton={!this.props.edit_mode && !this.state.review_mode}
               blocked_sms={this.props.blocked_sms}
               edit_mode={this.props.edit_mode}
             />
@@ -261,7 +261,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
+              showPreviousButton={!this.props.edit_mode && !this.state.review_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -270,7 +270,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               previous={this.previous}
               next={this.next}
-              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
+              showPreviousButton={!this.props.edit_mode && !this.state.review_mode}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -284,7 +284,7 @@ class Enrollment extends React.Component {
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
               first_positive_lab={this.props.first_positive_lab}
-              hidePreviousButton={this.props.edit_mode || this.state.review_mode}
+              showPreviousButton={!this.props.edit_mode && !this.state.review_mode}
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
@@ -300,7 +300,7 @@ class Enrollment extends React.Component {
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 assigned_users={this.props.assigned_users}
                 first_positive_lab={this.props.first_positive_lab}
-                hidePreviousButton={this.props.edit_mode || this.state.review_mode}
+                showPreviousButton={!this.props.edit_mode && !this.state.review_mode}
                 authenticity_token={this.props.authenticity_token}
               />
             </Carousel.Item>
