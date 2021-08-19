@@ -815,7 +815,7 @@ describe('AdvancedFilter', () => {
       expect(wrapper.find('.advanced-filter-multi-select').find('options').at(index).prop('label')).toEqual(value.label);
     });
     expect(wrapper.find(ReactTooltip).exists()).toBe(true);
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Leaving this field blank will not filter out any monitorees.`);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('If multiple Assigned Users are selected, records assigned to any of those users will be returned. Leaving this field blank will not filter out any monitorees.');
   });
 
   it('Toggling boolean buttons properly updates state and value', () => {

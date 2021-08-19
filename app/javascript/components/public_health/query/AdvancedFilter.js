@@ -884,9 +884,6 @@ class AdvancedFilter extends React.Component {
    * @param {Array} value - Current values selected
    */
   renderMultiStatement = (filter, index, value) => {
-    // Tooltip for Multi-select type
-    let tooltip = 'Leaving this field blank will not filter out any monitorees.';
-
     return (
       <React.Fragment>
         <div className="d-flex justify-content-between py-0 my-0">
@@ -902,7 +899,7 @@ class AdvancedFilter extends React.Component {
               this.changeMultiValue(index, event);
             }}
           />
-          {tooltip && this.renderStatementTooltip(filter.name, index, tooltip)}
+          {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
         </div>
       </React.Fragment>
     );

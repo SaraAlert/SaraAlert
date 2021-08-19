@@ -210,13 +210,15 @@ export const advancedFilterOptions = [
     description: 'Monitorees who have a specific assigned user',
     type: 'multi',
     options: [], // Populated asynchronously in the AdvancedFilter component
+    tooltip: 'If multiple Assigned Users are selected, records assigned to any of those users will be returned. Leaving this field blank will not filter out any monitorees.'
   },
   {
     name: 'jurisdiction',
     title: 'Jurisdiction (Multi-select)',
     description: 'Monitorees of a specific jurisdiction',
     type: 'multi',
-    options: [], // Populated in the AdvancedFilter component
+    options: [], // Populated in the AdvancedFilter component,
+    tooltip: 'If multiple Jurisdictions are selected, records assigned to any of those Jurisdictions will be returned. Leaving this field blank will not filter out any monitorees.'
   },
 
   /* NUMBER FILTER OPTIONS */
