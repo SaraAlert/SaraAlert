@@ -2,9 +2,9 @@ kor:
   assessments:
     html:
       shared:
-        email: 'Email'
-        phone: 'Phone'
-        webpage: 'Webpage'
+        email: '전자 메일'
+        phone: '전화'
+        webpage: '웹 페이지'
       weblink:
         title: '일일 자기 보고서'
         bool-title: '겪고 계신 모든 증상을 선택해 주십시오.'
@@ -13,13 +13,13 @@ kor:
           '어떠한 증상을 보고하셨다면, 곧 지역 보건부로부터 연락을 받으시게 됩니다. 즉각적인 대처가 필요한 경우는 의료 제공자나 지역 보건부에 문의하시기 바랍니다. 다른 사람들과의 접촉을 피하고 집에 머물러
           주십시오.'
         instruction3: '응급 의료 상황을 겪고 계신다면 911에 전화하셔서 보건부에 의해 모니터링되고 있음을 알려주시기 바랍니다.'
-        instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.'
-        submit: 'Submit'
+        instruction4: '아래의 연락처 정보를 이용하여 귀하의 케이스를 담당하고 있는 공중 보건인과 연락을 취하실 수 있습니다.'
+        submit: '제출'
         thank_you: '자기 보고서를 작성해 주셔서 감사합니다.'
       email:
         shared:
           greeting: '%{name}님,'
-          report: 'Daily Report'
+          report: '일일 보고서'
           footer: >-
             '이 이메일에 답장하거나, 이 이메일을 전달하거나, 이 링크를 공유하지 마십시오. 이 메시지는 Sara Alert 시스템에 의해 자동으로 생성되었으며 고유하고 귀하만을 위한 것입니다. 이러한 알림을
             중단하고 싶거나 실수라고 생각되면 지역 공중 보건부에 문의하십시오. 개인 정보 보호 및 더 자세한 정보를 원하시면 saraalert.org를 방문하십시오.'
@@ -37,24 +37,23 @@ kor:
           header: '모니터링이 종료되었습니다.'
           thank_you: '%{initials_age}에 대한 Sara Alert 모니터링이 %{completed_date}일에 완료되었습니다.참여해 주셔서 감사합니다.'
         contact:
-          info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:'
+          info1: '질문이 있으시면 등록을 도와드린 공중 보건 기관에 문의하시기 바랍니다:'
           info2: '질문이 있으시면 등록을 도와드린 공중 보건 기관에 문의하시기 바랍니다.'
     twilio:
       shared:
         experiencing_symptoms_s: '다음과 같은 증상을 겪고 계십니까? %{symptom_names}.'
         experiencing_symptoms_p: '이 분들 중에 다음과 같은 증상을 겪고 계신 분이 있으십니까? %{symptom_names}.'
-        max_retries_message: >-
-          'I''m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911.'
+        max_retries_message: '미안 해요, 최대 응답 시도 횟수에 도달했습니다. 당신이 응급 상황이 발생하는 경우, 911에 전화해서 당신이 보건 당국에 의해 감시되고있다 알려 주시기 바랍니다.'
       sms:
         prompt:
           intro: 'Sara Alert 시스템에 오신 것을 환영합니다. 이 전화번호로 %{name}님의 일일 보고서를 보내드리겠습니다. 개인 정보 보호 및 더 자세한 정보를 원하시면 saraalert.org를 방문하십시오.'
-          reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
+          reminder: '이것은 Sara Alert로서 우리에게 일일 보고서 메시지에 회신해 주길 바랍니다.'
           name: '%{name}님'
           daily: '이것은 %{names}의 Sara Alert 일일 보고서입니다. %{experiencing_symptoms} "네" 또는 "아니요"로 대답해 주시기 바랍니다.'
           try_again: '죄송합니다만 이해하지 못했습니다. "네" 또는 "아니요"로 대답해 주시기 바랍니다. 질문이 있으시면 지역 보건부에 문의하십시오.'
           thanks: '일일 보고서를 작성해 주셔서 감사합니다.'
         weblink:
-          intro: 'Please complete the Sara Alert Daily Report for %{initials_age}: %{url}'
+          intro: '이것은 님의 Sara Alert 일일 보고서입니다 %{initials_age}: %{url}'
         closed:
           thank_you: "%{initials_age}에 대한 Sara Alert 모니터링이 %{completed_date}일에 완료되었습니다.참여해 주셔서 감사합니다."
       voice:
@@ -90,8 +89,8 @@ kor:
       new-loss-of-taste:
         name: '새로운 미각소실'
       pulse-ox:
-        name: 'Pulse Ox'
-        notes: 'What was your lowest oxygen level in the past 24 hours?'
+        name: '혈중 산소 소준'
+        notes: '지난 24시간 동안 가장 낮은 산소 수치는 얼마였나요?'
       repeated-shaking-with-chills:
         name: '오한을 동반한 지속적 떨림'
       shortness-of-breath:
@@ -99,19 +98,19 @@ kor:
       sore-throat:
         name: '인후통'
       temperature:
-        name: 'Temperature'
-        notes: 'Please enter your current temperature in degrees Fahrenheit'
+        name: '온도'
+        notes: '체온를 입력하십시오(화씨).'
       used-a-fever-reducer:
         name: '해열제를 사용했음'
-        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
+        notes: '지난 24시간 동안 열을 줄이기 위해 약을 먹었나요?'
       other:
-        name: 'Other'
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
-      no-symptoms: 'I am not experiencing any symptoms'
+        name: '기타'
+        notes: '다른 증상이나 추가 필요사항에 대해 후속 조치를 받을 수 있는 사람이 있으면 좋겠습니다'
+      no-symptoms: '증상이 없습니다'
     threshold-op:
-      less-than: 'Less Than'
-      less-than-or-equal: 'Less Than Or Equal to'
-      greater-than: 'Greater Than'
-      greater-than-or-equal: 'Greater Than Or Equal to'
-      equal: 'Equal to'
-      not-equal: 'Not Equal to'
+      less-than: '미만'
+      less-than-or-equal: '작거나 같음'
+      greater-than: '보다 큼'
+      greater-than-or-equal: '크거나 같음'
+      equal: '같음'
+      not-equal: '같지 않음'

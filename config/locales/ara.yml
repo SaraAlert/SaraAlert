@@ -14,11 +14,11 @@ ara:
         instruction3: 'إذا كنت تعاني من حالة طبية طارئة، فيرجى الاتصال برقم 911 وإبلاغهم بأنك تحت المتابعة الصحية.'
         instruction4: 'يرجى استخدام معلومات الاتصال أدناه للتواصل مع مسؤول الصحة العامة الذي يتابع حالتك.'
         submit: 'إرسال'
-        thank_you: 'Thank You For Completing Your Self Report'
+        thank_you: 'أشكركم'
       email:
         shared:
           greeting: 'عزيزي %{name} ،'
-          report: 'Daily Report'
+          report: 'تقريرك اليومي'
           footer: >-
             'تم إنشاؤه بواسطة نظام Sara Alert وهو فريد ومخصص لك فقط. إذا كنت ترغب في التوقف عن تلقي هذه الإخطارات أو تعتقد أنه كان خطأ، يرجى الاتصال بقسم الصحة
             العامة المحلي. للخصوصية ومزيد من المعلومات، قم بزيارة saraalert.org.'
@@ -28,7 +28,7 @@ ara:
           info1: >-
             'لقد تم تسجيلك في نظام مراقبة Sara Alert. نطلب منك تقديم تقارير يومية عن حالتك. ما عليك سوى النقر فوق الزر أدناه واتباع التعليمات التي تظهر على
             الشاشة.'
-          info2: 'You will receive a similar reminder daily until your monitoring period has ended.'
+          info2: 'سوف تتلقى تذكيرًا مشابهًا يوميًا حتى انتهاء فترة المتابعة الخاصة بك.'
         reminder:
           subject: 'تذكير تقرير تنبيه سارة'
           header: 'هذا هو تذكيرك لإكمال تقريرك اليومي.'
@@ -38,26 +38,27 @@ ara:
           header: 'اكتملت المتابعة!'
           thank_you: 'Sara Alert اكتملت مرمتابعة %{initials_age} في %{completed_date}! أشكركم على مشاركتكم.'
         contact:
-          info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:'
-          info2: 'If you have any questions please reach out to the public health organization that helped enroll you.'
+          info1: 'إذا كانت لديك أي أسئلة، فيرجى التواصل مع قسم الصحة العامة التي ساعدت في تسجيلك:'
+          info2: 'إذا كانت لديك أي أسئلة، فيرجى التواصل مع قسم الصحة العامة التي ساعدت في تسجيلك.'
     twilio:
       shared:
         experiencing_symptoms_s: 'هل يعاني هذا الشخص من أي من الأعراض التالية: %{symptom_names}'
         experiencing_symptoms_p: 'هل يعاني أي من هؤلاء الأشخاص من أي من الأعراض التالية: %{symptom_names}.'
         max_retries_message: >-
-          'I''m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911.'
+          'أنا آسف لقد وصلت إلى الحد الأقصى لعدد محاولات الاستجابة. ذا كنت تعاني من حالة طبية طارئة، يرجى الاتصال بالرقم 911 واجعلهم يعرفون ما يجري رصده لك من قبل
+          وزارة الصحة.'
       sms:
         prompt:
           intro: >-
             'مرحبًا بك في نظام Sara Alert، سنرسل لك تقاريرك اليومية عن %{name} إلى رقم هذا الهاتف. للخصوصية ومزيد من المعلومات، قم بزيارة saraalert.org.'
-          reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
+          reminder: 'هذا تذكير Sara Alert للرد على رسائل التقرير اليومي.'
           name: '%{name}'
           daily: 'هذا هو تقرير Sara Alert اليومي لـ: %{names}. %{experiencing_symptoms} الرجاء الرد بـ "نعم" أو "لا"'
           try_again: >-
             'أنا آسف لم أفهم. الرجاء الرد بـ "نعم" أو "لا". إذا كانت لديك أي أسئلة ، يرجى الاتصال بقسم الصحة المحلي.'
           thanks: 'شكرا لاستكمال تقريرك اليومي'
         weblink:
-          intro: 'Please complete the Sara Alert Daily Report for %{initials_age}: %{url}'
+          intro: 'هذا هو تقرير Sara Alert اليومي لـ %{initials_age}: %{url}'
         closed:
           thank_you: 'Sara Alert اكتملت مرمتابعة %{initials_age} في %{completed_date}! أشكركم على مشاركتكم.'
       voice:
@@ -93,8 +94,8 @@ ara:
       new-loss-of-taste:
         name: 'فقدان حاسة التذوق المفاجئ'
       pulse-ox:
-        name: 'Pulse Ox'
-        notes: 'What was your lowest oxygen level in the past 24 hours?'
+        name: 'مقياس التأكسج النبضي'
+        notes: 'ما هو أقل مستوى أكسجين لديك في ال 24 ساعة الماضية؟'
       repeated-shaking-with-chills:
         name: 'قشعريرة'
       shortness-of-breath:
@@ -102,19 +103,19 @@ ara:
       sore-throat:
         name: 'التهاب الحلق'
       temperature:
-        name: 'Temperature'
-        notes: 'Please enter your current temperature in degrees Fahrenheit'
+        name: 'درجة الحرارة'
+        notes: 'الرجاء إدخال درجة حرارتك الحالية بالدرجات فهرنهايت'
       used-a-fever-reducer:
         name: 'أستخدمت مخفض الحمى'
-        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
+        notes: 'في ال 24 ساعة الماضية، هل استعملت أي دواء يقلل من الحمى؟'
       other:
-        name: 'Other'
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
-      no-symptoms: 'I am not experiencing any symptoms'
+        name: 'أخرى'
+        notes: 'أود أن يتصل بي أحدهم لمتابعة أعراض أخرى أو إحتياجات إضافية'
+      no-symptoms: 'لا أعاني من أي أعراض'
     threshold-op:
-      less-than: 'Less Than'
-      less-than-or-equal: 'Less Than Or Equal to'
-      greater-than: 'Greater Than'
-      greater-than-or-equal: 'Greater Than Or Equal to'
-      equal: 'Equal to'
-      not-equal: 'Not Equal to'
+      less-than: 'أصغر من'
+      less-than-or-equal: 'أصغر من أو تساوي'
+      greater-than: 'أكبر من'
+      greater-than-or-equal: 'أكبر أو يساوي'
+      equal: 'يساوي'
+      not-equal: 'لا تساوي'

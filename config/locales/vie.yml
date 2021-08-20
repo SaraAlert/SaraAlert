@@ -19,7 +19,7 @@ vie:
       email:
         shared:
           greeting: 'Kính gửi %{name},'
-          report: 'Daily Report'
+          report: 'Báo cáo hàng ngày'
           footer: >-
             'Xin đừng trả lời email này, chuyển tiếp email này hoặc chia sẻ liên kết này. Thông báo này được tạo tự động bởi hệ thống Sara Alert và là duy nhất và
             chỉ dành cho bạn. Nếu bạn muốn ngừng nhận những thông báo này hoặc tin rằng đó là do nhầm lẫn, vui lòng liên hệ với sở y tế công cộng địa phương của
@@ -42,28 +42,29 @@ vie:
           header: 'Quá trình giám sát hoàn tất!'
           thank_you: 'Sara Alert giám sát cho %{initials_age} hoàn thành vào %{completed_date}! Cảm ơn bạn vì sự tham gia của bạn.'
         contact:
-          info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:'
+          info1: 'Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với tổ chức y tế công cộng, nơi đã giúp đăng ký cho bạn:'
           info2: 'Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với tổ chức y tế công cộng, nơi đã giúp đăng ký cho bạn.'
     twilio:
       shared:
         experiencing_symptoms_s: 'Người này có gặp bất kỳ triệu chứng nào sau đây không? %{symptom_names}.'
         experiencing_symptoms_p: 'Có ai trong số những người này gặp bất kỳ triệu chứng nào sau đây không? %{symptom_names}.'
         max_retries_message: >-
-          'I''m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911.
+          'Tôi xin lỗi, bạn đã đạt đến số lần thử phản hồi tối đa. Nếu bạn đang gặp một trường hợp khẩn cấp y tế, xin vui lòng gọi số 911 và cho họ biết bạn
+          đang được theo dõi bởi các bộ phận y tế.'
       sms:
         prompt:
           intro: >-
             'Chào mừng bạn đến với hệ thống Sara Alert, chúng tôi sẽ gửi các báo cáo hàng ngày của bạn cho %{name} tới số điện thoại này. Để biết về quyền riêng
             tư và biết thêm thông tin, hãy truy cập saraalert.org.'
-          reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
+          reminder: 'Đây là Sara Alert nhắc nhở bạn để vui lòng trả lời để hoàn thành báo cáo hàng ngày của bạn.'
           name: '%{name}'
-          daily: 'This is the Sara Alert daily report for: %{names}. %{experiencing_symptoms} Please reply with "Yes" or "No"'
+          daily: 'Đây là bản báo cáo hàng ngày của Sara Alert cho: %{names}. %{experiencing_symptoms} Xin vui lòng trả lời "Có" hoặc "Không"'
           try_again: >-
             'Tôi xin lỗi, tôi không hiểu lắm. Xin vui lòng trả lời bằng \ "Có \" hoặc \ "Không \". Nếu bạn có bất kỳ câu hỏi nào, xin vui lòng liên hệ với sở y
             tế địa phương của bạn.'
           thanks: 'Cảm ơn bạn đã hoàn thành báo cáo hàng ngày của mình'
         weblink:
-          intro: 'Please complete the Sara Alert Daily Report for %{initials_age}: %{url}'
+          intro: 'Đây là bản báo cáo hàng ngày của Sara Alert cho %{initials_age}: %{url}'
         closed:
           thank_you: 'Sara Alert giám sát cho %{initials_age} hoàn thành vào %{completed_date}! Cảm ơn bạn vì sự tham gia của bạn.'
       voice:
@@ -99,8 +100,8 @@ vie:
       new-loss-of-taste:
         name: 'Mất vị giác mới'
       pulse-ox:
-        name: 'Pulse Ox'
-        notes: 'What was your lowest oxygen level in the past 24 hours?'
+        name: 'Lượng oxy trong máu'
+        notes: 'Mức độ bão hoà ô-xy thấp nhất của bạn trong 24 giờ qua là bao nhiêu?'
       repeated-shaking-with-chills:
         name: 'Run rẩy lặp đi lặp lại kèm theo ớn lạnh'
       shortness-of-breath:
@@ -108,19 +109,19 @@ vie:
       sore-throat:
         name: 'Đau họng'
       temperature:
-        name: 'Temperature'
-        notes: 'Please enter your current temperature in degrees Fahrenheit'
+        name: 'Nhiệt độ'
+        notes: 'Vui lòng nhập nhiệt độ hiện tại của bạn theo độ F'
       used-a-fever-reducer:
         name: 'Sử dụng thuốc hạ sốt'
-        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
+        notes: 'Trong 24 giờ qua, bạn đã sử dụng bất kỳ loại thuốc nào làm giảm sốt chưa?'
       other:
-        name: 'Other'
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
-      no-symptoms: 'I am not experiencing any symptoms'
+        name: 'Khác'
+        notes: 'Tôi muốn ai đó gọi cho tôi để theo dõi các triệu chứng khác hoặc nhu cầu bổ sung'
+      no-symptoms: 'Tôi không có triệu chứng nào cả'
     threshold-op:
-      less-than: 'Less Than'
-      less-than-or-equal: 'Less Than Or Equal to'
-      greater-than: 'Greater Than'
-      greater-than-or-equal: 'Greater Than Or Equal to'
-      equal: 'Equal to'
-      not-equal: 'Not Equal to'
+      less-than: 'nhỏ hơn'
+      less-than-or-equal: 'nhỏ hơn hoặc bằng'
+      greater-than: 'lớn hơn'
+      greater-than-or-equal: 'lớn hơn hoặc bằng'
+      equal: 'bằng'
+      not-equal: 'không bằng'

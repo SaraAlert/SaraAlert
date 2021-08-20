@@ -26,7 +26,7 @@ rus:
       email:
         shared:
           greeting: 'Здравствуйте %{name},'
-          report: 'Daily Report'
+          report: 'ежедневный опрос'
           footer: >-
             'Отвечать, пересылать и делится ссылкой на это сообщение не нужно. Это сообщение автоматически создано системой Sara Alert и предназначено только
             для Вас. Если Вы не хотите получать сообщения или считаете, что произошла ошибка, обратитесь в местный отдел общественного здравоохранения.  Чтобы
@@ -46,18 +46,18 @@ rus:
             'Спасибо за Ваше участвуете в программе мониторинга Sara Alert. Пожалуйста, заполните ежедневный опросник о состоянии вашего здоровья за сегодняшний
             день, перейдя по ссылке внизу.'
         closed:
-          subject: 'Sara Alert Reporting Complete'
-          header: 'Monitoring complete!'
+          subject: 'Ваш период мониторинга Sara Alert завершен'
+          header: 'Ваш мониторинг завершен!'
           thank_you: 'Мониторинг Sara Alert для %{initials_age} завершено %{completed_date}! Спасибо за ваше участие.'
         contact:
-          info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:'
+          info1: 'Если у вас есть какие-либо вопросы, пожалуйста, обратиться к организации общественного здравоохранения, которые помогли зарегистрировать вас:'
           info2: 'Если у Вас возникнут вопросы, пожалуйста, обратитесь в  организацию общественного здравоохранения, в которой помогли Вас зарегистрировать.'
     twilio:
       shared:
         experiencing_symptoms_s: 'Есть ли сегодня у %{name} какие-либо из следующих симптомов: %{symptom_names}.'
         experiencing_symptoms_p: 'Испытывает ли кто-то какие-либо из следующих симптомов: %{symptom_names}.'
         max_retries_message: >-
-          'I''m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911.
+          'Простите, достигнуто максимальное число попыток ответа. Если вы столкнулись с неотложной медицинской помощи, пожалуйста, позвоните по телефону 911.'
       sms:
         prompt:
           intro: >-
@@ -73,7 +73,7 @@ rus:
             общественного здравоохранения.'
           thanks: 'Спасибо, что заполнили наш ежедневный опросник.'
         weblink:
-          intro: 'Please complete the Sara Alert Daily Report for %{initials_age}: %{url}'
+          intro: 'Это Sara Alert, ежедневный опрос о самочувствии %{initials_age}: %{url}'
         closed:
           thank_you: 'Мониторинг Sara Alert для %{initials_age} завершено %{completed_date}! Спасибо за ваше участие.'
       voice:
@@ -111,8 +111,8 @@ rus:
       new-loss-of-taste:
         name: 'Новоприобретённая потеря вкуса '
       pulse-ox:
-        name: 'Pulse Ox'
-        notes: 'What was your lowest oxygen level in the past 24 hours?'
+        name: 'пульсоксиметрия'
+        notes: 'Каков был ваш самый низкий уровень кислорода за последние 24 часа?'
       repeated-shaking-with-chills:
         name: 'озноб'
       shortness-of-breath:
@@ -120,19 +120,19 @@ rus:
       sore-throat:
         name: 'Боль в горле'
       temperature:
-        name: 'Temperature'
-        notes: 'Please enter your current temperature in degrees Fahrenheit'
+        name: 'температура'
+        notes: 'Введите температуру в градусах по Фаренгейту'
       used-a-fever-reducer:
         name: 'Прием жаропонижающих препаратов'
-        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
+        notes: 'За последние 24 часа вы использовали какие-нибудь лекарства, которые уменьшают лихорадку?'
       other:
-        name: 'Other'
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
-      no-symptoms: 'I am not experiencing any symptoms'
+        name: 'прочее'
+        notes: 'Я хотел бы, чтобы кто-то позвонил мне, чтобы проследить за другими симптомами или дополнительными потребностями'
+      no-symptoms: 'У меня нет никаких симптомов'
     threshold-op:
-      less-than: 'Less Than'
-      less-than-or-equal: 'Less Than Or Equal to'
-      greater-than: 'Greater Than'
-      greater-than-or-equal: 'Greater Than Or Equal to'
-      equal: 'Equal to'
-      not-equal: 'Not Equal to'
+      less-than: 'меньше'
+      less-than-or-equal: 'меньше или равно'
+      greater-than: 'больше, чем'
+      greater-than-or-equal: 'больше или равно'
+      equal: 'равна'
+      not-equal: 'не равную'
