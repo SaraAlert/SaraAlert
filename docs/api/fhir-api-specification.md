@@ -1743,7 +1743,7 @@ Get a monitoree history via an id, e.g.:
 The `http://saraalert.org/StructureDefinition/comment` extension represents the comment for a history. This extension is read-only.
 ```json
 {
-  "url": "http://saraalert.org/StructureDefinition/comment", 
+  "url": "http://saraalert.org/StructureDefinition/comment",
   "valueString": "User changed latest public health action to \"Recommended medical evaluation of symptoms\". Reason: Lost to follow-up during monitoring period, details"
 }
 ```
@@ -1751,7 +1751,7 @@ The `http://saraalert.org/StructureDefinition/comment` extension represents the 
 The `http://saraalert.org/StructureDefinition/history-type` extension indicates the type of history that was created. This extension is read-only.
 ```json
 {
-  "url": "http://saraalert.org/StructureDefinition/history-type", 
+  "url": "http://saraalert.org/StructureDefinition/history-type",
   "valueString": "Monitoring Change"
 }
 ```
@@ -3303,7 +3303,7 @@ To create a new monitoree vaccination, simply POST a FHIR Immunization resource 
           "code": "207"
         }
       ],
-      "text": "Moderna COVID-19 Vaccine"
+      "text": "Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)"
     }
   ],
   "patient": {
@@ -3768,7 +3768,7 @@ On success, the server will update the existing resource given the id.
           "code": "207"
         }
       ],
-      "text": "Moderna COVID-19 Vaccine"
+      "text": "Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)"
     }
   ],
   "patient": {
@@ -5860,7 +5860,7 @@ GET `[base]/Patient?_count=2`
 </details>
 
 ## Transactions
-The API supports performing several actions as a single atomic "transaction" for which all of the individual changes succeed or fail together. 
+The API supports performing several actions as a single atomic "transaction" for which all of the individual changes succeed or fail together.
 
 <a name="transaction-post"/>
 
@@ -6269,7 +6269,7 @@ See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) docum
 
 
 ## Bulk Data Export
-The API supports exporting monitoree data in bulk according the the [FHIR Bulk Data Access](https://hl7.org/fhir/uv/bulkdata/export/index.html) specification. Instead of making individual requests to gather information, bulk data export supports exporting all available monitoree data at once. The bulk data request flow includes a kick-off request, status requests, and file requests, all of which are described in subsequent sections. This documentation focuses on how bulk data export works in Sara Alert, and for details not included here, please see the 
+The API supports exporting monitoree data in bulk according the the [FHIR Bulk Data Access](https://hl7.org/fhir/uv/bulkdata/export/index.html) specification. Instead of making individual requests to gather information, bulk data export supports exporting all available monitoree data at once. The bulk data request flow includes a kick-off request, status requests, and file requests, all of which are described in subsequent sections. This documentation focuses on how bulk data export works in Sara Alert, and for details not included here, please see the
 [specification](https://hl7.org/fhir/uv/bulkdata/export/index.html).
 <a name="bulk-data-kick-off"/>
 

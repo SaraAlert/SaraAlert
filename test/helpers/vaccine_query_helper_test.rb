@@ -12,11 +12,11 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
         'name' => 'COVID-19',
         'vaccines' => [
           {
-            'product_name' => 'Moderna COVID-19 Vaccine',
+            'product_name' => 'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)',
             'num_doses' => 2
           },
           {
-            'product_name' => 'Pfizer-BioNTech COVID-19 Vaccine',
+            'product_name' => 'Pfizer-BioNTech COVID-19 Vaccine (Non-US tradename: COMIRNATY)',
             'num_doses' => 2
           },
           {

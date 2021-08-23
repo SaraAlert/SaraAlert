@@ -154,31 +154,31 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     find('a', text: "#{file_type} (#{workflow})").click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
-    sleep(0.5) # wait for import modal to open
+    sleep(1) # wait for import modal to open
     find('button.close').click
     assert_content('You are about to cancel the import process. Are you sure you want to do this?')
     click_on 'Return to Import'
-    sleep(0.5) # wait for cancel import modal to close
+    sleep(0.75) # wait for cancel import modal to close
     page.find('body').send_keys :escape
     assert_content('You are about to cancel the import process. Are you sure you want to do this?')
     click_on 'Proceed to Cancel'
-    sleep(0.5) # wait for import modal to close
+    sleep(0.75) # wait for import modal to close
     assert page.has_no_content?("Import #{file_type}")
     click_on 'Import'
     find('a', text: file_type).click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
-    sleep(0.5) # wait for import modal to open
+    sleep(0.75) # wait for import modal to open
     find('.modal-body').find('div.card-body', match: :first).find('button', text: 'Accept').click
-    sleep(0.5) # wait for patient to be accepted
+    sleep(0.75) # wait for patient to be accepted
     find('button.close').click
     assert_content('You are about to stop the import process. Are you sure you want to do this?')
     click_on 'Return to Import'
-    sleep(0.5) # wait for cancel import modal to close
+    sleep(0.75) # wait for cancel import modal to close
     page.find('body').send_keys :escape
     assert_content('You are about to stop the import process. Are you sure you want to do this?')
     click_on 'Proceed to Stop'
-    sleep(0.5) # wait for import modal to close
+    sleep(0.75) # wait for import modal to close
     assert page.has_no_content?("Import #{file_type}")
   end
 
