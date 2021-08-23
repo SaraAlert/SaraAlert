@@ -16,11 +16,11 @@ const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 class Contact extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {}, isEditMode: window.location.href.includes('edit') };
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
   }
 
   componentDidMount() {
-    if (this.state.isEditMode) {
+    if (this.props.edit_mode) {
       // Update the Schema Validator by simulating the user changing their preferred_contact_method to what their actual preferred_contact_method really is.
       // This is to trigger schema validation when editing.
       this.updatePrimaryContactMethodValidations({
@@ -399,13 +399,18 @@ class Contact extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && (
-              <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
+            {this.props.previous && this.props.showPreviousButton && (
+              <Button id="enrollment-previous-button" variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
             )}
             {this.props.next && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={() => this.validate(this.props.next)}>
+              <Button
+                id="enrollment-next-button"
+                variant="outline-primary"
+                size="lg"
+                className="float-right btn-square px-5"
+                onClick={() => this.validate(this.props.next)}>
                 Next
               </Button>
             )}
@@ -437,6 +442,8 @@ Contact.propTypes = {
   setEnrollmentState: PropTypes.func,
   previous: PropTypes.func,
   next: PropTypes.func,
+  showPreviousButton: PropTypes.bool,
+  edit_mode: PropTypes.bool,
 };
 
 export default Contact;

@@ -232,13 +232,18 @@ class AdditionalPlannedTravel extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && (
-              <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
+            {this.props.previous && this.props.showPreviousButton && (
+              <Button id="enrollment-previous-button" variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
               </Button>
             )}
             {this.props.next && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={() => this.validate(this.props.next)}>
+              <Button
+                id="enrollment-next-button"
+                variant="outline-primary"
+                size="lg"
+                className="float-right btn-square px-5"
+                onClick={() => this.validate(this.props.next)}>
                 Next
               </Button>
             )}
@@ -272,6 +277,7 @@ AdditionalPlannedTravel.propTypes = {
   setEnrollmentState: PropTypes.func,
   previous: PropTypes.func,
   next: PropTypes.func,
+  showPreviousButton: PropTypes.bool,
 };
 
 export default AdditionalPlannedTravel;

@@ -600,7 +600,12 @@ class Identification extends React.Component {
               </Form.Row>
             </Form>
             {this.props.next && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={() => this.validate(this.props.next)}>
+              <Button
+                id="enrollment-next-button"
+                variant="outline-primary"
+                size="lg"
+                className="float-right btn-square px-5"
+                onClick={() => this.validate(this.props.next)}>
                 Next
               </Button>
             )}

@@ -8,7 +8,7 @@ import InfoTooltip from '../../../components/util/InfoTooltip';
 import { mockUser1 } from '../../mocks/mockUsers';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 import { mockMonitoringReasons } from '../../mocks/mockMonitoringReasons';
-import { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../mocks/mockPatients';
+import { blankIsolationMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../mocks/mockPatients';
 
 const mockToken = 'testMockTokenString12345';
 const caseStatusValues = ['', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'];
@@ -90,7 +90,7 @@ describe('CaseStatus', () => {
   });
 
   it('Correctly renders modal body and is moved to the exposure workflow when changing Case Status to Blank in the isolation workflow', () => {
-    const wrapper = getWrapper(blankMockPatient);
+    const wrapper = getWrapper(blankIsolationMockPatient);
     wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: '' }, persist: jest.fn() });
     const modalBody = wrapper.find(Modal.Body);
     expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
@@ -102,7 +102,7 @@ describe('CaseStatus', () => {
   });
 
   it('Correctly renders modal body and is moved to the exposure workflow when changing Case Status to Suspect, Unknown or Not A Case in the isolation workflow', () => {
-    const wrapper = getWrapper(blankMockPatient);
+    const wrapper = getWrapper(blankIsolationMockPatient);
     wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Suspect' }, persist: jest.fn() });
     const modalBody = wrapper.find(Modal.Body);
     expect(wrapper.state('showCaseStatusModal')).toBeTruthy();

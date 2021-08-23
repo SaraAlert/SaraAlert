@@ -75,11 +75,7 @@ class Review extends React.Component {
               headingLevel={2}
             />
             <div className="pb-4"></div>
-            {this.props.previous && (
-              <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
-                Previous
-              </Button>
-            )}
+
             {this.props.submit && (
               <Button
                 variant="secondary"
