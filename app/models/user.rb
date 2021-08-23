@@ -15,20 +15,20 @@ class User < ApplicationRecord
   # Validate password complexity
   validate :password_complexity
   def password_complexity
-    return unless password.present?
+    return if password.blank?
 
     # Passwords must have characters from at least two groups, identified by these regexes (last one is punctuation)
-    matches = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^\w\s]/].select { |rx| rx.match(password) }.size
+    matches = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^\w\s]/].count { |rx| rx.match?(password) }
     errors.add :password, 'must include characters from at least three groups (lower case, upper case, numbers, special characters)' unless matches >= 3
   end
 
-  has_many :created_patients, class_name: 'Patient', foreign_key: 'creator_id'
+  has_many :created_patients, class_name: 'Patient', foreign_key: 'creator_id', dependent: nil, inverse_of: 'creator'
 
-  has_many :downloads
-  has_many :export_receipts
-  has_many :user_filters
-  has_many :user_export_presets
-  has_many :contact_attempts
+  has_many :downloads, dependent: :destroy
+  has_many :export_receipts, dependent: :destroy
+  has_many :user_filters, dependent: :destroy
+  has_many :user_export_presets, dependent: :destroy
+  has_many :contact_attempts, dependent: nil
 
   belongs_to :jurisdiction
 
@@ -61,9 +61,9 @@ class User < ApplicationRecord
   # Get a patient (that this user is allowed to get)
   def get_patient(id)
     if role?(Roles::ENROLLER)
-      enrolled_patients.find_by_id(id)
+      enrolled_patients.find_by(id: id)
     elsif role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::CONTACT_TRACER)
-      viewable_patients.find_by_id(id)
+      viewable_patients.find_by(id: id)
     elsif role?(Roles::ADMIN)
       nil
     end
