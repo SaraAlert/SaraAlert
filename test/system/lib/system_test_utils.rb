@@ -32,7 +32,7 @@ class SystemTestUtils < ApplicationSystemTestCase
 
   def return_to_dashboard(workflow, is_epi: true)
     if !is_epi
-      click_on 'Return To Dashboard'
+      click_on 'Return to Dashboard'
     elsif !workflow.nil?
       click_on "Return to #{workflow.capitalize} Dashboard"
     else
