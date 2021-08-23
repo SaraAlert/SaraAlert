@@ -18,8 +18,10 @@ module Orchestration::Orchestrator # rubocop:todo Metrics/ModuleLength
     custom_options = workflow.nil? ? PLAYBOOKS.dig(playbook, :general, :custom_options,
                                                    option) : PLAYBOOKS.dig(playbook, :workflows, workflow, :custom_options, option)
 
-    return if base_configuration.nil?
+    return if base_configuration.nil? # UNNECESSARY?
     return base_configuration if custom_options.nil?
+
+    # return EMPTY if (base_config or custom_options) is nil?
 
     nested_configuration(base_configuration, custom_options)
   end
@@ -39,7 +41,7 @@ module Orchestration::Orchestrator # rubocop:todo Metrics/ModuleLength
     selected_configuration[:label] = base_configuration[:label] if base_configuration[:label].present?
 
     # If playbook has no type, then we'll assume everything since we don't know what to do
-    type = playbook_configuration[:type].nil? ? 'base' : playbook_configuration[:type]
+    type = playbook_configuration[:type] || 'base'
 
     case type
     when 'base'
@@ -50,18 +52,10 @@ module Orchestration::Orchestrator # rubocop:todo Metrics/ModuleLength
       selected_configuration = base_configuration
     when 'subset'
       # If a subset, then look into the configuration and only return the wanted fields
-      selected_configuration[:options] = if base_configuration[:options].is_a?(Array)
-                                           base_configuration[:options].select { |key| playbook_configuration[:config][:set].include?(key) }
-                                         else
-                                           base_configuration[:options].select { |key, _value| playbook_configuration[:config][:set].include?(key) }
-                                         end
+      selected_configuration[:options] = base_configuration[:options].select { |key| playbook_configuration[:config][:set].include?(key) }
     when 'remove'
       # If remove, then look into the configuration and reject the listed fields
-      selected_configuration[:options] = if base_configuration[:options].is_a?(Array)
-                                           base_configuration[:options].reject { |key| playbook_configuration[:config][:set].include?(key) }
-                                         else
-                                           base_configuration[:options].reject { |key, _value| playbook_configuration[:config][:set].include?(key) }
-                                         end
+      selected_configuration[:options] = base_configuration[:options].reject { |key| playbook_configuration[:config][:set].include?(key) }
     when 'custom'
       # TODO: This is here as a catch all, but this isn't really being implemented
       # For now the assumption is if you choose custom you need to write the whole configuration

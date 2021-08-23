@@ -64,5 +64,4 @@ class DashboardController < ApplicationController
     # Get all assigned users of current user's jurisdiction
     @all_assigned_users = current_user.patients.where.not(assigned_user: nil).pluck(:assigned_user).uniq.sort
   end
-
 end

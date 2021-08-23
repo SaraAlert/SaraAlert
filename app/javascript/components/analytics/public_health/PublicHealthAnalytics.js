@@ -147,16 +147,12 @@ class PublicHealthAnalytics extends React.Component {
           </Row>
           <Row className="mx-2">
             <Col className="mx-0 my-3 p-0">
-              <Demographics stats={this.props.stats} available_workflows={this.props.available_workflows} showGraphs={this.state.showEpidemiologicalGraphs} />
+              <Demographics stats={this.props.stats} available_workflows={this.props.available_workflows} showGraphs={this.state.showGraphs} />
             </Col>
           </Row>
           <Row className="mx-2">
             <Col className="mx-0 my-3 p-0">
-              <ExposureSummary
-                stats={this.props.stats}
-                available_workflows={this.props.available_workflows}
-                showGraphs={this.state.showEpidemiologicalGraphs}
-              />
+              <ExposureSummary stats={this.props.stats} available_workflows={this.props.available_workflows} showGraphs={this.state.showGraphs} />
             </Col>
           </Row>
           <Row className="mx-2">

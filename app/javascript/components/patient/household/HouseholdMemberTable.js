@@ -34,7 +34,7 @@ class HouseholdMemberTable extends React.Component {
       disabledIds: this.getDisabledIds(props.household_members),
     };
     if (props.continuous_exposure_enabled) {
-      var obj = { field: 'continuous_exposure', label: 'Continuous Exposure?', isSortable: true, tooltip: null, options: { true: 'Yes', false: 'No' } };
+      const obj = { field: 'continuous_exposure', label: 'Continuous Exposure?', isSortable: true, tooltip: null, options: { true: 'Yes', false: 'No' } };
       this.state.table.colData.push(obj);
     }
   }

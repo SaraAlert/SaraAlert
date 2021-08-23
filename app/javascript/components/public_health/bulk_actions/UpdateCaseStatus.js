@@ -27,9 +27,9 @@ class UpdateCaseStatus extends React.Component {
       monitoring: null,
       monitoring_reason: '',
       loading: false,
-      isolationWorkflowAvailable: props.available_workflows.some(w => w.name.toLowerCase() == 'isolation'),
     };
     this.origState = Object.assign({}, this.state);
+    this.isolationWorkflowAvailable = props.available_workflows.some(w => w.name.toLowerCase() == 'isolation');
   }
 
   componentDidMount() {
@@ -249,7 +249,7 @@ class UpdateCaseStatus extends React.Component {
                   aria-label="Case Status Follow Up Select">
                   <option></option>
                   <option>End Monitoring</option>
-                  {this.state.isolationWorkflowAvailable && <option>Continue Monitoring in Isolation Workflow</option>}
+                  {this.isolationWorkflowAvailable && <option>Continue Monitoring in Isolation Workflow</option>}
                 </Form.Control>
               </React.Fragment>
             )}
