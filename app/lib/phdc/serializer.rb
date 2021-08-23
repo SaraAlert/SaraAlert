@@ -196,13 +196,11 @@ module PHDC
       auth_id = Ox::Element.new(:id)
       auth_id['root'] = '2.16.840.1.113883.19.5'
       assigned_author << auth_id
-      assigned_person = Ox::Element.new(:assignedPerson)
-      assigned_author << assigned_person
-      auth_name = Ox::Element.new(:name)
-      assigned_person << auth_name
-      jur_name = Ox::Element.new(:family)
-      jur_name << "Sara Alert NBS Export: #{jurisdiction_path_string}"
-      auth_name << jur_name
+      assigned_authoring_device = Ox::Element.new(:assignedAuthoringDevice)
+      assigned_author << assigned_authoring_device
+      auth_name = Ox::Element.new(:softwareName)
+      auth_name << "Sara Alert NBS Export: #{jurisdiction_path_string}"
+      assigned_authoring_device << auth_name
 
       # Custodian
       custodian = Ox::Element.new(:custodian)
@@ -264,9 +262,11 @@ module PHDC
       clin_section_title << 'CLINICAL INFORMATION'
       clin_section << clin_section_title
       unless patient.user_defined_id_statelocal.blank?
-        clin_section << entry_helper_text('INV168', 'Investigation Local ID', 'ST', patient.user_defined_id_statelocal, nil)
         clin_section << entry_helper_text('INV173', 'Investigation State Local ID', 'ST', patient.user_defined_id_statelocal, nil)
       end
+      clin_section << clinical_entry_helper_code('INV169', '2.16.840.1.114222.4.5.232', 'Condition', 'PHIN Questions',
+                                                 '11065', '2.16.840.1.114222.4.5.277', 'Coronavirus Disease 2019 (COVID-19)',
+                                                 'Notifiable Event (Disease/Condition) Code List')
 
       # Generic Repeating Questions Information Section
 
@@ -383,6 +383,18 @@ module PHDC
       value_el['xsi:type'] = type
       value_el << text
       value_el
+    end
+
+    # Clinical Information entry helper for coded values
+    def clinical_entry_helper_code(code, code_system, display, code_system_name, value_code, value_code_system, value_display, value_code_system_name)
+      s_entry = entry_helper
+      s_obs = observation_helper('OBS', 'EVN')
+      s_entry << s_obs
+      s_obs << code_helper(code, code_system, display, code_system_name)
+      val = value_helper_code('CE', value_code, value_code_system, value_display)
+      val['codeSystemName'] = value_code_system_name
+      s_obs << val
+      s_entry
     end
 
     # Social History entry helper for coded values
