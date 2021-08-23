@@ -59,7 +59,7 @@ class Export extends React.Component {
       .then(() => {
         toast.success('Export has been initiated!');
         this.setState({
-          exportOptions: this.state.exportOptions(eo => {
+          exportOptions: this.state.exportOptions.map(eo => {
             eo.isOpen = false;
             return eo;
           }),
@@ -68,7 +68,7 @@ class Export extends React.Component {
       .catch(err => {
         reportError(err?.response?.data?.message ? err.response.data.message : err, false);
         this.setState({
-          exportOptions: this.state.exportOptions(eo => {
+          exportOptions: this.state.exportOptions.map(eo => {
             eo.isOpen = false;
             return eo;
           }),
