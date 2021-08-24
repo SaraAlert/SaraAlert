@@ -47,8 +47,8 @@ class Laboratory < ApplicationRecord
 
   validates_with LaboratoryDateValidator, on: %i[api import]
 
-  after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
+  after_save :update_patient_linelist_after_save
 
   # Returns a representative FHIR::Observation for an instance of a Sara Alert Laboratory.
   # https://www.hl7.org/fhir/observation.html
