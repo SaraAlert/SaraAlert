@@ -36,7 +36,7 @@ const mockFilterPreferredContactTime = {
   filterOption: advancedFilterOptions.find(filter => filter.name === 'preferred-contact-time'),
   numberOption: null,
   relativeOption: null,
-  value: 'Morning',
+  value: 'Early Morning',
 };
 
 /* MULTI-SELECT TYPE MOCK FILTERS */

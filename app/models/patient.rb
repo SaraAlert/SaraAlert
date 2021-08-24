@@ -302,6 +302,7 @@ class Patient < ApplicationRecord
   }
 
   scope :within_preferred_contact_time, lambda {
+    now = Time.now.getlocal('-00:00')
     where(
       '(patients.preferred_contact_time = "Morning"'\
       ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= ?'\
@@ -314,15 +315,20 @@ class Patient < ApplicationRecord
       ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= ?) '\
       'OR (patients.preferred_contact_time IS NULL'\
       ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= ?'\
-      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= ?)',
-      Time.now.getlocal('-00:00'), PatientDetailsHelper::MORNING_CONTACT_WINDOW.first,
-      Time.now.getlocal('-00:00'), PatientDetailsHelper::MORNING_CONTACT_WINDOW.last,
-      Time.now.getlocal('-00:00'), PatientDetailsHelper::AFTERNOON_CONTACT_WINDOW.first,
-      Time.now.getlocal('-00:00'), PatientDetailsHelper::AFTERNOON_CONTACT_WINDOW.last,
-      Time.now.getlocal('-00:00'), PatientDetailsHelper::EVENING_CONTACT_WINDOW.first,
-      Time.now.getlocal('-00:00'), PatientDetailsHelper::EVENING_CONTACT_WINDOW.last,
-      Time.now.getlocal('-00:00'), PatientDetailsHelper::UNSPECIFIED_CONTACT_WINDOW.first,
-      Time.now.getlocal('-00:00'), PatientDetailsHelper::UNSPECIFIED_CONTACT_WINDOW.last
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= ?)'\
+      'OR (patients.preferred_contact_time IN (?)'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) >= CONVERT(patients.preferred_contact_time, UNSIGNED INTEGER)'\
+      ' && HOUR(CONVERT_TZ(?, "UTC", patients.time_zone)) <= CONVERT(patients.preferred_contact_time + 4, UNSIGNED INTEGER))',
+      now, PatientDetailsHelper::MORNING_CONTACT_WINDOW.first,
+      now, PatientDetailsHelper::MORNING_CONTACT_WINDOW.last,
+      now, PatientDetailsHelper::AFTERNOON_CONTACT_WINDOW.first,
+      now, PatientDetailsHelper::AFTERNOON_CONTACT_WINDOW.last,
+      now, PatientDetailsHelper::EVENING_CONTACT_WINDOW.first,
+      now, PatientDetailsHelper::EVENING_CONTACT_WINDOW.last,
+      now, PatientDetailsHelper::UNSPECIFIED_CONTACT_WINDOW.first,
+      now, PatientDetailsHelper::UNSPECIFIED_CONTACT_WINDOW.last,
+      PatientDetailsHelper::CUSTOM_CONTACT_OPTIONS,
+      now, now
     )
   }
 
@@ -1257,13 +1263,7 @@ class Patient < ApplicationRecord
   # `time_zone` is saved to the DB so that time zone calculations may be done
   # on patient records without needing to load them into rails.
   def set_time_zone
-    self.time_zone = if monitored_address_state.present?
-                       time_zone_for_state(monitored_address_state)
-                     elsif address_state.present?
-                       time_zone_for_state(address_state)
-                     else
-                       time_zone_for_state('massachusetts')
-                     end
+    self.time_zone = time_zone_for_state(monitored_address_state || address_state || 'massachusetts')
   end
 
   # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.

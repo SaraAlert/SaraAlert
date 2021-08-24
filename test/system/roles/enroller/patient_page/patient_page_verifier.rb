@@ -6,7 +6,7 @@ require_relative '../enrollment/steps'
 require_relative '../../../lib/system_test_utils'
 
 class EnrollerPatientPageVerifier < ApplicationSystemTestCase
-  include ImportExport
+  include ExportHelper
   @@enrollment_form_steps = EnrollmentFormSteps.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 

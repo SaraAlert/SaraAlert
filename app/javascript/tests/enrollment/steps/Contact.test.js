@@ -13,14 +13,14 @@ const requiredStrings = ['PRIMARY TELEPHONE NUMBER', 'SECONDARY TELEPHONE NUMBER
 
 describe('Contact', () => {
   it('Properly renders all main components', () => {
-    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
+    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} patient={mockPatient1} />);
     requiredStrings.forEach(requiredString => {
       expect(wrapper.text().includes(requiredString)).toBe(true);
     });
   });
 
   it('Properly allows changing of the preferred Contact Method', () => {
-    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
+    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} patient={mockPatient2} />);
     let newPatient = mockPatient2;
     const preferredContactMethods = ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out'];
     preferredContactMethods.forEach(method => {
@@ -32,7 +32,7 @@ describe('Contact', () => {
   });
 
   it('Properly allows changing of the primary_telephone', () => {
-    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
+    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} patient={mockPatient1} />);
     expect(wrapper.find('#primary_telephone').at(2).instance().value).toEqual('');
     wrapper.setState({ current: { ...wrapper.state.current, patient: mockPatient1 } }, () => {
       expect(wrapper.find('#primary_telephone').at(2).instance().value).toEqual(mockPatient1.primary_telephone || '');
@@ -43,7 +43,7 @@ describe('Contact', () => {
   });
 
   it('Properly allows changing of the primary_telephone_type', () => {
-    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
+    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} patient={mockPatient1} />);
     expect(wrapper.find('#primary_telephone_type').instance().value).toEqual('');
     wrapper.setState({ current: { ...wrapper.state.current, patient: mockPatient1 } }, () => {
       expect(wrapper.find('#primary_telephone_type').instance().value).toEqual(mockPatient1.primary_telephone_type || '');
@@ -54,7 +54,7 @@ describe('Contact', () => {
   });
 
   it('Properly allows changing of the secondary_telephone', () => {
-    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
+    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} patient={mockPatient1} />);
     expect(wrapper.find('#secondary_telephone').at(2).instance().value).toEqual('');
     wrapper.setState({ current: { ...wrapper.state.current, patient: mockPatient1 } }, () => {
       expect(wrapper.find('#secondary_telephone').at(2).instance().value).toEqual(mockPatient1.secondary_telephone || '');
@@ -65,7 +65,7 @@ describe('Contact', () => {
   });
 
   it('Properly allows changing of the secondary_telephone_type', () => {
-    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
+    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} patient={mockPatient1} />);
     expect(wrapper.find('#secondary_telephone_type').instance().value).toEqual('');
     wrapper.setState({ current: { ...wrapper.state.current, patient: mockPatient1 } }, () => {
       expect(wrapper.find('#secondary_telephone_type').instance().value).toEqual(mockPatient1.secondary_telephone_type || '');
@@ -76,7 +76,7 @@ describe('Contact', () => {
   });
 
   it('Properly allows changing of the email', () => {
-    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
+    const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} patient={mockPatient1} />);
     expect(wrapper.find('#email').instance().value).toEqual('');
     wrapper.setState({ current: { ...wrapper.state.current, patient: mockPatient1 } }, () => {
       expect(wrapper.find('#email').instance().value).toEqual(mockPatient1.email);

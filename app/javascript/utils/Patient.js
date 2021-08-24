@@ -1,8 +1,10 @@
 import React from 'react';
-import IconMinor from '../components/patient/icons/IconMinor';
-import { formatDate } from '../utils/DateTime';
 import moment from 'moment-timezone';
 import libphonenumber from 'google-libphonenumber';
+
+import IconMinor from '../components/patient/icons/IconMinor';
+import { formatDate } from '../utils/DateTime';
+
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 

@@ -3,7 +3,7 @@ import PropTypes, { bool } from 'prop-types';
 import { Button, Modal, InputGroup, Form } from 'react-bootstrap';
 import Select from 'react-select';
 import _ from 'lodash';
-import { cursorPointerStyle } from '../../packs/stylesheets/ReactSelectStyling';
+import { cursorPointerStyle, bootstrapSelectTheme } from '../../packs/stylesheets/ReactSelectStyling';
 
 const MAX_NOTES_LENGTH = 5000;
 
@@ -86,10 +86,7 @@ class UserModal extends React.Component {
                 onChange={this.handleJurisdictionChange}
                 placeholder=""
                 styles={cursorPointerStyle}
-                theme={theme => ({
-                  ...theme,
-                  borderRadius: 0,
-                })}
+                theme={bootstrapSelectTheme}
               />
             </Form.Group>
             <Form.Group>
@@ -108,10 +105,7 @@ class UserModal extends React.Component {
                 onChange={this.handleRoleChange}
                 placeholder=""
                 styles={cursorPointerStyle}
-                theme={theme => ({
-                  ...theme,
-                  borderRadius: 0,
-                })}
+                theme={bootstrapSelectTheme}
               />
             </Form.Group>
             {this.props.type === 'edit' && (

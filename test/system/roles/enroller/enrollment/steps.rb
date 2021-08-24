@@ -60,7 +60,7 @@ class EnrollmentFormSteps < ApplicationSystemTestCase
       ],
       contact_information: [
         { id: 'preferred_contact_method', type: :select, required: true },
-        { id: 'preferred_contact_time', type: :select, info_page: true },
+        { id: 'preferred_contact_time', type: :react_select, info_page: true },
         { id: 'primary_telephone', type: :phone, info_page: true },
         { id: 'primary_telephone_type', type: :select, info_page: true },
         { id: 'secondary_telephone', type: :phone },
