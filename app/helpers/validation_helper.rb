@@ -147,7 +147,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     '9': '09:00',
     '10': '10:00',
     '11': '11:00',
-    '12': '12:00',
+    '12': 'Noon',
     '13': '13:00',
     '14': '14:00',
     '15': '15:00',
@@ -161,7 +161,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     '23': '23:00'
   }.freeze
 
-  NORMALIZED_INVERTED_TIME_OPTIONS = TIME_OPTIONS.invert.transform_keys(&:downcase).freeze
+  NORMALIZED_INVERTED_TIME_OPTIONS = TIME_OPTIONS.invert.merge({ '0': '00:00', '12': '12:00' }.invert).transform_keys(&:downcase).freeze
 
   VALID_PATIENT_ENUMS = {
     # identification
