@@ -2,7 +2,7 @@
 
 # ExportController: for exporting subjects
 class ExportController < ApplicationController
-  include ImportExport
+  include ExportHelper
 
   before_action :authenticate_user!
   before_action :authenticate_user_role

@@ -3,7 +3,7 @@
 # ExportJob: prepare an export for a user
 class ExportJob < ApplicationJob
   queue_as :exports
-  include ImportExport
+  include ExportHelper
 
   # Inner batch size limits number of Patient records details help in memory at once before writing to file.
   INNER_BATCH_SIZE = ENV.fetch('EXPORT_INNER_BATCH_SIZE', 500).to_i unless const_defined?(:INNER_BATCH_SIZE)

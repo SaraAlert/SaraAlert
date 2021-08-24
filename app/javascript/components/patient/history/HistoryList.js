@@ -5,7 +5,7 @@ import _ from 'lodash';
 import axios from 'axios';
 import Pagination from 'jw-react-pagination';
 import Select from 'react-select';
-import { cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
+import { bootstrapSelectTheme, cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
 
 import History from './History';
 import InfoTooltip from '../../util/InfoTooltip';
@@ -137,10 +137,7 @@ class HistoryList extends React.Component {
                 placeholder="Filter by Creator"
                 aria-label="History Creator Filter"
                 styles={cursorPointerStyle}
-                theme={theme => ({
-                  ...theme,
-                  borderRadius: 0,
-                })}
+                theme={bootstrapSelectTheme}
                 onChange={this.handleCreatorFilterChange}
               />
               <Select
@@ -153,10 +150,7 @@ class HistoryList extends React.Component {
                 placeholder="Filter by Type"
                 aria-label="History Type Filter"
                 styles={cursorPointerStyle}
-                theme={theme => ({
-                  ...theme,
-                  borderRadius: 0,
-                })}
+                theme={bootstrapSelectTheme}
                 onChange={this.handleTypeFilterChange}
               />
             </Row>

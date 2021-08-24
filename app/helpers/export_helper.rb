@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Helper methods for the import and export controllers
-module ImportExport # rubocop:todo Metrics/ModuleLength
+module ExportHelper # rubocop:todo Metrics/ModuleLength
   include ImportExportConstants
   include ValidationHelper
   include PatientQueryHelper
@@ -253,8 +253,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         patient_details = {}
 
         # populate inherent fields by type
-        (fields & PATIENT_FIELD_TYPES[:strings]).each { |field| patient_details[field] = remove_formula_start(patient[field]) }
+        (fields & PATIENT_FIELD_TYPES[:strings]).each { |field| patient_details[field] = patient[field] }
+        (fields & PATIENT_FIELD_TYPES[:notes]).each { |field| patient_details[field] = remove_formula_start(patient[field]) }
         (fields & PATIENT_FIELD_TYPES[:dates]).each { |field| patient_details[field] = patient[field]&.strftime('%F') }
+        (fields & PATIENT_FIELD_TYPES[:times]).each { |field| patient_details[field] = TIME_OPTIONS[patient[field]&.to_sym] }
         (fields & PATIENT_FIELD_TYPES[:phones]).each { |field| patient_details[field] = format_phone_number(patient[field]) }
         (fields & (PATIENT_FIELD_TYPES[:numbers] + PATIENT_FIELD_TYPES[:timestamps])).each { |field| patient_details[field] = patient[field] }
         (fields & (PATIENT_FIELD_TYPES[:booleans] + PATIENT_FIELD_TYPES[:races])).each { |field| patient_details[field] = patient[field] || false }

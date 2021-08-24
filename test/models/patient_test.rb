@@ -3039,6 +3039,32 @@ class PatientTest < ActiveSupport::TestCase
       Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 20)) do
         assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
       end
+
+      # custom time windows
+      [3, 11, 23].each do |hour|
+        patient.update(preferred_contact_time: hour)
+        patient.reload
+        # before window
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: (hour - 1) % 24, min: 59)) do
+          assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+        end
+        # front edge of window
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+        end
+        # middle of window
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour, min: 30)) do
+          assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+        end
+        # back edge of window
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour, min: 59)) do
+          assert_not_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+        end
+        # after window
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: (hour + 5) % 24)) do
+          assert_nil Patient.within_preferred_contact_time.find_by(id: patient.id)
+        end
+      end
     end
     Timecop.return
   end

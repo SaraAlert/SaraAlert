@@ -358,7 +358,7 @@ describe('AdvancedFilter', () => {
       expect(wrapper.find(Form.Control).find('option').at(index).text()).toEqual(option);
       expect(wrapper.find(Form.Control).find('option').at(index).prop('value')).toEqual(option);
     });
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
     expect(wrapper.find('.advanced-filter-additional-filter-options').exists()).toBeFalsy();
   });
 

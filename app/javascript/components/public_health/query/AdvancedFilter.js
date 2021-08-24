@@ -8,7 +8,7 @@ import axios from 'axios';
 import moment from 'moment-timezone';
 import ReactTooltip from 'react-tooltip';
 import Select, { components } from 'react-select';
-import { cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
+import { bootstrapSelectTheme, cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
 
 import DateInput from '../../util/DateInput';
 import confirmDialog from '../../util/ConfirmDialog';
@@ -726,10 +726,7 @@ class AdvancedFilter extends React.Component {
         aria-label="Advanced Filter Options Dropdown"
         className="advanced-filter-options-dropdown"
         styles={cursorPointerStyle}
-        theme={theme => ({
-          ...theme,
-          borderRadius: 0,
-        })}
+        theme={bootstrapSelectTheme}
       />
     );
   };

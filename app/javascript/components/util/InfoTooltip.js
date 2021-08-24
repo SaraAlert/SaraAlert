@@ -160,6 +160,13 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  customPreferredContactTime: (
+    <div>
+      This is the <b>earliest</b> time that any reminder would be sent to the monitoree for that day. It <b>does not guarantee</b> that they will be sent at
+      exactly this time.
+    </div>
+  ),
+
   continuousExposure: (
     <div>
       Allows a user to indicate that a monitoree has an ongoing exposure to one or more cases. If checked, the monitoring period will be extended indefinitely

@@ -351,6 +351,8 @@ namespace :demo do
   end
 
   def demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes, enroller_users, public_health_users)
+    include PatientHelper
+
     territory_names = ['American Samoa', 'District of Columbia', 'Federated States of Micronesia', 'Guam', 'Marshall Islands', 'Northern Mariana Islands',
                        'Palau', 'Puerto Rico', 'Virgin Islands'].freeze
 
@@ -389,7 +391,9 @@ namespace :demo do
 
       # Contact Information
       patient[:preferred_contact_method] = ValidationHelper::VALID_PATIENT_ENUMS[:preferred_contact_method].sample
-      patient[:preferred_contact_time] = ValidationHelper::VALID_PATIENT_ENUMS[:preferred_contact_time].sample if patient[:preferred_contact_method] != 'E-mailed Web Link' && rand < 0.6
+      if ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include?(patient[:preferred_contact_method]) && rand < 0.8
+        patient[:preferred_contact_time] = rand < 0.6 ? ['Morning', 'Afternoon', 'Evening', ''].sample : rand(0..23)
+      end
       patient[:primary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:preferred_contact_method] != 'E-mailed Web Link' || rand < 0.5
       patient[:primary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:primary_telephone_type].sample if patient[:primary_telephone]
       patient[:secondary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:primary_telephone] && rand < 0.5
@@ -505,6 +509,7 @@ namespace :demo do
 
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
+      patient[:time_zone] = time_zone_for_state(patient[:monitored_address_state] || patient[:address_state] || 'massachusetts')
       patient[:creator_id] = rand_enroller[0]
       patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
       patient_ts = create_fake_timestamp(beginning_of_day)

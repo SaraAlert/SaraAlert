@@ -419,7 +419,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'require-interpretation'
         patients = patients.where(interpretation_required: filter[:value].present? ? true : [nil, false])
       when 'preferred-contact-time'
-        patients = patients.where(preferred_contact_time: filter[:value].blank? ? [nil, ''] : filter[:value])
+        patients = advanced_filter_preferred_contact_time(patients, filter)
       when 'manual-contact-attempts'
         # less/greater-than operators are flipped for where_assoc_count
         operator = :==
@@ -529,6 +529,16 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     # Based on if the user selected true/false, return appropriate patients
     filter[:value].present? ? query : patients.where.not(id: query.pluck(:id))
+  end
+
+  def advanced_filter_preferred_contact_time(patients, filter)
+    value = %w[0 1 2 3 4 5 6 7] if filter[:value] == 'Early Morning'
+    value = %w[8 9 10 11 Morning] if filter[:value] == 'Morning'
+    value = %w[12 13 14 15 Afternoon] if filter[:value] == 'Afternoon'
+    value = %w[16 17 18 19 Evening] if filter[:value] == 'Evening'
+    value = %w[20 21 22 23] if filter[:value] == 'Late Night'
+
+    patients.where(preferred_contact_time: filter[:value].blank? ? [nil, ''] : value)
   end
 
   def advanced_filter_lab_result(patients, filter)
