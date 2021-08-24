@@ -27,9 +27,13 @@ class ContactAttemptsController < ApplicationController
                              successful: successful,
                              note: note)
 
+      comment = "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt"
+      comment += " logged on a household member’s record (Sara Alert ID: #{patient_id}) and also applied to this monitoree" unless id == patient_id
+      comment += ". Note: #{note}"
+
       History.create!(patient_id: id,
                       created_by: current_user.email,
-                      comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt. Note: #{note}",
+                      comment: comment,
                       history_type: 'Manual Contact Attempt')
     end
   end
