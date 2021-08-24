@@ -21,7 +21,11 @@
                       authenticity_token: form_authenticity_token,
                       jurisdiction_paths: @possible_jurisdiction_paths,
                       blocked_sms: @patient.blocked_sms,
-                      workflow: @dashboard
+                      workflow: @dashboard,
+                      reporting_url: new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
+                                                                                           @patient.jurisdiction.unique_identifier,
+                                                                                           @patient.select_language,
+                                                                                           @patient.initials_age)
                     }) %>
 
 <% if current_user.can_modify_subject_status? %>

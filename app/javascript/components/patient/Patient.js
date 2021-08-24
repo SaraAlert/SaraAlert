@@ -1,9 +1,10 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Col, Collapse, Row } from 'react-bootstrap';
+import { Button, Col, Collapse, Row, Modal } from 'react-bootstrap';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import QRCode from 'react-qr-code';
 
 import BadgeHoH from './icons/BadgeHoH';
 import InfoTooltip from '../util/InfoTooltip';
@@ -27,6 +28,7 @@ class Patient extends React.Component {
       expandPlannedTravelNotes: false,
       primaryLanguageDisplayName: null,
       showSetFlagModal: false,
+      showQRModal: false,
     };
   }
 
@@ -153,6 +155,13 @@ class Patient extends React.Component {
                 {formatName(this.props.details)}
               </span>
               {this.props.details.head_of_household && <BadgeHoH patientId={String(this.props.details.id)} location={'right'} />}
+              <FontAwesomeIcon
+                fixedWidth
+                icon={['fa', 'qrcode']}
+                onClick={() => {
+                  this.setState({ showQRModal: true });
+                }}
+              />
             </Heading>
             {this.props.can_modify_subject_status && !this.props.edit_mode && !this.props.details.follow_up_reason && (
               <Button id="set-follow-up-flag-link" size="sm" aria-label="Set Flag for Follow-up" onClick={() => this.setState({ showSetFlagModal: true })}>
@@ -688,6 +697,19 @@ class Patient extends React.Component {
             clear_flag={false}
           />
         )}
+        <Modal
+          size="lg"
+          show={this.state.showQRModal}
+          onHide={() => {
+            this.setState({ showQRModal: false });
+          }}>
+          <Modal.Header closeButton>
+            <Modal.Title>Monitoree Daily Report QR Code</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="qr-modal-body">
+            <QRCode size={512} value={this.props.reporting_url} />
+          </Modal.Body>
+        </Modal>
       </React.Fragment>
     );
   }
@@ -706,6 +728,7 @@ Patient.propTypes = {
   authenticity_token: PropTypes.string,
   workflow: PropTypes.string,
   headingLevel: PropTypes.number,
+  reporting_url: PropTypes.string,
 };
 
 export default Patient;

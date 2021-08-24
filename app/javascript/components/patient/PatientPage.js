@@ -26,6 +26,7 @@ class PatientPage extends React.Component {
             authenticity_token={this.props.authenticity_token}
             workflow={this.props.workflow}
             headingLevel={2}
+            reporting_url={this.props.reporting_url}
           />
           <div className="household-info">
             {!this.props.patient.head_of_household && this.props?.other_household_members?.length > 0 && (
@@ -74,6 +75,7 @@ PatientPage.propTypes = {
   jurisdiction_paths: PropTypes.object,
   blocked_sms: PropTypes.bool,
   workflow: PropTypes.string,
+  reporting_url: PropTypes.string,
 };
 
 export default PatientPage;
