@@ -1,8 +1,10 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form, Button, Modal } from 'react-bootstrap';
+import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import reportError from '../../../util/ReportError';
+import ApplyToHousehold from '../../household/actions/ApplyToHousehold';
 
 class ContactAttempt extends React.Component {
   constructor(props) {
@@ -12,6 +14,9 @@ class ContactAttempt extends React.Component {
       note: '',
       attempt: 'Successful',
       loading: false,
+      noMembersSelected: false,
+      apply_to_household: false,
+      apply_to_household_ids: [],
     };
   }
 
@@ -19,11 +24,24 @@ class ContactAttempt extends React.Component {
     let current = this.state.showContactAttemptModal;
     this.setState({
       showContactAttemptModal: !current,
+      apply_to_household: false,
+      apply_to_household_ids: [],
+      noMembersSelected: false,
     });
   };
 
   handleChange = event => {
     this.setState({ [event.target.id]: event.target.value });
+  };
+
+  handleApplyHouseholdChange = apply_to_household => {
+    const noMembersSelected = apply_to_household && this.state.apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household, apply_to_household_cm_exp_only: false, noMembersSelected });
+  };
+
+  handleApplyHouseholdIdsChange = apply_to_household_ids => {
+    const noMembersSelected = this.state.apply_to_household && apply_to_household_ids.length === 0;
+    this.setState({ apply_to_household_ids, noMembersSelected });
   };
 
   submit = () => {
@@ -35,6 +53,8 @@ class ContactAttempt extends React.Component {
           successful: this.state.attempt === 'Successful',
           note: this.state.note,
           comment: this.state.attempt + ' contact attempt.' + (this.state.comment ? ' Note: ' + this.state.comment : ''),
+          apply_to_household: this.state.apply_to_household,
+          apply_to_household_ids: this.state.apply_to_household_ids,
         })
         .then(() => {
           location.reload();
@@ -59,6 +79,16 @@ class ContactAttempt extends React.Component {
               <option>Unsuccessful</option>
             </Form.Control>
           </Form.Group>
+          {this.props.household_members.length > 0 && (
+            <ApplyToHousehold
+              household_members={this.props.household_members}
+              current_user={this.props.current_user}
+              jurisdiction_paths={this.props.jurisdiction_paths}
+              handleApplyHouseholdChange={this.handleApplyHouseholdChange}
+              handleApplyHouseholdIdsChange={this.handleApplyHouseholdIdsChange}
+              workflow={this.props.workflow}
+            />
+          )}
           <p>Please include any additional details:</p>
           <Form.Group>
             <Form.Control as="textarea" rows="2" id="note" onChange={this.handleChange} aria-label="Additional Details Text Area" />
@@ -68,13 +98,20 @@ class ContactAttempt extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading || this.state.noMembersSelected}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
               </React.Fragment>
             )}
-            Submit
+            <span data-for="contact-attempt-submit" data-tip="">
+              Submit
+            </span>
+            {this.state.noMembersSelected && (
+              <ReactTooltip id="contact-attempt-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
+                <div>Please select at least one household member or change your selection to apply to this monitoree only</div>
+              </ReactTooltip>
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -96,6 +133,10 @@ class ContactAttempt extends React.Component {
 ContactAttempt.propTypes = {
   authenticity_token: PropTypes.string,
   patient: PropTypes.object,
+  household_members: PropTypes.array,
+  current_user: PropTypes.object,
+  jurisdiction_paths: PropTypes.object,
+  workflow: PropTypes.string,
 };
 
 export default ContactAttempt;
