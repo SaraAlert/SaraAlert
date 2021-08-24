@@ -16,7 +16,7 @@ const vaccineModalSelectStyling = {
 };
 
 const preferredContactTimeSelectStyling = {
-  option: base => ({ ...base, cursor: 'pointer', ':nth-child(4)': { borderBottom: '1px solid #ced4da' } }),
+  option: base => ({ ...base, cursor: 'pointer', minHeight: '2.25rem', ':nth-of-type(4)': { borderBottom: '1px solid #ced4da' } }),
   control: base => ({ ...base, fontSize: '1.25rem', fontWeight: 400, fontFamily: 'Arial', color: '#495057', paddingLeft: '0.25rem' }),
 };
 
