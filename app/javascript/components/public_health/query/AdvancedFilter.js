@@ -1164,7 +1164,9 @@ class AdvancedFilter extends React.Component {
                 <Form.Control
                   as="select"
                   value={combinationValue.value}
-                  className="advanced-filter-combination-select-options advanced-filter-select my-0 mx-3 py-0"
+                  className={`advanced-filter-combination-select-options advanced-filter-select ${
+                    combinationValue.name === 'product-name' ? 'advanced-filter-select-vaccination-product-name' : ''
+                  } my-0 mx-3 py-0`}
                   aria-label="Advanced Filter Combination Select Options"
                   onChange={event => {
                     this.changeCombinationValue(statementIndex, combinationIndex, { name: combinationValue.name, value: event.target.value });
