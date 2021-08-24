@@ -4,9 +4,9 @@
 class DashboardController < ApplicationController
   include Orchestration::Orchestrator
 
-  before_action :authenticate_user!
-  before_action :authenticate_user_role
-  before_action :set_jurisdiction_paths, :set_all_assigned_users
+  before_action :authenticate_user!, only: %i[dashboard]
+  before_action :authenticate_user_role, only: %i[dashboard]
+  before_action :set_jurisdiction_paths, :set_all_assigned_users, only: %i[dashboard]
 
   def dashboard
     @path_params = request.path_parameters
