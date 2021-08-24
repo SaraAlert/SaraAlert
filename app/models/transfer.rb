@@ -7,8 +7,8 @@ class Transfer < ApplicationRecord
   belongs_to :who, class_name: 'User'
   belongs_to :patient, touch: true
 
-  after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
+  after_save :update_patient_linelist_after_save
 
   def from_path
     return 'Unknown Jurisdiction' if from_jurisdiction.blank?
@@ -28,9 +28,13 @@ class Transfer < ApplicationRecord
     when 'Last 24 Hours'
       where('transfers.created_at >= ?', DateTime.now.utc - 24.hours)
     when 'Last 7 Days'
-      where('transfers.created_at >= ? AND transfers.created_at < ?', DateTime.now.utc.beginning_of_day - 7.days, DateTime.now.utc.beginning_of_day)
+      where('transfers.created_at >= ? AND transfers.created_at < ?',
+            DateTime.now.utc.beginning_of_day - 7.days,
+            DateTime.now.utc.beginning_of_day)
     when 'Last 14 Days'
-      where('transfers.created_at >= ? AND transfers.created_at < ?', DateTime.now.utc.beginning_of_day - 14.days, DateTime.now.utc.beginning_of_day)
+      where('transfers.created_at >= ? AND transfers.created_at < ?',
+            DateTime.now.utc.beginning_of_day - 14.days,
+            DateTime.now.utc.beginning_of_day)
     when 'Total'
       all
     else
