@@ -952,8 +952,8 @@ namespace :demo do
       histories << History.new(
         patient_id: patient_id,
         created_by: manual_attempt ? user[1] : 'Sara Alert System',
-        comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt. Note: #{note}",
-        history_type: 'Contact Attempt',
+        comment: manual_attempt ? "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt. Note: #{note}" : 'The system attempted to make contact with the monitoree.',
+        history_type: manual_attempt ? 'Manual Contact Attempt' : 'Contact Attempt',
         created_at: contact_attempt_ts,
         updated_at: contact_attempt_ts
       )
