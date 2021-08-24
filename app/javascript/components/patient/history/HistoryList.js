@@ -28,7 +28,7 @@ class HistoryList extends React.Component {
     this.creatorFilterData = [
       {
         label: 'History Creator',
-        options: _.uniq(props.histories.map(h => h[0].created_by)).map(x => {
+        options: _.orderBy(_.uniq(props.histories.map(h => h[0].created_by)), x => _.toLower(x), 'asc').map(x => {
           return { value: x, label: x };
         }),
       },
@@ -47,6 +47,7 @@ class HistoryList extends React.Component {
         label: this.props.history_types[`${historyType}`],
       });
     }
+    this.typeFilterData[0].options = _.orderBy(this.typeFilterData[0].options, x => x.label, 'asc');
   }
 
   handleChange = event => {
