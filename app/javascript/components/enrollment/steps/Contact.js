@@ -106,10 +106,20 @@ class Contact extends React.Component {
 
     let current = this.state.current;
     let modified = this.state.modified;
+    const updates = { [event.target.id]: value };
+
+    // Clear preferred_contact_time if preferred_contact_method is changed from sms/phone/email
+    if (
+      event.target.id === 'preferred_contact_method' &&
+      !['SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'E-mailed Web Link'].includes(this.state.current.patient.preferred_contact_method)
+    ) {
+      updates.preferred_contact_time = '';
+    }
+
     this.setState(
       {
-        current: { ...current, blocked_sms, patient: { ...current.patient, [event.target.id]: value } },
-        modified: { ...modified, blocked_sms, patient: { ...modified.patient, [event.target.id]: value } },
+        current: { ...current, blocked_sms, patient: { ...current.patient, ...updates } },
+        modified: { ...modified, blocked_sms, patient: { ...modified.patient, ...updates } },
       },
       () => {
         this.props.setEnrollmentState({ ...this.state.modified });
@@ -329,10 +339,9 @@ class Contact extends React.Component {
                     {this.state.errors['preferred_contact_method']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                {(this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' ||
-                  this.state.current.patient.preferred_contact_method === 'Telephone call' ||
-                  this.state.current.patient.preferred_contact_method === 'SMS Text-message' ||
-                  this.state.current.patient.preferred_contact_method === 'E-mailed Web Link') && (
+                {['SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'E-mailed Web Link'].includes(
+                  this.state.current.patient.preferred_contact_method
+                ) && (
                   <Form.Group as={Col} lg="12" id="preferred_contact_time_wrapper" controlId="preferred_contact_time">
                     <Form.Label className="input-label">
                       PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
