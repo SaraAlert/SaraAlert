@@ -18,7 +18,7 @@ module Orchestration::Orchestrator # rubocop:todo Metrics/ModuleLength
     custom_options = workflow.nil? ? PLAYBOOKS.dig(playbook, :general, :custom_options,
                                                    option) : PLAYBOOKS.dig(playbook, :workflows, workflow, :custom_options, option)
 
-    return if base_configuration.nil? # UNNECESSARY?
+    return if base_configuration.nil?
     return base_configuration if custom_options.nil?
 
     # return EMPTY if (base_config or custom_options) is nil?
@@ -33,10 +33,8 @@ module Orchestration::Orchestrator # rubocop:todo Metrics/ModuleLength
   # 'custom': Overwrite the whole configuration
   def nested_configuration(base_configuration, playbook_configuration)
     # Replace label first if available
-    unless base_configuration[:label].nil?
-      base_configuration[:label] =
-        playbook_configuration[:label].nil? ? base_configuration[:label] : playbook_configuration[:label]
-    end
+    base_configuration[:label] = playbook_configuration[:label] unless base_configuration[:label].nil? || playbook_configuration[:label].nil?
+
     selected_configuration = {}
     selected_configuration[:label] = base_configuration[:label] if base_configuration[:label].present?
 
