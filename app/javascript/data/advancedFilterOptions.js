@@ -370,7 +370,7 @@ export const advancedFilterOptions = [
         type: 'select',
         options: [
           'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)',
-          'Pfizer-BioNTech COVID-19 Vaccine (Non-US tradename: COMIRNATY)',
+          'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)',
           'Janssen (J&J) COVID-19 Vaccine',
           'AstraZeneca COVID-19 Vaccine (Non-US tradenames: VAXZEVRIA, COVISHIELD)',
           'Coronavac (Sinovac) COVID-19 Vaccine (Non-US)',

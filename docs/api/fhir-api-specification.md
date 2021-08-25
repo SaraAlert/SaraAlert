@@ -2540,7 +2540,7 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
                 "code": "208"
               }
             ],
-            "text": "Pfizer-BioNTech COVID-19 Vaccine (Non-US tradename: COMIRNATY)"
+            "text": "Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)"
           }
         ],
         "patient": {

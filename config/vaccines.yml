@@ -11,7 +11,7 @@
       product_codes:
         - system: 'http://hl7.org/fhir/sid/cvx'
           code: '207'
-    - product_name: 'Pfizer-BioNTech COVID-19 Vaccine (Non-US tradename: COMIRNATY)'
+    - product_name: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)'
       num_doses: 3
       product_codes:
         - system: 'http://hl7.org/fhir/sid/cvx'

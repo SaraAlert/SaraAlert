@@ -16,7 +16,7 @@ class VaccineQueryHelperTest < ActiveSupport::TestCase
             'num_doses' => 2
           },
           {
-            'product_name' => 'Pfizer-BioNTech COVID-19 Vaccine (Non-US tradename: COMIRNATY)',
+            'product_name' => 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)',
             'num_doses' => 2
           },
           {
