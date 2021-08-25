@@ -6,19 +6,6 @@ class PublicHealthController < ApplicationController
 
   before_action :authenticate_user!
   before_action :authenticate_user_role
-  before_action :set_jurisdiction_paths, :set_all_assigned_users, only: %i[exposure isolation global]
-
-  def exposure
-    @title = 'Exposure Dashboard'
-  end
-
-  def isolation
-    @title = 'Isolation Dashboard'
-  end
-
-  def global
-    @title = 'Global Dashboard'
-  end
 
   def patients
     begin
@@ -79,14 +66,5 @@ class PublicHealthController < ApplicationController
   def authenticate_user_role
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-  end
-
-  def set_jurisdiction_paths
-    @possible_jurisdiction_paths = current_user.jurisdiction.subtree.pluck(:id, :path).to_h
-  end
-
-  def set_all_assigned_users
-    # Get all assigned users of current user's jurisdiction
-    @all_assigned_users = current_user.patients.where.not(assigned_user: nil).pluck(:assigned_user).uniq.sort
   end
 end

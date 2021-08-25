@@ -768,7 +768,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def linelist_specific_fields(playbook, workflow, tab)
-    columns = workflow_configuration(playbook, workflow, :dashboard_table_columns)
+    columns = workflow_configuration(playbook, workflow, :dashboard_tabs)
     return columns[:options][tab][:options] unless columns.nil?
 
     %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]

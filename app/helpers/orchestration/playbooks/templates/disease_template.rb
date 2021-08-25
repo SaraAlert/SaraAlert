@@ -13,47 +13,55 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
               label: 'Symptomatic',
               variant: 'danger',
               tooltip: 'exposure_symptomatic',
-              description: 'Monitorees who have reported symptoms, which need to be reviewed.'
+              description: 'Monitorees who have reported symptoms, which need to be reviewed.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
             },
             non_reporting: {
               label: 'Non-Reporting',
               variant: 'warning',
               tooltip: 'exposure_non_reporting',
-              description: 'Monitorees who have failed to report in the last day, and are not symptomatic.'
+              description: 'Monitorees who have failed to report in the last day, and are not symptomatic.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
             },
             asymptomatic: {
               label: 'Asymptomatic',
               variant: 'success',
               tooltip: 'exposure_asymptomatic',
-              description: 'Monitorees currently reporting no symptoms, who have reported during the last day.'
+              description: 'Monitorees currently reporting no symptoms, who have reported during the last day.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
             },
             pui: {
               label: 'PUI',
               variant: 'dark',
               tooltip: 'exposure_under_investigation',
-              description: 'Monitorees who are currently under investigation.'
+              description: 'Monitorees who are currently under investigation.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility]
             },
             closed: {
               label: 'Closed',
               variant: 'secondary',
               tooltip: 'exposure_closed',
-              description: 'Monitorees not currently being monitored.'
+              description: 'Monitorees not currently being monitored.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
             },
             transferred_in: {
               label: 'Transferred In',
               variant: 'info',
-              description: 'Monitorees that have been transferred into this jurisdiction during the last 24 hours.'
+              description: 'Monitorees that have been transferred into this jurisdiction during the last 24 hours.',
+              options: %i[flagged_for_follow_up transferred_from end_of_monitoring risk_level monitoring_plan transferred_at]
             },
             transferred_out: {
               label: 'Transferred Out',
               variant: 'info',
-              description: 'Monitorees that have been transferred out of this jurisdiction.'
+              description: 'Monitorees that have been transferred out of this jurisdiction.',
+              options: %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at]
             },
             # This is required
             all: {
               label: 'All Monitorees',
               variant: 'primary',
-              description: 'All Monitorees in this jurisdiction, in the Exposure workflow.'
+              description: 'All Monitorees in this jurisdiction, in the Exposure workflow.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility]
             }
           }
         },
@@ -72,34 +80,6 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
               saf: { label: 'Sara Alert Format', workflow_specific: true },
               sdx: { label: 'SDX', workflow_specific: true }
             } }
-          }
-        },
-        dashboard_table_columns: {
-          options: {
-            symptomatic: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
-            },
-            non_reporting: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
-            },
-            asymptomatic: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
-            },
-            pui: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility]
-            },
-            closed: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
-            },
-            transferred_in: {
-              options: %i[flagged_for_follow_up transferred_from end_of_monitoring risk_level monitoring_plan transferred_at]
-            },
-            transferred_out: {
-              options: %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at]
-            },
-            all: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility]
-            }
           }
         }
       },
@@ -203,28 +183,37 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
             active: {
               label: 'Active',
               variant: 'success',
-              description: 'Monitorees currently being actively monitored across both the exposure and isolation workflows.'
+              description: 'Monitorees currently being actively monitored across both the exposure and isolation workflows.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status
+                          report_eligibility]
             },
             priority_review: {
               label: 'Priority Review',
               variant: 'danger',
               description: 'Monitorees who meet the criteria to appear on either the Symptomatic line list (exposure) or '\
-              'Records Requiring Review line list (isolation) which need to be reviewed.'
+              'Records Requiring Review line list (isolation) which need to be reviewed.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status
+                          report_eligibility]
             },
             non_reporting: {
               label: 'Non-Reporting',
               variant: 'warning',
-              description: 'All monitorees who have failed to report in the last day across both the exposure and isolation workflows.'
+              description: 'All monitorees who have failed to report in the last day across both the exposure and isolation workflows.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status
+                          report_eligibility]
             },
             closed: {
               label: 'Closed',
               variant: 'secondary',
-              description: 'Monitorees not currently being monitored across both the exposure and isolation workflows.'
+              description: 'Monitorees not currently being monitored across both the exposure and isolation workflows.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at workflow]
             },
             all: {
               label: 'All Monitorees',
               variant: 'primary',
-              description: 'All Monitorees in this jurisdiction across both the exposure and isolation workflows.'
+              description: 'All Monitorees in this jurisdiction across both the exposure and isolation workflows.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status
+                          report_eligibility]
             }
           }
         },
@@ -238,29 +227,6 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
               all: { label: 'Excel Export For All Monitorees', workflow_specific: false },
               custom_format: { label: 'Custom Format...', workflow_specific: false }
             } }
-          }
-        },
-        dashboard_table_columns: {
-          options: {
-            active: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status
-                          report_eligibility]
-            },
-            priority_review: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status
-                          report_eligibility]
-            },
-            non_reporting: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status
-                          report_eligibility]
-            },
-            closed: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at workflow]
-            },
-            all: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user end_of_monitoring monitoring_plan reporter latest_report workflow status
-                          report_eligibility]
-            }
           }
         }
       }
