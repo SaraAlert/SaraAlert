@@ -237,7 +237,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         verify_laboratory(patient, row[91..94]) if row[91..94].filter(&:present?).any?
         verify_vaccine(patient, row[102..106]) if row[102..106].filter(&:present?).any?
         verify_vaccine(patient, row[107..111]) if row[107..111].filter(&:present?).any?
-        verify_vaccine(patient, row[112..116]) if row[112..116].filter(&:present?).any?
+        verify_vaccine(patient, row[114..118]) if row[114..118].filter(&:present?).any?
         assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_num}")
       end
     end
