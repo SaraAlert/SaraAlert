@@ -701,7 +701,8 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)' }, { name: 'dose-number', value: '1' }] }]
+    filters = [{ filterOption: {},
+                 value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)' }, { name: 'dose-number', value: '1' }] }]
     filters[0][:filterOption]['name'] = 'vaccination'
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
@@ -736,8 +737,8 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)',
                      administration_date: DateTime.new(2021, 4, 13), dose_number: '2')
     patient_6 = create(:patient, creator: user)
-    create(:vaccine, patient: patient_6, group_name: 'COVID-19', product_name: 'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)', administration_date: DateTime.new(2021, 3, 24),
-                     dose_number: '1')
+    create(:vaccine, patient: patient_6, group_name: 'COVID-19', product_name: 'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)',
+                     administration_date: DateTime.new(2021, 3, 24), dose_number: '1')
     create(:vaccine, patient: patient_6, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)',
                      administration_date: DateTime.new(2021, 4, 11), dose_number: '2')
     patient_7 = create(:patient, creator: user)
@@ -747,7 +748,8 @@ class PatientQueryHelperTest < ActionView::TestCase
 
     patients = Patient.all
     filters = [{ filterOption: {},
-                 value: [{ name: 'vaccine-group', value: 'COVID-19' }, { name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)' },
+                 value: [{ name: 'vaccine-group', value: 'COVID-19' },
+                         { name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)' },
                          { name: 'administration-date', value: { when: 'before', date: '2021-03-25' } },
                          { name: 'dose-number', value: '1' }] }]
     filters[0][:filterOption]['name'] = 'vaccination'
@@ -782,8 +784,12 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filter_option_1 = { filterOption: {}, value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)' }, { name: 'dose-number', value: '1' }] }
-    filter_option_2 = { filterOption: {}, value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)' }, { name: 'dose-number', value: '2' }] }
+    filter_option_1 = { filterOption: {},
+                        value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)' },
+                                { name: 'dose-number', value: '1' }] }
+    filter_option_2 = { filterOption: {},
+                        value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)' },
+                                { name: 'dose-number', value: '2' }] }
     filter_option_1[:filterOption]['name'] = 'vaccination'
     filter_option_2[:filterOption]['name'] = 'vaccination'
     filters = [filter_option_1, filter_option_2]
@@ -820,7 +826,8 @@ class PatientQueryHelperTest < ActionView::TestCase
                      administration_date: DateTime.new(2021, 3, 24), dose_number: 'Unknown')
     create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)',
                      administration_date: DateTime.new(2021, 3, 24), dose_number: nil)
-    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)', administration_date: DateTime.new(2021, 3, 25),
+    create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)',
+                     administration_date: DateTime.new(2021, 3, 25),
                      dose_number: '1')
     create(:vaccine, patient: patient_5, group_name: 'COVID-19', product_name: 'Unknown', administration_date: DateTime.new(2021, 3, 26), dose_number: nil)
     patient_6 = create(:patient, creator: user)
@@ -842,7 +849,8 @@ class PatientQueryHelperTest < ActionView::TestCase
                      administration_date: DateTime.new(2021, 3, 24), dose_number: 'Unknown')
     create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)',
                      administration_date: DateTime.new(2021, 3, 24), dose_number: nil)
-    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)', administration_date: DateTime.new(2021, 3, 25),
+    create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)',
+                     administration_date: DateTime.new(2021, 3, 25),
                      dose_number: '1')
     create(:vaccine, patient: patient_7, group_name: 'COVID-19', product_name: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)',
                      administration_date: DateTime.new(2021, 3, 26), dose_number: nil)
@@ -854,7 +862,8 @@ class PatientQueryHelperTest < ActionView::TestCase
 
     patients = Patient.all
     filter_option_1 = { filterOption: {},
-                        value: [{ name: 'vaccine-group', value: 'COVID-19' }, { name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)' },
+                        value: [{ name: 'vaccine-group', value: 'COVID-19' },
+                                { name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)' },
                                 { name: 'administration-date', value: { when: 'before', date: '2021-03-25' } },
                                 { name: 'dose-number', value: '1' }] }
     filter_option_2 = { filterOption: {},
