@@ -345,6 +345,7 @@ Enrollment.propTypes = {
   has_dependents: PropTypes.bool,
   blocked_sms: PropTypes.bool,
   first_positive_lab: PropTypes.object,
+  symptomatic_assessments_exist: PropTypes.bool,
   workflow: PropTypes.string,
   available_workflows: PropTypes.array,
   continuous_exposure_enabled: PropTypes.bool,
