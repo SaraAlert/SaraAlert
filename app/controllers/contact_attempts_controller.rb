@@ -20,18 +20,19 @@ class ContactAttemptsController < ApplicationController
 
     household_ids = [patient_id]
     household_ids.concat apply_to_household_ids unless apply_to_household_ids.empty?
+    household_members = current_user.get_patients(household_ids)
 
-    household_ids.each do |id|
-      ContactAttempt.create!(patient_id: id,
+    household_members.each do |member|
+      ContactAttempt.create!(patient_id: member.id,
                              user_id: current_user.id,
                              successful: successful,
                              note: note)
 
       comment = "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt"
-      comment += " logged on a household member’s record (Sara Alert ID: #{patient_id}) and also applied to this monitoree" unless id == patient_id
+      comment += " logged on a household member’s record (Sara Alert ID: #{patient_id}) and also applied to this monitoree" unless member.id == patient_id
       comment += ". Note: #{note}"
 
-      History.create!(patient_id: id,
+      History.create!(patient_id: member.id,
                       created_by: current_user.email,
                       comment: comment,
                       history_type: 'Manual Contact Attempt')
