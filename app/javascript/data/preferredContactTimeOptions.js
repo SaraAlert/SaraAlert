@@ -11,7 +11,7 @@ export const customPreferredContactTimeOptions = {
   9: '09:00',
   10: '10:00',
   11: '11:00',
-  12: '12:00',
+  12: 'Noon',
   13: '13:00',
   14: '14:00',
   15: '15:00',
@@ -51,7 +51,7 @@ export const customPreferredContactTimeGroupedOptions = [
   {
     label: 'Afternoon',
     options: [
-      { label: '12:00', value: '12' },
+      { label: 'Noon', value: '12' },
       { label: '13:00', value: '13' },
       { label: '14:00', value: '14' },
       { label: '15:00', value: '15' },

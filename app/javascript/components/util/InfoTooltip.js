@@ -162,7 +162,7 @@ const TOOLTIP_TEXT = {
 
   customPreferredContactTime: (
     <div>
-      This is the <b>earliest</b> time that any reminder would be sent to the monitoree for that day. It <b>does not guarantee</b> that they will be sent at
+      This is the <b>earliest</b> time that any reminder would be sent to the monitoree for that day. It <b>does not guarantee</b> reminders will be sent at
       exactly this time.
     </div>
   ),

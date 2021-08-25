@@ -185,7 +185,7 @@ export const advancedFilterOptions = [
       <div>
         <span className="d-block">Early Morning (Midnight - 7:00)</span>
         <span className="d-block">Morning (8:00 - 11:00)</span>
-        <span className="d-block">Afternoon (12:00 - 15:00)</span>
+        <span className="d-block">Afternoon (Noon - 15:00)</span>
         <span className="d-block">Evening (16:00 - 19:00)</span>
         <span className="d-block">Late Night (20:00 - 23:00)</span>
       </div>
