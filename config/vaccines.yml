@@ -17,7 +17,7 @@
         - system: 'http://hl7.org/fhir/sid/cvx'
           code: '208'
     - product_name: 'Janssen (J&J) COVID-19 Vaccine'
-      num_doses: 3
+      num_doses: 2
       product_codes:
         - system: 'http://hl7.org/fhir/sid/cvx'
           code: '212'
