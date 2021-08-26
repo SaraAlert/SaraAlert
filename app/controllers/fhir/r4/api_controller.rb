@@ -128,7 +128,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       # so that they occur atomically
       ActiveRecord::Base.transaction do
         # Verify that the updated jurisdiction and other updates are valid
-        unless jurisdiction_valid_for_update?(patient) && patient.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
+        unless jurisdiction_valid_for_update?(patient) && patient.save(context: :api) && !fhir_map.values.any? { |v| v[:errors].present? }
           req_json = request.patch? ? patient.as_fhir.to_json : JSON.parse(request_body)
           status_unprocessable_entity(patient, fhir_map, req_json) && return
         end
@@ -294,7 +294,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       change_fhir_map_context!(fhir_map, 'Observation', "Bundle.entry[#{index}].resource")
       referenced_patient.laboratories << resource
       # Laboratory must be validated here since errors are inaccessible when saving Patient
-      unless resource.valid?(:api) && fhir_map.all? { |_k, v| v[:errors].blank? }
+      unless resource.valid?(:api) && !fhir_map.values.any? { |v| v[:errors].present? }
         req_json = JSON.parse(request_body)
         status_unprocessable_entity(resource, fhir_map, req_json) && return
       end
@@ -1215,7 +1215,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   # Save a non-Patient record
   def save_record(resource, fhir_map, request_body, history_type, resource_label)
     ActiveRecord::Base.transaction do
-      unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
+      unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api) && !fhir_map.values.any? { |v| v[:errors].present? }
         req_json = JSON.parse(request_body)
         status_unprocessable_entity(resource, fhir_map, req_json) && (raise ClientError)
       end
@@ -1241,7 +1241,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   # Update a non-Patient record
   def update_record(resource, fhir_map, request_body, history_type, resource_label)
     ActiveRecord::Base.transaction do
-      unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
+      unless referenced_patient_valid_for_client?(resource, :patient_id) && resource.save(context: :api) && !fhir_map.values.any? { |v| v[:errors].present? }
         req_json = request.patch? ? resource.as_fhir.to_json : JSON.parse(request_body)
         status_unprocessable_entity(resource, fhir_map, req_json) && (raise ClientError)
       end

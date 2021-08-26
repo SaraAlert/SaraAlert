@@ -35,18 +35,20 @@ class Patient < ApplicationRecord
   validates :case_status,
             on: :api,
             inclusion: {
-              in: VALID_ISOLATION_ENUMS[:case_status] + [nil, ''],
-              message: "is not an acceptable value in the isolation workflow, acceptable values are: '#{VALID_ISOLATION_ENUMS[:case_status].join("', '")}'"
+              in: VALID_ISOLATION_ENUMS[:case_status],
+              message: 'is not an acceptable value in the isolation workflow, acceptable values are: '\
+              "'#{VALID_ISOLATION_ENUMS[:case_status].reject(&:blank?).join("', '")}'"
             },
             if: -> { isolation }
 
   validates :case_status,
             on: :api,
             inclusion: {
-              in: VALID_EXPOSURE_ENUMS[:case_status] + [nil, ''],
-              message: "is not an acceptable value in the exposure workflow, acceptable values are: '#{VALID_EXPOSURE_ENUMS[:case_status].join("', '")}'"
+              in: VALID_EXPOSURE_ENUMS[:case_status],
+              message: 'is not an acceptable value in the exposure workflow, acceptable values are: '\
+              "'#{VALID_EXPOSURE_ENUMS[:case_status].reject(&:blank?).join("', '")}'"
             },
-            if: -> { !isolation }
+            unless: -> { isolation }
 
   validates :source_of_report, on: :api, inclusion: {
     in: VALID_PATIENT_ENUMS[:source_of_report],

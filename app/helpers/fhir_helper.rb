@@ -7,10 +7,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   OMB_URL = 'ombCategory'
   DETAILED_URL = 'detailed'
   INTERPRETER_URL = 'http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired'
-  GENDER_IDENTITY_TO_FHIR = Rails.configuration.api['gender_identity'].freeze
-  GENDER_IDENTITY_FROM_FHIR = GENDER_IDENTITY_TO_FHIR.invert.freeze
-  SEXUAL_ORIENTATION_TO_FHIR = Rails.configuration.api['sexual_orientation'].freeze
-  SEXUAL_ORIENTATION_FROM_FHIR = SEXUAL_ORIENTATION_TO_FHIR.invert.freeze
+  GENDER_IDENTITY_TO_FHIR = Rails.configuration.api['gender_identity']
+  GENDER_IDENTITY_FROM_FHIR = GENDER_IDENTITY_TO_FHIR.invert
+  SEXUAL_ORIENTATION_TO_FHIR = Rails.configuration.api['sexual_orientation']
+  SEXUAL_ORIENTATION_FROM_FHIR = SEXUAL_ORIENTATION_TO_FHIR.invert
 
   # Switch the context of the paths on a fhir_map from old_context to new_context. For example
   # A Patient resource may have paths such as Patient.birthDate, but if that Patient resource
@@ -170,11 +170,11 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     symptom_onset = from_date_extension(patient, 'Patient', ['symptom-onset-date'])
 
     foreign_address = from_address_by_type_extension(patient, 'Foreign')
-    foreign_address_index = patient&.address&.index(foreign_address)
+    foreign_address_index = patient&.address&.index(foreign_address) || 0
     foreign_monitored_address = from_address_by_type_extension(patient, 'ForeignMonitored')
-    foreign_monitored_address_index = patient&.address&.index(foreign_monitored_address)
+    foreign_monitored_address_index = patient&.address&.index(foreign_monitored_address) || 0
     monitored_address = from_address_by_type_extension(patient, 'Monitored')
-    monitored_address_index = patient&.address&.index(monitored_address)
+    monitored_address_index = patient&.address&.index(monitored_address) || 0
     address = from_address_by_type_extension(patient, 'USA')
     address_index = patient&.address&.index(address) || foreign_address_index || 0
 

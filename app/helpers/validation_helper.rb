@@ -207,11 +207,11 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   VALID_EXPOSURE_ENUMS = {
-    case_status: ['Suspect', 'Unknown', 'Not a Case']
+    case_status: ['Suspect', 'Unknown', 'Not a Case', nil, '']
   }.freeze
 
   VALID_ISOLATION_ENUMS = {
-    case_status: %w[Confirmed Probable]
+    case_status: ['Confirmed', 'Probable', nil, '']
   }.freeze
 
   def self.normalize_enums(enums)

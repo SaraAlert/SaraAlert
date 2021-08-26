@@ -361,12 +361,12 @@ class ImportController < ApplicationController
       return NORMALIZED_EXPOSURE_ENUMS[field][normalized_value] if NORMALIZED_EXPOSURE_ENUMS[field].keys.include?(normalized_value)
 
       err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}' for monitorees imported into the Exposure workflow, "
-      err_msg += "acceptable values are: #{VALID_EXPOSURE_ENUMS[field].to_sentence}"
+      err_msg += "acceptable values are: #{VALID_EXPOSURE_ENUMS[field].reject(&:blank?).to_sentence}"
     else
       return NORMALIZED_ISOLATION_ENUMS[field][normalized_value] if NORMALIZED_ISOLATION_ENUMS[field].keys.include?(normalized_value)
 
       err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}' for cases imported into the Isolation workflow, "
-      err_msg += "acceptable values are: #{VALID_ISOLATION_ENUMS[field].to_sentence}"
+      err_msg += "acceptable values are: #{VALID_ISOLATION_ENUMS[field].reject(&:blank?).to_sentence}"
     end
     raise ValidationError.new(err_msg, row_ind)
   end
