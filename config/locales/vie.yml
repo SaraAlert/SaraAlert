@@ -10,8 +10,8 @@ vie:
         bool-title: 'Xin vui lòng chọn tất cả các triệu chứng mà bạn đang gặp phải.'
         instruction1: 'Nếu bạn không báo cáo bất kỳ triệu chứng nào, vui lòng tiếp tục làm theo các khuyến nghị do sở y tế địa phương cung cấp.'
         instruction2: >-
-          'Nếu bạn báo cáo bất kỳ triệu chứng nào, bộ phận y tế địa phương của bạn sẽ sớm liên hệ với bạn. Nếu bạn có bất kỳ thắc mắc nào, ngay lập tức, xin vui
-          lòng liên hệ với nhà cung cấp dịch vụ y tế hoặc sở y tế địa phương. Tránh tiếp xúc gần gũi với người khác và xin vui lòng ở nhà.'
+          Nếu bạn báo cáo bất kỳ triệu chứng nào, bộ phận y tế địa phương của bạn sẽ sớm liên hệ với bạn. Nếu bạn có bất kỳ thắc mắc nào, ngay lập tức, xin vui
+          lòng liên hệ với nhà cung cấp dịch vụ y tế hoặc sở y tế địa phương. Tránh tiếp xúc gần gũi với người khác và xin vui lòng ở nhà.
         instruction3: 'Nếu bạn đang gặp trường hợp khẩn cấp về y tế, xin vui lòng gọi 911 và cho họ biết bạn đang được bộ phận y tế theo dõi.'
         instruction4: 'Xin vui lòng sử dụng thông tin liên hệ bên dưới để liên hệ với một quan chức y tế công cộng quản lý trường hợp của bạn.'
         submit: 'Gửi đi'
@@ -21,22 +21,22 @@ vie:
           greeting: 'Kính gửi %{name},'
           report: 'Báo cáo hàng ngày'
           footer: >-
-            'Xin đừng trả lời email này, chuyển tiếp email này hoặc chia sẻ liên kết này. Thông báo này được tạo tự động bởi hệ thống Sara Alert và là duy nhất và
+            Xin đừng trả lời email này, chuyển tiếp email này hoặc chia sẻ liên kết này. Thông báo này được tạo tự động bởi hệ thống Sara Alert và là duy nhất và
             chỉ dành cho bạn. Nếu bạn muốn ngừng nhận những thông báo này hoặc tin rằng đó là do nhầm lẫn, vui lòng liên hệ với sở y tế công cộng địa phương của
-            bạn. Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập saraalert.org.'
+            bạn. Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập saraalert.org.
         enrollment:
           subject: 'Đăng ký Sara Alert'
           header: 'Chào mừng bạn đến với Hệ thống Cảnh báo Sara'
           greeting: 'Kính gửi %{name},'
           info1: >-
-            'Bạn đã được đăng ký vào hệ thống giám sát Sara Alert. Chúng tôi yêu cầu bạn cung cấp các báo cáo hàng ngày về tình trạng của bạn. Chỉ cần nhấn vào
-            nút bên dưới và làm theo hướng dẫn trên màn hình.'
+            Bạn đã được đăng ký vào hệ thống giám sát Sara Alert. Chúng tôi yêu cầu bạn cung cấp các báo cáo hàng ngày về tình trạng của bạn. Chỉ cần nhấn vào
+            nút bên dưới và làm theo hướng dẫn trên màn hình.
           info2: 'Bạn sẽ nhận được một lời nhắc tương tự hàng ngày cho đến khi thời gian theo dõi của bạn kết thúc.'
         reminder:
           subject: 'Lời nhắc Báo cáo Cảnh báo Sara'
           header: 'Đây là lời nhắc của bạn để hoàn thành báo cáo hàng ngày của bạn.'
           thank_you: >-
-            'Cảm ơn bạn đã tham gia vào chương trình theo dõi Sara Alert, xin vui lòng điền vào báo cáo hàng ngày của bạn bằng cách sử dụng liên kết bên dưới.'
+            Cảm ơn bạn đã tham gia vào chương trình theo dõi Sara Alert, xin vui lòng điền vào báo cáo hàng ngày của bạn bằng cách sử dụng liên kết bên dưới.
         closed:
           subject: 'Hoàn thành theo dõi cảnh báo Sara'
           header: 'Quá trình giám sát hoàn tất!'
@@ -49,19 +49,19 @@ vie:
         experiencing_symptoms_s: 'Người này có gặp bất kỳ triệu chứng nào sau đây không? %{symptom_names}.'
         experiencing_symptoms_p: 'Có ai trong số những người này gặp bất kỳ triệu chứng nào sau đây không? %{symptom_names}.'
         max_retries_message: >-
-          'Tôi xin lỗi, bạn đã đạt đến số lần thử phản hồi tối đa. Nếu bạn đang gặp một trường hợp khẩn cấp y tế, xin vui lòng gọi số 911 và cho họ biết bạn
-          đang được theo dõi bởi các bộ phận y tế.'
+          Tôi xin lỗi, bạn đã đạt đến số lần thử phản hồi tối đa. Nếu bạn đang gặp một trường hợp khẩn cấp y tế, xin vui lòng gọi số 911 và cho họ biết bạn
+          đang được theo dõi bởi các bộ phận y tế.
       sms:
         prompt:
           intro: >-
-            'Chào mừng bạn đến với hệ thống Sara Alert, chúng tôi sẽ gửi các báo cáo hàng ngày của bạn cho %{name} tới số điện thoại này. Để biết về quyền riêng
-            tư và biết thêm thông tin, hãy truy cập saraalert.org.'
+            Chào mừng bạn đến với hệ thống Sara Alert, chúng tôi sẽ gửi các báo cáo hàng ngày của bạn cho %{name} tới số điện thoại này. Để biết về quyền riêng
+            tư và biết thêm thông tin, hãy truy cập saraalert.org.
           reminder: 'Đây là Sara Alert nhắc nhở bạn để vui lòng trả lời để hoàn thành báo cáo hàng ngày của bạn.'
           name: '%{name}'
           daily: 'Đây là bản báo cáo hàng ngày của Sara Alert cho: %{names}. %{experiencing_symptoms} Xin vui lòng trả lời "Có" hoặc "Không"'
           try_again: >-
-            'Tôi xin lỗi, tôi không hiểu lắm. Xin vui lòng trả lời bằng \ "Có \" hoặc \ "Không \". Nếu bạn có bất kỳ câu hỏi nào, xin vui lòng liên hệ với sở y
-            tế địa phương của bạn.'
+            Tôi xin lỗi, tôi không hiểu lắm. Xin vui lòng trả lời bằng \ "Có \" hoặc \ "Không \". Nếu bạn có bất kỳ câu hỏi nào, xin vui lòng liên hệ với sở y
+            tế địa phương của bạn.
           thanks: 'Cảm ơn bạn đã hoàn thành báo cáo hàng ngày của mình'
         weblink:
           intro: 'Đây là bản báo cáo hàng ngày của Sara Alert cho %{initials_age}: %{url}'

@@ -10,11 +10,11 @@ spa:
         bool-title: 'Por favor, seleccione los síntomas que está sintiendo actualmente.'
         instruction1: 'Si Usted no reportó ningún síntoma, por favor siga las recomendaciones proveídas por su departamento de salud local.'
         instruction2: >-
-          'Si Usted reportó algún síntoma, su departamento de salud local se comunicará pronto con Usted. Si tiene alguna inquietud inmediata, llame a su
-          proveedor médico o al departamento de salud local. Evite el contacto cercano con otras personas y quédese en casa por favor.'
+          Si Usted reportó algún síntoma, su departamento de salud local se comunicará pronto con Usted. Si tiene alguna inquietud inmediata, llame a su
+          proveedor médico o al departamento de salud local. Evite el contacto cercano con otras personas y quédese en casa por favor.
         instruction3: 'Si tiene una emergencia médica, por favor llame al 911 e infórmeles que el departamento de salud lo está monitoreando.'
         instruction4: >-
-          'Por favor utilice la información de contacto a continuación para ponerse en contacto con un funcionario de salud pública que esté a cargo de su caso'
+          Por favor utilice la información de contacto a continuación para ponerse en contacto con un funcionario de salud pública que esté a cargo de su caso
         submit: 'Enviar'
         thank_you: '¡Gracias por completar su informe diario!'
       email:
@@ -22,15 +22,15 @@ spa:
           greeting: 'Estimado/a %{name},'
           report: 'Reporte diario'
           footer: >-
-            'No responda o reenvíe este correo electrónico, ni comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es
+            No responda o reenvíe este correo electrónico, ni comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es
             único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto
-            con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
+            con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.
         enrollment:
           subject: 'Inscripción de Sara Alert'
           header: 'Bienvenido al sistema Sara Alert'
           info1: >-
-            'Usted ha sido inscrito en el sistema de monitoreo Sara Alert. Le pedimos que proporcione informes diarios de su estado de salud. Simplemente haga
-            clic en el botón a continuación y siga las instrucciones en pantalla.'
+            Usted ha sido inscrito en el sistema de monitoreo Sara Alert. Le pedimos que proporcione informes diarios de su estado de salud. Simplemente haga
+            clic en el botón a continuación y siga las instrucciones en pantalla.
           info2: 'Usted recibirá un recordatorio diario similar hasta que finalice su período de monitoreo.'
         reminder:
           subject: 'Recordatorio del reporte de Sara Alert'
@@ -42,8 +42,8 @@ spa:
           thank_you: 'La supervisión de Sara Alert para %{initials_age} se completó el %{completed_date}. Gracias por su participación'
         contact:
           info1: >-
-            'Si tiene alguna pregunta, por favor utilice la información de contacto a continuación para comunicarse con la organización de salud pública que le
-            ayudó a inscribirse:'
+            Si tiene alguna pregunta, por favor utilice la información de contacto a continuación para comunicarse con la organización de salud pública que le
+            ayudó a inscribirse:
           info2: 'Si tiene alguna pregunta, por favor pónganse en contacto con el proveedor de atención médica que le ayudó a inscribirse.'
     twilio:
       shared:
@@ -53,9 +53,10 @@ spa:
       sms:
         prompt:
           intro: >-
-            'Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para %{name} a este número de teléfono. Para privacidad y más información,
-            visite saraalert.org.'
+            Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para %{name} a este número de teléfono. Para privacidad y más información,
+            visite saraalert.org.
           reminder: 'Este es el sistema Sara Alert recordándole que por favor responda a nuestros mensajes de reporte diario.'
+          name: '%{name}'
           daily: 'Este es el informe diario de Sara Alert para: %{names}. %{experiencing_symptoms} Responda con "Sí" o "No"'
           try_again: 'Lo siento, no entendí. Responda con "Sí" o "No"'
           thanks: '¡Gracias por completar su informe diario!'
