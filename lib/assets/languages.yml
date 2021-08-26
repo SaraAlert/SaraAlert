@@ -82,7 +82,7 @@
   :iso6391code: "ar"
   :system: 'iso639-2t'
   :supported:
-    :sms: true
+    :sms: false
     :email: true
     :phone: true
 
@@ -874,7 +874,7 @@
   :iso6391code: "ko"
   :system: 'iso639-2t'
   :supported:
-    :sms: true
+    :sms: false
     :email: true
     :phone: true
 
@@ -1398,7 +1398,7 @@
   :iso6391code: "ru"
   :system: 'iso639-2t'
   :supported:
-    :sms: true
+    :sms: false
     :email: true
     :phone: true
 
@@ -1788,7 +1788,7 @@
   :iso6391code: "vi"
   :system: 'iso639-2t'
   :supported:
-    :sms: true
+    :sms: false
     :email: true
 
 :vot:
