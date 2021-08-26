@@ -37,7 +37,7 @@ class CaseStatus extends React.Component {
   handleCaseStatusChange = event => {
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     const confirmedOrProbable = value === 'Confirmed' || value === 'Probable';
-    if (!confirmedOrProbable) {
+    if (this.state.monitoring && !confirmedOrProbable) {
       this.setState({ monitoring_reason: '', reasoning: '' });
     }
 
@@ -164,7 +164,8 @@ class CaseStatus extends React.Component {
     const diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
       // Per feedback, include the monitoring_reason in the reasoning text, as the user might not inlude any text
-      let reasoning = this.state.isolation ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
+      let alreadyClosed = !this.props.patient.monitoring && !this.state.monitoring;
+      let reasoning = this.state.isolation || alreadyClosed ? '' : [this.state.monitoring_reason, this.state.reasoning].filter(x => x).join(', ');
       // Add a period at the end of the Reasoning (if it's not already included)
       if (reasoning && !['.', '!', '?'].includes(_.last(reasoning))) {
         reasoning += '.';
