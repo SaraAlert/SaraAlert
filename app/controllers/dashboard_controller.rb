@@ -58,5 +58,4 @@ class DashboardController < ApplicationController
 
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
   end
-
 end
