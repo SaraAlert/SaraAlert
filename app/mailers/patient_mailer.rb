@@ -205,7 +205,7 @@ class PatientMailer < ApplicationMailer
 
     @lang = patient.select_language
     @contents = I18n.t(
-      'assessments.twilio.sms.closed.thank_you',
+      'assessments.html.email.closed.thank_you',
       initials_age: patient&.initials_age('-'),
       completed_date: patient.closed_at&.strftime('%m-%d-%Y'),
       locale: @lang
