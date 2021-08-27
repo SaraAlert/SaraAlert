@@ -252,5 +252,5 @@ To obtain system configurations, use:
 The following constraints should be considered when defining a new playbook.
 
 - Only 1 playbook may be active at a time. The playbook in use is defined in `config/sara.yml` by the admin variable, `playbook_name`. This can be overwritten by `ENV["ACTIVE_PLAYBOOK"]`)
-- The object names used for workflows must be a combination of `exposure`, `isolation`, and `global`. The values used for the label attributie can be changed in order to display a different name on the GUi, but the base name must be one of those three.
+- The object names used for workflows must be a combination of `exposure`, `isolation`, and `global`. The values used for the label attribute can be changed in order to display a different name on the GUI, but the base name must be one of those three.
 - A playbook configuration cannot be used to add features that are not available (i.e., defined) in the template that is inherited.

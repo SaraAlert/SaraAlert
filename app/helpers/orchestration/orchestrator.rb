@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Orchestrator: Methods for managing active playbook context
-module Orchestration::Orchestrator # rubocop:todo Metrics/ModuleLength
+module Orchestration::Orchestrator
   include Orchestration::Playbooks
 
   available = Orchestration::Playbooks.constants.reject { |m| m == :Templates }
