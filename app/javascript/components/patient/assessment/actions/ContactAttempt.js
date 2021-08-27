@@ -36,7 +36,7 @@ class ContactAttempt extends React.Component {
 
   handleApplyHouseholdChange = apply_to_household => {
     const noMembersSelected = apply_to_household && this.state.apply_to_household_ids.length === 0;
-    this.setState({ apply_to_household, apply_to_household_cm_exp_only: false, noMembersSelected });
+    this.setState({ apply_to_household, noMembersSelected });
   };
 
   handleApplyHouseholdIdsChange = apply_to_household_ids => {
