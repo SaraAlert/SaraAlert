@@ -13,8 +13,8 @@ class UpdateVaccineNames < ActiveRecord::Migration[6.1]
   def down
     Vaccine.where(dose_number: '3').update_all(dose_number: 'Unknown')
 
-    Vaccine.where(product_name: 'Moderna COVID-19 Vaccine').update_all(product_name: 'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)')
-    Vaccine.where(product_name: 'Pfizer-BioNTech COVID-19 Vaccine').update_all(product_name: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)')
+    Vaccine.where(product_name: 'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)').update_all(product_name: 'Moderna COVID-19 Vaccine')
+    Vaccine.where(product_name:  'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)').update_all(product_name: 'Pfizer-BioNTech COVID-19 Vaccine')
     # New Vaccines will get set to unknown
     Vaccine.where(product_name: ['AstraZeneca COVID-19 Vaccine (Non-US tradenames: VAXZEVRIA, COVISHIELD)', 'Coronavac (Sinovac) COVID-19 Vaccine (Non-US)', 'Sinopharm (BIBP) COVID-19 Vaccine (Non-US)']).update_all(product_name: 'Unknown')
 
