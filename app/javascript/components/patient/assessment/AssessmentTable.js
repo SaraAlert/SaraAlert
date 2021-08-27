@@ -332,7 +332,14 @@ class AssessmentTable extends React.Component {
                   </Button>
                   <ClearAssessments authenticity_token={this.props.authenticity_token} patient={this.props.patient} num_pos_labs={this.props.num_pos_labs} />
                   <PauseNotifications authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
-                  <ContactAttempt authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+                  <ContactAttempt
+                    authenticity_token={this.props.authenticity_token}
+                    patient={this.props.patient}
+                    household_members={this.props.household_members}
+                    current_user={this.props.current_user}
+                    jurisdiction_paths={this.props.jurisdiction_paths}
+                    workflow={this.props.workflow}
+                  />
                 </Col>
                 <Col lg={5}>
                   <InputGroup size="md">
