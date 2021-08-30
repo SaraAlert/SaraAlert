@@ -288,10 +288,14 @@ module PHDC
       qrq_entry << qrq_org
       qrq_org << code_helper('1', 'Local-codesystem-oid', 'Exposure Information', 'LocalSystem')
       qrq_org << status_code_helper('completed')
+
       unless patient.potential_exposure_country.blank?
-        code = code_helper('INV502', 'Local-codesystem-oid', 'Country of Exposure', 'LocalSystem')
-        value = value_helper_code('CE', @fips.country_to_alpha_3(patient.potential_exposure_country), '1.0.3166.1', patient.potential_exposure_country)
-        qrq_org << comp_obs_helper('OBS', 'EVN', code, value)
+        exposure_country_code = @fips.country_to_alpha_3(patient.potential_exposure_country)
+        unless exposure_country_code.blank?
+          code = code_helper('INV502', 'Local-codesystem-oid', 'Country of Exposure', 'LocalSystem')
+          value = value_helper_code('CE', exposure_country_code, '1.0.3166.1', patient.potential_exposure_country)
+          qrq_org << comp_obs_helper('OBS', 'EVN', code, value)
+        end
       end
       unless patient.potential_exposure_location.blank?
         code = code_helper('INV504', 'Local-codesystem-oid', 'City of Exposure', 'LocalSystem')
@@ -329,11 +333,19 @@ module PHDC
         sas_section << sas_entry
         sas_obs = observation_helper('OBS', 'EVN')
         sas_entry << sas_obs
-        sas_obs << code_helper('1', 'Local-codesystem-oid', 'Daily Report', 'LocalSystem')
+        sas_obs << code_helper('INV576', '2.16.840.1.114222.4.5.232', 'Symptomatic', 'PHIN Questions')
         effective_time = Ox::Element.new(:effectiveTime)
         effective_time['value'] = assessment.updated_at.strftime('%Y%m%d%H%M%S%z')
         sas_obs << effective_time
-        sas_obs << value_helper_code('CE', 'Yes', 'LocalSystem', 'Symptomatic')
+        sas_val = value_helper_code('CE', 'Y', '2.16.840.1.113883.12.136', 'Yes')
+        sas_val['codeSystemName'] = 'Yes/No Indicator (HL7)'
+        sas_obs << sas_val
+        translation = Ox::Element.new(:translation)
+        translation['codeSystem'] = '2.16.840.1.113883.12.136'
+        translation['codeSystemName'] = 'Yes/No Indicator (HL7)'
+        translation['displayName'] = 'Yes'
+        translation['code'] = 'Y'
+        sas_val << translation
       end
 
       # Return XML
