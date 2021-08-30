@@ -148,7 +148,7 @@ class CurrentStatus extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <h2 className="tertiary-title pb-3">
+        <h2 className="tertiary-title">
           <b>
             {this.props.isolation ? 'Isolation' : 'Exposure'} Workflow: {this.renderStatus(this.props.status)}
           </b>

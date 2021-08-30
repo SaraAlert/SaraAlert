@@ -44,7 +44,7 @@ class MonitoringPeriod extends React.Component {
 
   render() {
     return (
-      <Row>
+      <Row className="mt-3">
         <Col xl={{ span: this.props.patient.isolation ? 9 : 8, order: 1 }} md={{ span: 12, order: 1 }} xs={{ span: 24, order: 1 }}>
           <SymptomOnset
             authenticity_token={this.props.authenticity_token}
