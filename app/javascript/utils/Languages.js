@@ -13,6 +13,10 @@ const COMMON_LANGUAGES = {
   'spa-pr': 'Spanish (Puerto Rican)',
   por: 'Portuguese',
   som: 'Somali',
+  vie: 'Vietnamese',
+  kor: 'Korean',
+  rus: 'Russian',
+  // ara: 'Arabic',
 };
 
 /**

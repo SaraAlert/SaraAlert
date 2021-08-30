@@ -13,11 +13,10 @@ FactoryBot.define do
         muscle-pain
         headache
         sore-throat
-        new-loss-of-taste-or-smell
+        new-loss-of-taste
         pulse-ox
         diarrhea
-        nasal-congestion
-        runny-nose
+        congestion-or-runny-nose
         temperature
       ].sample
     end
