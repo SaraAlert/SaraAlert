@@ -12,19 +12,30 @@ class ContactAttemptsController < ApplicationController
     patient_id = params.require(:patient_id)
     successful = permitted_params[:successful]
     note = permitted_params[:note]
+    apply_to_household_ids = params.permit(apply_to_household_ids: [])[:apply_to_household_ids]
 
     redirect_to(root_url) && return if patient_id.nil?
 
     redirect_to(root_url) && return unless current_user.viewable_patients.where(id: patient_id).exists?
 
-    ContactAttempt.create!(patient_id: patient_id,
-                           user_id: current_user.id,
-                           successful: successful,
-                           note: note)
+    household_ids = [patient_id]
+    household_ids.concat apply_to_household_ids unless apply_to_household_ids.empty?
+    household_members = current_user.get_patients(household_ids)
 
-    History.create!(patient_id: patient_id,
-                    created_by: current_user.email,
-                    comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt. Note: #{note}",
-                    history_type: 'Manual Contact Attempt')
+    household_members.each do |member|
+      ContactAttempt.create!(patient_id: member.id,
+                             user_id: current_user.id,
+                             successful: successful,
+                             note: note)
+
+      comment = "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt"
+      comment += " logged on a household member’s record (Sara Alert ID: #{patient_id}) and also applied to this monitoree" unless member.id == patient_id
+      comment += ". Note: #{note}"
+
+      History.create!(patient_id: member.id,
+                      created_by: current_user.email,
+                      comment: comment,
+                      history_type: 'Manual Contact Attempt')
+    end
   end
 end

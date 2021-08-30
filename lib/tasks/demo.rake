@@ -238,6 +238,7 @@ namespace :demo do
 
     counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
     available_lang_codes = Languages.all_languages.keys.to_a.map(&:to_s)
+    supported_lang_codes = Languages.all_languages.filter { |k, v| v[:supported].present? }.keys
 
     # Freeze beginning of day outside loop to prevent problems when script is called over midnight
     beginning_of_today = DateTime.now.beginning_of_day
@@ -263,7 +264,8 @@ namespace :demo do
       printf("Simulating day #{day + 1} (#{beginning_of_day.to_date}):\n")
 
       # Populate patients, assessments, laboratories, transfers, histories, analytics
-      demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions, enroller_users, public_health_users)
+      demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties,
+                        available_lang_codes, supported_lang_codes, threshold_conditions, enroller_users, public_health_users)
       created_patients += num_patients_today
 
       # Cases increase 10-20% every day
@@ -288,6 +290,7 @@ namespace :demo do
 
     counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
     available_lang_codes = Languages.all_languages.keys.to_a.map(&:to_s)
+    supported_lang_codes = Languages.all_languages.filter { |k, v| v[:supported].present? }.keys
 
     puts 'Simulating today'
 
@@ -298,7 +301,8 @@ namespace :demo do
     enroller_users = User.where(role: 'enroller').pluck(:id, :email)
     public_health_users = User.where(role: 'public_health').pluck(:id, :email)
 
-    demo_populate_day(DateTime.now.beginning_of_day, num_patients_today, 0, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions, enroller_users, public_health_users)
+    demo_populate_day(DateTime.now.beginning_of_day, num_patients_today, 0, jurisdictions, assigned_users, case_ids, cache_analytics, counties,
+                      available_lang_codes, supported_lang_codes, threshold_conditions, enroller_users, public_health_users)
   end
 
   def fetch_all_threshold_conditions
@@ -315,14 +319,16 @@ namespace :demo do
     threshold_conditions
   end
 
-  def demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties, available_lang_codes, threshold_conditions, enroller_users, public_health_users)
+  def demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties,
+                        available_lang_codes, supported_lang_codes, threshold_conditions, enroller_users, public_health_users)
     # Transactions speeds things up a bit
     ActiveRecord::Base.transaction do
       # Patients created before today
       existing_patients = Patient.monitoring_open.where('created_at < ?', beginning_of_day)
 
       # Create patients
-      demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes, enroller_users, public_health_users)
+      demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes,
+                             supported_lang_codes, enroller_users, public_health_users)
 
       # Create assessments
       demo_populate_assessments(beginning_of_day, days_ago, existing_patients, threshold_conditions, public_health_users)
@@ -350,9 +356,9 @@ namespace :demo do
     demo_cache_analytics(beginning_of_day) if cache_analytics
   end
 
-  def demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes, enroller_users, public_health_users)
+  def demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes,
+                             supported_lang_codes, enroller_users, public_health_users)
     include PatientHelper
-
     territory_names = ['American Samoa', 'District of Columbia', 'Federated States of Micronesia', 'Guam', 'Marshall Islands', 'Northern Mariana Islands',
                        'Palau', 'Puerto Rico', 'Virgin Islands'].freeze
 
@@ -381,8 +387,8 @@ namespace :demo do
                                                                                .each { |race| patient[race] = true }
       end
       patient[:ethnicity] = rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino'
-      patient[:primary_language] = rand < 0.7 ? 'eng' : available_lang_codes.sample
-      patient[:secondary_language] = available_lang_codes.sample if rand < 0.4
+      patient[:primary_language] = rand < 0.5 ? 'eng' : (rand < 0.6 ? supported_lang_codes : available_lang_codes).sample
+      patient[:secondary_language] = (rand < 0.3 ? supported_lang_codes : available_lang_codes).sample if rand < 0.4
       patient[:interpretation_required] = rand < 0.15
       patient[:nationality] = Faker::Nation.nationality if rand < 0.6
       patient[:user_defined_id_statelocal] = "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}" if rand < 0.7

@@ -1285,11 +1285,21 @@ class Patient < ApplicationRecord
       # Skip if no value change
       next if patient_before[attribute] == patient_after[attribute]
 
-      diffs << {
-        attribute: attribute,
-        before: attribute.to_sym == :jurisdiction_id ? Jurisdiction.find(patient_before[attribute])[:path] : patient_before[attribute],
-        after: attribute.to_sym == :jurisdiction_id ? Jurisdiction.find(patient_after[attribute])[:path] : patient_after[attribute]
-      }
+      before = patient_before[attribute]
+      after = patient_after[attribute]
+
+      if attribute.to_sym == :jurisdiction_id
+        before = Jurisdiction.find(before)[:path]
+        after = Jurisdiction.find(after)[:path]
+      elsif attribute.to_sym == :preferred_contact_time
+        before = ValidationHelper::TIME_OPTIONS[before&.to_sym] || before
+        after = ValidationHelper::TIME_OPTIONS[after&.to_sym] || after
+      elsif %i[primary_language secondary_language].include?(attribute.to_sym)
+        before = Languages.all_languages.dig(before&.to_sym, :display) || before
+        after = Languages.all_languages.dig(after&.to_sym, :display) || after
+      end
+
+      diffs << { attribute: attribute, before: before, after: after }
     end
     diffs
   end
