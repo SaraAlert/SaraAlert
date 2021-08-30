@@ -100,8 +100,6 @@ class ConsumeAssessmentsJob < ApplicationJob
           queue.commit
           next
         when 'error_sms'
-          # If there was an error sending an SMS, nil out the last_reminder_sent field so the system will try calling again
-          patient.update(last_assessment_reminder_sent: nil)
           History.contact_attempt(patient: patient, comment: "Sara Alert was unable to send an SMS to this monitoree's \
                                                               primary telephone number #{patient.primary_telephone}.")
           unless dependents.blank?
