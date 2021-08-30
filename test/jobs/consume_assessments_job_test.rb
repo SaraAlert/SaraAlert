@@ -29,7 +29,6 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
         @redis_queue.push @assessment_generator.no_answer_assessment(response_status)
         ConsumeAssessmentsJob.perform_now
         @patient.reload
-        assert_nil @patient.last_assessment_reminder_sent unless response_status == 'no_answer_sms'
         assert_equal 'Contact Attempt', @patient.histories.first.history_type
         assert_includes @patient.histories.first.comment, @patient.primary_telephone
       end
