@@ -1298,6 +1298,11 @@ class Patient < ApplicationRecord
         after = Languages.all_languages.dig(after&.to_sym, :display) || after
       end
 
+      if attribute.to_sym == :preferred_contact_time
+        before = ValidationHelper::TIME_OPTIONS[before&.to_sym] || before
+        after = ValidationHelper::TIME_OPTIONS[after&.to_sym] || after
+      end
+
       diffs << { attribute: attribute, before: before, after: after }
     end
     diffs
