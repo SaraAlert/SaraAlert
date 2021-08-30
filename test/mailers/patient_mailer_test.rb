@@ -13,11 +13,9 @@ class PatientMailerTest < ActionMailer::TestCase
 
   def setup
     patient_email = Faker::Internet.email + rand(100).to_s
-    patient_submission_token = SecureRandom.urlsafe_base64[0, 10]
-    @patient = create(:patient)
+    @patient = create(:patient_with_submission_token)
     @patient.update(email: patient_email,
                     primary_language: 'eng',
-                    submission_token: patient_submission_token,
                     primary_telephone: '+15555550111',
                     preferred_contact_method: 'Telephone call')
     ENV['TWILLIO_SENDING_NUMBER'] = 'test'
@@ -34,21 +32,6 @@ class PatientMailerTest < ActionMailer::TestCase
     ENV['TWILLIO_API_KEY'] = nil
     ENV['TWILLIO_STUDIO_FLOW'] = nil
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
-  end
-
-  test 'enrollment email contents' do
-    email = PatientMailer.enrollment_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.tr("\n", ' ')
-    assert_not ActionMailer::Base.deliveries.empty?
-    assert_equal [@patient.email], email.to
-    assert_equal [PatientMailer.default[:from]], email.from
-    assert_equal I18n.t('assessments.email.enrollment.subject', locale: @patient.primary_language), email.subject
-    assert_includes email_body, I18n.t('assessments.email.enrollment.header', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.enrollment.dear', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.enrollment.info1', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.enrollment.info2', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.enrollment.report', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.enrollment.footer', locale: @patient.primary_language)
   end
 
   %i[enrollment_email assessment_email closed_email].each do |mthd|
@@ -121,165 +104,10 @@ class PatientMailerTest < ActionMailer::TestCase
     end
   end
 
-  test 'enrollment sms weblink message contents' do
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
-
-    allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
-                                                                                        from: 'test_messaging_sid',
-                                                                                        parameters:
-                                                                                           {
-                                                                                             medium: 'SINGLE_SMS',
-                                                                                             messages_array: [
-                                                                                               {
-                                                                                                 patient_submission_token: @patient.submission_token,
-                                                                                                 prompt: contents,
-                                                                                                 threshold_hash:
-                                                                                               @patient.jurisdiction[:current_threshold_condition_hash]
-                                                                                               }
-                                                                                             ]
-                                                                                           },
-                                                                                        to: '+15555550111'
-                                                                                      ))
-
-    PatientMailer.enrollment_sms_weblink(@patient).deliver_now
-  end
-
-  test 'enrollment sms weblink message contents not using messaging service' do
-    ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
-
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
-
-    # Assert correct REST call when messaging_service is NOT used falls back to from number
-    allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
-                                                                                        from: 'test',
-                                                                                        parameters:
-                                                                                           { medium: 'SINGLE_SMS',
-                                                                                             messages_array: [{
-                                                                                               patient_submission_token: @patient.submission_token,
-                                                                                               prompt: contents,
-                                                                                               threshold_hash:
-                                                                                              @patient.jurisdiction[:current_threshold_condition_hash]
-                                                                                             }] },
-                                                                                        to: '+15555550111'
-                                                                                      ))
-
-    PatientMailer.enrollment_sms_weblink(@patient).deliver_now
-  end
-
-  test 'enrollment sms text based message contents using messaging service' do
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
-
-    allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
-                                                                                        from: 'test_messaging_sid',
-                                                                                        parameters: {
-                                                                                          medium: 'SINGLE_SMS',
-                                                                                          messages_array: [
-                                                                                            {
-                                                                                              patient_submission_token: @patient.submission_token,
-                                                                                              prompt: contents,
-                                                                                              threshold_hash:
-                                                                                              @patient.jurisdiction[:current_threshold_condition_hash]
-                                                                                            }
-                                                                                          ]
-                                                                                        },
-                                                                                        to: '+15555550111'
-                                                                                      ))
-
-    PatientMailer.enrollment_sms_text_based(@patient).deliver_now
-  end
-
-  test 'enrollment sms text based message contents not using messaging service' do
-    ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: 'eng')} -0 #{I18n.t('assessments.sms.prompt.intro2', locale: 'eng')}"
-
-    allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
-                                                                                        from: 'test',
-                                                                                        parameters:
-                                                                                           { medium: 'SINGLE_SMS',
-                                                                                             messages_array: [{
-                                                                                               patient_submission_token: @patient.submission_token,
-                                                                                               prompt: contents,
-                                                                                               threshold_hash:
-                                                                                             @patient.jurisdiction[:current_threshold_condition_hash]
-                                                                                             }] },
-                                                                                        to: '+15555550111'
-                                                                                      ))
-
-    PatientMailer.enrollment_sms_text_based(@patient).deliver_now
-  end
-
-  test 'assessment sms weblink message contents using messaging service' do
+  test 'assessment sms weblink message with dependents' do
     @patient.update(preferred_contact_method: 'SMS Texted Weblink')
-    url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
-                                                                @patient.jurisdiction.unique_identifier,
-                                                                'eng',
-                                                                @patient&.initials_age)
-    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'eng')} -0: #{url}"
-
-    allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
-                                                                                        from: 'test_messaging_sid',
-                                                                                        parameters:
-                                                                                           { medium: 'SINGLE_SMS',
-                                                                                             messages_array: [{
-                                                                                               patient_submission_token: @patient.submission_token,
-                                                                                               prompt: contents,
-                                                                                               threshold_hash:
-                                                                                             @patient.jurisdiction[:current_threshold_condition_hash]
-                                                                                             }] },
-                                                                                        to: '+15555550111'
-                                                                                      ))
-
-    PatientMailer.assessment_sms_weblink(@patient).deliver_now
-  end
-
-  test 'assessment sms weblink message contents not using messaging service' do
-    ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
-    @patient.update(preferred_contact_method: 'SMS Texted Weblink')
-
-    url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
-                                                                @patient.jurisdiction.unique_identifier,
-                                                                'eng',
-                                                                @patient&.initials_age)
-    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'eng')} -0: #{url}"
-
-    allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
-                                                                                        from: 'test',
-                                                                                        parameters:
-                                                                                           { medium: 'SINGLE_SMS',
-                                                                                             messages_array: [{
-                                                                                               patient_submission_token: @patient.submission_token,
-                                                                                               prompt: contents,
-                                                                                               threshold_hash:
-                                                                                             @patient.jurisdiction[:current_threshold_condition_hash]
-                                                                                             }] },
-                                                                                        to: '+15555550111'
-                                                                                      ))
-
-    PatientMailer.assessment_sms_weblink(@patient).deliver_now
-  end
-
-  test 'assessment sms weblink message contents with dependents' do
-    @patient.update(preferred_contact_method: 'SMS Texted Weblink')
-    dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
+    dependent = create(:patient_with_submission_token)
+    dependent.update(responder_id: @patient.id)
 
     dependent_history_count = dependent.histories.count
     patient_history_count = @patient.histories.count
@@ -366,131 +194,326 @@ class PatientMailerTest < ActionMailer::TestCase
     end
   end
 
-  test 'assessment sms message content using messaging service' do
-    @patient.update(preferred_contact_method: 'SMS Text-Message')
+  Languages.all_languages.filter { |_k, v| v[:supported].present? }.each_key do |language|
+    test "assessment email contents in #{language}" do
+      @patient.update(primary_language: language.to_s)
+      email = PatientMailer.assessment_email(@patient).deliver_now
+      email_body = email.parts.first.body.to_s.tr("\n", ' ').tr("\r", '')
+      assert_not ActionMailer::Base.deliveries.empty?
+      assert_equal [@patient.email], email.to
+      assert_equal [PatientMailer.default[:from]], email.from
+      assert_equal I18n.t('assessments.html.email.reminder.subject', locale: @patient.primary_language), email.subject
+      assert_includes email_body, I18n.t('assessments.html.email.reminder.header', locale: @patient.primary_language)
+      assert_includes email_body, I18n.t('assessments.html.email.shared.greeting', locale: @patient.primary_language, name: @patient&.initials_age('-'))
+      assert_includes email_body.strip, I18n.t('assessments.html.email.reminder.thank_you', locale: @patient.primary_language)
+      assert_includes email_body, I18n.t('assessments.html.email.shared.report', locale: @patient.primary_language)
+      assert_includes email_body, I18n.t('assessments.html.email.shared.footer', locale: @patient.primary_language)
+    end
 
-    dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
+    test "closed email contents in #{language}" do
+      @patient.update(primary_language: language.to_s, closed_at: DateTime.now)
+      email = PatientMailer.closed_email(@patient).deliver_now
+      email_body = email.parts.first.body.to_s.tr("\n", ' ').tr("\r", '')
+      assert_not ActionMailer::Base.deliveries.empty?
+      assert_equal [@patient.email], email.to
+      assert_equal [PatientMailer.default[:from]], email.from
+      assert_equal I18n.t('assessments.html.email.closed.subject', locale: @patient.primary_language), email.subject
+      assert_includes email_body, I18n.t('assessments.html.email.closed.header', locale: @patient.primary_language)
+      assert_includes email_body, I18n.t(
+        'assessments.html.email.closed.thank_you',
+        initials_age: @patient.initials_age('-'),
+        completed_date: @patient.closed_at.strftime('%m-%d-%Y'),
+        locale: @patient.primary_language
+      )
+      assert_includes email_body, I18n.t('assessments.html.email.shared.footer', locale: @patient.primary_language)
+      assert_histories_contain(@patient, 'Monitoring Complete message was sent.')
+    end
 
-    dependent_history_count = dependent.histories.count
-    patient_history_count = @patient.histories.count
+    test "enrollment email contents in #{language}" do
+      @patient.update(primary_language: language.to_s)
+      email = PatientMailer.enrollment_email(@patient).deliver_now
+      email_body = email.parts.first.body.to_s.tr("\n", ' ').tr("\r", '')
+      assert_not ActionMailer::Base.deliveries.empty?
+      assert_equal [@patient.email], email.to
+      assert_equal [PatientMailer.default[:from]], email.from
+      assert_equal I18n.t('assessments.html.email.enrollment.subject', locale: @patient.primary_language), email.subject
+      assert_includes email_body, I18n.t('assessments.html.email.enrollment.header', locale: @patient.primary_language)
+      assert_includes email_body, I18n.t('assessments.html.email.shared.greeting', locale: @patient.primary_language, name: @patient&.initials_age('-'))
+      assert_includes email_body, I18n.t('assessments.html.email.enrollment.info1', locale: @patient.primary_language)
+      assert_includes email_body, I18n.t('assessments.html.email.enrollment.info2', locale: @patient.primary_language)
+      assert_includes email_body, I18n.t('assessments.html.email.shared.report', locale: @patient.primary_language)
+      assert_includes email_body, I18n.t('assessments.html.email.shared.footer', locale: @patient.primary_language)
+    end
 
-    params = {
-      language: 'ENG',
-      try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'eng'),
-      thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'eng'),
-      medium: 'SMS',
-      max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'eng'),
-      patient_submission_token: @patient.submission_token,
-      # Don't have any symptoms set up for this jurisdiction.
-      threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
-      # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'eng')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'eng')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'eng')}"
-      # rubocop:enable Layout/LineLength
-    }
+    test "enrollment sms weblink message contents not using messaging service in #{language}" do
+      ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
+      @patient.update(primary_language: language.to_s)
+      contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: language.to_s, name: '-0')
 
-    allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create)).with({
-                                                                                                               to: '+15555550111',
-                                                                                                               parameters: params,
-                                                                                                               from: 'test_messaging_sid'
-                                                                                                             })
-    PatientMailer.assessment_sms(@patient).deliver_now
-    # Assert that both the patient and dependent got history items added
-    assert_equal patient_history_count + 1, @patient.histories.count
-    assert_equal dependent_history_count + 1, dependent.histories.count
-  end
+      # Assert correct REST call when messaging_service is NOT used falls back to from number
+      allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
+        true
+      end)
+      expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
+                                                                                          from: 'test',
+                                                                                          parameters:
+                                                                                            { medium: 'SINGLE_SMS',
+                                                                                              messages_array: [{
+                                                                                                patient_submission_token: @patient.submission_token,
+                                                                                                prompt: contents,
+                                                                                                threshold_hash:
+                                                                                                @patient.jurisdiction[:current_threshold_condition_hash]
+                                                                                              }] },
+                                                                                          to: '+15555550111'
+                                                                                        ))
 
-  test 'assessment sms message content not using messaging service' do
-    ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
-    @patient.update(preferred_contact_method: 'SMS Text-Message')
-    dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+      PatientMailer.enrollment_sms_weblink(@patient).deliver_now
+    end
 
-    dependent_history_count = dependent.histories.count
-    patient_history_count = @patient.histories.count
+    test "enrollment sms text based message contents using messaging service in #{language}" do
+      contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: language.to_s, name: '-0')
+      @patient.update(primary_language: language.to_s)
 
-    params = {
-      language: 'ENG',
-      try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'eng'),
-      thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'eng'),
-      medium: 'SMS',
-      max_retries_message: I18n.t('assessments.sms.prompt.max_retries_message', locale: 'eng'),
-      patient_submission_token: @patient.submission_token,
-      # Don't have any symptoms set up for this jurisdiction.
-      threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
-      # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'eng')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'eng')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'eng')}"
-      # rubocop:enable Layout/LineLength
-    }
+      allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
+        true
+      end)
+      expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
+                                                                                          from: 'test_messaging_sid',
+                                                                                          parameters: {
+                                                                                            medium: 'SINGLE_SMS',
+                                                                                            messages_array: [
+                                                                                              {
+                                                                                                patient_submission_token: @patient.submission_token,
+                                                                                                prompt: contents,
+                                                                                                threshold_hash:
+                                                                                                @patient.jurisdiction[:current_threshold_condition_hash]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          to: '+15555550111'
+                                                                                        ))
 
-    allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create)).with({
-                                                                                                               to: '+15555550111',
-                                                                                                               parameters: params,
-                                                                                                               from: 'test'
-                                                                                                             })
-    PatientMailer.assessment_sms(@patient).deliver_now
+      PatientMailer.enrollment_sms_text_based(@patient).deliver_now
+    end
 
-    # Assert that both the patient and dependent got history items added
-    assert_equal patient_history_count + 1, @patient.histories.count
-    assert_equal dependent_history_count + 1, dependent.histories.count
-  end
+    test "enrollment sms text based message contents not using messaging service in #{language}" do
+      ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
+      contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: language.to_s, name: '-0')
+      @patient.update(primary_language: language.to_s)
 
-  test 'assessment voice message content should not use messaging service' do
-    dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
-    @patient.update(primary_language: 'so', preferred_contact_method: 'Telephone Call')
+      allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
+        true
+      end)
+      expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
+                                                                                          from: 'test',
+                                                                                          parameters:
+                                                                                            { medium: 'SINGLE_SMS',
+                                                                                              messages_array: [{
+                                                                                                patient_submission_token: @patient.submission_token,
+                                                                                                prompt: contents,
+                                                                                                threshold_hash:
+                                                                                              @patient.jurisdiction[:current_threshold_condition_hash]
+                                                                                              }] },
+                                                                                          to: '+15555550111'
+                                                                                        ))
 
-    dependent_history_count = dependent.histories.count
-    patient_history_count = @patient.histories.count
+      PatientMailer.enrollment_sms_text_based(@patient).deliver_now
+    end
 
-    params = {
-      language: 'ENG',
-      intro: I18n.t('assessments.phone.intro', locale: 'eng'),
-      try_again: I18n.t('assessments.phone.try-again', locale: 'eng'),
-      thanks: I18n.t('assessments.phone.thanks', locale: 'eng'),
-      max_retries_message: I18n.t('assessments.phone.max_retries_message', locale: 'eng'),
-      medium: 'VOICE',
-      patient_submission_token: @patient.submission_token,
-      # Don't have any symptoms set up for this jurisdiction.
-      threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
-      # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.phone.daily1', locale: 'eng')}, , #{I18n.t('assessments.phone.age', locale: 'eng')} 0,, , , #{I18n.t('assessments.phone.age', locale: 'eng')} 0,#{I18n.t('assessments.phone.daily2-p', locale: 'eng')}#{I18n.t('assessments.phone.daily3', locale: 'eng')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('eng')}?#{I18n.t('assessments.phone.daily4', locale: 'eng')}"
-      # rubocop:enable Layout/LineLength
-    }
+    test "assessment sms weblink message contents using messaging service in #{language}" do
+      @patient.update(preferred_contact_method: 'SMS Texted Weblink', primary_language: language.to_s)
+      url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
+                                                                  @patient.jurisdiction.unique_identifier,
+                                                                  @patient.primary_language,
+                                                                  @patient&.initials_age)
+      contents = I18n.t('assessments.twilio.sms.weblink.intro', locale: language.to_s, initials_age: '-0', url: url)
 
-    allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create)).with({
-                                                                                                               from: 'test',
-                                                                                                               to: '+15555550111',
-                                                                                                               parameters: params
-                                                                                                             })
-    PatientMailer.assessment_voice(@patient).deliver_now
+      allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
+        true
+      end)
+      expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
+                                                                                          from: 'test_messaging_sid',
+                                                                                          parameters:
+                                                                                            { medium: 'SINGLE_SMS',
+                                                                                              messages_array: [{
+                                                                                                patient_submission_token: @patient.submission_token,
+                                                                                                prompt: contents,
+                                                                                                threshold_hash:
+                                                                                              @patient.jurisdiction[:current_threshold_condition_hash]
+                                                                                              }] },
+                                                                                          to: '+15555550111'
+                                                                                        ))
 
-    # Assert that both the patient and dependent got history items added
-    assert_equal patient_history_count + 1, @patient.histories.count
-    assert_equal dependent_history_count + 1, dependent.histories.count
-  end
+      PatientMailer.assessment_sms_weblink(@patient).deliver_now
+    end
 
-  test 'assessment email contents' do
-    email = PatientMailer.assessment_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.tr("\n", ' ')
-    assert_not ActionMailer::Base.deliveries.empty?
-    assert_equal [@patient.email], email.to
-    assert_equal [PatientMailer.default[:from]], email.from
-    assert_equal I18n.t('assessments.email.reminder.subject', locale: @patient.primary_language), email.subject
-    assert_includes email_body, I18n.t('assessments.email.reminder.header', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.reminder.dear', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.reminder.thank-you', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.reminder.report', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t('assessments.email.reminder.footer', locale: @patient.primary_language)
+    test "assessment sms weblink message contents not using messaging service in #{language}" do
+      ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
+      @patient.update(preferred_contact_method: 'SMS Texted Weblink', primary_language: language.to_s)
+
+      url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
+                                                                  @patient.jurisdiction.unique_identifier,
+                                                                  @patient.primary_language,
+                                                                  @patient&.initials_age)
+      contents = I18n.t('assessments.twilio.sms.weblink.intro', locale: language.to_s, initials_age: '-0', url: url)
+
+      allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
+        true
+      end)
+      expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create).with(
+                                                                                          from: 'test',
+                                                                                          parameters:
+                                                                                            { medium: 'SINGLE_SMS',
+                                                                                              messages_array: [{
+                                                                                                patient_submission_token: @patient.submission_token,
+                                                                                                prompt: contents,
+                                                                                                threshold_hash:
+                                                                                              @patient.jurisdiction[:current_threshold_condition_hash]
+                                                                                              }] },
+                                                                                          to: '+15555550111'
+                                                                                        ))
+
+      PatientMailer.assessment_sms_weblink(@patient).deliver_now
+    end
+
+    if Languages.voice_supported?(language)
+      test "assessment voice message content should not use messaging service in #{language}" do
+        dependent = create(:patient_with_submission_token)
+        dependent.update(responder_id: @patient.id)
+        @patient.update(primary_language: language.to_s, preferred_contact_method: 'Telephone Call')
+
+        dependent_history_count = dependent.histories.count
+        patient_history_count = @patient.histories.count
+
+        patient_names = @patient.active_dependents.uniq.map do |dep|
+          I18n.t('assessments.twilio.voice.initials_age', locale: language.to_s, initials: dep&.initials, age: dep&.calc_current_age || '0')
+        end
+
+        symptom_names = @patient.jurisdiction.hierarchical_condition_bool_symptoms_string(language.to_s)
+        experiencing_symptoms = I18n.t('assessments.twilio.shared.experiencing_symptoms_p', locale: language.to_s, name: @patient.initials,
+                                                                                            symptom_names: symptom_names)
+        contents = I18n.t('assessments.twilio.voice.daily', locale: language.to_s, names: patient_names.join(', '),
+                                                            experiencing_symptoms: experiencing_symptoms)
+
+        params = {
+          language: language.to_s.split('-').first.upcase,
+          intro: I18n.t('assessments.twilio.voice.intro', locale: language.to_s),
+          try_again: I18n.t('assessments.twilio.voice.try_again', locale: language.to_s),
+          thanks: I18n.t('assessments.twilio.voice.thanks', locale: language.to_s),
+          max_retries_message: I18n.t('assessments.twilio.shared.max_retries_message', locale: language.to_s),
+          medium: 'VOICE',
+          patient_submission_token: @patient.submission_token,
+          # Don't have any symptoms set up for this jurisdiction.
+          threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
+          prompt: contents
+        }
+
+        allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
+          true
+        end)
+        expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create)).with({
+                                                                                                                   from: 'test',
+                                                                                                                   to: '+15555550111',
+                                                                                                                   parameters: params
+                                                                                                                 })
+        PatientMailer.assessment_voice(@patient).deliver_now
+
+        # Assert that both the patient and dependent got history items added
+        assert_equal patient_history_count + 1, @patient.histories.count
+        assert_equal dependent_history_count + 1, dependent.histories.count
+      end
+    end
+
+    test "assessment sms message content not using messaging service #{language}" do
+      ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
+      @patient.update(preferred_contact_method: 'SMS Text-Message', primary_language: language.to_s)
+      dependent = create(:patient)
+      dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+
+      dependent_history_count = dependent.histories.count
+      patient_history_count = @patient.histories.count
+
+      patient_names = @patient.active_dependents.uniq.map do |dep|
+        I18n.t('assessments.twilio.sms.prompt.name', locale: language.to_s, name: dep&.initials_age('-'))
+      end
+
+      symptom_names = @patient.jurisdiction.hierarchical_condition_bool_symptoms_string(language.to_s)
+      experiencing_symptoms = I18n.t('assessments.twilio.shared.experiencing_symptoms_p', locale: language.to_s, name: @patient.initials,
+                                                                                          symptom_names: symptom_names)
+      contents = I18n.t('assessments.twilio.sms.prompt.daily', locale: language.to_s, names: patient_names.join(', '),
+                                                               experiencing_symptoms: experiencing_symptoms)
+
+      params = {
+        language: language.to_s.split('-').first.upcase,
+        try_again: I18n.t('assessments.twilio.sms.prompt.try_again', locale: language.to_s),
+        thanks: I18n.t('assessments.twilio.sms.prompt.thanks', locale: language.to_s),
+        medium: 'SMS',
+        max_retries_message: I18n.t('assessments.twilio.shared.max_retries_message', locale: language.to_s),
+        patient_submission_token: @patient.submission_token,
+        # Don't have any symptoms set up for this jurisdiction.
+        threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
+        prompt: contents
+      }
+
+      allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
+        true
+      end)
+      expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create)).with({
+                                                                                                                 to: '+15555550111',
+                                                                                                                 parameters: params,
+                                                                                                                 from: 'test'
+                                                                                                               })
+      PatientMailer.assessment_sms(@patient).deliver_now
+
+      # Assert that both the patient and dependent got history items added
+      assert_equal patient_history_count + 1, @patient.histories.count
+      assert_equal dependent_history_count + 1, dependent.histories.count
+    end
+
+    test "assessment sms message content using messaging service #{language}" do
+      @patient.update(preferred_contact_method: 'SMS Text-Message', primary_language: language.to_s)
+
+      dependent = create(:patient_with_submission_token)
+      dependent.update(responder_id: @patient.id)
+
+      dependent_history_count = dependent.histories.count
+      patient_history_count = @patient.histories.count
+
+      patient_names = @patient.active_dependents.uniq.map do |dep|
+        I18n.t('assessments.twilio.sms.prompt.name', locale: language.to_s, name: dep&.initials_age('-'))
+      end
+
+      symptom_names = @patient.jurisdiction.hierarchical_condition_bool_symptoms_string(language.to_s)
+      experiencing_symptoms = I18n.t('assessments.twilio.shared.experiencing_symptoms_p', locale: language.to_s, name: @patient.initials,
+                                                                                          symptom_names: symptom_names)
+      contents = I18n.t('assessments.twilio.sms.prompt.daily', locale: language.to_s, names: patient_names.join(', '),
+                                                               experiencing_symptoms: experiencing_symptoms)
+
+      params = {
+        language: language.to_s.split('-').first.upcase,
+        try_again: I18n.t('assessments.twilio.sms.prompt.try_again', locale: language.to_s),
+        thanks: I18n.t('assessments.twilio.sms.prompt.thanks', locale: language.to_s),
+        medium: 'SMS',
+        max_retries_message: I18n.t('assessments.twilio.shared.max_retries_message', locale: language.to_s),
+        patient_submission_token: @patient.submission_token,
+        # Don't have any symptoms set up for this jurisdiction.
+        threshold_hash: @patient.jurisdiction[:current_threshold_condition_hash],
+        prompt: contents
+      }
+
+      allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
+        true
+      end)
+      expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create)).with({
+                                                                                                                 to: '+15555550111',
+                                                                                                                 parameters: params,
+                                                                                                                 from: 'test_messaging_sid'
+                                                                                                               })
+      PatientMailer.assessment_sms(@patient).deliver_now
+      # Assert that both the patient and dependent got history items added
+      assert_equal patient_history_count + 1, @patient.histories.count
+      assert_equal dependent_history_count + 1, dependent.histories.count
+    end
   end
 
   test 'assessment email with dependents' do
@@ -536,8 +559,8 @@ class PatientMailerTest < ActionMailer::TestCase
   test 'assessment email patient with dependents' do
     @patient.update(preferred_contact_method: 'E-mailed Web Link')
 
-    dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
+    dependent = create(:patient_with_submission_token)
+    dependent.update(responder_id: @patient.id)
 
     email = PatientMailer.enrollment_email(@patient).deliver_now
     email_body = email.parts.first.body.to_s.tr("\n", ' ')
@@ -551,25 +574,6 @@ class PatientMailerTest < ActionMailer::TestCase
     assert_not ActionMailer::Base.deliveries.empty?
     assert_includes email_body, @patient.submission_token
     assert_not_includes email_body, dependent.submission_token
-  end
-
-  test 'closed email contents' do
-    @patient.update(closed_at: DateTime.now)
-    email = PatientMailer.closed_email(@patient).deliver_now
-    email_body = email.parts.first.body.to_s.tr("\n", ' ').tr("\r", ' ')
-    assert_not ActionMailer::Base.deliveries.empty?
-    assert_equal [@patient.email], email.to
-    assert_equal [PatientMailer.default[:from]], email.from
-    assert_equal I18n.t('assessments.email.closed.subject', locale: @patient.primary_language), email.subject
-    assert_includes email_body, I18n.t('assessments.email.closed.header', locale: @patient.primary_language)
-    assert_includes email_body, I18n.t(
-      'assessments.email.closed.thank-you',
-      initials_age: @patient.initials_age('-'),
-      completed_date: @patient.closed_at.strftime('%m-%d-%Y'),
-      locale: @patient.primary_language
-    )
-    assert_includes email_body, I18n.t('assessments.email.closed.footer', locale: @patient.primary_language)
-    assert_histories_contain(@patient, 'Monitoring Complete message was sent.')
   end
 
   [
@@ -602,7 +606,7 @@ class PatientMailerTest < ActionMailer::TestCase
     test "send_assessment does not touch updated_at for #{attributes} when failing to send an assessment" do
       BlockedNumber.create(phone_number: '+12223334444')
       ActionMailer::Base.deliveries.clear
-      patient = create(:patient, { submission_token: SecureRandom.urlsafe_base64[0, 10], last_date_of_exposure: Date.yesterday }.merge(attributes))
+      patient = create(:patient_with_submission_token, { last_date_of_exposure: Date.yesterday }.merge(attributes))
       patient.update(updated_at: 300.days.ago)
       assert_nil patient.last_assessment_reminder_sent
       # If a job is created, then ensure it executes now
@@ -632,8 +636,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment_email logs to sentry when it fails' do
     ActionMailer::Base.deliveries.clear
-    patient = create(:patient,
-                     submission_token: SecureRandom.urlsafe_base64[0, 10],
+    patient = create(:patient_with_submission_token,
                      preferred_contact_method: 'E-mailed Web Link',
                      email: 'testpatient@example.com')
     allow_any_instance_of(Patient).to(receive(:select_language).and_raise('Testing assessment_email'))

@@ -179,9 +179,9 @@ class SymptomsAssessment extends React.Component {
         aria-label={`${symp.name} Symptom Check`}
         label={
           <div>
-            <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]['name']}</b>{' '}
-            {this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
-              ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
+            <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]?.name || symp.name}</b>{' '}
+            {this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes
+              ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes
               : ''}
           </div>
         }
@@ -220,9 +220,9 @@ class SymptomsAssessment extends React.Component {
     return (
       <Form.Row className="pt-3" key={key}>
         <Form.Label className="input-label" key={key + '_label'} htmlFor={id}>
-          <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]['name']}</b>{' '}
-          {this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
-            ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
+          <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]?.name || symp.name}</b>{' '}
+          {this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes
+            ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes
             : ''}
         </Form.Label>
         {symp.type === 'IntegerSymptom' && this.integerSymptom(symp)}
@@ -235,7 +235,7 @@ class SymptomsAssessment extends React.Component {
     return (
       <Card className="mx-0 card-square">
         <Card.Header className="h4">
-          {this.props.translations[this.props.lang]['web']['title']}{' '}
+          {this.props.translations[this.props.lang]['html']['weblink']['title']}{' '}
           {this.props.patient_initials && this.props.patient_age !== null && (
             <span>
               ({this.props.patient_initials}-{this.props.patient_age})
@@ -246,7 +246,7 @@ class SymptomsAssessment extends React.Component {
         </Card.Header>
         <Card.Body>
           <Form.Row>
-            <Form.Label className="input-label pb-3">{this.props.translations[this.props.lang]['web']['bool-title']}</Form.Label>
+            <Form.Label className="input-label pb-3">{this.props.translations[this.props.lang]['html']['weblink']['bool-title']}</Form.Label>
           </Form.Row>
           <Form.Row>
             <Form.Group className="pt-1">
@@ -279,7 +279,7 @@ class SymptomsAssessment extends React.Component {
                 </React.Fragment>
               )}
               {/* The following <span> tags cannot be removed. They prevent Google Translate from confusing the react node-tree when translated */}
-              <span>{this.props.translations[this.props.lang]['web']['submit']}</span>
+              <span>{this.props.translations[this.props.lang]['html']['weblink']['submit']}</span>
             </Button>
           </Form.Row>
         </Card.Body>

@@ -81,6 +81,10 @@
   :display: 'Arabic'
   :iso6391code: "ar"
   :system: 'iso639-2t'
+  :supported:
+    :sms: false
+    :email: false
+    :phone: false
 
 :arg:
   :display: 'Aragonese'
@@ -869,6 +873,10 @@
   :display: 'Korean'
   :iso6391code: "ko"
   :system: 'iso639-2t'
+  :supported:
+    :sms: false
+    :email: true
+    :phone: true
 
 :kos:
   :display: 'Kosraean'
@@ -1389,6 +1397,10 @@
   :display: 'Russian'
   :iso6391code: "ru"
   :system: 'iso639-2t'
+  :supported:
+    :sms: false
+    :email: true
+    :phone: true
 
 :sad:
   :display: 'Sandawe'
@@ -1775,6 +1787,10 @@
   :display: 'Vietnamese'
   :iso6391code: "vi"
   :system: 'iso639-2t'
+  :supported:
+    :sms: false
+    :email: true
+    :phone: false
 
 :vot:
   :display: 'Votic'
