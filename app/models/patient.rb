@@ -1291,16 +1291,12 @@ class Patient < ApplicationRecord
       if attribute.to_sym == :jurisdiction_id
         before = Jurisdiction.find(before)[:path]
         after = Jurisdiction.find(after)[:path]
-      end
-
-      if %i[primary_language secondary_language].include?(attribute.to_sym)
-        before = Languages.all_languages.dig(before&.to_sym, :display) || before
-        after = Languages.all_languages.dig(after&.to_sym, :display) || after
-      end
-
-      if attribute.to_sym == :preferred_contact_time
+      elsif attribute.to_sym == :preferred_contact_time
         before = ValidationHelper::TIME_OPTIONS[before&.to_sym] || before
         after = ValidationHelper::TIME_OPTIONS[after&.to_sym] || after
+      elsif %i[primary_language secondary_language].include?(attribute.to_sym)
+        before = Languages.all_languages.dig(before&.to_sym, :display) || before
+        after = Languages.all_languages.dig(after&.to_sym, :display) || after
       end
 
       diffs << { attribute: attribute, before: before, after: after }
