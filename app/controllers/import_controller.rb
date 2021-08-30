@@ -110,6 +110,8 @@ class ImportController < ApplicationController
           vaccines = []
           vaccines.push(vaccination(row[102..106], row_ind)) if row[102..106].filter(&:present?).any?
           vaccines.push(vaccination(row[107..111], row_ind)) if row[107..111].filter(&:present?).any?
+          vaccines.push(vaccination(row[114..118], row_ind)) if row[114..118].filter(&:present?).any?
+
           patient[:vaccines_attributes] = vaccines unless vaccines.empty?
 
           # Validate using Vaccine model validators without saving
