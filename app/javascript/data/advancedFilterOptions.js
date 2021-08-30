@@ -21,6 +21,14 @@ export const advancedFilterOptions = [
     type: 'boolean',
   },
   {
+    name: 'ineligible-for-recovery-definition',
+    title: 'Ineligible for any recovery definition (Boolean)',
+    description: 'All isolation records ineligible to ever appear on Records Requiring Review line list',
+    type: 'boolean',
+    tooltip:
+      'This filter will return all records in the Isolation workflow that both do not have a Symptom Onset Date and do not have a positive lab result with a Specimen Collection Date',
+  },
+  {
     name: 'monitoring-status',
     title: 'Active Monitoring (Boolean)',
     description: 'Monitorees who are currently under active monitoring',
@@ -76,12 +84,10 @@ export const advancedFilterOptions = [
       'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.',
   },
   {
-    name: 'ineligible-for-recovery-definition',
-    title: 'Ineligible for any recovery definition (Boolean)',
-    description: 'All isolation records ineligible to ever appear on Records Requiring Review line list',
+    name: 'unenrolled-close-contact',
+    title: 'Unenrolled Close Contact (Boolean)',
+    description: 'All records with at least one unenrolled Close Contact',
     type: 'boolean',
-    tooltip:
-      'This filter will return all records in the Isolation workflow that both do not have a Symptom Onset Date and do not have a positive lab result with a Specimen Collection Date',
   },
 
   /* SEARCH FILTER OPTIONS */
