@@ -12,6 +12,7 @@ const previousMock = jest.fn();
 const nextMock = jest.fn();
 const setEnrollmentStateMock = jest.fn();
 const exposureInputLabels = ['LAST DATE OF EXPOSURE', 'EXPOSURE LOCATION', 'EXPOSURE COUNTRY', 'CONTINUOUS EXPOSURE', 'EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)', 'CLOSE CONTACT WITH A KNOWN CASE', 'TRAVEL FROM AFFECTED COUNTRY OR AREA', 'WAS IN HEALTHCARE FACILITY WITH KNOWN CASES', 'LABORATORY PERSONNEL', 'HEALTHCARE PERSONNEL', 'CREW ON PASSENGER OR CARGO FLIGHT', 'MEMBER OF A COMMON EXPOSURE COHORT', 'NOTES'];
+const continuous_exposure_enabled = true;
 
 function getShallowWrapper(patient, showBtn) {
   const current = {
@@ -19,7 +20,7 @@ function getShallowWrapper(patient, showBtn) {
     patient: patient,
     propagatedFields: {},
   };
-  return shallow(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} authenticity_token={'123'} />);
+  return shallow(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} continuous_exposure_enabled={continuous_exposure_enabled} authenticity_token={'123'} />);
 }
 
 function getMountedWrapper(patient, showBtn) {
@@ -28,7 +29,7 @@ function getMountedWrapper(patient, showBtn) {
     patient: patient,
     propagatedFields: {},
   };
-  return mount(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} authenticity_token={'123'} />);
+  return mount(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} continuous_exposure_enabled={continuous_exposure_enabled} authenticity_token={'123'} />);
 }
 
 afterEach(() => {

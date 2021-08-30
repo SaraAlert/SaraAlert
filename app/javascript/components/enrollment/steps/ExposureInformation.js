@@ -280,17 +280,19 @@ class ExposureInformation extends React.Component {
               {this.state.errors['potential_exposure_country']}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} lg={{ span: 8, order: 4 }} md={{ span: 12, order: 3 }} xs={{ span: 24, order: 2 }} className="pl-1">
-            <Form.Check
-              size="lg"
-              label={`CONTINUOUS EXPOSURE${schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}`}
-              id="continuous_exposure"
-              className="ml-1 d-inline"
-              checked={!!this.state.current.patient.continuous_exposure}
-              onChange={this.handleChange}
-            />
-            <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
-          </Form.Group>
+          {this.props.continuous_exposure_enabled && (
+            <Form.Group as={Col} lg={{ span: 8, order: 4 }} md={{ span: 12, order: 3 }} xs={{ span: 24, order: 2 }} className="pl-1">
+              <Form.Check
+                size="lg"
+                label={`CONTINUOUS EXPOSURE${schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}`}
+                id="continuous_exposure"
+                className="ml-1 d-inline"
+                checked={!!this.state.current.patient.continuous_exposure}
+                onChange={this.handleChange}
+              />
+              <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
+            </Form.Group>
+          )}
         </Form.Row>
         <Form.Label className="input-label pb-1">EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)</Form.Label>
         <Form.Row>
@@ -555,6 +557,7 @@ ExposureInformation.propTypes = {
   jurisdiction_paths: PropTypes.object,
   assigned_users: PropTypes.array,
   showPreviousButton: PropTypes.bool,
+  continuous_exposure_enabled: PropTypes.bool,
   authenticity_token: PropTypes.string,
 };
 
