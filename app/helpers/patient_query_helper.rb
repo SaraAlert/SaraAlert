@@ -511,6 +511,12 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           # Get patients where jurisdiction is any of the jurisdictions or subjurisdictions of the filter
           patients = patients.where(jurisdiction_id: subjurisdictions)
         end
+      when 'unenrolled-close-contact'
+        patients = if filter[:value]
+                     patients.where_assoc_exists(:close_contacts, enrolled_id: nil)
+                   else
+                     patients.where_assoc_not_exists(:close_contacts, enrolled_id: nil)
+                   end
       end
     end
     patients
