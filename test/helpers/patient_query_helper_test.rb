@@ -6,7 +6,7 @@ require 'test_case'
 class PatientQueryHelperTest < ActionView::TestCase
   # --- BOOLEAN ADVANCED FILTER QUERIES --- #
 
-  test 'advanced filter blocked sms properly filters those with blocked numbers' do
+  test 'advanced filter blocked sms' do
     Patient.destroy_all
     user = create(:public_health_enroller_user)
     patient_1 = create(:patient, creator: user, primary_telephone: '1111111111')
@@ -76,6 +76,40 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:value] = false
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter unenrolled close contact' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:close_contact, patient: patient_1)
+    create(:close_contact, patient: patient_1, enrolled_id: 111)
+    patient_2 = create(:patient, creator: user)
+    create(:close_contact, patient: patient_2)
+    create(:close_contact, patient: patient_2)
+    patient_3 = create(:patient, creator: user)
+    create(:close_contact, patient: patient_3, enrolled_id: 333)
+    create(:close_contact, patient: patient_3, enrolled_id: 334)
+    create(:close_contact, patient: patient_3, enrolled_id: 335)
+    patient_4 = create(:patient, creator: user)
+
+    patients = Patient.all
+
+    filters = [{ filterOption: {}, additionalFilterOption: nil, value: nil }]
+    filters[0][:filterOption]['name'] = 'unenrolled-close-contact'
+    tz_offset = 300
+
+    # Check for monitorees who have at least one unenrolled close contact
+    filters[0][:value] = true
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Check for monitorees who have no close contacts or only enrolled close contacts
+    filters[0][:value] = false
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_3, patient_4]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
