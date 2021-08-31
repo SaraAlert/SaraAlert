@@ -322,60 +322,56 @@ class AssessmentTable extends React.Component {
             Reports
           </Card.Header>
           <Card.Body>
-            <div className="mt-4">
-              <CurrentStatus report_eligibility={this.props.report_eligibility} status={this.props.patient_status} isolation={this.props.patient?.isolation} />
-              <Row className="my-4">
-                <Col>
-                  <Button variant="primary" className="mr-2" onClick={this.handleAddReportClick}>
-                    <i className="fas fa-plus fa-fw"></i>
-                    <span className="ml-2">Add New Report</span>
-                  </Button>
-                  <ClearAssessments authenticity_token={this.props.authenticity_token} patient={this.props.patient} num_pos_labs={this.props.num_pos_labs} />
-                  <PauseNotifications authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
-                  <ContactAttempt
-                    authenticity_token={this.props.authenticity_token}
-                    patient={this.props.patient}
-                    household_members={this.props.household_members}
-                    current_user={this.props.current_user}
-                    jurisdiction_paths={this.props.jurisdiction_paths}
-                    workflow={this.props.workflow}
-                  />
-                </Col>
-                <Col lg={5}>
-                  <InputGroup size="md">
-                    <InputGroup.Prepend>
-                      <OverlayTrigger overlay={<Tooltip>Search by id or reporter.</Tooltip>}>
-                        <InputGroup.Text className="rounded-0">
-                          <i className="fas fa-search"></i>
-                          <label htmlFor="reports-search-input" className="ml-1 mb-0" aria-label="Search Reports Table by ID or reporter.">
-                            Search
-                          </label>
-                        </InputGroup.Text>
-                      </OverlayTrigger>
-                    </InputGroup.Prepend>
-                    <Form.Control id="reports-search-input" autoComplete="off" size="md" name="search" onChange={this.handleSearchChange} aria-label="Search" />
-                  </InputGroup>
-                </Col>
-              </Row>
-              <div className="mb-4">
-                <CustomTable
-                  title="Reports"
-                  dataType="assessments"
-                  columnData={this.state.table.colData}
-                  rowData={this.state.table.rowData}
-                  totalRows={this.state.table.totalRows}
-                  handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
-                  handleEntriesChange={this.handleEntriesChange}
-                  isLoading={this.state.isLoading}
-                  page={this.state.query.page}
-                  handlePageUpdate={this.handlePageUpdate}
-                  entryOptions={this.state.entryOptions}
-                  entries={this.state.query.entries}
-                  tableCustomClass="table-has-dropdown"
-                  getRowClassName={this.getRowClassName}
+            <CurrentStatus report_eligibility={this.props.report_eligibility} status={this.props.patient_status} isolation={this.props.patient?.isolation} />
+            <Row className="my-4">
+              <Col>
+                <Button variant="primary" className="mr-2" onClick={this.handleAddReportClick}>
+                  <i className="fas fa-plus fa-fw"></i>
+                  <span className="ml-2">Add New Report</span>
+                </Button>
+                <ClearAssessments authenticity_token={this.props.authenticity_token} patient={this.props.patient} num_pos_labs={this.props.num_pos_labs} />
+                <PauseNotifications authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+                <ContactAttempt
+                  authenticity_token={this.props.authenticity_token}
+                  patient={this.props.patient}
+                  household_members={this.props.household_members}
+                  current_user={this.props.current_user}
+                  jurisdiction_paths={this.props.jurisdiction_paths}
+                  workflow={this.props.workflow}
                 />
-              </div>
-            </div>
+              </Col>
+              <Col lg={5}>
+                <InputGroup size="md">
+                  <InputGroup.Prepend>
+                    <OverlayTrigger overlay={<Tooltip>Search by id or reporter.</Tooltip>}>
+                      <InputGroup.Text className="rounded-0">
+                        <i className="fas fa-search"></i>
+                        <label htmlFor="reports-search-input" className="ml-1 mb-0" aria-label="Search Reports Table by ID or reporter.">
+                          Search
+                        </label>
+                      </InputGroup.Text>
+                    </OverlayTrigger>
+                  </InputGroup.Prepend>
+                  <Form.Control id="reports-search-input" autoComplete="off" size="md" name="search" onChange={this.handleSearchChange} aria-label="Search" />
+                </InputGroup>
+              </Col>
+            </Row>
+            <CustomTable
+              title="Reports"
+              dataType="assessments"
+              columnData={this.state.table.colData}
+              rowData={this.state.table.rowData}
+              totalRows={this.state.table.totalRows}
+              handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
+              handleEntriesChange={this.handleEntriesChange}
+              isLoading={this.state.isLoading}
+              page={this.state.query.page}
+              handlePageUpdate={this.handlePageUpdate}
+              entryOptions={this.state.entryOptions}
+              entries={this.state.query.entries}
+              tableCustomClass="table-has-dropdown"
+              getRowClassName={this.getRowClassName}
+            />
             <MonitoringPeriod
               authenticity_token={this.props.authenticity_token}
               patient={this.props.patient}

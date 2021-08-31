@@ -385,62 +385,58 @@ class CloseContactTable extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Card className="mx-2 mt-3 mb-4 card-square">
+        <Card className="mx-2 my-4 card-square">
           <Card.Header as="h1" className="patient-card-header">
             Close Contacts <InfoTooltip tooltipTextKey="closeContacts" location="right" />
           </Card.Header>
-          <Card.Body>
-            <div className="mt-4">
-              <Row className="my-4">
-                <Col>
-                  <Button variant="primary" className="mr-2" onClick={() => this.toggleAddModal()}>
-                    <i className="fas fa-plus fa-fw"></i>
-                    <span className="ml-2">Add New Close Contact</span>
-                  </Button>
-                </Col>
-                <Col xl={6} lg={10} md={12}>
-                  <InputGroup size="md" className="mt-3 mt-md-0 ">
-                    <InputGroup.Prepend>
-                      <OverlayTrigger overlay={<Tooltip>Search by First Name, Last Name, Phone Number, Email, Assigned User, or Contact Attempts.</Tooltip>}>
-                        <InputGroup.Text className="rounded-0">
-                          <i className="fas fa-search"></i>
-                          <label
-                            htmlFor="close-contact-search-input"
-                            className="ml-2 mb-0"
-                            aria-label="Search Close Contact Table by First Name, Last Name, Phone Number, Email, Assigned User, or Contact Attempts.">
-                            Search
-                          </label>
-                        </InputGroup.Text>
-                      </OverlayTrigger>
-                    </InputGroup.Prepend>
-                    <Form.Control
-                      id="close-contact-search-input"
-                      autoComplete="off"
-                      size="md"
-                      name="search"
-                      onChange={this.handleSearchChange}
-                      aria-label="Search"
-                    />
-                  </InputGroup>
-                </Col>
-              </Row>
-              <div className="mb-4">
-                <CustomTable
-                  dataType="close-contacts"
-                  columnData={this.state.table.colData}
-                  rowData={this.state.table.rowData}
-                  totalRows={this.state.table.totalRows}
-                  handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
-                  handleEntriesChange={this.handleEntriesChange}
-                  isLoading={this.state.isLoading}
-                  page={this.state.query.page}
-                  handlePageUpdate={this.handlePageUpdate}
-                  entryOptions={this.state.entryOptions}
-                  entries={this.state.query.entries}
-                  tableCustomClass="table-has-dropdown"
-                />
-              </div>
-            </div>
+          <Card.Body className="my-1">
+            <Row className="mb-4">
+              <Col>
+                <Button variant="primary" className="mr-2" onClick={() => this.toggleAddModal()}>
+                  <i className="fas fa-plus fa-fw"></i>
+                  <span className="ml-2">Add New Close Contact</span>
+                </Button>
+              </Col>
+              <Col xl={6} lg={10} md={12}>
+                <InputGroup size="md" className="mt-3 mt-md-0 ">
+                  <InputGroup.Prepend>
+                    <OverlayTrigger overlay={<Tooltip>Search by First Name, Last Name, Phone Number, Email, Assigned User, or Contact Attempts.</Tooltip>}>
+                      <InputGroup.Text className="rounded-0">
+                        <i className="fas fa-search"></i>
+                        <label
+                          htmlFor="close-contact-search-input"
+                          className="ml-2 mb-0"
+                          aria-label="Search Close Contact Table by First Name, Last Name, Phone Number, Email, Assigned User, or Contact Attempts.">
+                          Search
+                        </label>
+                      </InputGroup.Text>
+                    </OverlayTrigger>
+                  </InputGroup.Prepend>
+                  <Form.Control
+                    id="close-contact-search-input"
+                    autoComplete="off"
+                    size="md"
+                    name="search"
+                    onChange={this.handleSearchChange}
+                    aria-label="Search"
+                  />
+                </InputGroup>
+              </Col>
+            </Row>
+            <CustomTable
+              dataType="close-contacts"
+              columnData={this.state.table.colData}
+              rowData={this.state.table.rowData}
+              totalRows={this.state.table.totalRows}
+              handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
+              handleEntriesChange={this.handleEntriesChange}
+              isLoading={this.state.isLoading}
+              page={this.state.query.page}
+              handlePageUpdate={this.handlePageUpdate}
+              entryOptions={this.state.entryOptions}
+              entries={this.state.query.entries}
+              tableCustomClass="table-has-dropdown"
+            />
           </Card.Body>
         </Card>
         {this.state.showDeleteModal && (
