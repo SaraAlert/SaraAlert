@@ -190,7 +190,7 @@ class CloseContactModal extends React.Component {
                 rows="5"
                 className="form-square"
                 value={this.state.notes || ''}
-                placeholder={this.closeContactNotePlaceholder}
+                placeholder="enter additional information about contact"
                 maxLength={MAX_NOTES_LENGTH}
                 onChange={this.handleNotesChange}
               />
