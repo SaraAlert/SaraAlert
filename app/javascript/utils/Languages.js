@@ -17,6 +17,7 @@ const COMMON_LANGUAGES = {
   kor: 'Korean',
   rus: 'Russian',
   // ara: 'Arabic',
+  zho: 'Chinese',
 };
 
 /**

@@ -1,0 +1,114 @@
+zho:
+  assessments:
+    html:
+      shared:
+        email: '电子邮件'
+        phone: '电话'
+        webpage: '网页'
+      weblink:
+        title: '日常自我报告 '
+        bool-title: '请选择您正经历的所有症状'
+        instruction1: '如果您没有报告任何症状，请继续遵循由当地卫生部门提供的建议。'
+        instruction2: '如果您报告了任何症状，当地卫生部门将会尽快与您联系。如果您有任何紧急问题，请联系您的医疗服务提供者或当地卫生部门。避免与其他人密切接触，并留在家中。'
+        instruction3: '如果您遇到紧急医疗情况，请拨打911，并让他们知道你正在接受卫生部门的监控。'
+        instruction4: '请使用下面的联系信息与负责您病例的公共健康官员联系。'
+        submit: '提交'
+        thank_you: '感谢您完成您的自我报告'
+      email:
+        shared:
+          greeting: '亲爱的%{name},'
+          report: '每日报告'
+          footer: >-
+            不要回复此电子邮件，转发此电子邮件或分享此链接。此消息是由Sara Alert系统自动生成的，并且是唯一的，仅供您使用。如果您希望停止接收这些通知，或者认为这是一个错误，请联系您当地的公共卫生部门。
+            有关隐私和更多信息，请访问saraalert.org。
+        enrollment:
+          subject: '加入Sara Alert'
+          header: '欢迎使用Sara Alert系统'
+          info1: '您已加入Sara Alert监控系统。我们要求您提供您的每日状况报告。请单击下面的按钮，然后按照屏幕上的说明进行操作。'
+          info2: '您将每天收到了类似的提醒，直到你的监控期结束。'
+        reminder:
+          subject: 'Sara Alert报告提醒'
+          header: '这封邮件提醒您完成您的每日报告'
+          thank_you: '感谢您参加Sara Alert监控系统，请使用下面的链接填写您的每日报告。'
+        closed:
+          subject: 'Sara Alert监控期已结束'
+          header: '监控已完成！'
+          thank_you: 'Sara警报监控 %{initials_age}已于%{completed_date}完成！感谢您的参与。'
+        contact:
+          info1: '如果您有任何疑问，请使用下面的联系信息联系帮助您的公共卫生机构：'
+          info2: '请联系帮助您加入Sara Alert 系统的公共卫生机构。'
+    twilio:
+      shared:
+        experiencing_symptoms_s: '%{name}是否正经历任何以下症状: %{symptom_names}.'
+        experiencing_symptoms_p: '这些人是否正经历任何以下症状: %{symptom_names}.'
+        max_retries_message: '抱歉，您已达到最大响应尝试次数。如果您遇到医疗紧急情况，请致电911。'
+      sms:
+        prompt:
+          intro: 欢迎使用Sara Alert系统。我们会将%{name}每日报告发送到这个电话号码。有关保护隐私和更多信息，请访问saraalert.org。
+          reminder: '这是Sara Alert系统提醒您请回复我们的每日报告信息'
+          name: '%{name}'
+          daily: '这是Sara Alert的每日报告: %{names}. %{experiencing_symptoms} 请用“是”或“否”回答'
+          try_again: '对不起，我听不懂。请回答“是”或“否”。如有任何疑问，请联系当地的卫生部门。'
+          thanks: '感谢您填写每日报告'
+        weblink:
+          intro: '请填写Sara Alert每日报告 %{initials_age}: %{url}'
+        closed:
+          thank_you: 'Sara警报监控 %{initials_age}已于%{completed_date}完成！感谢您的参与。'
+      voice:
+        intro: '您好，这里是自动公共卫生助手Sara打电话询问您的每日报告。'
+        initials_age: '%{initials}，年龄%{age}'
+        daily: '这个报告是有关: %{names}. %{experiencing_symptoms}. 请用“是”或“否”回答'
+        try_again: '对不起，我听不懂。让我们再试一次。'
+        thanks: '感谢您完成您的每日报告！再见。'
+    symptoms:
+      chills:
+        name: '发冷'
+      congestion-or-runny-nose:
+        name: '拥堵或流鼻涕'
+      cough:
+        name: '咳嗽'
+      diarrhea:
+        name: '腹泻'
+      difficulty-breathing:
+        name: '呼吸困难'
+      fatigue:
+        name: '疲劳'
+      fever:
+        name: '发烧'
+        notes: '发热或测量体温温度等于或高于100.4华氏度/38摄氏度'
+      headache:
+        name: '头痛'
+      muscle-pain:
+        name: '肌肉疼痛'
+      nausea-or-vomiting:
+        name: '恶心或呕吐'
+      new-loss-of-smell:
+        name: '新的嗅觉丧失'
+      new-loss-of-taste:
+        name: '新的味觉丧失'
+      pulse-ox:
+        name: '脉搏血氧水平'
+        notes: '你过去24小时里最低的氧气水平是多少？'
+      repeated-shaking-with-chills:
+        name: '反复发冷颤抖'
+      shortness-of-breath:
+        name: '呼吸急促'
+      sore-throat:
+        name: '咽喉痛'
+      temperature:
+        name: '温度'
+        notes: '请输入您当前的温度（华氏度）'
+      used-a-fever-reducer:
+        name: '使用退烧药'
+        notes: '過去24小時，你有沒有服用任何能減少發熱的藥物？'
+      other:
+        name: '其它'
+        notes: '我希望有人打电话给我跟进其它症状或其它需求'
+      no-symptoms: '我沒有出現任何症狀'
+    threshold-op:
+      less-than: '小于'
+      less-than-or-equal: '小于或等于'
+      greater-than: '大于'
+      greater-than-or-equal: '大于或等于'
+      equal: '等于'
+      not-equal: '不等于'

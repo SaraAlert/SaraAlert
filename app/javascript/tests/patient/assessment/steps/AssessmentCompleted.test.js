@@ -124,6 +124,18 @@ describe('AssessmentCompleted', () => {
   //   expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[`${language}`]['html']['weblink']['instruction3'])).toBeTruthy();
   // });
 
+  it('Properly renders all main components in Chinese', () => {
+    const language = 'zho';
+    const wrapper = getWrapper(language, contact);
+    expect(wrapper.find(Card.Header).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Header).text()).toEqual(mockTranslations[`${language}`]['html']['weblink']['title']);
+    expect(wrapper.find(Card.Body).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Form.Label).at(0).text()).toEqual(mockTranslations[`${language}`]['html']['weblink']['thank_you']);
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[`${language}`]['html']['weblink']['instruction1'])).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[`${language}`]['html']['weblink']['instruction2'])).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text().includes(mockTranslations[`${language}`]['html']['weblink']['instruction3'])).toBeTruthy();
+  });
+
   it('Properly renders email contact information', () => {
     const language = 'eng';
     const wrapper = getWrapper(language, { email: 'email@example.com' });
