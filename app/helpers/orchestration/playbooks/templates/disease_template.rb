@@ -91,40 +91,51 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
               label: 'Records Requiring Review',
               variant: 'danger',
               tooltip: 'isolation_records_requiring_review',
-              description: 'Cases who preliminarily meet the recovery definition and require review.'
+              description: 'Cases who preliminarily meet the recovery definition and require review.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report
+                          report_eligibility]
             },
             non_reporting: {
               label: 'Non-Reporting',
               variant: 'warning',
               tooltip: 'isolation_non_reporting',
-              description: 'Cases who failed to report during the last day and have not yet met recovery definition.'
+              description: 'Cases who failed to report during the last day and have not yet met recovery definition.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report
+                          report_eligibility]
             },
             reporting: {
               label: 'Reporting',
               variant: 'success',
               tooltip: 'isolation_reporting',
-              description: 'Cases who have reported in the last day and have not yet met recovery definition.'
+              description: 'Cases who have reported in the last day and have not yet met recovery definition.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report
+                          report_eligibility]
             },
             closed: {
               label: 'Closed',
               variant: 'secondary',
               tooltip: 'isolation_closed',
-              description: 'Cases not currently being monitored.'
+              description: 'Cases not currently being monitored.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
             },
             transferred_in: {
               label: 'Transferred In',
               variant: 'info',
-              description: 'Cases that have been transferred into this jurisdiction during the last 24 hours.'
+              description: 'Cases that have been transferred into this jurisdiction during the last 24 hours.',
+              options: %i[flagged_for_follow_up transferred_from monitoring_plan transferred_at]
             },
             transferred_out: {
               label: 'Transferred Out',
               variant: 'info',
-              description: 'Cases that have been transferred out of this jurisdiction.'
+              description: 'Cases that have been transferred out of this jurisdiction.',
+              options: %i[transferred_to monitoring_plan transferred_at]
             },
             all: {
               label: 'All Cases',
               variant: 'primary',
-              description: 'All cases in this jurisdiction, in the Isolation workflow.'
+              description: 'All cases in this jurisdiction, in the Isolation workflow.',
+              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report
+                          status report_eligibility]
             }
           }
         },
@@ -144,35 +155,6 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
               saf: { label: 'Sara Alert Format', workflow_specific: true },
               sdx: { label: 'SDX', workflow_specific: true }
             } }
-          }
-        },
-        dashboard_table_columns: {
-          options: {
-            requiring_review: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report
-                          report_eligibility]
-            },
-            non_reporting: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report
-                          report_eligibility]
-            },
-            reporting: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report
-                          report_eligibility]
-            },
-            closed: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user expected_purge_date reason_for_closure closed_at]
-            },
-            transferred_in: {
-              options: %i[flagged_for_follow_up transferred_from monitoring_plan transferred_at]
-            },
-            transferred_out: {
-              options: %i[transferred_to monitoring_plan transferred_at]
-            },
-            all: {
-              options: %i[flagged_for_follow_up jurisdiction assigned_user extended_isolation first_positive_lab_at symptom_onset monitoring_plan latest_report
-                          status report_eligibility]
-            }
           }
         }
       },
