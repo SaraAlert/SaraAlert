@@ -106,7 +106,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     filtered_patients_array = [patient_1, patient_2]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
-    # Check for monitorees who have NOT blocked the system
+    # Check for monitorees who have no close contacts or only enrolled close contacts
     filters[0][:value] = false
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_3, patient_4]
