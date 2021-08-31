@@ -89,6 +89,7 @@ module Orchestration::Playbooks::Templates::DiseaseTemplate # rubocop:todo Metri
           options: {
             requiring_review: {
               label: 'Records Requiring Review',
+              abbreviated_label: 'RRR',
               variant: 'danger',
               tooltip: 'isolation_records_requiring_review',
               description: 'Cases who preliminarily meet the recovery definition and require review.',

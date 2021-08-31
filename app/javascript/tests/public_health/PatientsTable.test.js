@@ -197,7 +197,7 @@ describe('PatientsTable', () => {
           .find('#' + key + '_tab')
           .find('.small-tab')
           .text()
-      ).toEqual(mockExposureTabs[`${key}`]['abbreviatedLabel'] || mockExposureTabs[`${key}`]['label']);
+      ).toEqual(mockExposureTabs[`${key}`]['abbreviated_label'] || mockExposureTabs[`${key}`]['label']);
       expect(
         wrapper
           .find('#' + key + '_tab')
@@ -240,7 +240,7 @@ describe('PatientsTable', () => {
           .find('#' + key + '_tab')
           .find('.small-tab')
           .text()
-      ).toEqual(mockIsolationTabs[`${key}`]['abbreviatedLabel'] || mockIsolationTabs[`${key}`]['label']);
+      ).toEqual(mockIsolationTabs[`${key}`]['abbreviated_label'] || mockIsolationTabs[`${key}`]['label']);
       expect(
         wrapper
           .find('#' + key + '_tab')
@@ -283,7 +283,7 @@ describe('PatientsTable', () => {
           .find('#' + key + '_tab')
           .find('.small-tab')
           .text()
-      ).toEqual(mockGlobalTabs[`${key}`]['abbreviatedLabel'] || mockGlobalTabs[`${key}`]['label']);
+      ).toEqual(mockGlobalTabs[`${key}`]['abbreviated_label'] || mockGlobalTabs[`${key}`]['label']);
       expect(
         wrapper
           .find('#' + key + '_tab')
