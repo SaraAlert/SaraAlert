@@ -10,13 +10,6 @@ class LanguagesTest < ActiveSupport::TestCase
     assert_not(Languages.supported_language?('test'))
   end
 
-  test 'voice_supported?' do
-    assert_not(Languages.voice_supported?('asl'))
-    assert_not(Languages.voice_supported?('som'))
-    assert(Languages.voice_supported?('eng'))
-    assert(Languages.voice_supported?('spa-pr'))
-  end
-
   test 'all_languages' do
     assert_equal(LANGUAGES, Languages.all_languages)
   end

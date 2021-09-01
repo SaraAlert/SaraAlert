@@ -13,7 +13,7 @@ class PatientMailer < ApplicationMailer
     @patients = patient.active_dependents.uniq.map do |dependent|
       { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
     end
-    @lang = patient.select_language
+    @lang = patient.select_language(:email)
     @contact_info = patient.jurisdiction.contact_info
     mail(to: patient.email&.strip, subject: I18n.t('assessments.html.email.enrollment.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
@@ -34,7 +34,7 @@ class PatientMailer < ApplicationMailer
       return
     end
 
-    lang = patient.select_language
+    lang = patient.select_language(:sms)
     contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: patient&.initials_age('-'))
     threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]
     message = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash }
@@ -60,11 +60,12 @@ class PatientMailer < ApplicationMailer
     return unless patient.last_assessment_reminder_sent_eligible?
 
     messages_array = []
-    lang = patient.select_language
+    sms_lang = patient.select_language(:sms)
+    web_lang = patient.select_language(:email)
     patient.active_dependents.uniq.each do |dependent|
-      url = new_patient_assessment_jurisdiction_lang_initials_url(dependent.submission_token, dependent.jurisdiction.unique_identifier, lang&.to_s,
+      url = new_patient_assessment_jurisdiction_lang_initials_url(dependent.submission_token, dependent.jurisdiction.unique_identifier, web_lang&.to_s,
                                                                   dependent&.initials_age)
-      contents = I18n.t('assessments.twilio.sms.weblink.intro', locale: lang, initials_age: dependent&.initials_age('-'), url: url)
+      contents = I18n.t('assessments.twilio.sms.weblink.intro', locale: sms_lang, initials_age: dependent&.initials_age('-'), url: url)
       # Update last send attempt timestamp before Twilio call
       patient.last_assessment_reminder_sent = DateTime.now
       patient.save(touch: false)
@@ -89,7 +90,7 @@ class PatientMailer < ApplicationMailer
     # Cover potential race condition where multiple messages are sent for the same monitoree.
     return unless patient.last_assessment_reminder_sent_eligible?
 
-    lang = patient.select_language
+    lang = patient.select_language(:sms)
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient_names = patient.active_dependents.uniq.map do |dependent|
       I18n.t('assessments.twilio.sms.prompt.name', locale: lang, name: dependent&.initials_age('-'))
@@ -129,8 +130,7 @@ class PatientMailer < ApplicationMailer
     # Cover potential race condition where multiple messages are sent for the same monitoree.
     return unless patient.last_assessment_reminder_sent_eligible?
 
-    lang = patient.select_language
-    lang = :eng unless Languages.voice_supported?(lang) # Some languages are not supported via voice
+    lang = patient.select_language(:phone)
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient_names = patient.active_dependents.uniq.map do |dependent|
       I18n.t('assessments.twilio.voice.initials_age', locale: lang, initials: dependent&.initials, age: dependent&.calc_current_age || '0')
@@ -172,7 +172,7 @@ class PatientMailer < ApplicationMailer
     # Do not send an assessment when patient's last_assessment_reminder_sent is set or a reminder was sent less than 12 hours ago.
     return unless patient.last_assessment_reminder_sent_eligible?
 
-    @lang = patient.select_language
+    @lang = patient.select_language(:email)
     @contact_info = patient.jurisdiction.contact_info
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
@@ -203,7 +203,7 @@ class PatientMailer < ApplicationMailer
       return
     end
 
-    @lang = patient.select_language
+    @lang = patient.select_language(:email)
     @contents = I18n.t(
       'assessments.html.email.closed.thank_you',
       initials_age: patient&.initials_age('-'),
@@ -226,7 +226,7 @@ class PatientMailer < ApplicationMailer
       return
     end
 
-    lang = patient.select_language
+    lang = patient.select_language(:sms)
     contents = I18n.t(
       'assessments.twilio.sms.closed.thank_you',
       initials_age: patient&.initials_age('-'),

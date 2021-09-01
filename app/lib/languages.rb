@@ -2,20 +2,12 @@
 
 # Helper methods for languages
 module Languages
-  def self.supported_language?(lang)
+  def self.supported_language?(lang, medium = nil)
     return false if lang.nil?
 
     # If the supported field exists at all for a language, then
     # that language can be considered supported
-    all_languages&.dig(lang.to_sym, :supported)
-  end
-
-  # Even though some languages may be supported, we are unable to send
-  # voice-calls in that language (typically due to Twilio limitations)
-  def self.voice_supported?(lang)
-    return false if lang.nil?
-
-    all_languages&.dig(lang.to_sym, :supported, :phone) || false
+    medium.present? ? all_languages&.dig(lang.to_sym, :supported, medium) : all_languages&.dig(lang.to_sym, :supported) || false
   end
 
   def self.all_languages

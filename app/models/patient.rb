@@ -1095,9 +1095,9 @@ class Patient < ApplicationRecord
   end
 
   # Determine the proper language for sending reports to this monitoree
-  def select_language
+  def select_language(medium)
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
-    Languages.supported_language?(primary_language) ? primary_language&.to_sym : :eng
+    Languages.supported_language?(primary_language, medium) ? primary_language&.to_sym : :eng
   end
 
   # Determine if this patient is eligible for receiving daily report messages; return
