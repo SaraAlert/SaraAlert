@@ -78,16 +78,16 @@ class FloatSymptomTest < ActiveSupport::TestCase
 
   test 'float symptom bool based prompt spanish' do
     symptom = create(:float_symptom, float_value: 90.1, threshold_operator: 'Less Than', name: 'pulse-ox', label: 'Pulse Ox')
-    assert_equal symptom.bool_based_prompt(:spa), 'Oximetro de pulso menos que 90.1'
+    assert_equal symptom.bool_based_prompt(:spa), 'Oxímetro de pulso menos que 90.1'
     symptom.threshold_operator = 'Less Than Or Equal'
-    assert_equal symptom.bool_based_prompt(:spa), 'Oximetro de pulso menor o igual a 90.1'
+    assert_equal symptom.bool_based_prompt(:spa), 'Oxímetro de pulso menor o igual a 90.1'
     symptom.threshold_operator = 'Greater Than'
-    assert_equal symptom.bool_based_prompt(:spa), 'Oximetro de pulso mas grande que 90.1'
+    assert_equal symptom.bool_based_prompt(:spa), 'Oxímetro de pulso mas grande que 90.1'
     symptom.threshold_operator = 'Greater Than Or Equal'
-    assert_equal symptom.bool_based_prompt(:spa), 'Oximetro de pulso mayor que o igual a 90.1'
+    assert_equal symptom.bool_based_prompt(:spa), 'Oxímetro de pulso mayor que o igual a 90.1'
     symptom.threshold_operator = 'Equal'
-    assert_equal symptom.bool_based_prompt(:spa), 'Oximetro de pulso igual a 90.1'
+    assert_equal symptom.bool_based_prompt(:spa), 'Oxímetro de pulso igual a 90.1'
     symptom.threshold_operator = 'Not Equal'
-    assert_equal symptom.bool_based_prompt(:spa), 'Oximetro de pulso no es igual a 90.1'
+    assert_equal symptom.bool_based_prompt(:spa), 'Oxímetro de pulso no es igual a 90.1'
   end
 end

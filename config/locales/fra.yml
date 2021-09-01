@@ -120,7 +120,7 @@ fra:
       no-symptoms: 'Aucun symptôme'
     threshold-op:
       less-than: 'moins que'
-      less-than-or-equal: 'inferieur ou egal a'
+      less-than-or-equal: 'inférieur ou égal a'
       greater-than: 'plus grand que'
       greater-than-or-equal: 'Plus grand ou égal à'
       equal: 'égal à'

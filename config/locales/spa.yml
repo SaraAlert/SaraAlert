@@ -97,8 +97,8 @@ spa:
       new-loss-of-taste:
         name: 'Pérdida reciente del gusto'
       pulse-ox:
-        name: 'oximetro de pulso'
-        notes: 'Ingrese la lectura más baja del oximetro de pulso en las últimas 24 horas'
+        name: 'oxímetro de pulso'
+        notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
       repeated-shaking-with-chills:
         name: 'Tiembla repetidamente y tiene escalofríos'
       shortness-of-breath:
