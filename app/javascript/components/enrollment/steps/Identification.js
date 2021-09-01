@@ -237,16 +237,16 @@ class Identification extends React.Component {
           message += ' is not currently supported by Sara Alert. Any messages sent to this monitoree will be in English.';
         } else if (!sms && !email && phone) {
           message +=
-            ' is supported for the telephone call method only. If email or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
+            ' is supported for the telephone call method only. If email or an SMS text reporting method is selected as the preferred reporting method, messages will be in English.';
         } else if (!sms && email && !phone) {
           message +=
-            ' is supported for the email weblink method only. If telephone call or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
+            ' is supported for the email weblink method only. If telephone call or an SMS text reporting method is selected as the preferred reporting method, messages will be in English.';
         } else if (!sms && email && phone) {
           message +=
-            ' is supported for telephone call and email reporting methods only. If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
+            ' is supported for telephone call and email reporting methods only. If an SMS text reporting method is selected as the preferred reporting method, the text will be in English.';
         } else if (sms && !email && !phone) {
           message +=
-            ' is supported for the SMS text weblink method only. If telephone call or emailed weblink is selected as the preferred reporting method, messages will be in English.';
+            ' is supported for SMS text reporting methods only. If telephone call or email is selected as the preferred reporting method, messages will be in English.';
         } else if (sms && !email && phone) {
           message +=
             ' is supported for telephone call and SMS text reporting methods only. If email is selected as the preferred reporting method, the email will be in English.';
