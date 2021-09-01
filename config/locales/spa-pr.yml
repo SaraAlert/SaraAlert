@@ -48,23 +48,23 @@ spa-pr:
           info2: 'Si tiene alguna pregunta, por favor pónganse en contacto con el proveedor de atención médica que le ayudó a inscribirse.'
     twilio:
       shared:
-        experiencing_symptoms_s: '¿Está usted sintiendo uno o más de los siguientes síntomas hoy?: %{symptom_names}.'
-        experiencing_symptoms_p: '¿Esta alguna de estas personas sintiendo uno o más de los siguientes síntomas hoy?: %{symptom_names}.'
-        max_retries_message: 'Lo siento, ha alcanzado el número máximo de intentos de respuesta. Si tiene una emergencia médica, llame al 911.'
+        experiencing_symptoms_s: '¿Esta usted sintiendo uno o mas de los siguientes sintomas hoy?: %{symptom_names}.'
+        experiencing_symptoms_p: '¿Esta alguna de estas personas sintiendo uno o mas de los siguientes sintomas hoy?: %{symptom_names}.'
+        max_retries_message: 'Lo siento, ha alcanzado el numero maximo de intentos de respuesta. Si tiene una emergencia medica, llame al 911.'
       sms:
         prompt:
           intro: >-
-            Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para %{name} a este número de teléfono. Para privacidad y más información,
+            Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para %{name} a este numero de telefono. Para privacidad y mas informacion,
             visite saraalert.org.
-          reminder: 'Este es el sistema Sara Alert recordándole que por favor responda a nuestros mensajes de reporte diario.'
+          reminder: 'Este es el sistema Sara Alert recordandole que por favor responda a nuestros mensajes de reporte diario.'
           name: '%{name}'
-          daily: 'Este es el informe diario de Sara Alert para: %{names}. %{experiencing_symptoms} Responda con "Sí" o "No"'
-          try_again: 'Lo siento, no entendí. Responda con "Sí" o "No"'
+          daily: 'Este es el informe diario de Sara Alert para: %{names}. %{experiencing_symptoms} Responda con "Si" o "No"'
+          try_again: 'Lo siento, no entendi. Responda con "Si" o "No"'
           thanks: '¡Gracias por completar su informe diario!'
         weblink:
           intro: 'Complete el Informe diario de Sara Alert para %{initials_age}: %{url}'
         closed:
-          thank_you: 'La supervisión de Sara Alert para %{initials_age} se completó el %{completed_date}. Gracias por su participación'
+          thank_you: 'La supervision de Sara Alert para %{initials_age} se completo el %{completed_date}. Gracias por su participacion'
     voice:
       intro: 'Hola, soy Sara, la asistente de salud pública automatizada que solicita su informe diario.'
       initials_age: '%{initials}, años %{age}'
@@ -73,9 +73,9 @@ spa-pr:
       thanks: '¡Gracias por completar su informe diario! Adiós.'
     symptoms:
       chills:
-        name: 'Escalofrío'
+        name: 'Escalofrio'
       congestion-or-runny-nose:
-        name: 'Congestión nasal o un exceso de moco en la nariz'
+        name: 'Congestion nasal o un exceso de moco en la nariz'
       cough:
         name: 'Tos'
       diarrhea:
@@ -92,16 +92,16 @@ spa-pr:
       muscle-pain:
         name: 'Dolor muscular'
       nausea-or-vomiting:
-        name: 'Náuseas o vómitos'
+        name: 'Nauseas o vomitos'
       new-loss-of-smell:
-        name: 'Pérdida reciente el olfato'
+        name: 'Perdida reciente el olfato'
       new-loss-of-taste:
-        name: 'Pérdida reciente del gusto'
+        name: 'Perdida reciente del gusto'
       pulse-ox:
-        name: 'oxímetro de pulso'
-        notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
+        name: 'oximetro de pulso'
+        notes: 'Ingrese la lectura mas baja del oximetro de pulso en las ultimas 24 horas'
       repeated-shaking-with-chills:
-        name: 'Tiembla repetidamente y tiene escalofríos'
+        name: 'Tiembla repetidamente y tiene escalofrios'
       shortness-of-breath:
         name: 'Falta de aire'
       sore-throat:
@@ -110,12 +110,12 @@ spa-pr:
         name: 'Temperatura'
         notes: 'Por favor ingrese su temperatura actual en grados Fahrenheit'
       used-a-fever-reducer:
-        name: 'Tomó medicina para reducir la fiebre'
-        notes: 'En las últimas 24 horas, ¿ha tomado algún medicamento para reducir la fiebre?'
+        name: 'Tomo medicina para reducir la fiebre'
+        notes: 'En las ultimas 24 horas, ¿ha tomado algun medicamento para reducir la fiebre?'
       other:
         name: 'Otro'
-        notes: 'Me gustaría que alguien me llamara para hacer un seguimiento de otros síntomas o necesidades adicionales'
-      no-symptoms: 'No tengo ningún síntoma.'
+        notes: 'Me gustaria que alguien me llamara para hacer un seguimiento de otros sintomas o necesidades adicionales'
+      no-symptoms: 'No tengo ningun sintoma.'
     threshold-op:
       less-than: 'Menos que'
       less-than-or-equal: 'Menor o igual a'

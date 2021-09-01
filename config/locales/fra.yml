@@ -49,24 +49,24 @@ fra:
           info2: 'Si vous avez des questions, veuillez contacter le professionnel de santé qui vous a recruté(e).'
     twilio:
       shared:
-        experiencing_symptoms_s: 'Cette personne est-elle y en a-t-il qui présentent un des symptômes suivants: %{symptom_names}.'
-        experiencing_symptoms_p: 'Parmi ces personnes y en a-t-il qui présentent un des symptômes suivants: %{symptom_names}.'
+        experiencing_symptoms_s: 'Cette personne est-elle y en a-t-il qui presentent un des symptomes suivants: %{symptom_names}.'
+        experiencing_symptoms_p: 'Parmi ces personnes y en a-t-il qui presentent un des symptomes suivants: %{symptom_names}.'
         max_retries_message: >-
-          Je suis désolé, vous avez atteint le nombre maximum de tentatives de réponse. Si vous rencontrez une urgence médicale, veuillez appeler le 911.
+          Je suis desole, vous avez atteint le nombre maximum de tentatives de reponse. Si vous rencontrez une urgence medicale, veuillez appeler le 911.
       sms:
         prompt:
           intro: >-
-            Bienvenue sur le système d'Alerte Sara, nous vous enverrons vos rapports quotidiens pour %{name} à ce numéro de téléphone. Pour la confidentialité
+            Bienvenue sur le systeme d'Alerte Sara, nous vous enverrons vos rapports quotidiens pour %{name} a ce numero de telephone. Pour la confidentialite
             et plus d'informations, visitez saraalert.org.
-          reminder: 'Ceci est un rappel du système d''Alerte Sara vous rappelant que vous devez répondre à nos messages de rapport quotidien.'
+          reminder: 'Ceci est un rappel du systeme d''Alerte Sara vous rappelant que vous devez repondre a nos messages de rapport quotidien.'
           name: '%{name}'
-          daily: 'Il s''agit d''un rapport d''alerte Sara quotidien destiné aux: %{names}. %{experiencing_symptoms} Veuillez répondre par "Oui" ou par "Non"'
-          try_again: 'Je suis désolé, je n''ai pas compris. Veuillez répondre par "Oui" ou par "Non"'
+          daily: 'Il s''agit d''un rapport d''alerte Sara quotidien destine aux: %{names}. %{experiencing_symptoms} Veuillez repondre par "Oui" ou par "Non"'
+          try_again: 'Je suis desole, je n''ai pas compris. Veuillez repondre par "Oui" ou par "Non"'
           thanks: 'Merci d''avoir rempli votre rapport quotidien!'
         weblink:
           intro: 'Veuillez remplir le rapport quotidien de Sara Alert pour %{initials_age}: %{url}'
         closed:
-          thank_you: 'La période de surveillance de Sara Alert pour %{initials_age} a été terminée le %{completed_date} ! Merci de votre participation'
+          thank_you: 'La periode de surveillance de Sara Alert pour %{initials_age} a ete terminee le %{completed_date} ! Merci de votre participation'
       voice:
         intro: 'Bonjour, voici Sara, l''assistante de santé publique automatisée qui demande votre rapport quotidien.'
         initials_age: '%{initials}, âge %{age}'
@@ -81,47 +81,47 @@ fra:
       cough:
         name: 'Toux'
       diarrhea:
-        name: 'Diarrhée'
+        name: 'Diarrhee'
       difficulty-breathing:
-        name: 'Difficultés respiratoires'
+        name: 'Difficultes respiratoires'
       fatigue:
         name: 'Fatigue'
       fever:
-        name: 'Fièvre'
-        notes: 'Sensation de fébrilité ou température mesurée supérieure ou égale à 38 °C (100,4 °F)'
+        name: 'Fievre'
+        notes: 'Sensation de febrilite ou temperature mesuree superieure ou egale a 38 °C (100,4 °F)'
       headache:
-        name: 'Maux de tête'
+        name: 'Maux de tete'
       muscle-pain:
         name: 'Douleurs musculaires'
       nausea-or-vomiting:
-        name: 'Nausées ou vomissements'
+        name: 'Nausees ou vomissements'
       new-loss-of-smell:
         name: 'Nouvelle perte de l''odorat'
       new-loss-of-taste:
-        name: 'Nouvelle perte de goût'
+        name: 'Nouvelle perte de gout'
       pulse-ox:
-        name: 'd''oxymétrie de pouls'
-        notes: 'Saisissez votre mesure d''oxymétrie de pouls la plus faible au cours des dernières 24 heures'
+        name: 'd''oxymetrie de pouls'
+        notes: 'Saisissez votre mesure d''oxymetrie de pouls la plus faible au cours des dernieres 24 heures'
       repeated-shaking-with-chills:
-        name: 'Tremblements répétés accompagnés de frissons'
+        name: 'Tremblements repetes accompagnes de frissons'
       shortness-of-breath:
         name: 'Essoufflement'
       sore-throat:
         name: 'Maux de gorge'
       temperature:
-        name: 'Température'
-        notes: 'Veuillez entrer votre température actuelle en degrés Fahrenheit'
+        name: 'Temperature'
+        notes: 'Veuillez entrer votre temperature actuelle en degres Fahrenheit'
       used-a-fever-reducer:
-        name: 'Utilisation d''un agent pour diminuer la fièvre'
-        notes: 'Avez-vous utilisé un médicament pour diminuer la fièvre au cours des dernières 24 heures?'
+        name: 'Utilisation d''un agent pour diminuer la fievre'
+        notes: 'Avez-vous utilise un medicament pour diminuer la fievre au cours des dernieres 24 heures?'
       other:
         name: 'Other'
-        notes: 'J''aimerais que quelqu''un m''appelle pour faire le suivi d''autres symptômes ou d''autre chose'
-      no-symptoms: 'Aucun symptôme'
+        notes: 'J''aimerais que quelqu''un m''appelle pour faire le suivi d''autres symptomes ou d''autre chose'
+      no-symptoms: 'Aucun symptome'
     threshold-op:
       less-than: 'moins que'
       less-than-or-equal: 'inferieur ou egal a'
       greater-than: 'plus grand que'
-      greater-than-or-equal: 'Plus grand ou égal à'
-      equal: 'égal à'
-      not-equal: 'pas égal à'
+      greater-than-or-equal: 'Plus grand ou egal a'
+      equal: 'egal a'
+      not-equal: 'pas egal a'
