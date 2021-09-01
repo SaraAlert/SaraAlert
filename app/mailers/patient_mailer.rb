@@ -131,7 +131,6 @@ class PatientMailer < ApplicationMailer
     return unless patient.last_assessment_reminder_sent_eligible?
 
     lang = patient.select_language(:phone)
-    lang = :eng unless Languages.voice_supported?(lang) # Some languages are not supported via voice
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient_names = patient.active_dependents.uniq.map do |dependent|
       I18n.t('assessments.twilio.voice.initials_age', locale: lang, initials: dependent&.initials, age: dependent&.calc_current_age || '0')

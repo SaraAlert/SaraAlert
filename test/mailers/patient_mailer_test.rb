@@ -386,7 +386,7 @@ class PatientMailerTest < ActionMailer::TestCase
       PatientMailer.assessment_sms_weblink(@patient).deliver_now
     end
 
-    if Languages.voice_supported?(language)
+    if Languages.supported_language?(language, :phone)
       test "assessment voice message content should not use messaging service in #{language}" do
         dependent = create(:patient_with_submission_token)
         dependent.update(responder_id: @patient.id)
