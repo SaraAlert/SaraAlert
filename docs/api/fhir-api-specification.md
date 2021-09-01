@@ -2540,7 +2540,7 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
                 "code": "208"
               }
             ],
-            "text": "Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)"
+            "text": "Pfizer-BioNTech COVID-19 Vaccine (COMIRNATY)"
           }
         ],
         "patient": {
@@ -3303,7 +3303,7 @@ To create a new monitoree vaccination, simply POST a FHIR Immunization resource 
           "code": "207"
         }
       ],
-      "text": "Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)"
+      "text": "Moderna COVID-19 Vaccine (non-US Spikevax)"
     }
   ],
   "patient": {
@@ -3768,7 +3768,7 @@ On success, the server will update the existing resource given the id.
           "code": "207"
         }
       ],
-      "text": "Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)"
+      "text": "Moderna COVID-19 Vaccine (non-US Spikevax)"
     }
   ],
   "patient": {

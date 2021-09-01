@@ -6,12 +6,12 @@
     - system: 'http://hl7.org/fhir/sid/cvx'
       code: '213'
   vaccines:
-    - product_name: 'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)'
+    - product_name: 'Moderna COVID-19 Vaccine (non-US Spikevax)'
       num_doses: 3
       product_codes:
         - system: 'http://hl7.org/fhir/sid/cvx'
           code: '207'
-    - product_name: 'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)'
+    - product_name: 'Pfizer-BioNTech COVID-19 Vaccine (COMIRNATY)'
       num_doses: 3
       product_codes:
         - system: 'http://hl7.org/fhir/sid/cvx'
@@ -21,17 +21,17 @@
       product_codes:
         - system: 'http://hl7.org/fhir/sid/cvx'
           code: '212'
-    - product_name: 'AstraZeneca COVID-19 Vaccine (Non-US tradenames: VAXZEVRIA, COVISHIELD)'
+    - product_name: 'AstraZeneca COVID-19 Vaccine (Non-US tradenames include VAXZEVRIA, COVISHIELD)'
       num_doses: 3
       product_codes:
         - system: 'http://hl7.org/fhir/sid/cvx'
           code: '210'
-    - product_name: 'Coronavac (Sinovac) COVID-19 Vaccine (Non-US)'
+    - product_name: 'Coronavac (Sinovac) COVID-19 Vaccine'
       num_doses: 3
       product_codes:
         - system: 'http://hl7.org/fhir/sid/cvx'
           code: '511'
-    - product_name: 'Sinopharm (BIBP) COVID-19 Vaccine (Non-US)'
+    - product_name: 'Sinopharm (BIBP) COVID-19 Vaccine'
       num_doses: 3
       product_codes:
         - system: 'http://hl7.org/fhir/sid/cvx'

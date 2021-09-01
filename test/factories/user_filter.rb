@@ -23,12 +23,12 @@ FactoryBot.define do
               'title' => 'product name',
               'type' => 'select',
               'options' => [
-                'Moderna COVID-19 Vaccine (Non-US tradename: Spikevax)',
-                'Pfizer-BioNTech COVID-19 Vaccine (Tradename: COMIRNATY)',
+                'Moderna COVID-19 Vaccine (non-US Spikevax)',
+                'Pfizer-BioNTech COVID-19 Vaccine (COMIRNATY)',
                 'Janssen (J&J) COVID-19 Vaccine',
-                'AstraZeneca COVID-19 Vaccine (Non-US tradenames: VAXZEVRIA, COVISHIELD)',
-                'Coronavac (Sinovac) COVID-19 Vaccine (Non-US)',
-                'Sinopharm (BIBP) COVID-19 Vaccine (Non-US)',
+                'AstraZeneca COVID-19 Vaccine (Non-US tradenames include VAXZEVRIA, COVISHIELD)',
+                'Coronavac (Sinovac) COVID-19 Vaccine',
+                'Sinopharm (BIBP) COVID-19 Vaccine',
                 'Unknown'
               ]
             }, {
