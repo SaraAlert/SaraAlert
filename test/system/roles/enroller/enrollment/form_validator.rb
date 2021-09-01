@@ -130,7 +130,7 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     # rubocop:enable Rails/DynamicFindBy
     click_on 'Next'
     @@system_test_utils.wait_for_enrollment_page_transition
-    click_on 'edit-potential_exposure_information-btn'
+    click_on 'edit-case_information-btn'
     fill_in 'jurisdiction_id', with: '' # clear out jurisdiction to so that there is at least one validation error
     click_on 'Next'
     page.assert_text('Please enter a Symptom Onset Date AND/OR a positive lab result.')

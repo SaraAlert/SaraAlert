@@ -8,13 +8,13 @@
 
 <p><%= t('assessments.html.email.enrollment.info1', locale: @lang) %></p>
 <%= render partial: 'main_mailer/responsive_button', locals: {
-          patient: patient,
-          link: new_patient_assessment_jurisdiction_lang_initials_url(patient[:patient].submission_token,
-                                                                      patient[:jurisdiction_unique_id],
-                                                                      @lang&.to_s,
-                                                                      patient[:patient]&.initials_age('-')),
-          text: t('assessments.html.email.shared.report', locale: @lang)
-        } %><br />
+      patient: patient,
+      link: new_patient_assessment_jurisdiction_lang_initials_url(patient[:patient].submission_token,
+                                                                  patient[:jurisdiction_unique_id],
+                                                                  @lang&.to_s,
+                                                                  patient[:patient]&.initials_age('-')),
+      text: t('assessments.html.email.shared.report', locale: @lang)
+    } %><br />
 <% end %>
 <p><%= t('assessments.html.email.enrollment.info2', locale: @lang) %> </p>
 <% if @contact_info[:email].present? || @contact_info[:phone].present? || @contact_info[:webpage].present? %>
