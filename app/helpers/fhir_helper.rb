@@ -77,6 +77,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
                                                              rank: 2,
                                                              extension: [to_string_extension(patient.secondary_telephone_type, 'phone-type')])
                                     : nil,
+        patient.international_telephone ? FHIR::ContactPoint.new(system: 'phone',
+                                                                 value: patient.international_telephone,
+                                                                 extension: [to_bool_extension(true, 'international-telephone')])
+                                        : nil,
         patient.email ? FHIR::ContactPoint.new(system: 'email', value: patient.email, rank: 1) : nil
       ].reject(&:nil?),
       birthDate: patient.date_of_birth&.strftime('%F'),
@@ -180,6 +184,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
     primary_phone = patient&.telecom&.find { |t| t&.system == 'phone' }
     secondary_phone = patient&.telecom&.select { |t| t&.system == 'phone' }&.second
+    international_phone = patient&.telecom&.find { |t| t&.extension&.include?(to_bool_extension(true, 'international-telephone')) }
     email = patient&.telecom&.find { |t| t&.system == 'email' }
     {
       monitoring: { value: patient&.active.nil? ? false : patient.active, path: 'Patient.active' },
@@ -189,6 +194,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       primary_telephone: { value: from_fhir_phone_number(primary_phone&.value), path: "Patient.telecom[#{patient&.telecom&.index(primary_phone)}].value" },
       secondary_telephone: { value: from_fhir_phone_number(secondary_phone&.value),
                              path: "Patient.telecom[#{patient&.telecom&.index(secondary_phone)}].value" },
+      international_telephone: { value: from_fhir_phone_number(international_phone&.value),
+                                 path: "Patient.telecom[#{patient&.telecom&.index(international_phone)}].value" },
       email: { value: email&.value, path: "Patient.telecom[#{patient&.telecom&.index(email)}].value" },
       date_of_birth: { value: patient&.birthDate, path: 'Patient.birthDate' },
       age: { value: Patient.calc_current_age_fhir(patient&.birthDate), path: 'Patient.birthDate' },

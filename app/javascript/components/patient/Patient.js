@@ -272,6 +272,25 @@ class Patient extends React.Component {
               <div>
                 <b>Primary Telephone Type:</b> <span>{this.props.details.primary_telephone_type || '--'}</span>
               </div>
+              {(this.props.details.secondary_telephone || this.props.details.international_telephone) && (
+                <div className="pl-3 py-1">
+                  {this.props.details.secondary_telephone && (
+                    <div className="small-text">
+                      <b>Secondary Phone:</b> <span>{formatPhoneNumberVisually(this.props.details.primary_telephone) || '--'}</span>
+                    </div>
+                  )}
+                  {this.props.details.secondary_telephone && (
+                    <div className="small-text">
+                      <b>Secondary Phone Type:</b> <span>{this.props.details.secondary_telephone_type || '--'}</span>
+                    </div>
+                  )}
+                  {this.props.details.international_telephone && (
+                    <div className="small-text">
+                      <b>International Phone:</b> <span>{this.props.details.international_telephone || '--'}</span>
+                    </div>
+                  )}
+                </div>
+              )}
               <div>
                 <b>Email:</b> <span>{this.props.details.email || '--'}</span>
               </div>

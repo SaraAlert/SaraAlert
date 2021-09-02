@@ -253,7 +253,7 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
         patient_details = {}
 
         # populate inherent fields by type
-        (fields & PATIENT_FIELD_TYPES[:strings]).each { |field| patient_details[field] = patient[field] }
+        (fields & (PATIENT_FIELD_TYPES[:strings] + PATIENT_FIELD_TYPES[:int_phones])).each { |field| patient_details[field] = patient[field] }
         (fields & PATIENT_FIELD_TYPES[:notes]).each { |field| patient_details[field] = remove_formula_start(patient[field]) }
         (fields & PATIENT_FIELD_TYPES[:dates]).each { |field| patient_details[field] = patient[field]&.strftime('%F') }
         (fields & PATIENT_FIELD_TYPES[:times]).each { |field| patient_details[field] = TIME_OPTIONS[patient[field]&.to_sym] }

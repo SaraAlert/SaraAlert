@@ -31,6 +31,7 @@ patient_1:
   primary_telephone_type: 'Smartphone'
   secondary_telephone: '+15555550112'
   secondary_telephone_type: 'Landline'
+  international_telephone: '+447911123456'
   email: 'jeremy@example.com'
   preferred_contact_method: 'Telephone call'
   preferred_contact_time: 'Morning'

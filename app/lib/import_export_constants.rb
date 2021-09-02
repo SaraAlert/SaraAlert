@@ -60,7 +60,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                 race_refused_to_answer vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number
                                 vaccine_1_notes vaccine_2_group_name vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number
                                 vaccine_2_notes follow_up_reason follow_up_note vaccine_3_group_name vaccine_3_product_name vaccine_3_administration_date
-                                vaccine_3_dose_number vaccine_3_notes].freeze
+                                vaccine_3_dose_number vaccine_3_notes international_telephone].freeze
 
   SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                                'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
@@ -88,7 +88,8 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                'Race Refused to Answer', 'Vaccine 1 Group Name', 'Vaccine 1 Product Name', 'Vaccine 1 Administration Date',
                                'Vaccine 1 Dose Number', 'Vaccine 1 Notes', 'Vaccine 2 Group Name', 'Vaccine 2 Product Name', 'Vaccine 2 Administration Date',
                                'Vaccine 2 Dose Number', 'Vaccine 2 Notes', 'Follow-Up Reason', 'Follow-Up Note', 'Vaccine 3 Group Name',
-                               'Vaccine 3 Product Name', 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes'].freeze
+                               'Vaccine 3 Product Name', 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes',
+                               'International Telephone'].freeze
 
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
   # of fields between Sara Alert Format and Full History Patients
@@ -134,6 +135,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     times: %i[preferred_contact_time],
     timestamps: %i[created_at updated_at closed_at latest_assessment_at latest_transfer_at last_assessment_reminder_sent],
     phones: %i[primary_telephone secondary_telephone],
+    int_phones: %i[international_telephone],
     booleans: %i[interpretation_required isolation continuous_exposure contact_of_known_case travel_to_affected_country_or_area
                  was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight
                  member_of_a_common_exposure_cohort head_of_household pause_notifications],
@@ -217,6 +219,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     primary_telephone_type: 'Primary Telephone Type',
     secondary_telephone: 'Secondary Telephone',
     secondary_telephone_type: 'Secondary Telephone Type',
+    international_telephone: 'International Telephone',
     email: 'Email',
     # Enrollment Info - Travel - Arrival Information
     port_of_origin: 'Port of Origin',
@@ -447,7 +450,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                 ]
               },
               rct_node(:patients, 'Contact Information', %i[preferred_contact_method preferred_contact_time primary_telephone primary_telephone_type
-                                                            secondary_telephone secondary_telephone_type email]),
+                                                            secondary_telephone secondary_telephone_type international_telephone email]),
               {
                 value: 'patients-enrollment-travel',
                 label: 'Travel',

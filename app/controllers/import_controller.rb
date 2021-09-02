@@ -247,6 +247,7 @@ class ImportController < ApplicationController
     value = import_date_field(value) if VALIDATION[field][:checks].include?(:date)
     value = import_and_validate_time_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:time)
     value = import_phone_field(value) if VALIDATION[field][:checks].include?(:phone)
+    value = import_and_validate_int_phone_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:int_phone)
     value = import_and_validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
     value = import_and_validate_language_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:lang)
     value = import_sex_field(field, value) if VALIDATION[field][:checks].include?(:sex)
@@ -295,6 +296,15 @@ class ImportController < ApplicationController
   def import_phone_field(value)
     e_164 = Phonelib.parse(value, 'US').full_e164
     e_164.blank? ? value : e_164
+  end
+
+  def import_and_validate_int_phone_field(field, value, row_ind)
+    unless value == value&.gsub(/[^0-9.\-()+ ]/, '')
+      raise ValidationError.new("Value '#{value}' for '#{VALIDATION[field][:label]}' is not an acceptable value, please only use valid characters which \
+                                include digits, \".\", \"-\", \"(\", \")\", \"+\", \" \".", row_ind)
+    end
+
+    import_phone_field(value)
   end
 
   def import_and_validate_state_field(field, value, row_ind)

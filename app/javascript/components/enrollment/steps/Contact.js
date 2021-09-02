@@ -64,6 +64,8 @@ class Contact extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     if (event.target.id === 'primary_telephone' || event.target.id === 'secondary_telephone') {
       value = value.replace(/-/g, '');
+    } else if (event.target.id === 'international_telephone') {
+      value = value.replace(/[^0-9.\-()+ ]/g, '');
     }
 
     let blocked_sms = this.state.current.blocked_sms;
@@ -236,10 +238,10 @@ class Contact extends React.Component {
     );
   };
 
-  renderWarningBanner = (message, showTooltip) => {
+  renderWarningBanner = (message, showTooltip, variant) => {
     return (
       <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
-        <Alert variant="danger" className="mb-0">
+        <Alert variant={variant || 'danger'} className="mb-0">
           <b>Warning:</b> {message}
           {showTooltip && <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="right" />}
         </Alert>
@@ -479,7 +481,7 @@ class Contact extends React.Component {
                   )}
               </Form.Row>
               <Form.Row>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} lg={12}>
                   <div>
                     <span className="font-weight-bold">Smartphone: </span>
                     <span className="font-weight-light">Phone capable of accessing web-based reporting tool</span>
@@ -491,6 +493,24 @@ class Contact extends React.Component {
                     <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
                   </div>
                 </Form.Group>
+                <Form.Group as={Col} lg={12}>
+                  <Form.Label className="input-label">
+                    INTERNATIONAL TELEPHONE NUMBER{schema?.fields?.international_telephone?._exclusive?.required && ' *'}
+                  </Form.Label>
+                  <Form.Control
+                    id="international_telephone"
+                    value={this.state.current.patient.international_telephone || ''}
+                    onChange={this.handleChange}
+                    size="lg"
+                    className="form-square"
+                    isInvalid={this.state.errors['international_telephone']}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['international_telephone']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                {this.state.current.patient.international_telephone &&
+                  this.renderWarningBanner('International telephone number is not used by the system for automated symptom reporting.', false, 'warning')}
               </Form.Row>
               <Form.Row className="mt-2">
                 <Form.Group as={Col} lg="12" controlId="email">
@@ -551,6 +571,7 @@ var schema = yup.object().shape({
   secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  international_telephone: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   confirm_email: yup
     .string()
