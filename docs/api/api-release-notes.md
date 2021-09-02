@@ -4,6 +4,11 @@ title: Release Notes
 parent: API
 nav_order: 1
 ---
+# 1.36.0
+* Add support for bulk export via the API according to the FHIR bulk data [specification](https://hl7.org/fhir/uv/bulkdata/). See the [bulk data export](/api/fhir-api-specification.html#bulk-data-export) section for full details.
+* Add support for reading all Sara Alert data elements via the API. See the [list of supported fields](/api/#what-can-the-sara-alert-api-do) for more details. The [FHIR Interface Specification](/api/fhir-api-specification.html) contains additional information about how Sara Alert fields are represented in FHIR.
+
+***
 # 1.32.0
 * Support for writing Lab Results via a FHIR Observation.
 * Support for writing Monitorees and Lab Results in bulk via a FHIR transaction Bundle. This will allow for Monitorees to be enrolled alongside their Lab Results, which will enable support for asymptomatic enrollment of Monitorees in the Isolation workflow.
