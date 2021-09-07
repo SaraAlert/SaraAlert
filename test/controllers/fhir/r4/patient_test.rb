@@ -4,6 +4,9 @@ require 'api_controller_test_case'
 
 # rubocop:disable Metrics/ClassLength
 class ApiControllerTest < ApiControllerTestCase
+  include FhirHelper
+  include ValidationHelper
+
   setup do
     setup_system_applications
     setup_system_tokens
@@ -902,6 +905,204 @@ class ApiControllerTest < ApiControllerTestCase
     assert_nil json_response['communication']
     assert_equal 'Unit 123', json_response['address'][0]['line'][1]
     assert_equal 'Foo', json_response['name'][0]['family']
+  end
+
+  test 'update monitored address' do
+    mock_patient = build(:patient, monitored_address_line_1: 'Line 1', monitored_address_line_2: 'Line 2',
+      monitored_address_city: 'City', monitored_address_county: 'County',
+      monitored_address_zip: 'zip', monitored_address_state: 'Idaho', address_state: 'Idaho')
+    @patient_1.address = [to_address_by_type_extension(mock_patient, 'Monitored'), to_address_by_type_extension(mock_patient, 'USA')]
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :success
+    body = JSON.parse(response.body)
+    address_extension = body['address'].second
+    assert_equal(mock_patient.monitored_address_line_1, address_extension['line'][0])
+    assert_equal(mock_patient.monitored_address_line_2, address_extension['line'][1])
+    assert_equal(mock_patient.monitored_address_city, address_extension['city'])
+    assert_equal(mock_patient.monitored_address_county, address_extension['district'])
+    assert_equal(mock_patient.monitored_address_zip, address_extension['postalCode'])
+    assert_equal(mock_patient.monitored_address_state, address_extension['state'])
+  end
+
+  test 'update foreign monitored address' do
+    mock_patient = build(:patient, foreign_address_line_1: 'Line 1', foreign_address_line_2: 'Line 2',
+                         foreign_address_line_3: 'Line 3', foreign_address_city: 'City', foreign_address_country: 'Country',
+                         foreign_address_zip: 'zip', foreign_address_state: 'State')
+    @patient_1.address = to_address_by_type_extension(mock_patient, 'Foreign')
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    address_extension = body['address'].first
+    assert_equal(mock_patient.foreign_address_line_1, address_extension['line'][0])
+    assert_equal(mock_patient.foreign_address_line_2, address_extension['line'][1])
+    assert_equal(mock_patient.foreign_address_line_3, address_extension['line'][2])
+    assert_equal(mock_patient.foreign_address_city, address_extension['city'])
+    assert_equal(mock_patient.foreign_address_country, address_extension['country'])
+    assert_equal(mock_patient.foreign_address_zip, address_extension['postalCode'])
+    assert_equal(mock_patient.foreign_address_state, address_extension['state'])
+  end
+
+  test 'update exposure risk factors' do
+    mock_patient = build(:patient, contact_of_known_case: false, contact_of_known_case_id: '123',
+                                   was_in_health_care_facility_with_known_cases: true,
+                                   was_in_health_care_facility_with_known_cases_facility_name: 'hospital',
+                                   laboratory_personnel: true, laboratory_personnel_facility_name: 'lab',
+                                   healthcare_personnel: false, healthcare_personnel_facility_name: 'facility',
+                                   member_of_a_common_exposure_cohort: true,
+                                   member_of_a_common_exposure_cohort_type: 'laboratory member',
+                                   travel_to_affected_country_or_area: false,
+                                   crew_on_passenger_or_cargo_flight: true)
+    @patient_1.extension.delete_if { |extension| extension.url.eql?('http://saraalert.org/StructureDefinition/exposure-risk-factors') }
+    @patient_1.extension << to_exposure_risk_factors_extension(mock_patient)
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    # risk factors are inserted as a collection of other basic extensions
+    exposure_risk_factors_extensions = body['extension'].detect do |e|
+                                         e['url'].eql?('http://saraalert.org/StructureDefinition/exposure-risk-factors')
+                                       end ['extension']
+    boolean_fields = %w[contact-of-known-case was-in-healthcare-facility-with-known-case laboratory-ersonnel healthcare-personnel
+                        member-of-a-common-exposure-cohort travel-to-affected-country-or-area crew-on-passenger-or-cargo-flight]
+    string_fields = %w[contact-of-known-case-id was-in-health-care-facility-with-known-cases-facility-name laboratory-personnel-facility-name
+                       healthcare-personnel-facility-name member-of-a-common-exposure-cohort-type]
+    exposure_risk_factors_extensions.select { |e| boolean_fields.include?(e['url']) }.each do |extension|
+      assert_equal(mock_patient.send(extension['url'].underscore.to_sym), extension['valueBoolean'])
+    end
+    exposure_risk_factors_extensions.select { |e| string_fields.include?(e['url']) }.each do |extension|
+      assert_equal(mock_patient.send(extension['url'].underscore.to_sym), extension['valueString'])
+    end
+  end
+
+  test 'update report source' do
+    mock_patient = build(:patient, source_of_report: 'Other', source_of_report_specify: 'source of report specify')
+    @patient_1.extension.delete_if { |extension| extension.url.eql?('http://saraalert.org/StructureDefinition/source-of-report') }
+    @patient_1.extension << to_report_source_extension(mock_patient)
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    # report source is inserted as a collection of other basic extensions
+    report_source_extensions = body['extension'].detect do |e|
+                                e['url'].eql?('http://saraalert.org/StructureDefinition/source-of-report')
+                              end ['extension']
+
+    report_source_extensions.each do |extension|
+      if extension['url'] == 'specify'
+        assert_equal(mock_patient.source_of_report_specify, extension['valueString'])
+      else
+        assert_equal(mock_patient.source_of_report, extension['valueString'])
+      end
+    end
+  end
+
+  VALID_ISOLATION_ENUMS[:case_status].each_with_index do |status, i|
+    test "update case status to #{status}_#{i} isolation" do
+      Patient.find(1).update(isolation: true)
+      @patient_1.extension.delete_if { |extension| extension.url.eql?('http://saraalert.org/StructureDefinition/isolation') }
+      @patient_1.extension.delete_if { |extension| extension.url.eql?('http://saraalert.org/StructureDefinition/case-status') }
+      @patient_1.extension << to_string_extension(status, 'case-status')
+
+      put(
+        '/fhir/r4/Patient/1',
+        params: @patient_1.to_json,
+        headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      )
+
+      assert_response :success
+      body = JSON.parse(response.body)
+      if status.nil? || status.eql?('')
+        # nil is stripped out of the request/response cycle
+        assert_not(body['extension'].include?(nil))
+      else
+        case_status_extension = body['extension'].detect { |e| e['url'].eql?('http://saraalert.org/StructureDefinition/case-status') }
+        assert_equal(status, case_status_extension['valueString'])
+      end
+    end
+  end
+
+  VALID_EXPOSURE_ENUMS[:case_status].each_with_index do |status, i|
+    test "update case status to #{status}_#{i} exposure" do
+      Patient.find(1).update(isolation: false)
+      @patient_1.extension.delete_if { |extension| extension.url.eql?('http://saraalert.org/StructureDefinition/isolation') }
+      @patient_1.extension.delete_if { |extension| extension.url.eql?('http://saraalert.org/StructureDefinition/case-status') }
+      @patient_1.extension << to_string_extension(status, 'case-status')
+
+      put(
+        '/fhir/r4/Patient/1',
+        params: @patient_1.to_json,
+        headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      )
+
+      assert_response :success
+      body = JSON.parse(response.body)
+      if status.nil? || status.eql?('')
+        # nil is stripped out of the request/response cycle
+        assert_not(body['extension'].include?(nil))
+      else
+        case_status_extension = body['extension'].detect { |e| e['url'].eql?('http://saraalert.org/StructureDefinition/case-status') }
+        assert_equal(status, case_status_extension['valueString'])
+      end
+    end
+  end
+
+  GENDER_IDENTITY_TO_FHIR.each_key do |identity|
+    test "update gender identity to #{identity}" do
+      @patient_1.extension.delete_if { |extension| extension.url.eql?('http://hl7.org/fhir/StructureDefinition/patient-genderIdentity') }
+      @patient_1.extension << to_gender_identity_extension(identity)
+
+      put(
+        '/fhir/r4/Patient/1',
+        params: @patient_1.to_json,
+        headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      )
+
+      assert_response :success
+      body = JSON.parse(response.body)
+      gender_identity_extension = body['extension'].detect { |e| e['url'].eql?('http://hl7.org/fhir/StructureDefinition/patient-genderIdentity') }
+      assert_equal(identity, gender_identity_extension['valueCodeableConcept']['text'])
+      assert_equal(GENDER_IDENTITY_TO_FHIR[identity]['code'], gender_identity_extension['valueCodeableConcept']['coding'].first['code'])
+    end
+  end
+
+  SEXUAL_ORIENTATION_TO_FHIR.each_key do |orientation|
+    test "update sexual orientation to #{orientation}" do
+      @patient_1.extension.delete_if { |extension| extension.url.eql?('http://saraalert.org/StructureDefinition/sexual-orientation') }
+      @patient_1.extension << to_sexual_orientation_extension(orientation)
+
+      put(
+        '/fhir/r4/Patient/1',
+        params: @patient_1.to_json,
+        headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+      )
+
+      assert_response :success
+      body = JSON.parse(response.body)
+      sexual_orientation_extension = body['extension'].detect { |e| e['url'].eql?('http://saraalert.org/StructureDefinition/sexual-orientation') }
+      assert_equal(orientation, sexual_orientation_extension['valueCodeableConcept']['text'])
+      assert_equal(SEXUAL_ORIENTATION_TO_FHIR[orientation]['code'], sexual_orientation_extension['valueCodeableConcept']['coding'].first['code'])
+    end
   end
 
   #----- search tests -----
