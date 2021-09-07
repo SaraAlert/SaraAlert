@@ -34,35 +34,45 @@ The API exists to allow other software systems to **read** and **write** Sara Al
 The examples above are in terms of Monitorees, but the API also supports reading/writing of Close Contacts, Vaccinations, and Lab Results and reading of Symptom Reports.
 
 ### For Monitorees
-**A client can read and write the following data elements:**<br>Workflow, First Name, Middle Name, Last Name, Date of Birth, Sex, White, Black or African American, American Indian or Alaskan Native, Asian, Native Hawaiian or Other Pacific Islander, Ethnicity, Primary Language, Secondary Language, Interpretation Requirement, Address 1, Address 2, Town/City, State, Zip, County, Address 1 (Foreign), Address 2 (Foreign), Address 3 (Foreign), Town/City (Foreign), State/Province (Foreign), Postal Code (Foreign), Country (Foreign), Preferred Reporting Method, Preferred Contact Time, Primary Telephone Number, Secondary Telephone Number, E-mail Address, Last Date of Exposure, Symptom Onset Date, Monitoring Status, Assigned Jurisdiction, Monitoring Plan, Assigned User, Additional Planned Travel Start Date, Additional Planned Travel Notes, Port of Origin, Date of Departure, Flight or Vessel Number, Flight or Vessel Carrier, Date of Arrival, Travel Related Notes, Exposure Notes, Primary Telephone Type, Secondary Telephone Type, State/Local ID, CDC ID, NNDSS ID, Close Contact with a Known Case, Contact of Known Case ID, Common Exposure Cohort Name, Exposure Location, Exposure Country, Risk Assessment, Latest Public Health Action, Extend Isolation To, Follow-up Reason, Follow-up Note
+**A client can read and write the following data elements:**<br>Workflow, First Name, Middle Name, Last Name, Date of Birth, Sex, White, Black or African American, American Indian or Alaskan Native, Asian, Native Hawaiian or Other Pacific Islander, Ethnicity, Primary Language, Secondary Language, Interpretation Requirement, Address 1, Address 2, Town/City, State, Zip, County, Address 1 (Foreign), Address 2 (Foreign), Address 3 (Foreign), Town/City (Foreign), State/Province (Foreign), Postal Code (Foreign), Country (Foreign), Preferred Reporting Method, Preferred Contact Time, Primary Telephone Number, Secondary Telephone Number, E-mail Address, Last Date of Exposure, Symptom Onset Date, Monitoring Status, Assigned Jurisdiction, Monitoring Plan, Assigned User, Additional Planned Travel Start Date, Additional Planned Travel Notes, Port of Origin, Date of Departure, Flight or Vessel Number, Flight or Vessel Carrier, Date of Arrival, Travel Related Notes, Exposure Notes, Primary Telephone Type, Secondary Telephone Type, State/Local ID, CDC ID, NNDSS ID, Exposure Location, Exposure Country, Risk Assessment, Latest Public Health Action, Extend Isolation To, Follow-up Reason, Follow-up Note
 
-**A client can read (but not write) the following data elements:**<br>End of Monitoring, Transfer Created Date, From Jurisdiction, Eligible for Purge After, Reason for Closure
+**A client can read (but not write) the following data elements:**<br>End of Monitoring, Eligible for Purge After, Reason for Closure, Address 1 (Monitored), Address 2 (Monitored), Town/City (Monitored), State (Monitored), Zip (Monitored), County (Monitored), Address 1 (Foreign Monitored), Address 2 (Foreign Monitored), Town/City (Foreign Monitored), State (Foreign Monitored), Zip (Foreign Monitored), County (Foreign Monitored), Transfer Created Date, Transfer Updated Date, Transfer From Jurisdiction, Transfer To Jurisdiction, Transfer ID, Who Initiated Transfer, Close Contact with a Known Case, Contact of Known Case ID, Member of a Common Exposure Cohort, Common Exposure Cohort Name, Laboratory Personnel, Laboratory Personnel Facility Name, Health Care Personnel, Health Care Personnel Facility Name, Was in Health Care Facility With Known Cases, Health Care Facility with Known Cases Name, Travel from Affected Country or Area, Crew on Passenger or Cargo Flight, Source of Report, Source of Report Specify, Additional Planned Travel Destination, Additional Planned Travel Destination Country, Additional Planned Travel Destination State, Additional Planned Travel End Date, Additional Planned Travel Port of Departure, Additional Planned Travel Type, Port of Entry Into USA, Case Status, Closed At, Gender Identity, Sexual Orientation, Head of Household, ID of Reporter, Last Assessment Reminder Sent, Paused Notifications, Status, User Defined Symptom Onset
 
 **A client can search by the following data elements:**<br>First Name, Last Name, Primary Telephone Number, E-mail Address, Monitoring Status
 
 ### For Close Contacts
 **A client can read and write the following data elements:**<br>First Name, Last Name, Primary Telephone, Email, Notes, Enrolled ID, Contact Attempts, Last Date of Exposure, Assigned User, Patient ID
 
+**A client can read (but not write) the following data elements:**<br>Created Date
+
 **A client can search by the following data elements:**<br>ID, Patient ID
 
 ### For Vaccinations
 **A client can read and write the following data elements:**<br>Vaccine Group, Product Name, Administration Date, Dose Number, Notes, Patient ID
+
+**A client can read (but not write) the following data elements:**<br>Created Date
 
 **A client can search by the following data elements:**<br>ID, Patient ID
 
 ### For Histories
 **A client can read the following data elements:**<br>Patient ID, Comment, History Type, Created By
 
+**A client can read (but not write) the following data elements:**<br>Deleted By, Delete Reason, Original Comment ID
+
 **A client can search by the following data elements:**<br>ID, Patient ID
 
 ### For Symptom Reports
-**A client can read the following data elements:**<br>Name, Answer
+**A client can read the following data elements:**<br>Name, Answer, Patient ID
+
+**A client can read (but not write) the following data elements:**<br>Created Date, Symptomatic, Who Reported
 
 **A client can search by the following data elements:**<br>ID, Patient ID
 
 
 ### For Lab Results
 **A client can read and write the following data elements:**<br>Report Date, Specimen Collection Date, Lab Type, Result, Patient ID
+
+**A client can read (but not write) the following data elements:**<br>Created Date
 
 **A client can search by the following data elements:**<br>ID, Patient ID
 
