@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_01_151212) do
+ActiveRecord::Schema.define(version: 2021_09_09_184215) do
 
   create_table "active_storage_attachments", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -258,8 +258,11 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "status", default: "Missing"
-    t.integer "exposure_to_isolation"
-    t.integer "isolation_to_exposure"
+    t.integer "isolation_to_exposure_total"
+    t.integer "exposure_to_isolation_total"
+    t.integer "exposure_to_isolation_active"
+    t.integer "exposure_to_isolation_not_active"
+    t.integer "exposure_to_isolation_closed_in_exposure"
     t.index ["analytic_id"], name: "index_monitoree_snapshots_on_analytic_id"
   end
 
