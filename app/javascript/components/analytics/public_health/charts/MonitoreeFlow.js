@@ -47,19 +47,19 @@ class MonitoreeFlow extends React.Component {
         time_frame,
         exposure_to_isolation_active: {
           value: thisTimeFrameData?.exposure_to_isolation_active || 0,
-          percentage: null, // ADD ME
+          percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation_active, thisTimeFrameData?.exposure_to_isolation_total),
         },
         exposure_to_isolation_not_active: {
           value: thisTimeFrameData?.exposure_to_isolation_not_active || 0,
-          percentage: null, // ADD ME
+          percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation_not_active, thisTimeFrameData?.exposure_to_isolation_total),
         },
         exposure_to_isolation_closed_in_exposure: {
           value: thisTimeFrameData?.exposure_to_isolation_closed_in_exposure || 0,
-          percentage: null, // ADD ME
+          percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation_closed_in_exposure, thisTimeFrameData?.exposure_to_isolation_total),
         },
         exposure_to_isolation_total: {
           value: thisTimeFrameData?.exposure_to_isolation_total || 0,
-          percentage: null, // ADD ME
+          percentage: null,
         },
       };
     });
@@ -72,7 +72,7 @@ class MonitoreeFlow extends React.Component {
         time_frame,
         isolation_to_exposure_total: {
           value: thisTimeFrameData?.isolation_to_exposure_total || 0,
-          percentage: null, // add me
+          percentage: null,
         },
       };
     });
@@ -249,7 +249,7 @@ class MonitoreeFlow extends React.Component {
                   <td key={i}>
                     <div className="count-percent-container">
                       <span className="number">{x.isolation_to_exposure_total.value}</span>
-                      <span className="percentage align-bottom">({x.isolation_to_exposure_total.percentage})</span>
+                      <span className="percentage align-bottom"></span>
                     </div>
                   </td>
                 ))}

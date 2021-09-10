@@ -403,7 +403,7 @@ class CacheAnalyticsJob < ApplicationJob
                                                  .in_time_frame(time_frame)
                                                  .size,
                         isolation_to_exposure_total: workflow == 'Exposure' ? 1 : nil,
-                        exposure_to_isolation_total: workflow == 'Isolation' ? 2 : nil,
+                        exposure_to_isolation_total: workflow == 'Isolation' ? 20 : nil,
                         exposure_to_isolation_active: workflow == 'Isolation' ? 3 : nil,
                         exposure_to_isolation_not_active: workflow == 'Isolation' ? 4 : nil,
                         exposure_to_isolation_closed_in_exposure: workflow == 'Isolation' ? 5 : nil,
