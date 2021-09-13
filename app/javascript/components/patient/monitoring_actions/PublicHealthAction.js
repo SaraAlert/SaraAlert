@@ -168,6 +168,7 @@ class PublicHealthAction extends React.Component {
             as="select"
             className="form-control-lg"
             id="public_health_action"
+            aria-label="Latest Public Health Action Select"
             onChange={this.handlePublicHealthActionChange}
             value={this.state.public_health_action}>
             <option>None</option>

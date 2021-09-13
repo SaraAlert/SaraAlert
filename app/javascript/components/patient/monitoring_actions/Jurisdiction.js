@@ -170,6 +170,7 @@ class Jurisdiction extends React.Component {
             <Form.Control
               as="input"
               id="jurisdiction_id"
+              aria-label="Assigned Jurisdiction Select"
               list="jurisdiction_paths"
               autoComplete="off"
               className="form-control-lg"

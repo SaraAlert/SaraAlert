@@ -151,6 +151,7 @@ class AssignedUser extends React.Component {
             <Form.Control
               as="input"
               id="assigned_user"
+              aria-label="Assigned User Select"
               list="assigned_users"
               autoComplete="off"
               className="form-control-lg"
