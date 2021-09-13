@@ -55,6 +55,10 @@ class AdvancedFilter extends React.Component {
     });
     advancedFilterOptions[Number(assignedUsersIndex)].options = allAssignedUsers;
 
+    if (!this.props.continuous_exposure_enabled) {
+      _.remove(advancedFilterOptions, option => option.name === 'continuous-exposure');
+    }
+
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
       this.addStatement();
@@ -1512,6 +1516,7 @@ AdvancedFilter.propTypes = {
   updateStickySettings: PropTypes.bool,
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default AdvancedFilter;

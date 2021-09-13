@@ -37,6 +37,7 @@ class Workflow extends React.Component {
           current_monitorees_count={this.state.current_monitorees_count}
           custom_export_options={this.props.custom_export_options}
           available_workflows={this.props.available_workflows}
+          continuous_exposure_enabled={this.props.continuous_exposure_enabled}
           available_line_lists={this.props.available_line_lists}
           playbook={this.props.playbook}
           header_action_buttons={this.props.header_action_buttons}
@@ -77,6 +78,7 @@ Workflow.propTypes = {
   playbook: PropTypes.string,
   header_action_buttons: PropTypes.object,
   monitoring_dashboard_buttons: PropTypes.object,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default Workflow;

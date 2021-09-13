@@ -348,6 +348,7 @@ class CustomExport extends React.Component {
                       jurisdiction={this.props.jurisdiction}
                       available_workflows={this.props.available_workflows}
                       available_line_lists={this.props.available_line_lists}
+                      continuous_exposure_enabled={this.props.continuous_exposure_enabled}
                       query={this.state.custom_patient_query}
                       onQueryChange={(field, value, cb) =>
                         this.setState(
@@ -604,6 +605,7 @@ CustomExport.propTypes = {
   options: PropTypes.object,
   onClose: PropTypes.func,
   reloadExportPresets: PropTypes.func,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default CustomExport;

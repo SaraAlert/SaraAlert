@@ -17,15 +17,16 @@ const available_workflows = [
   { name: 'isolation', label: 'Isolation' },
   { name: 'global', label: 'Global' },
 ];
+const continuous_exposure_enabled = true;
 
 const mockToken = 'testMockTokenString12345';
 
 function getExposureWrapper() {
-  return shallow(<Export all_monitorees_count={200} authenticity_token={mockToken} availableLineLists={availableLineLists} available_workflows={available_workflows} current_monitorees_count={32} custom_export_options={{}} export_options={mockPlaybookImportExportOptions} jurisdiction={mockJurisdiction1} jurisdiction_paths={mockJurisdictionPaths} query={mockQuery1} tabs={mockExposureTabs} workflow="exposure" />);
+  return shallow(<Export all_monitorees_count={200} authenticity_token={mockToken} availableLineLists={availableLineLists} available_workflows={available_workflows} current_monitorees_count={32} custom_export_options={{}} export_options={mockPlaybookImportExportOptions} jurisdiction={mockJurisdiction1} jurisdiction_paths={mockJurisdictionPaths} query={mockQuery1} tabs={mockExposureTabs} workflow="exposure" continuous_exposure_enabled={continuous_exposure_enabled} />);
 }
 
 function getIsolationWrapper() {
-  return shallow(<Export all_monitorees_count={200} authenticity_token={mockToken} availableLineLists={availableLineLists} available_workflows={available_workflows} current_monitorees_count={32} custom_export_options={{}} export_options={mockPlaybookImportExportOptions} jurisdiction={mockJurisdiction1} jurisdiction_paths={mockJurisdictionPaths} query={mockQuery2} tabs={mockIsolationTabs} workflow="isolation" />);
+  return shallow(<Export all_monitorees_count={200} authenticity_token={mockToken} availableLineLists={availableLineLists} available_workflows={available_workflows} current_monitorees_count={32} custom_export_options={{}} export_options={mockPlaybookImportExportOptions} jurisdiction={mockJurisdiction1} jurisdiction_paths={mockJurisdictionPaths} query={mockQuery2} tabs={mockIsolationTabs} workflow="isolation" continuous_exposure_enabled={continuous_exposure_enabled} />);
 }
 
 afterEach(() => {
@@ -47,12 +48,7 @@ describe('Export', () => {
     const wrapper = getExposureWrapper();
     Object.values(mockPlaybookImportExportOptions.export.options).forEach((option, index) => {
       let dropdownOption = `${option.label}${option.workflow_specific ? ' (exposure)' : ''}`;
-      expect(
-        wrapper
-          .find(Dropdown.Item)
-          .at(index)
-          .text()
-      ).toContain(dropdownOption);
+      expect(wrapper.find(Dropdown.Item).at(index).text()).toContain(dropdownOption);
     });
   });
 
@@ -60,12 +56,7 @@ describe('Export', () => {
     const wrapper = getIsolationWrapper();
     Object.values(mockPlaybookImportExportOptions.export.options).forEach((option, index) => {
       let dropdownOption = `${option.label}${option.workflow_specific ? ' (isolation)' : ''}`;
-      expect(
-        wrapper
-          .find(Dropdown.Item)
-          .at(index)
-          .text()
-      ).toContain(dropdownOption);
+      expect(wrapper.find(Dropdown.Item).at(index).text()).toContain(dropdownOption);
     });
   });
 
@@ -74,16 +65,8 @@ describe('Export', () => {
     it(`Clicking "${label}" options displays the Confirm Export Modal`, () => {
       const wrapper = getExposureWrapper();
       expect(wrapper.find(ConfirmExport).exists()).toBeFalsy();
-      expect(
-        wrapper
-          .find(Dropdown.Item)
-          .at(index)
-          .text()
-      ).toContain(label);
-      wrapper
-        .find(Dropdown.Item)
-        .at(index)
-        .simulate('click');
+      expect(wrapper.find(Dropdown.Item).at(index).text()).toContain(label);
+      wrapper.find(Dropdown.Item).at(index).simulate('click');
       expect(wrapper.find(ConfirmExport).exists()).toBeTruthy();
       expect(wrapper.find(ConfirmExport).prop('show')).toBeTruthy();
       expect(wrapper.find(ConfirmExport).prop('exportType')).toEqual(option.label);

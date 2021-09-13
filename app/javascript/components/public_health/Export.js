@@ -132,6 +132,7 @@ class Export extends React.Component {
             jurisdiction={this.props.jurisdiction}
             available_workflows={this.props.available_workflows}
             available_line_lists={this.props.available_line_lists}
+            continuous_exposure_enabled={this.props.continuous_exposure_enabled}
             tabs={this.props.tabs}
             preset={this.state.savedPreset}
             presets={this.state.savedExportPresets}
@@ -159,6 +160,7 @@ Export.propTypes = {
   available_workflows: PropTypes.array,
   available_line_lists: PropTypes.object,
   current_monitorees_count: PropTypes.number,
+  continuous_exposure_enabled: PropTypes.bool,
   custom_export_options: PropTypes.object,
   export_options: PropTypes.object,
   tabs: PropTypes.object,

@@ -700,6 +700,7 @@ class PatientsTable extends React.Component {
                     updateStickySettings={true}
                     jurisdiction_paths={this.props.jurisdiction_paths}
                     all_assigned_users={this.props.all_assigned_users}
+                    continuous_exposure_enabled={this.props.continuous_exposure_enabled}
                   />
                   {this.state.query.tab !== 'transferred_out' && (
                     <DropdownButton
@@ -826,6 +827,7 @@ PatientsTable.propTypes = {
   setFilteredMonitoreesCount: PropTypes.func,
   monitoring_reasons: PropTypes.array,
   available_workflows: PropTypes.array,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default PatientsTable;

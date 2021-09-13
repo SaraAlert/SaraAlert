@@ -173,6 +173,7 @@ class PatientsFilters extends React.Component {
                 updateStickySettings={false}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 all_assigned_users={this.props.all_assigned_users}
+                continuous_exposure_enabled={this.props.continuous_exposure_enabled}
               />
             </InputGroup>
           </Col>
@@ -190,6 +191,7 @@ PatientsFilters.propTypes = {
   available_workflows: PropTypes.array,
   available_line_lists: PropTypes.object,
   query: PropTypes.object,
+  continuous_exposure_enabled: PropTypes.bool,
   onQueryChange: PropTypes.func,
 };
 

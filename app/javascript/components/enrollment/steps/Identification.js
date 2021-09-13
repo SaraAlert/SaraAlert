@@ -16,7 +16,7 @@ let workflow_options;
 
 // the terms 'contact' and 'case' are used commonly in public health settings,
 // so we want to include them here in the UI for clarity
-let publicHealthTerms = {
+const publicHealthTerms = {
   exposure: 'Exposure (contact)',
   isolation: 'Isolation (case)',
 };

@@ -193,6 +193,7 @@ class PublicHealthHeader extends React.Component {
                   all_monitorees_count={_.isEmpty(this.state.counts) ? 0 : this.state.counts.exposure + this.state.counts.isolation}
                   current_monitorees_count={this.props.current_monitorees_count}
                   custom_export_options={this.props.custom_export_options}
+                  continuous_exposure_enabled={this.props.continuous_exposure_enabled}
                 />
               )}
               {this.props.abilities.import && this.props.header_action_buttons.import && (
@@ -256,6 +257,7 @@ PublicHealthHeader.propTypes = {
   playbook: PropTypes.string,
   header_action_buttons: PropTypes.object,
   monitoring_dashboard_buttons: PropTypes.object,
+  continuous_exposure_enabled: PropTypes.bool,
 };
 
 export default PublicHealthHeader;

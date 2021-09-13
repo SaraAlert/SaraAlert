@@ -19,17 +19,18 @@ const mockToken = 'testMockTokenString12345';
 const setQueryMock = jest.fn();
 const setMonitoreeCountMock = jest.fn();
 const dropdownOptions = ['Close Records', 'Update Case Status', 'Update Assigned User', 'Flag for Follow-up'];
+const continuous_exposure_enabled = true;
 
 function getExposureWrapper() {
-  return shallow(<PatientsTable authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'exposure'} jurisdiction={mockJurisdiction1} tabs={mockExposureTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock} />);
+  return shallow(<PatientsTable authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'exposure'} jurisdiction={mockJurisdiction1} tabs={mockExposureTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock} continuous_exposure_enabled={continuous_exposure_enabled} />);
 }
 
 function getIsolationWrapper() {
-  return shallow(<PatientsTable authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'isolation'} jurisdiction={mockJurisdiction1} tabs={mockIsolationTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock} />);
+  return shallow(<PatientsTable authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'isolation'} jurisdiction={mockJurisdiction1} tabs={mockIsolationTabs} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock} continuous_exposure_enabled={continuous_exposure_enabled} />);
 }
 
 function getGlobalWrapper() {
-  return shallow(<PatientsTable authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'global'} jurisdiction={mockJurisdiction1} tabs={mockGlobalTabs} default_tab={'all'} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock} />);
+  return shallow(<PatientsTable authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} workflow={'global'} jurisdiction={mockJurisdiction1} tabs={mockGlobalTabs} default_tab={'all'} monitoring_reasons={mockMonitoringReasons} setQuery={setQueryMock} setFilteredMonitoreesCount={setMonitoreeCountMock} continuous_exposure_enabled={continuous_exposure_enabled} />);
 }
 
 afterEach(() => {

@@ -311,7 +311,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = advanced_filter_date(patients, :symptom_onset, filter, tz_diff, :date)
       when 'symptom-onset-relative'
         patients = advanced_filter_relative_date(patients, :symptom_onset, filter, tz_diff, :date)
-      when 'continous-exposure'
+      when 'continuous-exposure'
         patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
       when 'close-contact-with-known-case-id'
         if filter[:value].blank?
@@ -769,8 +769,6 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
   def linelist_specific_fields(playbook, workflow, tab)
     columns = workflow_configuration(playbook, workflow, :dashboard_tabs)
-    return columns[:options][tab][:options] unless columns.nil?
-
-    %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
+    columns.dig(:options, tab, :options) || %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
   end
 end

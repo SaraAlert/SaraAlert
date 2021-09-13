@@ -45,9 +45,10 @@ const relativeOptionValues = ['today', 'tomorrow', 'yesterday', 'custom'];
 const relativeOptionOperatorValues = ['less-than', 'greater-than'];
 const relativeOptionUnitValues = ['day(s)', 'week(s)', 'month(s)'];
 const relativeOptionWhenValues = ['past', 'future'];
+const continuous_exposure_enabled = true;
 
 function getWrapper() {
-  return shallow(<AdvancedFilter workflow={'exposure'} advancedFilterUpdate={advancedFilterUpdateMock} updateStickySettings={true} authenticity_token={mockToken} />);
+  return shallow(<AdvancedFilter workflow={'exposure'} advancedFilterUpdate={advancedFilterUpdateMock} updateStickySettings={true} authenticity_token={mockToken} continuous_exposure_enabled={continuous_exposure_enabled} />);
 }
 
 afterEach(() => {
