@@ -139,6 +139,7 @@ class MonitoringPlan extends React.Component {
             as="select"
             className="form-control-lg"
             id="monitoring_plan"
+            aria-label="Monitoring Plan Select"
             onChange={this.handleMonitoringPlanChange}
             value={this.state.monitoring_plan}>
             <option></option>

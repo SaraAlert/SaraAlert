@@ -142,6 +142,7 @@ class ExposureRiskAssessment extends React.Component {
             as="select"
             className="form-control-lg"
             id="exposure_risk_assessment"
+            aria-label="Exposure Risk Assessment Select"
             onChange={this.handleExposureRiskAssessmentChange}
             value={this.state.exposure_risk_assessment}>
             <option></option>
