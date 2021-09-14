@@ -258,11 +258,10 @@ ActiveRecord::Schema.define(version: 2021_09_09_184215) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "status", default: "Missing"
-    t.integer "isolation_to_exposure_total"
-    t.integer "exposure_to_isolation_total"
     t.integer "exposure_to_isolation_active"
     t.integer "exposure_to_isolation_not_active"
-    t.integer "exposure_to_isolation_closed_in_exposure"
+    t.integer "cases_closed_in_exposure"
+    t.integer "isolation_to_exposure"
     t.index ["analytic_id"], name: "index_monitoree_snapshots_on_analytic_id"
   end
 
