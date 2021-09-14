@@ -18,7 +18,6 @@ class LastDateExposure extends React.Component {
       last_date_of_exposure: this.props.patient.last_date_of_exposure,
       continuous_exposure: !!this.props.patient.continuous_exposure,
       loading: false,
-      noMembersSelected: false,
       apply_to_household: false,
       apply_to_household_ids: [],
       showLastDateOfExposureModal: false,
@@ -26,6 +25,47 @@ class LastDateExposure extends React.Component {
     };
     this.origState = Object.assign({}, this.state);
   }
+
+  openContinuousExposureModal = () => {
+    this.setState({
+      showContinuousExposureModal: true,
+      last_date_of_exposure: null,
+      continuous_exposure: !this.props.patient.continuous_exposure,
+      apply_to_household: false,
+      apply_to_household_ids: [],
+    });
+  };
+
+  openLastDateOfExposureModal = date => {
+    if (date !== this.props.patient.last_date_of_exposure) {
+      this.setState({
+        showLastDateOfExposureModal: true,
+        last_date_of_exposure: date,
+        continuous_exposure: date === null,
+        apply_to_household: false,
+        apply_to_household_ids: [],
+      });
+    }
+  };
+
+  handleApplyHouseholdChange = apply_to_household => {
+    this.setState({ apply_to_household, apply_to_household_ids: [] });
+  };
+
+  handleApplyHouseholdIdsChange = apply_to_household_ids => {
+    this.setState({ apply_to_household_ids });
+  };
+
+  closeModal = () => {
+    this.setState({
+      last_date_of_exposure: this.props.patient.last_date_of_exposure,
+      continuous_exposure: !!this.props.patient.continuous_exposure,
+      showLastDateOfExposureModal: false,
+      showContinuousExposureModal: false,
+      apply_to_household: false,
+      apply_to_household_ids: [],
+    });
+  };
 
   submit = () => {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
@@ -46,52 +86,6 @@ class LastDateExposure extends React.Component {
         .catch(err => {
           reportError(err?.response?.data?.error ? err.response.data.error : err, false);
         });
-    });
-  };
-
-  handleApplyHouseholdChange = apply_to_household => {
-    const noMembersSelected = apply_to_household && this.state.apply_to_household_ids.length === 0;
-    this.setState({ apply_to_household, noMembersSelected });
-  };
-
-  handleApplyHouseholdIdsChange = apply_to_household_ids => {
-    const noMembersSelected = this.state.apply_to_household && apply_to_household_ids.length === 0;
-    this.setState({ apply_to_household_ids, noMembersSelected });
-  };
-
-  openContinuousExposureModal = () => {
-    this.setState({
-      showContinuousExposureModal: true,
-      last_date_of_exposure: null,
-      continuous_exposure: !this.props.patient.continuous_exposure,
-      apply_to_household: false,
-      apply_to_household_ids: [],
-      noMembersSelected: false,
-    });
-  };
-
-  openLastDateOfExposureModal = date => {
-    if (date !== this.props.patient.last_date_of_exposure) {
-      this.setState({
-        showLastDateOfExposureModal: true,
-        last_date_of_exposure: date,
-        continuous_exposure: date === null,
-        apply_to_household: false,
-        apply_to_household_ids: [],
-        noMembersSelected: false,
-      });
-    }
-  };
-
-  closeModal = () => {
-    this.setState({
-      last_date_of_exposure: this.props.patient.last_date_of_exposure,
-      continuous_exposure: !!this.props.patient.continuous_exposure,
-      showLastDateOfExposureModal: false,
-      showContinuousExposureModal: false,
-      apply_to_household: false,
-      apply_to_household_ids: [],
-      noMembersSelected: false,
     });
   };
 
@@ -135,7 +129,11 @@ class LastDateExposure extends React.Component {
           <Button
             variant="primary btn-square"
             onClick={submit}
-            disabled={this.state.loading || this.state.noMembersSelected || (!this.state.last_date_of_exposure && !this.state.continuous_exposure)}>
+            disabled={
+              this.state.loading ||
+              (this.state.apply_to_household && this.state.apply_to_household_ids.length === 0) ||
+              (!this.state.last_date_of_exposure && !this.state.continuous_exposure)
+            }>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
@@ -144,7 +142,7 @@ class LastDateExposure extends React.Component {
             <span data-for="lde-submit" data-tip="">
               Submit
             </span>
-            {this.state.noMembersSelected && (
+            {this.state.apply_to_household && this.state.apply_to_household_ids.length === 0 && (
               <ReactTooltip id="lde-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
                 <div>Please select at least one household member or change your selection to apply to this monitoree only</div>
               </ReactTooltip>

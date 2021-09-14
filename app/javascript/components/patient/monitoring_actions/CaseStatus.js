@@ -29,7 +29,6 @@ class CaseStatus extends React.Component {
       reasoning: '',
       loading: false,
       disabled: false,
-      noMembersSelected: false,
     };
     this.origState = Object.assign({}, this.state);
   }
@@ -133,13 +132,11 @@ class CaseStatus extends React.Component {
   };
 
   handleApplyHouseholdChange = apply_to_household => {
-    const noMembersSelected = apply_to_household && this.state.apply_to_household_ids.length === 0;
-    this.setState({ apply_to_household, noMembersSelected });
+    this.setState({ apply_to_household, apply_to_household_ids: [] });
   };
 
   handleApplyHouseholdIdsChange = apply_to_household_ids => {
-    const noMembersSelected = this.state.apply_to_household && apply_to_household_ids.length === 0;
-    this.setState({ apply_to_household_ids, noMembersSelected });
+    this.setState({ apply_to_household_ids });
   };
 
   toggleCaseStatusModal = () => {
@@ -254,7 +251,10 @@ class CaseStatus extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={this.state.disabled || this.state.loading || this.state.noMembersSelected}>
+          <Button
+            variant="primary btn-square"
+            onClick={submit}
+            disabled={this.state.disabled || this.state.loading || (this.state.apply_to_household && this.state.apply_to_household_ids.length === 0)}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
@@ -263,7 +263,7 @@ class CaseStatus extends React.Component {
             <span data-for="case-status-submit" data-tip="">
               Submit
             </span>
-            {this.state.noMembersSelected && (
+            {this.state.apply_to_household && this.state.apply_to_household_ids.length === 0 && (
               <ReactTooltip id="case-status-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
                 <div>Please select at least one household member or change your selection to apply to this monitoree only</div>
               </ReactTooltip>
