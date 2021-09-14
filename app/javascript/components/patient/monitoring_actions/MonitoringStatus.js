@@ -228,6 +228,7 @@ class MonitoringStatus extends React.Component {
             as="select"
             className="form-control-lg"
             id="monitoring_status"
+            aria-label="Monitoring Status Select"
             onChange={this.handleMonitoringStatusChange}
             value={this.state.monitoring_status}>
             <option>Actively Monitoring</option>
