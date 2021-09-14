@@ -1023,6 +1023,7 @@ class ApiControllerTest < ApiControllerTestCase
       @patient_1.extension.delete_if { |extension| extension.url.eql?('http://saraalert.org/StructureDefinition/isolation') }
       @patient_1.extension.delete_if { |extension| extension.url.eql?('http://saraalert.org/StructureDefinition/case-status') }
       @patient_1.extension << to_string_extension(status, 'case-status')
+      @patient_1.extension << to_bool_extension(true, 'isolation')
 
       put(
         '/fhir/r4/Patient/1',
