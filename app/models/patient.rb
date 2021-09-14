@@ -679,7 +679,7 @@ class Patient < ApplicationRecord
     when 'Last 24 Hours'
       where('patients.exposure_to_isolation_at >= ?', 24.hours.ago)
     when 'Last 7 Days'
-      where('patients.exposure_to_isolation_at >= ?', 7.days.ago.to_date.to_datetime)
+      where('patients.exposure_to_isolation_at >= ? AND patients.exposure_to_isolation_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
       where('patients.exposure_to_isolation_at >= ?', 14.days.ago.to_date.to_datetime)
     when 'Total'
@@ -695,9 +695,9 @@ class Patient < ApplicationRecord
     when 'Last 24 Hours'
       where('patients.isolation_to_exposure_at >= ?', 24.hours.ago)
     when 'Last 7 Days'
-      where('patients.isolation_to_exposure_at >= ?', 7.days.ago.to_date.to_datetime)
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_a < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
-      where('patients.isolation_to_exposure_at >= ?', 14.days.ago.to_date.to_datetime)
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_a < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'
       where.not(isolation_to_exposure_at: nil)
     else

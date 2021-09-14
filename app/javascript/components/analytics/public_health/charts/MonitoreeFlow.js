@@ -43,22 +43,24 @@ class MonitoreeFlow extends React.Component {
       let thisTimeFrameData = props.stats.monitoree_snapshots.find(
         monitoree_snapshot => monitoree_snapshot.status === 'Isolation' && monitoree_snapshot.time_frame === time_frame
       );
+      let exposureToIsolationTotal =
+        thisTimeFrameData?.exposure_to_isolation_active + thisTimeFrameData?.exposure_to_isolation_not_active + thisTimeFrameData?.cases_closed_in_exposure;
       return {
         time_frame,
         exposure_to_isolation_active: {
           value: thisTimeFrameData?.exposure_to_isolation_active || 0,
-          percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation_active, thisTimeFrameData?.exposure_to_isolation_total),
+          percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation_active, exposureToIsolationTotal),
         },
         exposure_to_isolation_not_active: {
           value: thisTimeFrameData?.exposure_to_isolation_not_active || 0,
-          percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation_not_active, thisTimeFrameData?.exposure_to_isolation_total),
+          percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation_not_active, exposureToIsolationTotal),
         },
-        exposure_to_isolation_closed_in_exposure: {
-          value: thisTimeFrameData?.exposure_to_isolation_closed_in_exposure || 0,
-          percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation_closed_in_exposure, thisTimeFrameData?.exposure_to_isolation_total),
+        cases_closed_in_exposure: {
+          value: thisTimeFrameData?.cases_closed_in_exposure || 0,
+          percentage: formatPercentage(thisTimeFrameData?.cases_closed_in_exposure, exposureToIsolationTotal),
         },
         exposure_to_isolation_total: {
-          value: thisTimeFrameData?.exposure_to_isolation_total || 0,
+          value: exposureToIsolationTotal,
           percentage: null,
         },
       };
@@ -71,7 +73,7 @@ class MonitoreeFlow extends React.Component {
       return {
         time_frame,
         isolation_to_exposure_total: {
-          value: thisTimeFrameData?.isolation_to_exposure_total || 0,
+          value: thisTimeFrameData?.isolation_to_exposure || 0,
           percentage: null,
         },
       };
@@ -203,8 +205,8 @@ class MonitoreeFlow extends React.Component {
                 {data.map((x, i) => (
                   <td key={i}>
                     <div className="count-percent-container">
-                      <span className="number">{x.exposure_to_isolation_closed_in_exposure.value}</span>
-                      <span className="percentage">({x.exposure_to_isolation_closed_in_exposure.percentage})</span>
+                      <span className="number">{x.cases_closed_in_exposure.value}</span>
+                      <span className="percentage">({x.cases_closed_in_exposure.percentage})</span>
                     </div>
                   </td>
                 ))}
