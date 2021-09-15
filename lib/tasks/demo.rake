@@ -514,6 +514,14 @@ namespace :demo do
         patient[:was_in_health_care_facility_with_known_cases_facility_name] = Faker::GreekPhilosophers.name if patient[:was_in_health_care_facility_with_known_cases] && rand < 0.15
       end
 
+      # Fields used for tracking workflow changes
+      if rand < 0.5 # swap workflow from original
+        patient[:isolation] = !patient[:isolation]
+        if rand < 0.1 # swap workflow back to original
+          patient[:isolation] = !patient[:isolation]
+        end
+      end
+
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
       patient[:time_zone] = time_zone_for_state(patient[:monitored_address_state] || patient[:address_state] || 'massachusetts')
