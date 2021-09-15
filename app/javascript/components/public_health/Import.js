@@ -225,7 +225,7 @@ class Import extends React.Component {
               </Button>
             )}
             {this.state.phased.length > 0 && (
-              <ProgressBar animated striped className="my-3" now={Math.round((this.state.progress + 1 / this.state.phased.length) * 100)} />
+              <ProgressBar animated striped className="my-3" now={((this.state.progress + 1) / this.state.phased.length) * 100} />
             )}
             {this.state.patients.map((patient, index) => {
               return (
