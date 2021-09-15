@@ -47,7 +47,7 @@ class CacheAnalyticsJob < ApplicationJob
     crew_on_passenger_or_cargo_flight: 'Crew on Passenger or Cargo Flight',
     laboratory_personnel: 'Laboratory Personnel'
   }.freeze
-  MONITOREE_SNAPSHOT_TIME_FRAMES = ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'].freeze
+  MONITOREE_SNAPSHOT_TIME_FRAMES = ['Yesterday', 'Last 7 Days', 'Last 14 Days', 'Total'].freeze
   MAX_EXPOSURE_COUNTRIES = 200
   NUM_PAST_DAYS = 28
   NUM_PAST_WEEKS = 53

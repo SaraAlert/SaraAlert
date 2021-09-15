@@ -33,7 +33,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Month').size)
     assert_not_equal(0, MonitoreeCount.all.size)
 
-    assert_equal(20, MonitoreeSnapshot.where(time_frame: 'Last 24 Hours').size)
+    assert_equal(20, MonitoreeSnapshot.where(time_frame: 'Yesterday').size)
     assert_equal(20, MonitoreeSnapshot.where(time_frame: 'Last 14 Days').size)
     assert_equal(20, MonitoreeSnapshot.where(time_frame: 'Last 7 Days').size)
     assert_equal(20, MonitoreeSnapshot.where(time_frame: 'Total').size)
@@ -128,8 +128,8 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   # TODO: Test is intermittently failing - needs to be investigated when Analytics are revisited
   #   test 'monitoree snapshots' do
   #     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, @@monitorees, 1)
-  #     verify_snapshot(snapshots, 0, 'Last 24 Hours', 3, 0, 2, 0, 0, 0)
-  #     verify_snapshot(snapshots, 1, 'Last 24 Hours', 2, 0, 0, 0, 0, 0)
+  #     verify_snapshot(snapshots, 0, 'Yesterday', 3, 0, 2, 0, 0, 0)
+  #     verify_snapshot(snapshots, 1, 'Yesterday', 2, 0, 0, 0, 0, 0)
   #     verify_snapshot(snapshots, 2, 'Last 7 Days', 14, 0, 1, 0, 1, 1)
   #     verify_snapshot(snapshots, 3, 'Last 7 Days', 12, 0, 0, 0, 1, 1)
   #     verify_snapshot(snapshots, 4, 'Last 14 Days', 18, 0, 1, 0, 1, 1)
@@ -138,8 +138,8 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   #     verify_snapshot(snapshots, 7, 'Total', 15, 0, 0, 0, 1, 1)
 
   #     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, Patient.where(jurisdiction_id: 2), 2)
-  #     verify_snapshot(snapshots, 0, 'Last 24 Hours', 0, 1, 1, 1, 0, 0)
-  #     verify_snapshot(snapshots, 1, 'Last 24 Hours', 2, 0, 0, 0, 0, 0)
+  #     verify_snapshot(snapshots, 0, 'Yesterday', 0, 1, 1, 1, 0, 0)
+  #     verify_snapshot(snapshots, 1, 'Yesterday', 2, 0, 0, 0, 0, 0)
   #     verify_snapshot(snapshots, 2, 'Last 7 Days', 5, 1, 0, 1, 1, 1)
   #     verify_snapshot(snapshots, 3, 'Last 7 Days', 11, 0, 0, 0, 1, 1)
   #     verify_snapshot(snapshots, 4, 'Last 14 Days', 7, 1, 0, 1, 1, 1)

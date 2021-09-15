@@ -25,7 +25,7 @@ class Transfer < ApplicationRecord
   # All transfers within the given time frame
   scope :in_time_frame, lambda { |time_frame|
     case time_frame
-    when 'Last 24 Hours'
+    when 'Yesterday'
       where('transfers.created_at >= ?', DateTime.now.utc - 24.hours)
     when 'Last 7 Days'
       where('transfers.created_at >= ? AND transfers.created_at < ?',

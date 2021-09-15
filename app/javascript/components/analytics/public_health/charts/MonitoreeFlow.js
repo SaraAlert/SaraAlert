@@ -5,7 +5,7 @@ import { formatPercentage } from '../../../../utils/Analytics';
 
 const RELEASE_DATE = '10/5/2021';
 const WORKFLOWS = ['Exposure', 'Isolation'];
-const MONITOREE_FLOW_HEADERS = ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'];
+const MONITOREE_FLOW_HEADERS = ['Yesterday', 'Last 7 Days', 'Last 14 Days', 'Total'];
 
 class MonitoreeFlow extends React.Component {
   constructor(props) {
@@ -15,8 +15,8 @@ class MonitoreeFlow extends React.Component {
         let thisTimeFrameData = props.stats.monitoree_snapshots.find(
           monitoree_snapshot => monitoree_snapshot.status === workflow && monitoree_snapshot.time_frame === time_frame
         );
-        let inTotal = thisTimeFrameData?.new_enrollments + thisTimeFrameData?.transferred_in;
-        let outTotal = thisTimeFrameData?.closed + thisTimeFrameData?.transferred_out;
+        let inTotal = thisTimeFrameData?.new_enrollments || 0  + thisTimeFrameData?.transferred_in || 0 ;
+        let outTotal = thisTimeFrameData?.closed || 0  + thisTimeFrameData?.transferred_out || 0 ;
         return {
           time_frame,
           new_enrollments: {
@@ -44,7 +44,7 @@ class MonitoreeFlow extends React.Component {
         monitoree_snapshot => monitoree_snapshot.status === 'Isolation' && monitoree_snapshot.time_frame === time_frame
       );
       let exposureToIsolationTotal =
-        thisTimeFrameData?.exposure_to_isolation_active + thisTimeFrameData?.exposure_to_isolation_not_active + thisTimeFrameData?.cases_closed_in_exposure;
+        thisTimeFrameData?.exposure_to_isolation_active || 0 + thisTimeFrameData?.exposure_to_isolation_not_active || 0  + thisTimeFrameData?.cases_closed_in_exposure || 0 ;
       return {
         time_frame,
         exposure_to_isolation_active: {
@@ -89,7 +89,7 @@ class MonitoreeFlow extends React.Component {
             <thead>
               <tr className="g-border-bottom text-center header">
                 <th></th>
-                <th>Last 24h</th>
+                <th>Yesterday</th>
                 <th>Last 7d</th>
                 <th>Last 14d</th>
                 <th>Cumulative</th>
@@ -166,7 +166,7 @@ class MonitoreeFlow extends React.Component {
             <thead>
               <tr className="g-border-bottom text-center header">
                 <th></th>
-                <th>Last 24h</th>
+                <th>Yesterday</th>
                 <th>Last 7d</th>
                 <th>Last 14d</th>
                 <th>Cumulative</th>
@@ -238,7 +238,7 @@ class MonitoreeFlow extends React.Component {
             <thead>
               <tr className="g-border-bottom text-center header">
                 <th></th>
-                <th>Last 24h</th>
+                <th>Yesterday</th>
                 <th>Last 7d</th>
                 <th>Last 14d</th>
                 <th>Cumulative</th>

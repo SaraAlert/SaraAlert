@@ -1777,7 +1777,7 @@ export default {
     {
       id: 793,
       analytic_id: 100,
-      time_frame: 'Last 24 Hours',
+      time_frame: 'Yesterday',
       new_enrollments: 54,
       transferred_in: 7,
       closed: 4,
@@ -1798,7 +1798,7 @@ export default {
     {
       id: 794,
       analytic_id: 100,
-      time_frame: 'Last 24 Hours',
+      time_frame: 'Yesterday',
       new_enrollments: 39,
       transferred_in: 4,
       closed: 2,
