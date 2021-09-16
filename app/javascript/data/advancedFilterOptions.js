@@ -3,7 +3,7 @@ import React from 'react';
 export const advancedFilterOptions = [
   /* BOOLEAN FILTER OPTIONS */
   {
-    name: 'continuous-exposure',
+    name: 'continous-exposure',
     title: 'Continuous Exposure (Boolean)',
     description: 'Monitorees who have continuous exposure enabled',
     type: 'boolean',
