@@ -3711,6 +3711,28 @@ class PatientTest < ActiveSupport::TestCase
       assert_equal unspec_patient.time_to_notify_closed.day, patient_local_time.tomorrow.day
     end
   end
+
+  test 'add report reminder success history' do
+    # id == responder_id
+    patient = create(:patient, preferred_contact_method: 'SMS Texted Weblink')
+    patient.add_report_reminder_success_history
+    assert(patient.histories.last.history_type == 'Report Reminder')
+    assert_includes(patient.histories.last.comment, patient.preferred_contact_method)
+
+    # id != responder_id
+    dependent = create(:patient, responder_id: patient.id, preferred_contact_method: 'Telephone Call')
+    dependent.add_report_reminder_success_history
+    assert(dependent.histories.last.history_type == 'Report Reminder')
+    assert_includes(dependent.histories.last.comment, patient.preferred_contact_method)
+  end
+
+  test 'add report reminder fail history blank field' do
+    patient = create(:patient, preferred_contact_method: 'SMS Texted Weblink')
+    patient.add_report_reminder_fail_history_blank_field('primary phone number')
+    assert_includes(patient.histories.last.comment, patient.preferred_contact_method)
+    assert_includes(patient.histories.last.comment, 'primary phone number')
+    assert(patient.histories.last.history_type == 'Unsuccessful Report Reminder')
+  end
 end
 # rubocop:enable Metrics/ClassLength
 

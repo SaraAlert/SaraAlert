@@ -2,6 +2,8 @@
 
 module ConsumeAssessmentsJobTestHelper
   class AssessmentGenerator
+    include Twilio
+
     @@response_statuses = %w[no_answer_voice no_answer_sms error_voice error_sms]
 
     def initialize(patient)
@@ -45,7 +47,7 @@ module ConsumeAssessmentsJobTestHelper
       }.to_json
     end
 
-    def error_sms_assessment(error_code: TwilioSender::TWILIO_ERROR_CODES[:unknown_error][:code], patient: @patient)
+    def error_sms_assessment(error_code: TwilioErrorCodes::CODES[:unknown_error][:code], patient: @patient)
       {
         response_status: 'error_sms',
         error_code: error_code,
@@ -54,7 +56,7 @@ module ConsumeAssessmentsJobTestHelper
       }.to_json
     end
 
-    def error_voice_assessment(error_code: TwilioSender::TWILIO_ERROR_CODES[:unknown_error][:code], patient: @patient)
+    def error_voice_assessment(error_code: TwilioErrorCodes::CODES[:unknown_error][:code], patient: @patient)
       {
         response_status: 'error_voice',
         error_code: error_code,

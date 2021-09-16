@@ -41,7 +41,8 @@ class SendAssessmentsJob < ApplicationJob
       :created_at,
       :monitoring,
       :isolation,
-      :continuous_exposure
+      :continuous_exposure,
+      :primary_telephone
     ).where(id: patient_batch).find_in_batches(batch_size: 15_000) do |group|
       group.each do |patient|
         sent << { id: patient.id, method: patient.preferred_contact_method } if patient.send_assessment

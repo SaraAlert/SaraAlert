@@ -45,7 +45,7 @@ namespace :mailers do
     # patient.age = 27
     # patient.primary_telephone = <Test Number in E164 format>
     # patient.save
-    PatientMailer.assessment_voice(patient).deliver_now
+    PatientCaller.perform('assessment', patient)
   end
 
   desc "Send Assessments and Assessment Reminders To Non-Reporting Individuals"

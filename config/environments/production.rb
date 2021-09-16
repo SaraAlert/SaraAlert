@@ -1,5 +1,12 @@
 require "active_support/core_ext/integer/time"
 
+# Reuse values from the mailer since all URLs should be written consistently
+Rails.application.routes.default_url_options = {
+  host: ENV['ACTION_MAILER_HOST'] || 'localhost',
+  port: ENV['ACTION_MAILER_PORT'] || 3000,
+  protocol: ENV['ACTION_MAILER_PROTOCOL'] || 'http',
+  script_name: ENV['ACTION_MAILER_PATH']
+}
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 

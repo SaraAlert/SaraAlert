@@ -3,8 +3,6 @@
 require 'test_case'
 
 class ActiveStorage::Blobs::ProxyControllerTest < ActionDispatch::IntegrationTest
-  include Rails.application.routes.url_helpers
-
   def setup
     @user = create(:public_health_user)
     @download = create(:download, user_id: @user.id)

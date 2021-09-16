@@ -1007,16 +1007,11 @@ class Patient < ApplicationRecord
       # sidekiq and redis should be running for this to work
       # If these are not running, all jobs will be completed when services start
       PatientMailer.enrollment_email(self).deliver_later if ADMIN_OPTIONS['enable_email'] && !Rails.env.test?
-    elsif primary_telephone.present? && preferred_contact_method == 'SMS Texted Weblink'
+    elsif primary_telephone.present? && (preferred_contact_method == 'SMS Texted Weblink' || preferred_contact_method == 'SMS Text-message')
       # deliver_later forces the use of ActiveJob
       # sidekiq and redis should be running for this to work
       # If these are not running, all jobs will be completed when services start
-      PatientMailer.enrollment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
-    elsif primary_telephone.present? && preferred_contact_method == 'SMS Text-message'
-      # deliver_later forces the use of ActiveJob
-      # sidekiq and redis should be running for this to work
-      # If these are not running, all jobs will be completed when services start
-      PatientMailer.enrollment_sms_text_based(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
+      PatientTexterJob.perform_later('enrollment', self) if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
     end
   end
 
@@ -1041,12 +1036,20 @@ class Patient < ApplicationRecord
     return unless last_assessment_reminder_sent_eligible?
 
     contact_method = preferred_contact_method&.downcase
+
     if contact_method == 'sms text-message' && ADMIN_OPTIONS['enable_sms']
-      PatientMailer.assessment_sms(self).deliver_later
+      PatientTexterJob.perform_later('assessment_text', self)
     elsif contact_method == 'sms texted weblink' && ADMIN_OPTIONS['enable_sms']
-      PatientMailer.assessment_sms_weblink(self).deliver_later
+      PatientTexterJob.perform_later('assessment_weblink', self)
     elsif contact_method == 'telephone call' && ADMIN_OPTIONS['enable_voice']
-      PatientMailer.assessment_voice(self).deliver_later
+      if primary_telephone.present?
+        # Cover potential race condition where multiple messages are sent for the same monitoree.
+        return unless last_assessment_reminder_sent_eligible?
+
+        PatientCaller.perform_later('assessment', self)
+      else
+        add_report_reminder_fail_history_blank_field('primary_phone_number')
+      end
     elsif contact_method == 'e-mailed web link' && ADMIN_OPTIONS['enable_email']
       PatientMailer.assessment_email(self).deliver_later if email.present?
     end
@@ -1499,6 +1502,21 @@ class Patient < ApplicationRecord
                 'Monitoree moved from isolation to exposure workflow.'
               end
     History.monitoring_change(patient: self, created_by: 'Sara Alert System', comment: comment)
+  end
+
+  def add_report_reminder_success_history
+    comment = if id == responder_id
+                "Sara Alert sent a report reminder to this monitoree via #{preferred_contact_method}."
+              else
+                "Sara Alert sent a report reminder to this monitoree's head of household via #{responder.preferred_contact_method}."
+              end
+    History.report_reminder(patient: self, comment: comment)
+  end
+
+  def add_report_reminder_fail_history_blank_field(type)
+    History.unsuccessful_report_reminder(patient: self,
+                                         comment: "Sara Alert could not send a report reminder to this monitoree via \
+                                     #{preferred_contact_method}, because the monitoree #{type} was blank.")
   end
 end
 # rubocop:enable Metrics/ClassLength

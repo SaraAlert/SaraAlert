@@ -4,6 +4,8 @@ require 'test_case'
 require_relative '../test_helpers/consume_assessments_job_test_helper'
 
 class ConsumeAssessmentsJobTest < ActiveJob::TestCase
+  include Twilio
+
   def setup
     Sidekiq::Testing.fake!
     @redis = Rails.application.config.redis
@@ -122,7 +124,7 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
   end
 
   test 'consume errored sms assessment retry-eligible error resets last_assessment_reminder_sent' do
-    error_code = TwilioSender.retry_eligible_error_codes.first
+    error_code = TwilioErrorCodes.retry_eligible_error_codes.first
     @patient.update(preferred_contact_method: 'SMS Texted Weblink', last_assessment_reminder_sent: DateTime.now)
     assert_difference '@patient.assessments.count', 0 do
       assert_difference '@patient.histories.count', 1 do

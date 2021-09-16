@@ -4,9 +4,16 @@ require 'test_helper'
 require 'vcr_setup'
 
 class TwilioSenderTest < ActiveSupport::TestCase
+  include Twilio
+
   def setup
     ENV['TWILLIO_STUDIO_FLOW'] = 'test'
     ENV['TWILLIO_SENDING_NUMBER'] = '+15555555555'
+  end
+
+  def teardown
+    ENV['TWILLIO_STUDIO_FLOW'] = nil
+    ENV['TWILLIO_SENDING_NUMBER'] = nil
   end
 
   def test_get_number_from_single_message_execution

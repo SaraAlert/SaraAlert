@@ -5,6 +5,8 @@ require 'redis-queue'
 
 # ConsumeAssessmentsJob: Pulls assessments created in the split instance and saves them
 class ConsumeAssessmentsJob < ApplicationJob
+  include Twilio
+
   queue_as :default
 
   def perform
@@ -44,9 +46,9 @@ class ConsumeAssessmentsJob < ApplicationJob
 
         # Error occured in twilio studio flow
         if message['error_code'].present?
-          TwilioSender.handle_twilio_error_codes(patient, message['error_code'])
+          TwilioErrorCodes.handle_twilio_error_codes(patient, message['error_code'])
           # Will attempt to resend assessment if phone is off
-          patient.update(last_assessment_reminder_sent: nil) if message['error_code']&.in? TwilioSender.retry_eligible_error_codes
+          patient.update(last_assessment_reminder_sent: nil) if message['error_code']&.in? TwilioErrorCodes.retry_eligible_error_codes
           queue.commit
           next
         end
@@ -210,7 +212,7 @@ class ConsumeAssessmentsJob < ApplicationJob
     # a flow execution id, this is because a monitoree may send STOP/START outside the context of an assessment and
     # therefore the patient.submission_token will not be available. We get the responder associated with the opt_in
     # or opt_out phone number by requesting the phone number who sent the message in the associated flow execution id
-    phone_numbers = TwilioSender.get_phone_numbers_from_flow_execution(message['patient_submission_token'])
+    phone_numbers = get_phone_numbers_from_flow_execution(message['patient_submission_token'])
     if phone_numbers.nil?
       Rails.logger.info(
         "ConsumeAssessmentsJob: failure fetching number for opt-in/opt-out message (message response status: #{message['response_status']})"

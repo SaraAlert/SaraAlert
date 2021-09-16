@@ -2,7 +2,6 @@
 
 # UserMailer: mailers for users
 class UserMailer < ApplicationMailer
-  include Rails.application.routes.url_helpers
   default from: 'notifications@saraalert.org'
 
   def assessment_job_email(sent, not_sent, eligible)

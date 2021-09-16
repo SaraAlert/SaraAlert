@@ -61,14 +61,14 @@ class ClosePatientsJob < ApplicationJob
             if patient.blocked_sms
               histories << History.send_close_sms_blocked(patient: patient, create: false)
             elsif patient.primary_telephone.blank?
-              histories << History.send_close_conact_method_blank(patient: patient, type: 'primary phone number', create: false)
+              histories << History.send_close_contact_method_blank(patient: patient, type: 'primary phone number', create: false)
             else
-              PatientMailer.closed_sms(patient).deliver_later(wait_until: patient.time_to_notify_closed)
+              PatientTexterJob.set(wait_until: patient.time_to_notify_closed).perform_later('close', patient)
             end
           elsif contact_method == 'e-mailed web link'
             # Do not enqueue if the contact method is blank
             if patient.email.blank?
-              histories << History.send_close_conact_method_blank(patient: patient, type: 'email', create: false)
+              histories << History.send_close_contact_method_blank(patient: patient, type: 'email', create: false)
             else
               PatientMailer.closed_email(patient).deliver_later(wait_until: patient.time_to_notify_closed)
             end

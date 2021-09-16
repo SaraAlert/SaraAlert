@@ -272,7 +272,7 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment, create: create)
   end
 
-  def self.send_close_conact_method_blank(patient: nil, created_by: 'Sara Alert System', type: 'Unknown', create: true)
+  def self.send_close_contact_method_blank(patient: nil, created_by: 'Sara Alert System', type: 'Unknown', create: true)
     comment = "The system was unable to send a monitoring complete message to this monitoree because their preferred contact method, #{type}, was blank."
     create_history(patient, created_by, HISTORY_TYPES[:monitoring_complete_message_sent], comment, create: create)
   end
