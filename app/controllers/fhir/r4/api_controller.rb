@@ -210,6 +210,14 @@ class Fhir::R4::ApiController < ApplicationApiController
     when 'patient'
       return if doorkeeper_authorize!(*PATIENT_WRITE_SCOPES)
 
+      # Check for duplicates
+      if request.headers['If-None-Exist'].present?
+        search_params = request.headers['If-None-Exist'].split('&').map { |p| p.split('=', 2) }.select { |p| p.size == 2 }.to_h
+        num_matches = search_patients(search_params).size
+        err_msg = "There #{num_matches > 1 ? 'are' : 'is'} #{num_matches} potential duplicate patient#{num_matches > 1 ? 's' : ''}"
+        status_precondition_failed_with_custom_errors([err_msg]) && return if num_matches.positive?
+      end
+
       resource = save_patient(*build_patient(contents), request_body)
     when 'relatedperson'
       return if doorkeeper_authorize!(*RELATED_PERSON_WRITE_SCOPES)
@@ -265,6 +273,14 @@ class Fhir::R4::ApiController < ApplicationApiController
     patients = []
     contents.entry&.each_with_index do |entry, index|
       next unless entry.resource&.resourceType&.downcase == 'patient'
+
+      # Check for duplicates
+      if entry&.request&.ifNoneExist.present?
+        search_params = entry.request.ifNoneExist.split('&').map { |p| p.split('=', 2) }.select { |p| p.size == 2 }.to_h
+        num_matches = search_patients(search_params).size
+        err_msg = "There #{num_matches > 1 ? 'are' : 'is'} #{num_matches} potential duplicate patient#{num_matches > 1 ? 's' : ''}"
+        status_precondition_failed_with_custom_errors([err_msg]) && return if num_matches.positive?
+      end
 
       resource, fhir_map = build_patient(entry&.resource)
       change_fhir_map_context!(fhir_map, 'Patient', "Bundle.entry[#{index}].resource")
@@ -323,8 +339,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_not_acceptable && return unless accept_header?
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
-    search_params = params.slice('family', 'given', 'telecom', 'email', 'subject', 'active',
-                                 '_count', '_id', 'patient')
+    search_params = params.slice('family', 'given', 'telecom', 'email', 'state-local-id', 'birthDate', 'subject', 'active', '_count', '_id', 'patient')
+
     case resource_type
     when 'patient'
       return if doorkeeper_authorize!(*PATIENT_READ_SCOPES)
@@ -930,6 +946,13 @@ class Fhir::R4::ApiController < ApplicationApiController
     end
   end
 
+  # 412 precondition failed with custom error messages
+  def status_precondition_failed_with_custom_errors(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :precondition_failed }
+    end
+  end
+
   # 429 too many requests with custom error messages
   def status_too_many_requests_with_custom_errors(errors = [])
     respond_to do |format|
@@ -1044,6 +1067,10 @@ class Fhir::R4::ApiController < ApplicationApiController
         query = query.where('primary_telephone like ?', Phonelib.parse(search, 'US').full_e164)
       when 'email'
         query = query.where('email like ?', "%#{search}%")
+      when 'state-local-id'
+        query = query.where('lower(user_defined_id_statelocal) like ?', "#{search&.downcase}%")
+      when 'birthDate'
+        query = query.where(date_of_birth: search)
       when '_id'
         query = query.where(id: search)
       when 'active'

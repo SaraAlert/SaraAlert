@@ -191,6 +191,18 @@ class TransactionTest < ApiControllerTestCase
     assert_match(/Bundle\.entry\[1\]\.resource\.code\.coding\[0\]/, json_response['issue'][0]['expression'][0])
   end
 
+  test 'should be precondition failed when duplicate detection is enabled and duplicates are present for transactions' do
+    @bundle.entry[0].request.ifNoneExist = "birthDate=#{@bundle.entry[0].resource.birthDate}"
+    post(
+      '/fhir/r4',
+      params: @bundle.to_json,
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :precondition_failed
+    json_response = JSON.parse(response.body)
+    assert_match(/There are 3 potential duplicate patients/, json_response['issue'][0]['diagnostics'])
+  end
+
   test 'should create a Patient and Observation via transaction' do
     post(
       '/fhir/r4',
