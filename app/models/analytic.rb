@@ -2,7 +2,7 @@
 
 # Analytic
 class Analytic < ApplicationRecord
-  has_many :monitoree_maps
-  has_many :monitoree_counts
-  has_many :monitoree_snapshots
+  has_many :monitoree_maps, dependent: nil
+  has_many :monitoree_counts, dependent: nil
+  has_many :monitoree_snapshots, dependent: nil
 end
