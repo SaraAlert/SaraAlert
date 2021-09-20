@@ -196,13 +196,11 @@ module PHDC
       auth_id = Ox::Element.new(:id)
       auth_id['root'] = '2.16.840.1.113883.19.5'
       assigned_author << auth_id
-      assigned_person = Ox::Element.new(:assignedPerson)
-      assigned_author << assigned_person
-      auth_name = Ox::Element.new(:name)
-      assigned_person << auth_name
-      jur_name = Ox::Element.new(:family)
-      jur_name << "Sara Alert NBS Export: #{jurisdiction_path_string}"
-      auth_name << jur_name
+      assigned_authoring_device = Ox::Element.new(:assignedAuthoringDevice)
+      assigned_author << assigned_authoring_device
+      auth_name = Ox::Element.new(:softwareName)
+      auth_name << "Sara Alert NBS Export: #{jurisdiction_path_string}"
+      assigned_authoring_device << auth_name
 
       # Custodian
       custodian = Ox::Element.new(:custodian)
@@ -264,9 +262,11 @@ module PHDC
       clin_section_title << 'CLINICAL INFORMATION'
       clin_section << clin_section_title
       unless patient.user_defined_id_statelocal.blank?
-        clin_section << entry_helper_text('INV168', 'Investigation Local ID', 'ST', patient.user_defined_id_statelocal, nil)
         clin_section << entry_helper_text('INV173', 'Investigation State Local ID', 'ST', patient.user_defined_id_statelocal, nil)
       end
+      clin_section << clinical_entry_helper_code('INV169', '2.16.840.1.114222.4.5.232', 'Condition', 'PHIN Questions',
+                                                 '11065', '2.16.840.1.114222.4.5.277', 'Coronavirus Disease 2019 (COVID-19)',
+                                                 'Notifiable Event (Disease/Condition) Code List')
 
       # Generic Repeating Questions Information Section
 
@@ -288,10 +288,14 @@ module PHDC
       qrq_entry << qrq_org
       qrq_org << code_helper('1', 'Local-codesystem-oid', 'Exposure Information', 'LocalSystem')
       qrq_org << status_code_helper('completed')
+
       unless patient.potential_exposure_country.blank?
-        code = code_helper('INV502', 'Local-codesystem-oid', 'Country of Exposure', 'LocalSystem')
-        value = value_helper_code('CE', @fips.country_to_alpha_3(patient.potential_exposure_country), '1.0.3166.1', patient.potential_exposure_country)
-        qrq_org << comp_obs_helper('OBS', 'EVN', code, value)
+        exposure_country_code = @fips.country_to_alpha_3(patient.potential_exposure_country)
+        unless exposure_country_code.blank?
+          code = code_helper('INV502', 'Local-codesystem-oid', 'Country of Exposure', 'LocalSystem')
+          value = value_helper_code('CE', exposure_country_code, '1.0.3166.1', patient.potential_exposure_country)
+          qrq_org << comp_obs_helper('OBS', 'EVN', code, value)
+        end
       end
       unless patient.potential_exposure_location.blank?
         code = code_helper('INV504', 'Local-codesystem-oid', 'City of Exposure', 'LocalSystem')
@@ -329,11 +333,19 @@ module PHDC
         sas_section << sas_entry
         sas_obs = observation_helper('OBS', 'EVN')
         sas_entry << sas_obs
-        sas_obs << code_helper('1', 'Local-codesystem-oid', 'Daily Report', 'LocalSystem')
+        sas_obs << code_helper('INV576', '2.16.840.1.114222.4.5.232', 'Symptomatic', 'PHIN Questions')
         effective_time = Ox::Element.new(:effectiveTime)
         effective_time['value'] = assessment.updated_at.strftime('%Y%m%d%H%M%S%z')
         sas_obs << effective_time
-        sas_obs << value_helper_code('CE', 'Yes', 'LocalSystem', 'Symptomatic')
+        sas_val = value_helper_code('CE', 'Y', '2.16.840.1.113883.12.136', 'Yes')
+        sas_val['codeSystemName'] = 'Yes/No Indicator (HL7)'
+        sas_obs << sas_val
+        translation = Ox::Element.new(:translation)
+        translation['codeSystem'] = '2.16.840.1.113883.12.136'
+        translation['codeSystemName'] = 'Yes/No Indicator (HL7)'
+        translation['displayName'] = 'Yes'
+        translation['code'] = 'Y'
+        sas_val << translation
       end
 
       # Return XML
@@ -383,6 +395,18 @@ module PHDC
       value_el['xsi:type'] = type
       value_el << text
       value_el
+    end
+
+    # Clinical Information entry helper for coded values
+    def clinical_entry_helper_code(code, code_system, display, code_system_name, value_code, value_code_system, value_display, value_code_system_name)
+      s_entry = entry_helper
+      s_obs = observation_helper('OBS', 'EVN')
+      s_entry << s_obs
+      s_obs << code_helper(code, code_system, display, code_system_name)
+      val = value_helper_code('CE', value_code, value_code_system, value_display)
+      val['codeSystemName'] = value_code_system_name
+      s_obs << val
+      s_entry
     end
 
     # Social History entry helper for coded values
