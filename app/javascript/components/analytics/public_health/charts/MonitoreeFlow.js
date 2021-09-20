@@ -15,8 +15,8 @@ class MonitoreeFlow extends React.Component {
         let thisTimeFrameData = props.stats.monitoree_snapshots.find(
           monitoree_snapshot => monitoree_snapshot.status === workflow && monitoree_snapshot.time_frame === time_frame
         );
-        let inTotal = thisTimeFrameData?.new_enrollments || 0  + thisTimeFrameData?.transferred_in || 0 ;
-        let outTotal = thisTimeFrameData?.closed || 0  + thisTimeFrameData?.transferred_out || 0 ;
+        let inTotal = thisTimeFrameData?.new_enrollments || 0 + thisTimeFrameData?.transferred_in || 0;
+        let outTotal = thisTimeFrameData?.closed || 0 + thisTimeFrameData?.transferred_out || 0;
         return {
           time_frame,
           new_enrollments: {
@@ -44,7 +44,10 @@ class MonitoreeFlow extends React.Component {
         monitoree_snapshot => monitoree_snapshot.status === 'Isolation' && monitoree_snapshot.time_frame === time_frame
       );
       let exposureToIsolationTotal =
-        thisTimeFrameData?.exposure_to_isolation_active || 0 + thisTimeFrameData?.exposure_to_isolation_not_active || 0  + thisTimeFrameData?.cases_closed_in_exposure || 0 ;
+        thisTimeFrameData?.exposure_to_isolation_active ||
+        0 + thisTimeFrameData?.exposure_to_isolation_not_active ||
+        0 + thisTimeFrameData?.cases_closed_in_exposure ||
+        0;
       return {
         time_frame,
         exposure_to_isolation_active: {
@@ -273,7 +276,7 @@ class MonitoreeFlow extends React.Component {
           <Row>{this.workflowTableData.map((data, index) => this.renderWorkflowTable(data, index))}</Row>
           <div className="text-center text-secondary info-text mb-4">
             <i className="fas fa-info-circle mr-1"></i>
-            Cumulative includes all incoming and outgoing counts ever recorded for this jurisdiction
+            Cumulative includes incoming and outgoing counts recorded for this jurisdiction (excluding today’s counts)
           </div>
           <Row>
             {this.renderExposureToCaseTable(this.exposureToCaseTableData)}
@@ -281,7 +284,7 @@ class MonitoreeFlow extends React.Component {
           </Row>
           <div className="text-center text-secondary info-text mb-1">
             <i className="fas fa-info-circle mr-1"></i>
-            Cumulative includes only monitorees that were enrolled in the system after {RELEASE_DATE}
+            Cumulative includes counts of the monitorees that met the criteria listed in the tables after {RELEASE_DATE} (excluding today’s counts)
           </div>
         </Card.Body>
       </Card>

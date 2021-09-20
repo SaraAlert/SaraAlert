@@ -16,7 +16,7 @@ class Header extends React.Component {
    */
   getActiveTabKey = () => {
     // Active tab should still be the tab for the monitoring dashboards when viewing the isolation workflow
-    if (window.location.pathname === `${window.BASE_PATH}/public_health/isolation`) {
+    if (window.location.pathname.includes('/public_health/')) {
       return `${window.BASE_PATH}/public_health`;
     }
     return window.location.pathname;
