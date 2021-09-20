@@ -4,9 +4,12 @@
 #
 # Want to migrate an existing database dump and rebuild the image?
 #
+# Pull latest database with docker pull ghcr.io/saraalert/saraalert-1m-database:latest
+# Run it docker run --rm -e MYSQL_ROOT_PASSWORD=root ghcr.io/saraalert/saraalert-1m-database:latest
+# Dump the database (in a new terminal) docker exec <container ID> mysqldump -u root --password=root disease_trakker_development > sara_database_latest.sql
 # FILE=./path_to_backup.sql bundle exec rails demo:restore_database
 # bundle exec rails db:migrate
-# bundle exec rails db:backup_database
+# bundle exec rails demo:backup_database
 # ./performance/docker/build-push-1m-database-image.sh ./path_to_migrated_db_dump.sql
 #
 
