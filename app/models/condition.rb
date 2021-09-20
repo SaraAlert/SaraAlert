@@ -2,7 +2,7 @@
 
 # Condition
 class Condition < ApplicationRecord
-  has_many :symptoms
+  has_many :symptoms, dependent: nil
 
   def self.build_symptoms(symptoms_array)
     raise TypeError, "no conversion of #{symptoms_array.class} to Symptoms Array" unless symptoms_array.is_a?(Array)
