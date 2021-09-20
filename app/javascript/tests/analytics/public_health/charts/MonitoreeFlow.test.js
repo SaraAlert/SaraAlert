@@ -4,7 +4,7 @@ import { Card } from 'react-bootstrap';
 import MonitoreeFlow from '../../../../components/analytics/public_health/charts/MonitoreeFlow';
 import mockAnalytics from '../../../mocks/mockAnalytics';
 
-const monitoreeFlowTableHeaders = ['Last 24h', 'Last 7d', 'Last 14d', 'Cumulative'];
+const monitoreeFlowTableHeaders = ['Yesterday', 'Last 7d', 'Last 14d', 'Cumulative'];
 const exposureNewEnrollmentValues = [
   { number: '54', percent: '88.5%' },
   { number: '164', percent: '88.6%' },
@@ -53,6 +53,26 @@ const isolationTransferredOutValues = [
   { number: '22', percent: '78.6%' },
   { number: '25', percent: '78.1%' },
 ];
+const exposureToCaseActiveValues = [
+  { number: '3', percent: '37.5%' },
+  { number: '8', percent: '36.4%' },
+  { number: '14', percent: '35.0%' },
+  { number: '22', percent: '34.4%' },
+];
+const exposureToCaseNonActiveValues = [
+  { number: '5', percent: '62.5%' },
+  { number: '13', percent: '59.1%' },
+  { number: '21', percent: '52.5%' },
+  { number: '34', percent: '53.1%' },
+];
+const casesClosedInExposureValues = [
+  { number: '0', percent: 'None' },
+  { number: '1', percent: '4.5%' },
+  { number: '5', percent: '12.5%' },
+  { number: '8', percent: '12.5%' },
+];
+const exposureToCaseTotalValues = [{ number: '8' }, { number: '22' }, { number: '40' }, { number: '64' }];
+const isolationToExposureTotalValues = [{ number: '1' }, { number: '7' }, { number: '12' }, { number: '23' }];
 
 function getWrapper() {
   return shallow(<MonitoreeFlow stats={mockAnalytics} />);
@@ -71,10 +91,11 @@ describe('MonitoreeFlow', () => {
     expect(wrapper.find(Card.Body).find('table').length).toEqual(2);
     expect(wrapper.find(Card.Body).find('.info-text').exists()).toBe(true);
     expect(wrapper.find(Card.Body).find('.info-text').find('i').hasClass('fa-info-circle')).toBe(true);
-    expect(wrapper.find(Card.Body).find('.info-text').text()).toContain('Cumulative includes all incoming and outgoing counts ever recorded for this jurisdiction');
+    expect(wrapper.find(Card.Body).find('.info-text').at(0).text()).toContain('Cumulative includes incoming and outgoing counts recorded for this jurisdiction (excluding today’s counts)');
+    expect(wrapper.find(Card.Body).find('.info-text').at(1).text()).toContain('Cumulative includes counts of the monitorees that met the criteria listed in the tables after 10/5/2021 (excluding today’s counts)');
   });
 
-  it('Properly renders exposure monitoree flow table', () => {
+  it('Properly renders "Exposure" monitoree flow table', () => {
     const wrapper = getWrapper();
     const tableBody = wrapper.find('tbody').at(0);
     expect(wrapper.find('.analytics-table-header').at(0).text()).toEqual('Exposure Workflow');
@@ -174,7 +195,7 @@ describe('MonitoreeFlow', () => {
     });
   });
 
-  it('Properly renders isolation monitoree flow table', () => {
+  it('Properly renders "Isolation" monitoree flow table', () => {
     const wrapper = getWrapper();
     const tableBody = wrapper.find('tbody').at(1);
     expect(wrapper.find('.analytics-table-header').at(1).text()).toEqual('Isolation Workflow');
@@ -271,6 +292,140 @@ describe('MonitoreeFlow', () => {
           .find('.percentage')
           .text()
       ).toEqual(`(${value.percent})`);
+    });
+  });
+
+  it('Properly renders "Exposure to Case Development" monitoree flow table', () => {
+    const wrapper = getWrapper();
+    const tableBody = wrapper.find('tbody').at(2);
+    expect(wrapper.find('.analytics-table-header').at(2).text()).toEqual('Exposure to Case Development');
+    monitoreeFlowTableHeaders.forEach((header, index) => {
+      expect(
+        wrapper
+          .find('th')
+          .at(index + 1)
+          .text()
+      ).toContain(header);
+    });
+    expect(tableBody.find('tr').at(0).text()).toEqual('Moved from Exposure to Isolation Workflow');
+    expect(tableBody.find('tr').at(1).find('td').at(0).text()).toEqual('Currently Active');
+    exposureToCaseActiveValues.forEach((value, index) => {
+      expect(
+        tableBody
+          .find('tr')
+          .at(1)
+          .find('td')
+          .at(index + 1)
+          .find('.number')
+          .text()
+      ).toEqual(value.number);
+      expect(
+        tableBody
+          .find('tr')
+          .at(1)
+          .find('td')
+          .at(index + 1)
+          .find('.percentage')
+          .text()
+      ).toEqual(`(${value.percent})`);
+    });
+    expect(tableBody.find('tr').at(2).find('td').at(0).text()).toEqual('Closed or Purged');
+    exposureToCaseNonActiveValues.forEach((value, index) => {
+      expect(
+        tableBody
+          .find('tr')
+          .at(2)
+          .find('td')
+          .at(index + 1)
+          .find('.number')
+          .text()
+      ).toEqual(value.number);
+      expect(
+        tableBody
+          .find('tr')
+          .at(2)
+          .find('td')
+          .at(index + 1)
+          .find('.percentage')
+          .text()
+      ).toEqual(`(${value.percent})`);
+    });
+    expect(tableBody.find('tr').at(3).find('td').at(0).text()).toEqual('Cases that were closed in Exposure Workflow');
+    casesClosedInExposureValues.forEach((value, index) => {
+      expect(
+        tableBody
+          .find('tr')
+          .at(3)
+          .find('td')
+          .at(index + 1)
+          .find('.number')
+          .text()
+      ).toEqual(value.number);
+      expect(
+        tableBody
+          .find('tr')
+          .at(3)
+          .find('td')
+          .at(index + 1)
+          .find('.percentage')
+          .text()
+      ).toEqual(`(${value.percent})`);
+    });
+    expect(tableBody.find('tr').at(4).find('td').at(0).text()).toEqual('Total Contacts that became Cases');
+    exposureToCaseTotalValues.forEach((value, index) => {
+      expect(
+        tableBody
+          .find('tr')
+          .at(4)
+          .find('td')
+          .at(index + 1)
+          .find('.number')
+          .text()
+      ).toEqual(value.number);
+      expect(
+        tableBody
+          .find('tr')
+          .at(4)
+          .find('td')
+          .at(index + 1)
+          .find('.percentage')
+          .text()
+      ).toEqual('');
+    });
+  });
+
+  it('Properly renders "Moved from Isolation to Exposure" monitoree flow table', () => {
+    const wrapper = getWrapper();
+    const tableBody = wrapper.find('tbody').at(3);
+    expect(wrapper.find('.analytics-table-header').at(3).text()).toEqual('Moved from Isolation to Exposure');
+    monitoreeFlowTableHeaders.forEach((header, index) => {
+      expect(
+        wrapper
+          .find('th')
+          .at(index + 1)
+          .text()
+      ).toContain(header);
+    });
+    expect(tableBody.find('tr').at(0).find('td').at(0).text()).toEqual('Moved from Isolation to Exposure Workflow');
+    isolationToExposureTotalValues.forEach((value, index) => {
+      expect(
+        tableBody
+          .find('tr')
+          .at(0)
+          .find('td')
+          .at(index + 1)
+          .find('.number')
+          .text()
+      ).toEqual(value.number);
+      expect(
+        tableBody
+          .find('tr')
+          .at(0)
+          .find('td')
+          .at(index + 1)
+          .find('.percentage')
+          .text()
+      ).toEqual('');
     });
   });
 });

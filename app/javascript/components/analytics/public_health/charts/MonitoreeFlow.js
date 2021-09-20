@@ -15,8 +15,9 @@ class MonitoreeFlow extends React.Component {
         let thisTimeFrameData = props.stats.monitoree_snapshots.find(
           monitoree_snapshot => monitoree_snapshot.status === workflow && monitoree_snapshot.time_frame === time_frame
         );
-        let inTotal = thisTimeFrameData?.new_enrollments || 0 + thisTimeFrameData?.transferred_in || 0;
-        let outTotal = thisTimeFrameData?.closed || 0 + thisTimeFrameData?.transferred_out || 0;
+        let inTotal = thisTimeFrameData?.new_enrollments + thisTimeFrameData?.transferred_in;
+        let outTotal = thisTimeFrameData?.closed + thisTimeFrameData?.transferred_out;
+
         return {
           time_frame,
           new_enrollments: {
@@ -44,10 +45,7 @@ class MonitoreeFlow extends React.Component {
         monitoree_snapshot => monitoree_snapshot.status === 'Isolation' && monitoree_snapshot.time_frame === time_frame
       );
       let exposureToIsolationTotal =
-        thisTimeFrameData?.exposure_to_isolation_active ||
-        0 + thisTimeFrameData?.exposure_to_isolation_not_active ||
-        0 + thisTimeFrameData?.cases_closed_in_exposure ||
-        0;
+        thisTimeFrameData?.exposure_to_isolation_active + thisTimeFrameData?.exposure_to_isolation_not_active + thisTimeFrameData?.cases_closed_in_exposure;
       return {
         time_frame,
         exposure_to_isolation_active: {
