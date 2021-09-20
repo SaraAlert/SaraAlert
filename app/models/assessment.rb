@@ -15,7 +15,7 @@ class Assessment < ApplicationRecord
       validates column.name.to_sym, length: { maximum: 200 }
     end
   end
-  has_one :reported_condition, class_name: 'ReportedCondition'
+  has_one :reported_condition, class_name: 'ReportedCondition', dependent: nil
   belongs_to :patient, touch: true
 
   after_create { update_patient_linelist_fields(:created) }
@@ -51,7 +51,7 @@ class Assessment < ApplicationRecord
 
   def symptomatic?
     symptom_groups = []
-    threshold_symptoms = reported_condition&.threshold_condition&.symptoms&.map { |threshold_symptom| [threshold_symptom[:name], threshold_symptom] }&.to_h
+    threshold_symptoms = reported_condition&.threshold_condition&.symptoms&.index_by { |threshold_symptom| threshold_symptom[:name] }
     reported_condition.symptoms.each do |reported_symptom|
       threshold_symptom = threshold_symptoms[reported_symptom.name] unless threshold_symptoms.nil?
       # Group represents how many have to be true in that group to be considered as symptomatic
