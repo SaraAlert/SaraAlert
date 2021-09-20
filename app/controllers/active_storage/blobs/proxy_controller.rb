@@ -45,7 +45,7 @@ class ActiveStorage::Blobs::ProxyController < ActiveStorage::BaseController
   end
 
   def queue_destroy_download(download)
-    DestroyDownloadsJob.set(wait_until: ADMIN_OPTIONS['download_destroy_wait_time'].to_i.minute.from_now).perform_later(download)
+    DestroyDownloadsJob.set(wait_until: ADMIN_OPTIONS['download_destroy_wait_time'].to_i.minute.from_now).perform_later(download.id)
     download.update(marked_for_deletion: true)
   end
 end
