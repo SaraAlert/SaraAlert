@@ -56,6 +56,7 @@ class History < ApplicationRecord
   # - monitoree data download
   # - unsuccessful_report_reminder
   # - report_email_error
+  # rubocop:disable Rails/SkipsModelValidations
   after_create(
     proc do
       patient.touch unless [
@@ -66,6 +67,7 @@ class History < ApplicationRecord
       ].include? history_type
     end
   )
+  # rubocop:enable Rails/SkipsModelValidations
 
   # All histories within the given time frame
   scope :in_time_frame, lambda { |time_frame|
@@ -332,11 +334,11 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    if !history[:updates][:monitoring].blank? && !history[:updates][:monitoring]
+    if history[:updates][:monitoring].present? && !history[:updates][:monitoring]
       # monitoree went from actively monitoring to not monitoring
       history[:note] = ', and chose to "End Monitoring"'
       # monitoree went from exposure to isolation (only applies to when user deliberately selected to continue monitoring in isolation workflow)
-    elsif !history[:patient_before][:isolation].present? && history[:updates][:isolation].present? && !diff_state.nil? && diff_state.include?(:isolation)
+    elsif history[:patient_before][:isolation].blank? && history[:updates][:isolation].present? && !diff_state.nil? && diff_state.include?(:isolation)
       history[:note] = ', and chose to "Continue Monitoring in Isolation Workflow"'
     end
 
@@ -457,7 +459,7 @@ class History < ApplicationRecord
     comment = 'User flagged for follow-up'
     comment += compose_explanation(history) + '.'
     comment += " Reason: \"#{history[:follow_up_reason]}"
-    comment += ": #{history[:follow_up_note]}" unless history[:follow_up_note].blank?
+    comment += ": #{history[:follow_up_note]}" if history[:follow_up_note].present?
     comment += '"'
 
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment, create: create)
@@ -468,7 +470,7 @@ class History < ApplicationRecord
 
     comment = 'User cleared flag for follow-up'
     comment += compose_explanation(history) + '.'
-    comment += " Reason: #{history[:clear_flag_reason]}" unless history[:clear_flag_reason].blank?
+    comment += " Reason: #{history[:clear_flag_reason]}" if history[:clear_flag_reason].present?
 
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:follow_up_flag], comment, create: create)
   end
@@ -491,9 +493,9 @@ class History < ApplicationRecord
 
     comment = "User #{verb} #{field[:name]} from #{from_text} to #{to_text}"
     comment += compose_explanation(history)
-    comment += history[:note] unless history[:note].blank?
+    comment += history[:note] if history[:note].present?
     comment += '.'
-    comment += " Reason: #{history[:reason]}" unless history[:reason].blank?
+    comment += " Reason: #{history[:reason]}" if history[:reason].present?
     comment
   end
 
