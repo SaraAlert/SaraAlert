@@ -36,7 +36,7 @@ zho:
           thank_you: 'Sara警报监控 %{initials_age}已于%{completed_date}完成！感谢您的参与。'
         contact:
           info1: '如果您有任何疑问，请使用下面的联系信息联系帮助您的公共卫生机构：'
-          info2: '请联系帮助您加入Sara Alert 系统的公共卫生机构。'
+          info2: '如果您有任何疑问，请联系帮助您加入Sara Alert 系统的公共卫生机构。'
     twilio:
       shared:
         experiencing_symptoms_s: '%{name}是否正经历任何以下症状: %{symptom_names}.'
