@@ -143,14 +143,15 @@ if Rails.env.test? || Rails.env.development?
       'en_US': [
         'config/locales/*.eng.yml',
         'config/locales/eng.yml'
-      ],
-      'es_PR': [
-        'config/locales/spa-pr.yml',
-        'config/locales/spa.yml'
-      ],
-      'fr_FR': [
-        'config/locales/fra.yml'
       ]
+      # Disable spellcheck for French and Spanish until we are able to put back special characters
+      # 'es_PR': [
+      #   'config/locales/spa-pr.yml',
+      #   'config/locales/spa.yml'
+      # ],
+      # 'fr_FR': [
+      #   'config/locales/fra.yml'
+      # ]
     }
     locale_globs.each do |dict_name, glob|
       Dir.glob(glob).each do|filepath|
