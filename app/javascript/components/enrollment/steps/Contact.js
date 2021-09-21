@@ -571,7 +571,7 @@ var schema = yup.object().shape({
   secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  international_telephone: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 200 characters.').nullable(),
   email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   confirm_email: yup
     .string()

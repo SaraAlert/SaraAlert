@@ -257,7 +257,6 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     primary_telephone_type: { label: 'Primary Telephone Type', checks: [:enum] },
     secondary_telephone: { label: 'Secondary Telephone', checks: [:phone] },
     secondary_telephone_type: { label: 'Secondary Telephone Type', checks: [:enum] },
-    international_telephone: { label: 'International Telephone', checks: [:int_phone] },
     email: { label: 'Email', checks: [:email] },
     # arrival info
     date_of_departure: { label: 'Date of Departure', checks: [:date] },

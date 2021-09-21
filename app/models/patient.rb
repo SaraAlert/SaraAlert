@@ -134,6 +134,7 @@ class Patient < ApplicationRecord
 
   validates_with PrimaryContactValidator, on: %i[api import]
   validates_with RaceValidator, on: %i[api import]
+  validates_with InternationalPhoneNumberValidator, on: %i[api import]
   validates_with RequiredAddressValidator, on: :api
   validates_with TimeZoneValidator
   validates_with IsolationSymptomOnsetValidator, on: %i[api_create]
