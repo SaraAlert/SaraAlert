@@ -194,7 +194,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       primary_telephone: { value: from_fhir_phone_number(primary_phone&.value), path: "Patient.telecom[#{patient&.telecom&.index(primary_phone)}].value" },
       secondary_telephone: { value: from_fhir_phone_number(secondary_phone&.value),
                              path: "Patient.telecom[#{patient&.telecom&.index(secondary_phone)}].value" },
-      international_telephone: { value: from_fhir_phone_number(international_phone&.value),
+      international_telephone: { value: international_phone&.value,
                                  path: "Patient.telecom[#{patient&.telecom&.index(international_phone)}].value" },
       email: { value: email&.value, path: "Patient.telecom[#{patient&.telecom&.index(email)}].value" },
       date_of_birth: { value: patient&.birthDate, path: 'Patient.birthDate' },
