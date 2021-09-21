@@ -112,17 +112,17 @@ describe('AssessmentCompleted', () => {
     expect(wrapper.find(Card.Body).find(Form.Label).at(1).text()).toContain(mockTranslations[`${language}`]['html']['weblink']['instruction3']);
   });
 
-  // it('Properly renders all main components in Arabic', () => {
-  //   const language = 'ara';
-  //   const wrapper = getWrapper(language, contact);
-  //   expect(wrapper.find(Card.Header).exists()).toBe(true);
-  //   expect(wrapper.find(Card.Header).text()).toEqual(mockTranslations[`${language}`]['html']['weblink']['title']);
-  //   expect(wrapper.find(Card.Body).exists()).toBe(true);
-  //   expect(wrapper.find(Card.Body).find(Form.Label).at(0).text()).toEqual(mockTranslations[`${language}`]['html']['weblink']['thank_you']);
-  //   expect(wrapper.find(Card.Body).find(Form.Label).at(1).text()).toContain(mockTranslations[`${language}`]['html']['weblink']['instruction1']);
-  //   expect(wrapper.find(Card.Body).find(Form.Label).at(1).text()).toContain(mockTranslations[`${language}`]['html']['weblink']['instruction2']);
-  //   expect(wrapper.find(Card.Body).find(Form.Label).at(1).text()).toContain(mockTranslations[`${language}`]['html']['weblink']['instruction3']);
-  // });
+  it('Properly renders all main components in Arabic', () => {
+    const language = 'ara';
+    const wrapper = getWrapper(language, contact);
+    expect(wrapper.find(Card.Header).exists()).toBe(true);
+    expect(wrapper.find(Card.Header).text()).toEqual(mockTranslations[`${language}`]['html']['weblink']['title']);
+    expect(wrapper.find(Card.Body).exists()).toBe(true);
+    expect(wrapper.find(Card.Body).find(Form.Label).at(0).text()).toEqual(mockTranslations[`${language}`]['html']['weblink']['thank_you']);
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text()).toContain(mockTranslations[`${language}`]['html']['weblink']['instruction1']);
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text()).toContain(mockTranslations[`${language}`]['html']['weblink']['instruction2']);
+    expect(wrapper.find(Card.Body).find(Form.Label).at(1).text()).toContain(mockTranslations[`${language}`]['html']['weblink']['instruction3']);
+  });
 
   it('Properly renders all main components in Chinese', () => {
     const language = 'zho';

@@ -1,5 +1,6 @@
 zho:
   assessments:
+    dir: 'ltr'
     html:
       shared:
         email: '电子邮件'

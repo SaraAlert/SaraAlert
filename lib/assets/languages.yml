@@ -83,8 +83,8 @@
   :system: 'iso639-2t'
   :supported:
     :sms: false
-    :email: false
-    :phone: false
+    :email: true
+    :phone: true
 
 :arg:
   :display: 'Aragonese'

@@ -1,40 +1,50 @@
 <% content_for :preheader do %>
-<%= t('assessments.html.email.enrollment.header', locale: @lang) %>
+  <%= t('assessments.html.email.enrollment.header', locale: @lang) %>
 <% end %>
 
 <% content_for :body do %>
-<% @patients.each do |patient| %>
-<p><%= t('assessments.html.email.shared.greeting', locale: @lang, name: patient[:patient]&.initials_age('-')) %></p>
+  <div dir="<%= t('assessments.dir', locale: @lang) %>">
+    <% @patients.each do |patient| %>
+      <p><%= t('assessments.html.email.shared.greeting', locale: @lang, name: patient[:patient]&.initials_age('-')) %></p>
 
-<p><%= t('assessments.html.email.enrollment.info1', locale: @lang) %></p>
-<%= render partial: 'main_mailer/responsive_button', locals: {
-      patient: patient,
-      link: new_patient_assessment_jurisdiction_lang_initials_url(patient[:patient].submission_token,
-                                                                  patient[:jurisdiction_unique_id],
-                                                                  @lang&.to_s,
-                                                                  patient[:patient]&.initials_age('-')),
-      text: t('assessments.html.email.shared.report', locale: @lang)
-    } %><br />
-<% end %>
-<p><%= t('assessments.html.email.enrollment.info2', locale: @lang) %> </p>
-<% if @contact_info[:email].present? || @contact_info[:phone].present? || @contact_info[:webpage].present? %>
-<p><%= t('assessments.html.email.contact.info1', locale: @lang) %></p>
-<% if @contact_info[:email].present? %>
-<%= t('assessments.html.shared.email', locale: @lang) %><%= ':'%> <%= @contact_info[:email] %> <br />
-<% end %>
-<% if @contact_info[:phone].present? %>
-<%= t('assessments.html.shared.phone', locale: @lang) %><%= ':'%> <%= @contact_info[:phone] %> <br />
-<% end %>
-<% if @contact_info[:webpage].present? %>
-<%= t('assessments.html.shared.webpage', locale: @lang) %><%= ':'%> <%= @contact_info[:webpage] %>
-<% end %>
-<% else %>
-<p><%= t('assessments.html.email.contact.info2', locale: @lang) %></p>
-<% end %>
+      <p><%= t('assessments.html.email.enrollment.info1', locale: @lang) %></p>
+
+      <%= render partial: 'main_mailer/responsive_button', locals: {
+            patient: patient,
+            link: new_patient_assessment_jurisdiction_lang_initials_url(patient[:patient].submission_token,
+                                                                        patient[:jurisdiction_unique_id],
+                                                                        @lang&.to_s,
+                                                                        patient[:patient]&.initials_age('-')),
+            text: t('assessments.html.email.shared.report', locale: @lang)
+          } %><br />
+    <% end %>
+
+    <p><%= t('assessments.html.email.enrollment.info2', locale: @lang) %> </p>
+
+    <% if @contact_info[:email].present? || @contact_info[:phone].present? || @contact_info[:webpage].present? %>
+      <p><%= t('assessments.html.email.contact.info1', locale: @lang) %></p>
+
+      <% if @contact_info[:email].present? %>
+        <%= t('assessments.html.shared.email', locale: @lang) %><%= ':'%> <%= @contact_info[:email] %> <br />
+      <% end %>
+
+      <% if @contact_info[:phone].present? %>
+        <%= t('assessments.html.shared.phone', locale: @lang) %><%= ':'%> <%= @contact_info[:phone] %> <br />
+      <% end %>
+
+      <% if @contact_info[:webpage].present? %>
+        <%= t('assessments.html.shared.webpage', locale: @lang) %><%= ':'%> <%= @contact_info[:webpage] %>
+      <% end %>
+    <% else %>
+      <p><%= t('assessments.html.email.contact.info2', locale: @lang) %></p>
+    <% end %>
+  </div>
 <% end %>
 
 <% content_for :footer do %>
-<p>
-  <%= t('assessments.html.email.shared.footer', locale: @lang) %>
-</p>
+  <div dir="<%= t('assessments.dir', locale: @lang) %>">
+    <p>
+      <%= t('assessments.html.email.shared.footer', locale: @lang) %>
+    </p>
+  </div>
 <% end %>

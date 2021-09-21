@@ -16,7 +16,7 @@ const COMMON_LANGUAGES = {
   vie: 'Vietnamese',
   kor: 'Korean',
   rus: 'Russian',
-  // ara: 'Arabic',
+  ara: 'Arabic',
   zho: 'Chinese',
 };
 

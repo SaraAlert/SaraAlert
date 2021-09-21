@@ -1,5 +1,6 @@
 kor:
   assessments:
+    dir: 'ltr'
     html:
       shared:
         email: '전자 메일'

@@ -1,5 +1,6 @@
 spa:
   assessments:
+    dir: 'ltr'
     html:
       shared:
         email: 'Correo electrónico'

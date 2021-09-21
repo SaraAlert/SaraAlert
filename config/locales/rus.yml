@@ -1,5 +1,6 @@
 rus:
   assessments:
+    dir: 'ltr'
     html:
       shared:
         email: 'Электронная почта'
