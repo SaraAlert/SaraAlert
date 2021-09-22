@@ -514,14 +514,6 @@ namespace :demo do
         patient[:was_in_health_care_facility_with_known_cases_facility_name] = Faker::GreekPhilosophers.name if patient[:was_in_health_care_facility_with_known_cases] && rand < 0.15
       end
 
-      # Fields used for tracking workflow changes
-      if rand < 0.5 # swap workflow from original
-        patient[:isolation] = !patient[:isolation]
-        if rand < 0.1 # swap workflow back to original
-          patient[:isolation] = !patient[:isolation]
-        end
-      end
-
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
       patient[:time_zone] = time_zone_for_state(patient[:monitored_address_state] || patient[:address_state] || 'massachusetts')
@@ -540,6 +532,25 @@ namespace :demo do
       patient[:public_health_action] = patient[:isolation] || rand < 0.8 ? 'None' : ValidationHelper::VALID_PATIENT_ENUMS[:public_health_action].sample
       patient[:pause_notifications] = rand < 0.1
       patient[:last_assessment_reminder_sent] = beginning_of_day - rand(7).days if rand < 0.3
+
+      # Fields used for tracking workflow changes
+      patient[:enrolled_workflow] = patient[:isolation] ? 'Isolation' : 'Exposure'
+      if rand < 0.5 # switch workflows once
+        patient[:isolation] = !patient[:isolation]
+        if patient[:isolation]
+          patient[:exposure_to_isolation_at] = beginning_of_day - rand(21).days
+        else
+          patient[:isolation_to_exposure_at] = beginning_of_day - rand(21).days
+        end
+        if rand < 0.1 # switch workflows again
+          patient[:isolation] = !patient[:isolation]
+          if patient[:isolation]
+            patient[:exposure_to_isolation_at] = rand(beginning_of_day..patient[:isolation_to_exposure_at])
+          else
+            patient[:isolation_to_exposure_at] = rand(beginning_of_day..patient[:exposure_to_isolation_at])
+          end
+        end
+      end
 
       # Follow-up Flag
       if rand < 0.15
