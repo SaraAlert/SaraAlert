@@ -645,7 +645,7 @@ class Patient < ApplicationRecord
   scope :enrolled_in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Yesterday'
-      where('patients.created_at >= ? AND patients.created_at < ?', 1.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.created_at >= ? AND patients.created_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 7 Days'
       where('patients.created_at >= ? AND patients.created_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
@@ -661,7 +661,7 @@ class Patient < ApplicationRecord
   scope :closed_in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Yesterday'
-      where('patients.closed_at >= ? AND patients.closed_at < ?', 1.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.closed_at >= ? AND patients.closed_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 7 Days'
       where('patients.closed_at >= ? AND patients.closed_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
@@ -677,7 +677,7 @@ class Patient < ApplicationRecord
   scope :exposure_to_isolation_in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Yesterday'
-      where('patients.exposure_to_isolation_at >= ? AND patients.exposure_to_isolation_at < ?', 1.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.exposure_to_isolation_at >= ? AND patients.exposure_to_isolation_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 7 Days'
       where('patients.exposure_to_isolation_at >= ? AND patients.exposure_to_isolation_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
@@ -693,7 +693,7 @@ class Patient < ApplicationRecord
   scope :isolation_to_exposure_in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Yesterday'
-      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 1.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 7 Days'
       where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
