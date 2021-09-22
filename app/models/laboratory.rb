@@ -46,6 +46,7 @@ class Laboratory < ApplicationRecord
   end
 
   validates_with LaboratoryDateValidator, on: %i[api import]
+  validates_with NonEmptyLaboratoryValidator, on: %i[api import]
 
   before_destroy :update_patient_linelist_before_destroy
   after_save :update_patient_linelist_after_save
