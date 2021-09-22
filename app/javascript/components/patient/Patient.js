@@ -276,7 +276,7 @@ class Patient extends React.Component {
                 <div className="pl-3 py-1">
                   {this.props.details.secondary_telephone && (
                     <div className="small-text">
-                      <b>Secondary Phone:</b> <span>{formatPhoneNumberVisually(this.props.details.primary_telephone) || '--'}</span>
+                      <b>Secondary Phone:</b> <span>{formatPhoneNumberVisually(this.props.details.secondary_telephone) || '--'}</span>
                     </div>
                   )}
                   {this.props.details.secondary_telephone && (
