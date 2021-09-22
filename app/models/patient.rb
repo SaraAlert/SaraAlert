@@ -693,11 +693,11 @@ class Patient < ApplicationRecord
   scope :isolation_to_exposure_in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Yesterday'
-      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_a < ?', 1.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 1.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 7 Days'
-      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_a < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
-      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_a < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'
       where.not(isolation_to_exposure_at: nil)
     else
