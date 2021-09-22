@@ -34,9 +34,7 @@ class Identification extends React.Component {
   componentDidMount() {
     getLanguageData(this.props.authenticity_token, languageData => {
       const langOptions = languageData.map(lang => {
-        const fullySupported = lang.supported.sms && lang.supported.email && lang.supported.phone;
-        const langLabel = fullySupported ? lang.display : lang.display + '*';
-        return { value: lang.code, label: langLabel };
+        return { value: lang.code, label: lang.display };
       });
 
       // lodash's 'remove()' actually removes the values from the object
