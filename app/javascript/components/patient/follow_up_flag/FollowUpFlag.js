@@ -15,7 +15,6 @@ class FollowUpFlag extends React.Component {
     this.state = {
       apply_to_household: false,
       apply_to_household_ids: [],
-      noMembersSelected: false,
       bulk_action_apply_to_household: false,
       cancelToken: axios.CancelToken.source(),
       clear_flag_disabled: true,
@@ -72,13 +71,11 @@ class FollowUpFlag extends React.Component {
   };
 
   handleApplyHouseholdChange = apply_to_household => {
-    const noMembersSelected = apply_to_household && this.state.apply_to_household_ids.length === 0;
-    this.setState({ apply_to_household, noMembersSelected });
+    this.setState({ apply_to_household, apply_to_household_ids: [] });
   };
 
   handleApplyHouseholdIdsChange = apply_to_household_ids => {
-    const noMembersSelected = this.state.apply_to_household && apply_to_household_ids.length === 0;
-    this.setState({ apply_to_household_ids, noMembersSelected });
+    this.setState({ apply_to_household_ids });
   };
 
   /**
@@ -242,7 +239,11 @@ class FollowUpFlag extends React.Component {
             id="follow_up_flag_submit_button"
             variant="primary btn-square"
             onClick={this.submit}
-            disabled={(!this.state.clear_flag && this.state.follow_up_reason === '') || this.state.loading || this.state.noMembersSelected}>
+            disabled={
+              (!this.state.clear_flag && this.state.follow_up_reason === '') ||
+              this.state.loading ||
+              (this.state.apply_to_household && this.state.apply_to_household_ids.length === 0)
+            }>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
@@ -253,16 +254,18 @@ class FollowUpFlag extends React.Component {
               {!this.props.bulkAction && this.state.initial_follow_up_reason !== '' && !this.state.clear_flag && 'Update'}
               {!this.props.bulkAction && this.state.clear_flag && 'Clear'}
             </span>
-            {this.state.noMembersSelected && (
+            {this.state.apply_to_household && this.state.apply_to_household_ids.length === 0 && (
               <ReactTooltip id="follow-up-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
                 <div>Please select at least one household member or change your selection to apply to this monitoree only</div>
               </ReactTooltip>
             )}
-            {!this.state.noMembersSelected && !this.state.clear_flag && this.state.follow_up_reason === '' && (
-              <ReactTooltip id="follow-up-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
-                <div>Please select a reason for follow-up</div>
-              </ReactTooltip>
-            )}
+            {!(this.state.apply_to_household && this.state.apply_to_household_ids.length === 0) &&
+              !this.state.clear_flag &&
+              this.state.follow_up_reason === '' && (
+                <ReactTooltip id="follow-up-submit" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
+                  <div>Please select a reason for follow-up</div>
+                </ReactTooltip>
+              )}
           </Button>
         </Modal.Footer>
       </React.Fragment>
