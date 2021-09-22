@@ -50,7 +50,6 @@ class ApplyToHousehold extends React.Component {
             current_user={this.props.current_user}
             jurisdiction_paths={this.props.jurisdiction_paths}
             isSelectable={true}
-            handleApplyHouseholdChange={this.props.handleApplyHouseholdChange}
             handleApplyHouseholdIdsChange={this.props.handleApplyHouseholdIdsChange}
             workflow={this.props.workflow}
           />

@@ -313,7 +313,6 @@ HouseholdMemberTable.propTypes = {
   current_user: PropTypes.object,
   jurisdiction_paths: PropTypes.object,
   isSelectable: PropTypes.bool,
-  handleApplyHouseholdChange: PropTypes.func,
   handleApplyHouseholdIdsChange: PropTypes.func,
   workflow: PropTypes.string,
 };
