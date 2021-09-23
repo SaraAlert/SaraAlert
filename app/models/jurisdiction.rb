@@ -41,14 +41,14 @@ class Jurisdiction < ApplicationRecord
 
   # All patients that were in the jurisdiction before (but were transferred), and are not currently in the subtree
   def transferred_out_patients
-    Patient.where(purged: false, id: Transfer.where(from_jurisdiction_id: subtree_ids).pluck(:patient_id)).where.not(jurisdiction_id: subtree_ids + [id])
+    Patient.where(purged: false, id: Transfer.where(from_jurisdiction_id: subtree_ids).select(:patient_id)).where.not(jurisdiction_id: subtree_ids + [id])
   end
 
   # All patients that were transferred into the jurisdiction in the last 24 hours
   def transferred_in_patients
     Patient.where(purged: false, id: Transfer.where(to_jurisdiction_id: subtree_ids + [id])
                               .where.not(from_jurisdiction_id: subtree_ids + [id])
-                              .where('created_at > ?', 24.hours.ago).pluck(:patient_id))
+                              .where('created_at > ?', 24.hours.ago).select(:patient_id))
            .where(jurisdiction_id: subtree_ids + [id])
   end
 
