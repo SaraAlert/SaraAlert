@@ -66,7 +66,7 @@ class LaboratoryModal extends React.Component {
               <Form.Group as={Col} controlId="lab_type">
                 <Form.Label className="input-label">Lab Test Type</Form.Label>
                 <Form.Control as="select" className="form-control-lg" onChange={this.handleChange} value={this.state.lab_type}>
-                  <option disabled></option>
+                  <option></option>
                   <option>PCR</option>
                   <option>Antigen</option>
                   <option>Total Antibody</option>
@@ -88,6 +88,7 @@ class LaboratoryModal extends React.Component {
                   minDate={'2020-01-01'}
                   maxDate={moment().format('YYYY-MM-DD')}
                   onChange={date => this.handleDateChange('specimen_collection', date)}
+                  isClearable
                   placement="bottom"
                   customClass="form-control-lg"
                   ariaLabel="Specimen Collection Date Input"
@@ -105,6 +106,7 @@ class LaboratoryModal extends React.Component {
                   minDate={'2020-01-01'}
                   maxDate={moment().format('YYYY-MM-DD')}
                   onChange={date => this.handleDateChange('report', date)}
+                  isClearable
                   placement="bottom"
                   isInvalid={this.state.reportInvalid}
                   customClass="form-control-lg"
@@ -123,7 +125,7 @@ class LaboratoryModal extends React.Component {
                     <option>positive</option>
                   ) : (
                     <React.Fragment>
-                      <option disabled></option>
+                      <option></option>
                       <option>positive</option>
                       <option>negative</option>
                       <option>indeterminate</option>
