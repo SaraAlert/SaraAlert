@@ -181,10 +181,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     monitored_address_index = patient&.address&.index(monitored_address) || 0
     address = from_address_by_type_extension(patient, 'USA')
     address_index = patient&.address&.index(address) || foreign_address_index || 0
-
-    primary_phone = patient&.telecom&.find { |t| t&.system == 'phone' }
-    secondary_phone = patient&.telecom&.select { |t| t&.system == 'phone' }&.second
-    international_phone = patient&.telecom&.find { |t| t&.extension&.include?(to_bool_extension(true, 'international-telephone')) }
+    int_phone_extension = to_bool_extension(true, 'international-telephone')
+    primary_phone = patient&.telecom&.find { |t| t&.system == 'phone' && !t&.extension&.include?(int_phone_extension) }
+    secondary_phone = patient&.telecom&.select { |t| t&.system == 'phone' && !t&.extension&.include?(int_phone_extension) }&.second
+    international_phone = patient&.telecom&.find { |t| t&.extension&.include?(int_phone_extension) }
     email = patient&.telecom&.find { |t| t&.system == 'email' }
     {
       monitoring: { value: patient&.active.nil? ? false : patient.active, path: 'Patient.active' },
