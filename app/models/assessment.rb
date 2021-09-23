@@ -129,7 +129,8 @@ class Assessment < ApplicationRecord
       kor: I18n.backend.send(:translations)[:kor][:assessments],
       vie: I18n.backend.send(:translations)[:vie][:assessments],
       rus: I18n.backend.send(:translations)[:rus][:assessments],
-      ara: I18n.backend.send(:translations)[:ara][:assessments]
+      ara: I18n.backend.send(:translations)[:ara][:assessments],
+      zho: I18n.backend.send(:translations)[:zho][:assessments]
     }
   end
 

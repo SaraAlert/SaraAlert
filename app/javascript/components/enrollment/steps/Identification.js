@@ -34,21 +34,25 @@ class Identification extends React.Component {
   componentDidMount() {
     getLanguageData(this.props.authenticity_token, languageData => {
       const langOptions = languageData.map(lang => {
-        const fullySupported = lang.supported.sms && lang.supported.email && lang.supported.phone;
-        const langLabel = fullySupported ? lang.display : lang.display + '*';
-        return { value: lang.code, label: langLabel };
+        return { value: lang.code, label: lang.display };
       });
 
       // lodash's 'remove()' actually removes the values from the object
-      let supportedLangCodes = languageData.filter(l => l.supported.sms || l.supported.email || l.supported.phone).map(x => x.code);
-      const supportedLangsFormatted = _.remove(langOptions, n => supportedLangCodes.includes(n.value));
+      const fullySupportedLangCodes = languageData.filter(l => l.supported.sms && l.supported.email && l.supported.phone).map(x => x.code);
+      const supportedLangCodes = languageData.filter(l => l.supported.sms || l.supported.email || l.supported.phone).map(x => x.code);
+      const fullySupportedLangsFormatted = _.remove(langOptions, n => fullySupportedLangCodes.includes(n.value));
+      const partiallySupportedLangsFormatted = _.remove(langOptions, n => supportedLangCodes.includes(n.value));
       const unsupportedLangsFormatted = langOptions;
 
       // For each language, get the support options
       const groupedOptions = [
         {
-          label: 'Supported Languages',
-          options: supportedLangsFormatted,
+          label: 'Fully Supported Languages',
+          options: fullySupportedLangsFormatted,
+        },
+        {
+          label: 'Partially Supported Languages',
+          options: partiallySupportedLangsFormatted,
         },
         {
           label: 'Unsupported Languages',
