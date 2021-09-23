@@ -240,12 +240,10 @@ class Contact extends React.Component {
 
   renderWarningBanner = (message, showTooltip, variant) => {
     return (
-      <Form.Group as={Col} className="mt-1 mb-3 mb-lg-0" sm={{ span: 24, order: 2 }} lg={{ span: 24, order: 3 }}>
-        <Alert variant={variant || 'danger'} className="mb-0">
-          <b>Warning:</b> {message}
-          {showTooltip && <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="right" />}
-        </Alert>
-      </Form.Group>
+      <Alert variant={variant || 'danger'} className="mb-0">
+        <b>Warning:</b> {message}
+        {showTooltip && <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="right" />}
+      </Alert>
     );
   };
 
@@ -392,8 +390,8 @@ class Contact extends React.Component {
                   </Form.Group>
                 )}
               </Form.Row>
-              <Form.Row className="mb-4">
-                <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 1 }} lg={{ span: 12, order: 1 }} controlId="primary_telephone">
+              <Form.Row>
+                <Form.Group as={Col} lg="12" controlId="primary_telephone">
                   <Form.Label className="input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
                   {this.state.current.blocked_sms && (
                     <span className="float-right font-weight-bold">
@@ -410,8 +408,11 @@ class Contact extends React.Component {
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['primary_telephone']}
                   </Form.Control.Feedback>
+                  {this.state.current.patient?.preferred_contact_method?.includes('SMS') &&
+                    this.state.current.blocked_sms &&
+                    this.renderWarningBanner('SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert', true)}
                 </Form.Group>
-                <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 3 }} lg={{ span: 12, order: 2 }} controlId="secondary_telephone">
+                <Form.Group as={Col} lg="12" controlId="secondary_telephone">
                   <Form.Label className="input-label">SECONDARY TELEPHONE NUMBER{schema?.fields?.secondary_telephone?._exclusive?.required && ' *'}</Form.Label>
                   <PhoneInput
                     id="secondary_telephone"
@@ -423,66 +424,43 @@ class Contact extends React.Component {
                     {this.state.errors['secondary_telephone']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                {this.state.current.patient?.preferred_contact_method?.includes('SMS') &&
-                  this.state.current.blocked_sms &&
-                  this.renderWarningBanner('SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert', true)}
-              </Form.Row>
-              <Form.Row className="mb-3">
-                <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 1 }} lg={{ span: 12, order: 1 }} controlId="primary_telephone_type">
-                  <Form.Label className="input-label">PRIMARY PHONE TYPE{schema?.fields?.primary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['primary_telephone_type']}
-                    as="select"
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.primary_telephone_type || ''}
-                    onChange={this.handleChange}>
-                    <option></option>
-                    <option>Smartphone</option>
-                    <option>Plain Cell</option>
-                    <option>Landline</option>
-                  </Form.Control>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['primary_telephone_type']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group as={Col} className="mb-0" sm={{ span: 24, order: 3 }} lg={{ span: 12, order: 2 }} controlId="secondary_telephone_type">
-                  <Form.Label className="input-label">SECONDARY PHONE TYPE{schema?.fields?.secondary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['secondary_telephone_type']}
-                    as="select"
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.secondary_telephone_type || ''}
-                    onChange={this.handleChange}>
-                    <option></option>
-                    <option>Smartphone</option>
-                    <option>Plain Cell</option>
-                    <option>Landline</option>
-                  </Form.Control>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['secondary_telephone_type']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
-                  this.state.current.patient.primary_telephone_type == 'Plain Cell' &&
-                  this.renderWarningBanner(
-                    'Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
-                  )}
-                {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
-                  this.state.current.patient.primary_telephone_type == 'Landline' &&
-                  this.renderWarningBanner(
-                    'Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
-                  )}
-                {this.state.current.patient.preferred_contact_method === 'SMS Text-message' &&
-                  this.state.current.patient.primary_telephone_type === 'Landline' &&
-                  this.renderWarningBanner(
-                    'Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this type of message.'
-                  )}
               </Form.Row>
               <Form.Row>
-                <Form.Group as={Col} lg={12}>
-                  <div>
+                <Col lg="12">
+                  <Form.Group controlId="primary_telephone_type">
+                    <Form.Label className="input-label">PRIMARY PHONE TYPE{schema?.fields?.primary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
+                    <Form.Control
+                      isInvalid={this.state.errors['primary_telephone_type']}
+                      as="select"
+                      size="lg"
+                      className="form-square"
+                      value={this.state.current.patient.primary_telephone_type || ''}
+                      onChange={this.handleChange}>
+                      <option></option>
+                      <option>Smartphone</option>
+                      <option>Plain Cell</option>
+                      <option>Landline</option>
+                    </Form.Control>
+                    <Form.Control.Feedback className="d-block" type="invalid">
+                      {this.state.errors['primary_telephone_type']}
+                    </Form.Control.Feedback>
+                    {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
+                      this.state.current.patient.primary_telephone_type == 'Plain Cell' &&
+                      this.renderWarningBanner(
+                        'Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
+                      )}
+                    {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
+                      this.state.current.patient.primary_telephone_type == 'Landline' &&
+                      this.renderWarningBanner(
+                        'Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
+                      )}
+                    {this.state.current.patient.preferred_contact_method === 'SMS Text-message' &&
+                      this.state.current.patient.primary_telephone_type === 'Landline' &&
+                      this.renderWarningBanner(
+                        'Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this type of message.'
+                      )}
+                  </Form.Group>
+                  <div className="mb-2">
                     <span className="font-weight-bold">Smartphone: </span>
                     <span className="font-weight-light">Phone capable of accessing web-based reporting tool</span>
                     <br />
@@ -492,25 +470,46 @@ class Contact extends React.Component {
                     <span className="font-weight-bold">Landline: </span>
                     <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
                   </div>
-                </Form.Group>
-                <Form.Group as={Col} lg={12}>
-                  <Form.Label className="input-label">
-                    INTERNATIONAL TELEPHONE NUMBER{schema?.fields?.international_telephone?._exclusive?.required && ' *'}
-                  </Form.Label>
-                  <Form.Control
-                    id="international_telephone"
-                    value={this.state.current.patient.international_telephone || ''}
-                    onChange={this.handleChange}
-                    size="lg"
-                    className="form-square"
-                    isInvalid={this.state.errors['international_telephone']}
-                  />
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['international_telephone']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                {this.state.current.patient.international_telephone &&
-                  this.renderWarningBanner('International telephone number is not used by the system for automated symptom reporting.', false, 'warning')}
+                </Col>
+                <Col lg="12">
+                  <Form.Group controlId="secondary_telephone_type">
+                    <Form.Label className="input-label">
+                      SECONDARY PHONE TYPE{schema?.fields?.secondary_telephone_type?._exclusive?.required && ' *'}
+                    </Form.Label>
+                    <Form.Control
+                      isInvalid={this.state.errors['secondary_telephone_type']}
+                      as="select"
+                      size="lg"
+                      className="form-square"
+                      value={this.state.current.patient.secondary_telephone_type || ''}
+                      onChange={this.handleChange}>
+                      <option></option>
+                      <option>Smartphone</option>
+                      <option>Plain Cell</option>
+                      <option>Landline</option>
+                    </Form.Control>
+                    <Form.Control.Feedback className="d-block" type="invalid">
+                      {this.state.errors['secondary_telephone_type']}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group controlId="international_telephone">
+                    <Form.Label className="input-label">
+                      INTERNATIONAL TELEPHONE NUMBER{schema?.fields?.international_telephone?._exclusive?.required && ' *'}
+                    </Form.Label>
+                    <Form.Control
+                      value={this.state.current.patient.international_telephone || ''}
+                      onChange={this.handleChange}
+                      size="lg"
+                      className="form-square"
+                      isInvalid={this.state.errors['international_telephone']}
+                    />
+                    <Form.Control.Feedback className="d-block" type="invalid">
+                      {this.state.errors['international_telephone']}
+                    </Form.Control.Feedback>
+                    {this.state.current.patient.international_telephone &&
+                      this.renderWarningBanner('International telephone number is not used by the system for automated symptom reporting.', false, 'warning')}
+                  </Form.Group>
+                </Col>
               </Form.Row>
               <Form.Row className="mt-2">
                 <Form.Group as={Col} lg="12" controlId="email">
