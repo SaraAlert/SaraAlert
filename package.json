@@ -15,7 +15,7 @@
     "@rails/webpacker": "^5.2.0",
     "@sentry/browser": "^5.15.5",
     "authy-form-helpers": "^2.4.4",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "babel-loader": "^8.1.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "base64toblob": "^0.0.2",
