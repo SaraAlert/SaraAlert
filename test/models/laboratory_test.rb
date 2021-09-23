@@ -22,7 +22,7 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert laboratory.valid?(:api)
     assert laboratory.valid?(:import)
 
-    laboratory = build(:laboratory, report: nil)
+    laboratory = build(:laboratory, report: nil, result: 'positive')
     assert laboratory.valid?(:api)
     assert laboratory.valid?(:import)
 
@@ -46,7 +46,7 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert laboratory.valid?(:api)
     assert laboratory.valid?(:import)
 
-    laboratory = build(:laboratory, specimen_collection: nil)
+    laboratory = build(:laboratory, specimen_collection: nil, result: 'positive')
     assert laboratory.valid?(:api)
     assert laboratory.valid?(:import)
 
@@ -157,7 +157,7 @@ class LaboratoryTest < ActiveSupport::TestCase
   end
 
   test 'validates lab_type inclusion in api and import context' do
-    lab = create(:laboratory)
+    lab = create(:laboratory, result: 'positive')
 
     lab.lab_type = 'PCR'
     assert lab.valid?(:api)
@@ -194,7 +194,7 @@ class LaboratoryTest < ActiveSupport::TestCase
   end
 
   test 'validates specimen_collection is a valid date' do
-    lab = create(:laboratory)
+    lab = create(:laboratory, result: 'positive')
 
     lab.specimen_collection = Time.now.getlocal - 1.day
     assert lab.valid?(:api)
@@ -245,7 +245,7 @@ class LaboratoryTest < ActiveSupport::TestCase
   end
 
   test 'validates report is a valid date' do
-    lab = create(:laboratory)
+    lab = create(:laboratory, result: 'positive')
 
     lab.report = Time.now.getlocal - 1.day
     assert lab.valid?(:api)
@@ -294,5 +294,31 @@ class LaboratoryTest < ActiveSupport::TestCase
     assert_not lab.valid?(:import)
     assert_not lab.valid?(:api)
     assert_equal 'is not a valid date, please use the \'YYYY-MM-DD\' format', lab.errors[:report][0]
+  end
+
+  test 'validates at least one field is present' do
+    lab = create(:laboratory)
+
+    assert_not lab.valid?(:api)
+    assert_not lab.valid?(:import)
+
+    lab.report = Time.now.getlocal - 1.day
+    assert lab.valid?(:api)
+    assert lab.valid?(:import)
+
+    lab.report = nil
+    lab.specimen_collection = Time.now.getlocal - 1.day
+    assert lab.valid?(:api)
+    assert lab.valid?(:import)
+
+    lab.specimen_collection = nil
+    lab.result = 'positive'
+    assert lab.valid?(:api)
+    assert lab.valid?(:import)
+
+    lab.result = nil
+    lab.lab_type = 'PCR'
+    assert lab.valid?(:api)
+    assert lab.valid?(:import)
   end
 end

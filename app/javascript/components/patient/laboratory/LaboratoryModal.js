@@ -52,8 +52,8 @@ class LaboratoryModal extends React.Component {
   };
 
   render() {
-    // Data is valid and can be saved if there is either a report or specimen collection date AND a result
-    const isValid = (this.state.report || this.state.specimen_collection) && this.state.result;
+    // Data is valid as long as at least one field has a value
+    const isValid = this.state.lab_type || this.state.specimen_collection || this.state.report || this.state.result;
     return (
       <Modal size="lg" className="laboratory-modal-container" show centered onHide={this.props.cancel}>
         <h1 className="sr-only">{this.props.editMode ? 'Edit' : 'Add New'} Lab Result</h1>
@@ -66,7 +66,7 @@ class LaboratoryModal extends React.Component {
               <Form.Group as={Col} controlId="lab_type">
                 <Form.Label className="input-label">Lab Test Type</Form.Label>
                 <Form.Control as="select" className="form-control-lg" onChange={this.handleChange} value={this.state.lab_type}>
-                  <option disabled></option>
+                  <option></option>
                   <option>PCR</option>
                   <option>Antigen</option>
                   <option>Total Antibody</option>
@@ -88,6 +88,7 @@ class LaboratoryModal extends React.Component {
                   minDate={'2020-01-01'}
                   maxDate={moment().format('YYYY-MM-DD')}
                   onChange={date => this.handleDateChange('specimen_collection', date)}
+                  isClearable
                   placement="bottom"
                   customClass="form-control-lg"
                   ariaLabel="Specimen Collection Date Input"
@@ -105,6 +106,7 @@ class LaboratoryModal extends React.Component {
                   minDate={'2020-01-01'}
                   maxDate={moment().format('YYYY-MM-DD')}
                   onChange={date => this.handleDateChange('report', date)}
+                  isClearable
                   placement="bottom"
                   isInvalid={this.state.reportInvalid}
                   customClass="form-control-lg"
@@ -123,7 +125,7 @@ class LaboratoryModal extends React.Component {
                     <option>positive</option>
                   ) : (
                     <React.Fragment>
-                      <option disabled></option>
+                      <option></option>
                       <option>positive</option>
                       <option>negative</option>
                       <option>indeterminate</option>
@@ -172,8 +174,8 @@ class LaboratoryModal extends React.Component {
           {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
           {/* This does not impact component functionality at all. */}
           {!isValid && (
-            <ReactTooltip id="submit-tooltip" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container text-left">
-              Please enter at minimum a result and either a report date or specimen date
+            <ReactTooltip id="submit-tooltip" place="top" type="dark" effect="solid">
+              Please enter at least one field.
             </ReactTooltip>
           )}
         </Modal.Footer>
