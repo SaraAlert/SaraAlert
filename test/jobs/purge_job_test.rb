@@ -6,14 +6,17 @@ class PurgeJobTest < ActiveSupport::TestCase
   def setup
     # Allowed to purge immediately for the tests
     ADMIN_OPTIONS['job_run_email'] = 'test@test.com'
+    @old_size = ADMIN_OPTIONS['job_run_email_group_size']
     Patient.delete_all
     Assessment.delete_all
     ReportedCondition.delete_all
     Symptom.delete_all
+    ActionMailer::Base.deliveries.clear
   end
 
   def teardown
     ADMIN_OPTIONS['job_run_email'] = nil
+    ADMIN_OPTIONS['job_run_email_group_size'] = @old_size
     ActionMailer::Base.deliveries.clear
   end
 
@@ -37,7 +40,6 @@ class PurgeJobTest < ActiveSupport::TestCase
   end
 
   test 'sends emails in groups of monitorees' do
-    old_size = ADMIN_OPTIONS['job_run_email_group_size']
     ADMIN_OPTIONS['job_run_email_group_size'] = 5
     10.times do
       patient = create(:patient, monitoring: false, purged: false)
@@ -45,7 +47,6 @@ class PurgeJobTest < ActiveSupport::TestCase
     end
     PurgeJob.perform_now
     assert_equal(2, ActionMailer::Base.deliveries.length)
-    ADMIN_OPTIONS['job_run_email_group_size'] = old_size
   end
 
   test 'does not purge heads of household with active dependents' do
