@@ -779,27 +779,27 @@ const mockTranslations = {
   kor: {
     html: {
       shared: {
-        email: 'Email',
-        phone: 'Phone',
-        webpage: 'Webpage',
+        email: '전자 메일',
+        phone: '전화',
+        webpage: '웹 페이지',
       },
       weblink: {
         title: '일일 자기 보고서',
         'bool-title': '겪고 계신 모든 증상을 선택해 주십시오.',
         instruction1: '아무 증상도 보고하지 않으셨다면, 계속해서 지역 보건부가 제공하는 권고사항을 따라 주십시오.',
         instruction2:
-          "'어떠한 증상을 보고하셨다면, 곧 지역 보건부로부터 연락을 받으시게 됩니다. 즉각적인 대처가 필요한 경우는 의료 제공자나 지역 보건부에 문의하시기 바랍니다. 다른 사람들과의 접촉을 피하고 집에 머물러 주십시오.'",
+          '어떠한 증상을 보고하셨다면, 곧 지역 보건부로부터 연락을 받으시게 됩니다. 즉각적인 대처가 필요한 경우는 의료 제공자나 지역 보건부에 문의하시기 바랍니다. 다른 사람들과의 접촉을 피하고 집에 머물러 주십시오.',
         instruction3: '응급 의료 상황을 겪고 계신다면 911에 전화하셔서 보건부에 의해 모니터링되고 있음을 알려주시기 바랍니다.',
-        instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.',
-        submit: 'Submit',
+        instruction4: '아래의 연락처 정보를 이용하여 귀하의 케이스를 담당하고 있는 공중 보건인과 연락을 취하실 수 있습니다.',
+        submit: '제출',
         thank_you: '자기 보고서를 작성해 주셔서 감사합니다.',
       },
       email: {
         shared: {
           greeting: '%{name}님,',
-          report: 'Daily Report',
+          report: '일일 보고서',
           footer:
-            "'이 이메일에 답장하거나, 이 이메일을 전달하거나, 이 링크를 공유하지 마십시오. 이 메시지는 Sara Alert 시스템에 의해 자동으로 생성되었으며 고유하고 귀하만을 위한 것입니다. 이러한 알림을 중단하고 싶거나 실수라고 생각되면 지역 공중 보건부에 문의하십시오. 개인 정보 보호 및 더 자세한 정보를 원하시면 saraalert.org를 방문하십시오.'",
+            '이 이메일에 답장하거나, 이 이메일을 전달하거나, 이 링크를 공유하지 마십시오. 이 메시지는 Sara Alert 시스템에 의해 자동으로 생성되었으며 고유하고 귀하만을 위한 것입니다. 이러한 알림을 중단하고 싶거나 실수라고 생각되면 지역 공중 보건부에 문의하십시오. 개인 정보 보호 및 더 자세한 정보를 원하시면 saraalert.org를 방문하십시오.',
         },
         enrollment: {
           subject: 'Sara Alert 등록',
@@ -819,7 +819,7 @@ const mockTranslations = {
           thank_you: '%{initials_age}에 대한 Sara Alert 모니터링이 %{completed_date}일에 완료되었습니다.참여해 주셔서 감사합니다.',
         },
         contact: {
-          info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:',
+          info1: '질문이 있으시면 등록을 도와드린 공중 보건 기관에 문의하시기 바랍니다:',
           info2: '질문이 있으시면 등록을 도와드린 공중 보건 기관에 문의하시기 바랍니다.',
         },
       },
@@ -829,20 +829,20 @@ const mockTranslations = {
         experiencing_symptoms_s: '다음과 같은 증상을 겪고 계십니까? %{symptom_names}.',
         experiencing_symptoms_p: '이 분들 중에 다음과 같은 증상을 겪고 계신 분이 있으십니까? %{symptom_names}.',
         max_retries_message:
-          "'I''m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911.'",
+          '미안 해요, 최대 응답 시도 횟수에 도달했습니다. 당신이 응급 상황이 발생하는 경우, 911에 전화해서 당신이 보건 당국에 의해 감시되고있다 알려 주시기 바랍니다.',
       },
       sms: {
         prompt: {
           intro:
             'Sara Alert 시스템에 오신 것을 환영합니다. 이 전화번호로 %{name}님의 일일 보고서를 보내드리겠습니다. 개인 정보 보호 및 더 자세한 정보를 원하시면 saraalert.org를 방문하십시오.',
-          reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.',
+          reminder: '이것은 Sara Alert로서 우리에게 일일 보고서 메시지에 회신해 주길 바랍니다.',
           name: '%{name}님',
           daily: '이것은 %{names}의 Sara Alert 일일 보고서입니다. %{experiencing_symptoms} "네" 또는 "아니요"로 대답해 주시기 바랍니다.',
           try_again: '죄송합니다만 이해하지 못했습니다. "네" 또는 "아니요"로 대답해 주시기 바랍니다. 질문이 있으시면 지역 보건부에 문의하십시오.',
           thanks: '일일 보고서를 작성해 주셔서 감사합니다.',
         },
         weblink: {
-          intro: 'Please complete the Sara Alert Daily Report for %{initials_age}: %{url}',
+          intro: '이것은 님의 Sara Alert 일일 보고서입니다 %{initials_age}: %{url}',
         },
         closed: {
           thank_you: '%{initials_age}에 대한 Sara Alert 모니터링이 %{completed_date}일에 완료되었습니다.참여해 주셔서 감사합니다.',
@@ -895,8 +895,8 @@ const mockTranslations = {
         name: '새로운 미각소실',
       },
       'pulse-ox': {
-        name: 'Pulse Ox',
-        notes: 'What was your lowest oxygen level in the past 24 hours?',
+        name: '혈중 산소 소준',
+        notes: '지난 24시간 동안 가장 낮은 산소 수치는 얼마였나요?',
       },
       'repeated-shaking-with-chills': {
         name: '오한을 동반한 지속적 떨림',
@@ -908,26 +908,26 @@ const mockTranslations = {
         name: '인후통',
       },
       temperature: {
-        name: 'Temperature',
-        notes: 'Please enter your current temperature in degrees Fahrenheit',
+        name: '온도',
+        notes: '체온를 입력하십시오(화씨).',
       },
       'used-a-fever-reducer': {
         name: '해열제를 사용했음',
-        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?',
+        notes: '지난 24시간 동안 열을 줄이기 위해 약을 먹었나요?',
       },
       other: {
-        name: 'Other',
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs',
+        name: '기타',
+        notes: '다른 증상이나 추가 필요사항에 대해 후속 조치를 받을 수 있는 사람이 있으면 좋겠습니다',
       },
-      'no-symptoms': 'I am not experiencing any symptoms',
+      'no-symptoms': '증상이 없습니다',
     },
     'threshold-op': {
-      'less-than': 'Less Than',
-      'less-than-or-equal': 'Less Than Or Equal to',
-      'greater-than': 'Greater Than',
-      'greater-than-or-equal': 'Greater Than Or Equal to',
-      equal: 'Equal to',
-      'not-equal': 'Not Equal to',
+      'less-than': '미만',
+      'less-than-or-equal': '작거나 같음',
+      'greater-than': '보다 큼',
+      'greater-than-or-equal': '크거나 같음',
+      equal: '같음',
+      'not-equal': '같지 않음',
     },
   },
   vie: {
@@ -942,7 +942,7 @@ const mockTranslations = {
         'bool-title': 'Xin vui lòng chọn tất cả các triệu chứng mà bạn đang gặp phải.',
         instruction1: 'Nếu bạn không báo cáo bất kỳ triệu chứng nào, vui lòng tiếp tục làm theo các khuyến nghị do sở y tế địa phương cung cấp.',
         instruction2:
-          "'Nếu bạn báo cáo bất kỳ triệu chứng nào, bộ phận y tế địa phương của bạn sẽ sớm liên hệ với bạn. Nếu bạn có bất kỳ thắc mắc nào, ngay lập tức, xin vui lòng liên hệ với nhà cung cấp dịch vụ y tế hoặc sở y tế địa phương. Tránh tiếp xúc gần gũi với người khác và xin vui lòng ở nhà.'",
+          'Nếu bạn báo cáo bất kỳ triệu chứng nào, bộ phận y tế địa phương của bạn sẽ sớm liên hệ với bạn. Nếu bạn có bất kỳ thắc mắc nào, ngay lập tức, xin vui lòng liên hệ với nhà cung cấp dịch vụ y tế hoặc sở y tế địa phương. Tránh tiếp xúc gần gũi với người khác và xin vui lòng ở nhà.',
         instruction3: 'Nếu bạn đang gặp trường hợp khẩn cấp về y tế, xin vui lòng gọi 911 và cho họ biết bạn đang được bộ phận y tế theo dõi.',
         instruction4: 'Xin vui lòng sử dụng thông tin liên hệ bên dưới để liên hệ với một quan chức y tế công cộng quản lý trường hợp của bạn.',
         submit: 'Gửi đi',
@@ -951,23 +951,23 @@ const mockTranslations = {
       email: {
         shared: {
           greeting: 'Kính gửi %{name},',
-          report: 'Daily Report',
+          report: 'Báo cáo hàng ngày',
           footer:
-            "'Xin đừng trả lời email này, chuyển tiếp email này hoặc chia sẻ liên kết này. Thông báo này được tạo tự động bởi hệ thống Sara Alert và là duy nhất và chỉ dành cho bạn. Nếu bạn muốn ngừng nhận những thông báo này hoặc tin rằng đó là do nhầm lẫn, vui lòng liên hệ với sở y tế công cộng địa phương của bạn. Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập saraalert.org.'",
+            'Xin đừng trả lời email này, chuyển tiếp email này hoặc chia sẻ liên kết này. Thông báo này được tạo tự động bởi hệ thống Sara Alert và là duy nhất và chỉ dành cho bạn. Nếu bạn muốn ngừng nhận những thông báo này hoặc tin rằng đó là do nhầm lẫn, vui lòng liên hệ với sở y tế công cộng địa phương của bạn. Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập saraalert.org.',
         },
         enrollment: {
           subject: 'Đăng ký Sara Alert',
           header: 'Chào mừng bạn đến với Hệ thống Cảnh báo Sara',
           greeting: 'Kính gửi %{name},',
           info1:
-            "'Bạn đã được đăng ký vào hệ thống giám sát Sara Alert. Chúng tôi yêu cầu bạn cung cấp các báo cáo hàng ngày về tình trạng của bạn. Chỉ cần nhấn vào nút bên dưới và làm theo hướng dẫn trên màn hình.'",
+            'Bạn đã được đăng ký vào hệ thống giám sát Sara Alert. Chúng tôi yêu cầu bạn cung cấp các báo cáo hàng ngày về tình trạng của bạn. Chỉ cần nhấn vào nút bên dưới và làm theo hướng dẫn trên màn hình.',
           info2: 'Bạn sẽ nhận được một lời nhắc tương tự hàng ngày cho đến khi thời gian theo dõi của bạn kết thúc.',
         },
         reminder: {
           subject: 'Lời nhắc Báo cáo Cảnh báo Sara',
           header: 'Đây là lời nhắc của bạn để hoàn thành báo cáo hàng ngày của bạn.',
           thank_you:
-            "'Cảm ơn bạn đã tham gia vào chương trình theo dõi Sara Alert, xin vui lòng điền vào báo cáo hàng ngày của bạn bằng cách sử dụng liên kết bên dưới.'",
+            'Cảm ơn bạn đã tham gia vào chương trình theo dõi Sara Alert, xin vui lòng điền vào báo cáo hàng ngày của bạn bằng cách sử dụng liên kết bên dưới.',
         },
         closed: {
           subject: 'Hoàn thành theo dõi cảnh báo Sara',
@@ -975,7 +975,7 @@ const mockTranslations = {
           thank_you: 'Sara Alert giám sát cho %{initials_age} hoàn thành vào %{completed_date}! Cảm ơn bạn vì sự tham gia của bạn.',
         },
         contact: {
-          info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:',
+          info1: 'Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với tổ chức y tế công cộng, nơi đã giúp đăng ký cho bạn:',
           info2: 'Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với tổ chức y tế công cộng, nơi đã giúp đăng ký cho bạn.',
         },
       },
@@ -985,21 +985,21 @@ const mockTranslations = {
         experiencing_symptoms_s: 'Người này có gặp bất kỳ triệu chứng nào sau đây không? %{symptom_names}.',
         experiencing_symptoms_p: 'Có ai trong số những người này gặp bất kỳ triệu chứng nào sau đây không? %{symptom_names}.',
         max_retries_message:
-          "'I''m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911.",
+          'Tôi xin lỗi, bạn đã đạt đến số lần thử phản hồi tối đa. Nếu bạn đang gặp một trường hợp khẩn cấp y tế, xin vui lòng gọi số 911 và cho họ biết bạn đang được theo dõi bởi các bộ phận y tế.',
       },
       sms: {
         prompt: {
           intro:
-            "'Chào mừng bạn đến với hệ thống Sara Alert, chúng tôi sẽ gửi các báo cáo hàng ngày của bạn cho %{name} tới số điện thoại này. Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập saraalert.org.'",
-          reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.',
+            'Chào mừng bạn đến với hệ thống Sara Alert, chúng tôi sẽ gửi các báo cáo hàng ngày của bạn cho %{name} tới số điện thoại này. Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập saraalert.org.',
+          reminder: 'Đây là Sara Alert nhắc nhở bạn để vui lòng trả lời để hoàn thành báo cáo hàng ngày của bạn.',
           name: '%{name}',
-          daily: 'This is the Sara Alert daily report for: %{names}. %{experiencing_symptoms} Please reply with "Yes" or "No"',
+          daily: 'Đây là bản báo cáo hàng ngày của Sara Alert cho: %{names}. %{experiencing_symptoms} Xin vui lòng trả lời "Có" hoặc "Không"',
           try_again:
-            '\'Tôi xin lỗi, tôi không hiểu lắm. Xin vui lòng trả lời bằng \\ "Có \\" hoặc \\ "Không \\". Nếu bạn có bất kỳ câu hỏi nào, xin vui lòng liên hệ với sở y tế địa phương của bạn.\'',
+            'Tôi xin lỗi, tôi không hiểu lắm. Xin vui lòng trả lời bằng \\ "Có \\" hoặc \\ "Không \\". Nếu bạn có bất kỳ câu hỏi nào, xin vui lòng liên hệ với sở y tế địa phương của bạn.',
           thanks: 'Cảm ơn bạn đã hoàn thành báo cáo hàng ngày của mình',
         },
         weblink: {
-          intro: 'Please complete the Sara Alert Daily Report for %{initials_age}: %{url}',
+          intro: 'Đây là bản báo cáo hàng ngày của Sara Alert cho %{initials_age}: %{url}',
         },
         closed: {
           thank_you: 'Sara Alert giám sát cho %{initials_age} hoàn thành vào %{completed_date}! Cảm ơn bạn vì sự tham gia của bạn.',
@@ -1052,8 +1052,8 @@ const mockTranslations = {
         name: 'Mất vị giác mới',
       },
       'pulse-ox': {
-        name: 'Pulse Ox',
-        notes: 'What was your lowest oxygen level in the past 24 hours?',
+        name: 'Lượng oxy trong máu',
+        notes: 'Mức độ bão hoà ô-xy thấp nhất của bạn trong 24 giờ qua là bao nhiêu?',
       },
       'repeated-shaking-with-chills': {
         name: 'Run rẩy lặp đi lặp lại kèm theo ớn lạnh',
@@ -1065,26 +1065,26 @@ const mockTranslations = {
         name: 'Đau họng',
       },
       temperature: {
-        name: 'Temperature',
-        notes: 'Please enter your current temperature in degrees Fahrenheit',
+        name: 'Nhiệt độ',
+        notes: 'Vui lòng nhập nhiệt độ hiện tại của bạn theo độ F',
       },
       'used-a-fever-reducer': {
         name: 'Sử dụng thuốc hạ sốt',
-        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?',
+        notes: 'Trong 24 giờ qua, bạn đã sử dụng bất kỳ loại thuốc nào làm giảm sốt chưa?',
       },
       other: {
-        name: 'Other',
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs',
+        name: 'Khác',
+        notes: 'Tôi muốn ai đó gọi cho tôi để theo dõi các triệu chứng khác hoặc nhu cầu bổ sung',
       },
-      'no-symptoms': 'I am not experiencing any symptoms',
+      'no-symptoms': 'Tôi không có triệu chứng nào cả',
     },
     'threshold-op': {
-      'less-than': 'Less Than',
-      'less-than-or-equal': 'Less Than Or Equal to',
-      'greater-than': 'Greater Than',
-      'greater-than-or-equal': 'Greater Than Or Equal to',
-      equal: 'Equal to',
-      'not-equal': 'Not Equal to',
+      'less-than': 'nhỏ hơn',
+      'less-than-or-equal': 'nhỏ hơn hoặc bằng',
+      'greater-than': 'lớn hơn',
+      'greater-than-or-equal': 'lớn hơn hoặc bằng',
+      equal: 'bằng',
+      'not-equal': 'không bằng',
     },
   },
   rus: {
@@ -1099,11 +1099,11 @@ const mockTranslations = {
         'bool-title': 'Пожалуйста, выберите все симптомы, которые у вас есть на данный момент',
         instruction1: 'Если Вы сообщили о каких-либо симптомах, с Вами в скором времени всяжутся сотрудники местного отдела общественного здравоохранения.',
         instruction2:
-          "'Если у Вас возникли неотложные причины для беспокойства, пожалуйста незамедлительно свяжитесь со своим лечащим врачом или местным отделом общественного здравоохранения. Пожалуйста, избегайте близкого контакта с людьми и оставайтесь дома.'",
+          'Если у Вас возникли неотложные причины для беспокойства, пожалуйста незамедлительно свяжитесь со своим лечащим врачом или местным отделом общественного здравоохранения. Пожалуйста, избегайте близкого контакта с людьми и оставайтесь дома.',
         instruction3:
-          "'Если Вам требуется срочная медицинская помощь, пожалуйста, наберите 911 и скажите им, что что Вы находитесь под контролем департамента здравоохранения'",
+          'Если Вам требуется срочная медицинская помощь, пожалуйста, наберите 911 и скажите им, что что Вы находитесь под контролем департамента здравоохранения',
         instruction4:
-          "'Пожалуйста, используйте указанную ниже контактную информацию для общения с сотрудниками местного отдела общественного здравоохранения, занимающимися вашим случаем.'",
+          'Пожалуйста, используйте указанную ниже контактную информацию для общения с сотрудниками местного отдела общественного здравоохранения, занимающимися вашим случаем.',
         submit: 'отправить',
         thank_you: 'Благодарим за заполнение опросника.',
         email: 'Электронная почта',
@@ -1113,31 +1113,32 @@ const mockTranslations = {
       email: {
         shared: {
           greeting: 'Здравствуйте %{name},',
-          report: 'Daily Report',
+          report: 'ежедневный опрос',
           footer:
-            "'Отвечать, пересылать и делится ссылкой на это сообщение не нужно. Это сообщение автоматически создано системой Sara Alert и предназначено только для Вас. Если Вы не хотите получать сообщения или считаете, что произошла ошибка, обратитесь в местный отдел общественного здравоохранения.  Чтобы подробнее узнать о программе, системе конфиденциальности, а также получить дополнительную информацию, посетите saraalert.org.'",
+            'Отвечать, пересылать и делится ссылкой на это сообщение не нужно. Это сообщение автоматически создано системой Sara Alert и предназначено только для Вас. Если Вы не хотите получать сообщения или считаете, что произошла ошибка, обратитесь в местный отдел общественного здравоохранения.  Чтобы подробнее узнать о программе, системе конфиденциальности, а также получить дополнительную информацию, посетите saraalert.org.',
         },
         enrollment: {
           subject: 'Вы были зарегистрированы в Sara Alert',
           header: 'Добро пожаловать в систему Sara Alert!',
           greeting: 'Здравствуйте %{name},',
           info1:
-            "'Вы были зарегистрированы в системе мониторинга Sara Alert. Мы будем Вам очень признательны, если Вы ежедневно будете присылать нам отчеты о состоянии вашего здоровья в день получения Вами этого сообщения. Пожалуйста, нажмите на ссылку внизу и следуйте инструкциям на экране.'",
+            'Вы были зарегистрированы в системе мониторинга Sara Alert. Мы будем Вам очень признательны, если Вы ежедневно будете присылать нам отчеты о состоянии вашего здоровья в день получения Вами этого сообщения. Пожалуйста, нажмите на ссылку внизу и следуйте инструкциям на экране.',
           info2: 'Вы будете получать  подобное напоминание ежедневно вплоть до окончания периода мониторинга.',
         },
         reminder: {
           subject: 'Напоминание об опросе о самочувствии, Sara Alert',
           header: 'Хотим напомнить, что сегодня Вы не завершили заполнение ежедневного опросника о состоянии вашего здоровья.',
           thank_you:
-            "'Спасибо за Ваше участвуете в программе мониторинга Sara Alert. Пожалуйста, заполните ежедневный опросник о состоянии вашего здоровья за сегодняшний день, перейдя по ссылке внизу.'",
+            'Спасибо за Ваше участвуете в программе мониторинга Sara Alert. Пожалуйста, заполните ежедневный опросник о состоянии вашего здоровья за сегодняшний день, перейдя по ссылке внизу.',
         },
         closed: {
-          subject: 'Sara Alert Reporting Complete',
-          header: 'Monitoring complete!',
+          subject: 'Ваш период мониторинга Sara Alert завершен',
+          header: 'Ваш мониторинг завершен!',
           thank_you: 'Мониторинг Sara Alert для %{initials_age} завершено %{completed_date}! Спасибо за ваше участие.',
         },
         contact: {
-          info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:',
+          info1:
+            'Если у вас есть какие-либо вопросы, пожалуйста, обратиться к организации общественного здравоохранения, которые помогли зарегистрировать вас:',
           info2: 'Если у Вас возникнут вопросы, пожалуйста, обратитесь в  организацию общественного здравоохранения, в которой помогли Вас зарегистрировать.',
         },
       },
@@ -1147,22 +1148,22 @@ const mockTranslations = {
         experiencing_symptoms_s: 'Есть ли сегодня у %{name} какие-либо из следующих симптомов: %{symptom_names}.',
         experiencing_symptoms_p: 'Испытывает ли кто-то какие-либо из следующих симптомов: %{symptom_names}.',
         max_retries_message:
-          "'I''m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911.",
+          'Простите, достигнуто максимальное число попыток ответа. Если вы столкнулись с неотложной медицинской помощи, пожалуйста, позвоните по телефону 911.',
       },
       sms: {
         prompt: {
           intro:
-            "'Добро пожаловать в систему Sara Alert. Мы будем отправлятьежедневные опросы для %{name} на этот номер телефона.  Чтобы подробнее узнать о программе, системе конфиденциальности, а также получить дополнительную информацию, посетите saraalert.org.'",
+            'Добро пожаловать в систему Sara Alert. Мы будем отправлятьежедневные опросы для %{name} на этот номер телефона.  Чтобы подробнее узнать о программе, системе конфиденциальности, а также получить дополнительную информацию, посетите saraalert.org.',
           reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.',
           name: '%{name}',
           daily:
-            "'Это Sara Alert, ежедневный опрос о самочувствии %{names}. %{experiencing_symptoms} Пожалуйста, ответьте «Да» или «Нет» на каждый из предложенных вопросов.'",
+            'Это Sara Alert, ежедневный опрос о самочувствии %{names}. %{experiencing_symptoms} Пожалуйста, ответьте «Да» или «Нет» на каждый из предложенных вопросов.',
           try_again:
-            "'Простите, пожалуйста, я не совсем понял ответ. Пожалуйста, ответьте «Да» или «Нет». Если у вас есть какие-либо вопросы, обратитесь в местный отдел общественного здравоохранения.'",
+            'Простите, пожалуйста, я не совсем понял ответ. Пожалуйста, ответьте «Да» или «Нет». Если у вас есть какие-либо вопросы, обратитесь в местный отдел общественного здравоохранения.',
           thanks: 'Спасибо, что заполнили наш ежедневный опросник.',
         },
         weblink: {
-          intro: 'Please complete the Sara Alert Daily Report for %{initials_age}: %{url}',
+          intro: 'Это Sara Alert, ежедневный опрос о самочувствии %{initials_age}: %{url}',
         },
         closed: {
           thank_you: 'Мониторинг Sara Alert для %{initials_age} завершено %{completed_date}! Спасибо за ваше участие.',
@@ -1172,7 +1173,7 @@ const mockTranslations = {
         intro: 'Здравствуйте, это "Sara", Ваш роботизированный помощник из отдела здравоохранения.',
         initials_age: '%{initials}, возраста %{age}',
         daily:
-          "'Это Sara Alert, ежедневный опрос о самочувствии: %{names}. %{experiencing_symptoms}. Пожалуйста, ответьте «Да» или «Нет» на каждый из предложенных вопросов.'",
+          'Это Sara Alert, ежедневный опрос о самочувствии: %{names}. %{experiencing_symptoms}. Пожалуйста, ответьте «Да» или «Нет» на каждый из предложенных вопросов.',
         try_again: 'Простите, пожалуйста, я не совсем понял ответ. Давайте попробуем снова.',
         thanks: 'Спасибо, что заполнили наш ежедневный опросник! До свидания.',
       },
@@ -1216,8 +1217,8 @@ const mockTranslations = {
         name: 'Новоприобретённая потеря вкуса ',
       },
       'pulse-ox': {
-        name: 'Pulse Ox',
-        notes: 'What was your lowest oxygen level in the past 24 hours?',
+        name: 'пульсоксиметрия',
+        notes: 'Каков был ваш самый низкий уровень кислорода за последние 24 часа?',
       },
       'repeated-shaking-with-chills': {
         name: 'озноб',
@@ -1229,26 +1230,26 @@ const mockTranslations = {
         name: 'Боль в горле',
       },
       temperature: {
-        name: 'Temperature',
-        notes: 'Please enter your current temperature in degrees Fahrenheit',
+        name: 'температура',
+        notes: 'Введите температуру в градусах по Фаренгейту',
       },
       'used-a-fever-reducer': {
         name: 'Прием жаропонижающих препаратов',
-        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?',
+        notes: 'За последние 24 часа вы использовали какие-нибудь лекарства, которые уменьшают лихорадку?',
       },
       other: {
-        name: 'Other',
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs',
+        name: 'прочее',
+        notes: 'Я хотел бы, чтобы кто-то позвонил мне, чтобы проследить за другими симптомами или дополнительными потребностями',
       },
-      'no-symptoms': 'I am not experiencing any symptoms',
+      'no-symptoms': 'У меня нет никаких симптомов',
     },
     'threshold-op': {
-      'less-than': 'Less Than',
-      'less-than-or-equal': 'Less Than Or Equal to',
-      'greater-than': 'Greater Than',
-      'greater-than-or-equal': 'Greater Than Or Equal to',
-      equal: 'Equal to',
-      'not-equal': 'Not Equal to',
+      'less-than': 'меньше',
+      'less-than-or-equal': 'меньше или равно',
+      'greater-than': 'больше, чем',
+      'greater-than-or-equal': 'больше или равно',
+      equal: 'равна',
+      'not-equal': 'не равную',
     },
   },
   ara: {
@@ -1263,25 +1264,25 @@ const mockTranslations = {
         'bool-title': 'الرجاء تحديد جميع الأعراض التي تعاني منها',
         instruction1: 'إذا لم تبلغ عن أي أعراض ، فيرجى الاستمرار في اتباع التوصيات المقدمة من وزارة الصحة المحلية.',
         instruction2:
-          "'إذا أبلغت عن أي أعراض ، فستتواصل إدارة الصحة المحلية قريبًا. إذا كان لديك أي مخاوف فورية ، يرجى الاتصال بمزود الخدمة الطبية أو الصحة المحلية'",
+          'إذا أبلغت عن أي أعراض ، فستتواصل إدارة الصحة المحلية قريبًا. إذا كان لديك أي مخاوف فورية ، يرجى الاتصال بمزود الخدمة الطبية أو الصحة المحلية',
         instruction3: 'إذا كنت تعاني من حالة طبية طارئة، فيرجى الاتصال برقم 911 وإبلاغهم بأنك تحت المتابعة الصحية.',
         instruction4: 'يرجى استخدام معلومات الاتصال أدناه للتواصل مع مسؤول الصحة العامة الذي يتابع حالتك.',
         submit: 'إرسال',
-        thank_you: 'Thank You For Completing Your Self Report',
+        thank_you: 'أشكركم',
       },
       email: {
         shared: {
           greeting: 'عزيزي %{name} ،',
-          report: 'Daily Report',
+          report: 'تقريرك اليومي',
           footer:
-            "'تم إنشاؤه بواسطة نظام Sara Alert وهو فريد ومخصص لك فقط. إذا كنت ترغب في التوقف عن تلقي هذه الإخطارات أو تعتقد أنه كان خطأ، يرجى الاتصال بقسم الصحة العامة المحلي. للخصوصية ومزيد من المعلومات، قم بزيارة saraalert.org.'",
+            'تم إنشاؤه بواسطة نظام Sara Alert وهو فريد ومخصص لك فقط. إذا كنت ترغب في التوقف عن تلقي هذه الإخطارات أو تعتقد أنه كان خطأ، يرجى الاتصال بقسم الصحة العامة المحلي. للخصوصية ومزيد من المعلومات، قم بزيارة saraalert.org.',
         },
         enrollment: {
           subject: 'تسجيل Sara Alert',
           header: 'مرحبًا بك في نظام تنبيه سارة',
           info1:
-            "'لقد تم تسجيلك في نظام مراقبة Sara Alert. نطلب منك تقديم تقارير يومية عن حالتك. ما عليك سوى النقر فوق الزر أدناه واتباع التعليمات التي تظهر على الشاشة.'",
-          info2: 'You will receive a similar reminder daily until your monitoring period has ended.',
+            'لقد تم تسجيلك في نظام مراقبة Sara Alert. نطلب منك تقديم تقارير يومية عن حالتك. ما عليك سوى النقر فوق الزر أدناه واتباع التعليمات التي تظهر على الشاشة.',
+          info2: 'سوف تتلقى تذكيرًا مشابهًا يوميًا حتى انتهاء فترة المتابعة الخاصة بك.',
         },
         reminder: {
           subject: 'تذكير تقرير تنبيه سارة',
@@ -1294,8 +1295,8 @@ const mockTranslations = {
           thank_you: 'Sara Alert اكتملت مرمتابعة %{initials_age} في %{completed_date}! أشكركم على مشاركتكم.',
         },
         contact: {
-          info1: 'If you have any questions, please use the contact information below to reach out to the public health organization that helped enroll you:',
-          info2: 'If you have any questions please reach out to the public health organization that helped enroll you.',
+          info1: 'إذا كانت لديك أي أسئلة، فيرجى التواصل مع قسم الصحة العامة التي ساعدت في تسجيلك:',
+          info2: 'إذا كانت لديك أي أسئلة، فيرجى التواصل مع قسم الصحة العامة التي ساعدت في تسجيلك.',
         },
       },
     },
@@ -1304,20 +1305,19 @@ const mockTranslations = {
         experiencing_symptoms_s: 'هل يعاني هذا الشخص من أي من الأعراض التالية: %{symptom_names}',
         experiencing_symptoms_p: 'هل يعاني أي من هؤلاء الأشخاص من أي من الأعراض التالية: %{symptom_names}.',
         max_retries_message:
-          "'I''m sorry, you have reached the maximum number of response attempts. If you are experiencing a medical emergency, please call 911.'",
+          'أنا آسف لقد وصلت إلى الحد الأقصى لعدد محاولات الاستجابة. ذا كنت تعاني من حالة طبية طارئة، يرجى الاتصال بالرقم 911 واجعلهم يعرفون ما يجري رصده لك من قبل وزارة الصحة.',
       },
       sms: {
         prompt: {
-          intro:
-            "'مرحبًا بك في نظام Sara Alert، سنرسل لك تقاريرك اليومية عن %{name} إلى رقم هذا الهاتف. للخصوصية ومزيد من المعلومات، قم بزيارة saraalert.org.'",
-          reminder: 'This is the Sara Alert system reminding you to please reply to our daily-report messages.',
+          intro: 'مرحبًا بك في نظام Sara Alert، سنرسل لك تقاريرك اليومية عن %{name} إلى رقم هذا الهاتف. للخصوصية ومزيد من المعلومات، قم بزيارة saraalert.org.',
+          reminder: 'هذا تذكير Sara Alert للرد على رسائل التقرير اليومي.',
           name: '%{name}',
           daily: 'هذا هو تقرير Sara Alert اليومي لـ: %{names}. %{experiencing_symptoms} الرجاء الرد بـ "نعم" أو "لا"',
-          try_again: '\'أنا آسف لم أفهم. الرجاء الرد بـ "نعم" أو "لا". إذا كانت لديك أي أسئلة ، يرجى الاتصال بقسم الصحة المحلي.\'',
+          try_again: 'أنا آسف لم أفهم. الرجاء الرد بـ "نعم" أو "لا". إذا كانت لديك أي أسئلة ، يرجى الاتصال بقسم الصحة المحلي.',
           thanks: 'شكرا لاستكمال تقريرك اليومي',
         },
         weblink: {
-          intro: 'Please complete the Sara Alert Daily Report for %{initials_age}: %{url}',
+          intro: 'هذا هو تقرير Sara Alert اليومي لـ %{initials_age}: %{url}',
         },
         closed: {
           thank_you: 'Sara Alert اكتملت مرمتابعة %{initials_age} في %{completed_date}! أشكركم على مشاركتكم.',
@@ -1370,8 +1370,8 @@ const mockTranslations = {
         name: 'فقدان حاسة التذوق المفاجئ',
       },
       'pulse-ox': {
-        name: 'Pulse Ox',
-        notes: 'What was your lowest oxygen level in the past 24 hours?',
+        name: 'مقياس التأكسج النبضي',
+        notes: 'ما هو أقل مستوى أكسجين لديك في ال 24 ساعة الماضية؟',
       },
       'repeated-shaking-with-chills': {
         name: 'قشعريرة',
@@ -1383,26 +1383,177 @@ const mockTranslations = {
         name: 'التهاب الحلق',
       },
       temperature: {
-        name: 'Temperature',
-        notes: 'Please enter your current temperature in degrees Fahrenheit',
+        name: 'درجة الحرارة',
+        notes: 'الرجاء إدخال درجة حرارتك الحالية بالدرجات فهرنهايت',
       },
       'used-a-fever-reducer': {
         name: 'أستخدمت مخفض الحمى',
-        notes: 'In the past 24 hours, have you used any medicine that reduces fevers?',
+        notes: 'في ال 24 ساعة الماضية، هل استعملت أي دواء يقلل من الحمى؟',
       },
       other: {
-        name: 'Other',
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs',
+        name: 'أخرى',
+        notes: 'أود أن يتصل بي أحدهم لمتابعة أعراض أخرى أو إحتياجات إضافية',
       },
-      'no-symptoms': 'I am not experiencing any symptoms',
+      'no-symptoms': 'لا أعاني من أي أعراض',
     },
     'threshold-op': {
-      'less-than': 'Less Than',
-      'less-than-or-equal': 'Less Than Or Equal to',
-      'greater-than': 'Greater Than',
-      'greater-than-or-equal': 'Greater Than Or Equal to',
-      equal: 'Equal to',
-      'not-equal': 'Not Equal to',
+      'less-than': 'أصغر من',
+      'less-than-or-equal': 'أصغر من أو تساوي',
+      'greater-than': 'أكبر من',
+      'greater-than-or-equal': 'أكبر أو يساوي',
+      equal: 'يساوي',
+      'not-equal': 'لا تساوي',
+    },
+  },
+  zho: {
+    html: {
+      shared: {
+        email: '电子邮件',
+        phone: '电话',
+        webpage: '网页',
+      },
+      weblink: {
+        title: '日常自我报告 ',
+        'bool-title': '请选择您正经历的所有症状',
+        instruction1: '如果您没有报告任何症状，请继续遵循由当地卫生部门提供的建议。',
+        instruction2:
+          '如果您报告了任何症状，当地卫生部门将会尽快与您联系。如果您有任何紧急问题，请联系您的医疗服务提供者或当地卫生部门。避免与其他人密切接触，并留在家中。',
+        instruction3: '如果您遇到紧急医疗情况，请拨打911，并让他们知道你正在接受卫生部门的监控。',
+        instruction4: '请使用下面的联系信息与负责您病例的公共健康官员联系。',
+        submit: '提交',
+        thank_you: '感谢您完成您的自我报告',
+      },
+      email: {
+        shared: {
+          greeting: '亲爱的%{name},',
+          report: '每日报告',
+          footer:
+            '不要回复此电子邮件，转发此电子邮件或分享此链接。此消息是由Sara Alert系统自动生成的，并且是唯一的，仅供您使用。如果您希望停止接收这些通知，或者认为这是一个错误，请联系您当地的公共卫生部门。 有关隐私和更多信息，请访问saraalert.org。',
+        },
+        enrollment: {
+          subject: '加入Sara Alert',
+          header: '欢迎使用Sara Alert系统',
+          info1: '您已加入Sara Alert监控系统。我们要求您提供您的每日状况报告。请单击下面的按钮，然后按照屏幕上的说明进行操作。',
+          info2: '您将每天收到了类似的提醒，直到你的监控期结束。',
+        },
+        reminder: {
+          subject: 'Sara Alert报告提醒',
+          header: '这封邮件提醒您完成您的每日报告',
+          thank_you: '感谢您参加Sara Alert监控系统，请使用下面的链接填写您的每日报告。',
+        },
+        closed: {
+          subject: 'Sara Alert监控期已结束',
+          header: '监控已完成！',
+          thank_you: 'Sara警报监控 %{initials_age}已于%{completed_date}完成！感谢您的参与。',
+        },
+        contact: {
+          info1: '如果您有任何疑问，请使用下面的联系信息联系帮助您的公共卫生机构：',
+          info2: '请联系帮助您加入Sara Alert 系统的公共卫生机构。',
+        },
+      },
+    },
+    twilio: {
+      shared: {
+        experiencing_symptoms_s: '%{name}是否正经历任何以下症状: %{symptom_names}.',
+        experiencing_symptoms_p: '这些人是否正经历任何以下症状: %{symptom_names}.',
+        max_retries_message: '抱歉，您已达到最大响应尝试次数。如果您遇到医疗紧急情况，请致电911。',
+      },
+      sms: {
+        prompt: {
+          intro: '欢迎使用Sara Alert系统。我们会将%{name}每日报告发送到这个电话号码。有关保护隐私和更多信息，请访问saraalert.org。',
+          reminder: '这是Sara Alert系统提醒您请回复我们的每日报告信息',
+          name: '%{name}',
+          daily: '这是Sara Alert的每日报告: %{names}. %{experiencing_symptoms} 请用“是”或“否”回答',
+          try_again: '对不起，我听不懂。请回答“是”或“否”。如有任何疑问，请联系当地的卫生部门。',
+          thanks: '感谢您填写每日报告',
+        },
+        weblink: {
+          intro: '请填写Sara Alert每日报告 %{initials_age}: %{url}',
+        },
+        closed: {
+          thank_you: 'Sara警报监控 %{initials_age}已于%{completed_date}完成！感谢您的参与。',
+        },
+      },
+      voice: {
+        intro: '您好，这里是自动公共卫生助手Sara打电话询问您的每日报告。',
+        initials_age: '%{initials}，年龄%{age}',
+        daily: '这个报告是有关: %{names}. %{experiencing_symptoms}. 请用“是”或“否”回答',
+        try_again: '对不起，我听不懂。让我们再试一次。',
+        thanks: '感谢您完成您的每日报告！再见。',
+      },
+    },
+    symptoms: {
+      chills: {
+        name: '发冷',
+      },
+      'congestion-or-runny-nose': {
+        name: '拥堵或流鼻涕',
+      },
+      cough: {
+        name: '咳嗽',
+      },
+      diarrhea: {
+        name: '腹泻',
+      },
+      'difficulty-breathing': {
+        name: '呼吸困难',
+      },
+      fatigue: {
+        name: '疲劳',
+      },
+      fever: {
+        name: '发烧',
+        notes: '发热或测量体温温度等于或高于100.4华氏度/38摄氏度',
+      },
+      headache: {
+        name: '头痛',
+      },
+      'muscle-pain': {
+        name: '肌肉疼痛',
+      },
+      'nausea-or-vomiting': {
+        name: '恶心或呕吐',
+      },
+      'new-loss-of-smell': {
+        name: '新的嗅觉丧失',
+      },
+      'new-loss-of-taste': {
+        name: '新的味觉丧失',
+      },
+      'pulse-ox': {
+        name: '脉搏血氧水平',
+        notes: '你过去24小时里最低的氧气水平是多少？',
+      },
+      'repeated-shaking-with-chills': {
+        name: '反复发冷颤抖',
+      },
+      'shortness-of-breath': {
+        name: '呼吸急促',
+      },
+      'sore-throat': {
+        name: '咽喉痛',
+      },
+      temperature: {
+        name: '温度',
+        notes: '请输入您当前的温度（华氏度）',
+      },
+      'used-a-fever-reducer': {
+        name: '使用退烧药',
+        notes: '過去24小時，你有沒有服用任何能減少發熱的藥物？',
+      },
+      other: {
+        name: '其它',
+        notes: '我希望有人打电话给我跟进其它症状或其它需求',
+      },
+      'no-symptoms': '我沒有出現任何症狀',
+    },
+    'threshold-op': {
+      'less-than': '小于',
+      'less-than-or-equal': '小于或等于',
+      'greater-than': '大于',
+      'greater-than-or-equal': '大于或等于',
+      equal: '等于',
+      'not-equal': '不等于',
     },
   },
 };

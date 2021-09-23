@@ -663,9 +663,13 @@ namespace :stats do
       #   exposure: active_exp.where(primary_language: 'ara').count,
       #   isolation: active_iso.where(primary_language: 'ara').count
       # }
+      results[title]['Preferred Language - Chinese'] = {
+        exposure: active_exp.where(primary_language: 'zho').count,
+        isolation: active_iso.where(primary_language: 'zho').count
+      }
       results[title]['Preferred Language - Other'] = {
-        exposure: active_exp.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr', 'fra', 'som', 'kor', 'vie', 'rus', 'ara']).count,
-        isolation: active_iso.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr', 'fra', 'som', 'kor', 'vie', 'rus', 'ara']).count
+        exposure: active_exp.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr', 'fra', 'som', 'kor', 'vie', 'rus', 'ara', 'zho']).count,
+        isolation: active_iso.where.not(primary_language: ['', nil, 'eng', 'spa', 'spa-pr', 'fra', 'som', 'kor', 'vie', 'rus', 'ara', 'zho']).count
       }
       results[title]['Preferred Language - blank'] = {
         exposure: active_exp.where(primary_language: ['', nil]).count,

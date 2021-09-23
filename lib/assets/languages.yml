@@ -1876,6 +1876,10 @@
   :display: 'Chinese'
   :iso6391code: "zh"
   :system: 'iso639-2t'
+  :supported:
+    :sms: false
+    :email: true
+    :phone: true
 
 :zul:
   :display: 'Zulu'
