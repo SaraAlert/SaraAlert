@@ -435,7 +435,7 @@ class CloseContactTable extends React.Component {
               handlePageUpdate={this.handlePageUpdate}
               entryOptions={this.state.entryOptions}
               entries={this.state.query.entries}
-              tableCustomClass="table-has-dropdown"
+              tableCustomClass="table-has-dropdown-large"
             />
           </Card.Body>
         </Card>
