@@ -35,7 +35,7 @@ patient_1:
   preferred_contact_method: 'Telephone call'
   preferred_contact_time: 'Morning'
   port_of_origin: 'South Mandieshire'
-  source_of_report: 'Self_Identified'
+  source_of_report: 'Self-Identified'
   flight_or_vessel_number: 'W345'
   flight_or_vessel_carrier: 'Brady Airlines'
   port_of_entry_into_usa: 'South Hershelmouth'
@@ -92,7 +92,7 @@ patient_2:
   email: 'grazyna@example.com'
   preferred_contact_method: 'Telephone call'
   port_of_origin: 'Lake Franklynfurt'
-  source_of_report: 'Self_Identified'
+  source_of_report: 'Self-Identified'
   flight_or_vessel_number: 'T343'
   flight_or_vessel_carrier: 'Morton Airlines'
   port_of_entry_into_usa: 'Brittanieshire'
@@ -180,7 +180,7 @@ patient_5:
   primary_telephone: '+15555550148'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
-  source_of_report: 'Self_Identified'
+  source_of_report: 'Self-Identified'
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: <%= 66.days.ago %>
   pause_notifications: true

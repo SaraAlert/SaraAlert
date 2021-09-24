@@ -1755,7 +1755,7 @@ class PatientTest < ActiveSupport::TestCase
   test 'validates case_status inclusion in api and import context' do
     patient = valid_patient
 
-    patient.case_status = 'Confirmed'
+    patient.case_status = 'Unknown'
     assert patient.valid?(:api)
     assert patient.valid?(:import)
 
@@ -1771,6 +1771,58 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
     assert patient.valid?
+
+    # API validates workflow specific case status
+    patient.isolation = true
+    patient.case_status = 'Confirmed'
+    assert patient.valid?(:api)
+
+    patient.isolation = false
+    patient.case_status = 'Confirmed'
+    assert_not patient.valid?(:api)
+
+    patient.case_status = 'Not a Case'
+    assert patient.valid?(:api)
+
+    patient.isolation = true
+    patient.case_status = 'Not a Case'
+    assert_not patient.valid?(:api)
+  end
+
+  test 'validates source_of_report inclusion in api context' do
+    patient = valid_patient
+
+    patient.source_of_report = 'CDC'
+    assert patient.valid?(:api)
+
+    patient.source_of_report = ''
+    assert patient.valid?(:api)
+
+    patient.source_of_report = nil
+    assert patient.valid?(:api)
+
+    patient.source_of_report = 'foo'
+    assert_not patient.valid?(:api)
+  end
+
+  test 'validates source_of_report_specify only present when source_of_report is Other in api context' do
+    patient = valid_patient
+
+    patient.source_of_report = 'Other'
+    patient.source_of_report_specify = 'details'
+    assert patient.valid?(:api)
+
+    patient.source_of_report = ''
+    patient.source_of_report_specify = 'details'
+    assert_not patient.valid?(:api)
+
+    patient.source_of_report = nil
+    patient.source_of_report_specify = 'details'
+    assert_not patient.valid?(:api)
+
+    patient.source_of_report = 'CDC'
+    patient.source_of_report_specify = 'details'
+    assert_not patient.valid?(:api)
   end
 
   test 'validates follow_up_reason inclusion in api and import context' do

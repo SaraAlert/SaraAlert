@@ -3,3 +3,48 @@ bulk_export_retry_after_minutes: <%= ENV["SARA_ALERT_BULK_FHIR_EXPORT_RETRY_AFTE
 bulk_export_expiration_minutes: <%= ENV["SARA_ALERT_BULK_FHIR_EXPORT_EXPIRATION_MINUTES"] || 60 %>
 
 bulk_export_status_retry_after_seconds: <%= ENV["SARA_ALERT_BULK_FHIR_EXPORT_STATUS_RETRY_AFTER_SECONDS"] || 10 %>
+
+# GENDER IDENTITY MAPPING
+gender_identity:
+  'Male (Identifies as male)':
+      system: http://hl7.org/fhir/gender-identity
+      code: male
+  'Female (Identifies as female)':
+      system: http://hl7.org/fhir/gender-identity
+      code: female
+  'Transgender Male (Female-to-Male [FTM])':
+      system: http://hl7.org/fhir/gender-identity
+      code: transgender-male
+  'Transgender Female (Male-to-Female [MTF])':
+      system: http://hl7.org/fhir/gender-identity
+      code: transgender-female
+  'Genderqueer / gender nonconforming (neither exclusively male nor female)':
+      system: http://hl7.org/fhir/gender-identity
+      code: non-binary
+  'Another':
+      system: http://hl7.org/fhir/gender-identity
+      code: other
+  'Chose not to disclose':
+      system: http://hl7.org/fhir/gender-identity
+      code: non-disclose
+
+# SEXUAL ORIENTATION MAPPING
+sexual_orientation:
+  'Straight or Heterosexual':
+      system: http://snomed.info/sct 
+      code: '20430005'
+  'Lesbian, Gay, or Homosexual':
+      system: http://snomed.info/sct 
+      code: '38628009'
+  'Bisexual':
+      system: http://snomed.info/sct 
+      code: '42035005'
+  'Another':
+      system: http://terminology.hl7.org/CodeSystem/v3-NullFlavor
+      code: OTH
+  'Choose not to disclose':
+      system: http://terminology.hl7.org/CodeSystem/v3-NullFlavor
+      code: ASKU
+  'Don’t know':
+      system: http://terminology.hl7.org/CodeSystem/v3-NullFlavor
+      code: UNK

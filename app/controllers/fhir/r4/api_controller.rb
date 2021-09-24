@@ -128,7 +128,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       # so that they occur atomically
       ActiveRecord::Base.transaction do
         # Verify that the updated jurisdiction and other updates are valid
-        unless jurisdiction_valid_for_update?(patient) && patient.save(context: :api)
+        unless jurisdiction_valid_for_update?(patient) && patient.save(context: :api) && fhir_map.all? { |_k, v| v[:errors].blank? }
           req_json = request.patch? ? patient.as_fhir.to_json : JSON.parse(request_body)
           status_unprocessable_entity(patient, fhir_map, req_json) && return
         end
