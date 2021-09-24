@@ -707,8 +707,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   # Return a string representing the birthsex of the given FHIR::Patient
   def from_us_core_birthsex(patient)
-    url = 'us-core-birthsex'
-    code = patient&.extension&.select { |e| e.url.include?(url) }&.first&.valueCode
+    url = 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex'
+    code = patient&.extension&.select { |e| e.url == url }&.first&.valueCode
     converted = 'Male' if code == 'M'
     converted = 'Female' if code == 'F'
     converted = 'Unknown' if code == 'UNK'
@@ -738,12 +738,16 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   # Convert from a boolean extension, treating omission (nil) as equal to false
   def from_bool_extension_false_default(element, base_path, extension_id)
-    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueBoolean || false, path: bool_ext_path(base_path, extension_id) }
+    { value: element&.extension&.find do |e|
+               e.url == SA_EXT_BASE_URL + extension_id || e.url == extension_id
+             end&.valueBoolean || false, path: bool_ext_path(base_path, extension_id) }
   end
 
   # Convert from a boolean extension, treating omission (nil) as different than false
   def from_bool_extension_nil_default(element, base_path, extension_id)
-    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueBoolean, path: bool_ext_path(base_path, extension_id) }
+    { value: element&.extension&.find do |e|
+               e.url == SA_EXT_BASE_URL + extension_id || e.url == extension_id
+             end&.valueBoolean, path: bool_ext_path(base_path, extension_id) }
   end
 
   def to_date_extension(value, extension_id)
@@ -758,7 +762,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     val = nil
     ext_id = nil
     extension_ids.each do |eid|
-      val = element&.extension&.find { |e| e.url.include?(eid) }&.valueDate
+      val = element&.extension&.find { |e| e.url == SA_EXT_BASE_URL + eid || e.url == eid }&.valueDate
       ext_id = eid
       break unless val.nil?
     end
@@ -780,7 +784,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def from_string_extension(element, base_path, extension_id, default_value = nil)
-    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueString || default_value, path: str_ext_path(base_path, extension_id) }
+    { value: element&.extension&.find do |e|
+               e.url == SA_EXT_BASE_URL + extension_id || e.url == extension_id
+             end&.valueString || default_value, path: str_ext_path(base_path, extension_id) }
   end
 
   def to_reference_extension(id, resource_type, extension_id)
@@ -798,7 +804,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def from_positive_integer_extension(element, base_path, extension_id)
-    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valuePositiveInt, path: pos_int_ext_path(base_path, extension_id) }
+    { value: element&.extension&.find do |e|
+               e.url == SA_EXT_BASE_URL + extension_id || e.url == extension_id
+             end&.valuePositiveInt, path: pos_int_ext_path(base_path, extension_id) }
   end
 
   def to_unsigned_integer_extension(value, extension_id)
@@ -809,7 +817,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def from_unsigned_integer_extension_0_default(element, base_path, extension_id)
-    { value: element&.extension&.find { |e| e.url.include?(extension_id) }&.valueUnsignedInt || 0, path: unsigned_int_ext_path(base_path, extension_id) }
+    { value: element&.extension&.find do |e|
+               e.url == SA_EXT_BASE_URL + extension_id || e.url == extension_id
+             end&.valueUnsignedInt || 0, path: unsigned_int_ext_path(base_path, extension_id) }
   end
 
   # Convert from FHIR extension for Full Assigned Jurisdiction Path.
@@ -824,7 +834,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   def from_primary_phone_type_extension(element, base_path)
     phone_telecom = element&.telecom&.find { |t| t&.system == 'phone' }
     {
-      value: phone_telecom&.extension&.find { |e| e.url.include?('phone-type') }&.valueString,
+      value: phone_telecom&.extension&.find { |e| e.url == SA_EXT_BASE_URL + 'phone-type' }&.valueString,
       path: str_ext_path("#{base_path}.telecom[#{element&.telecom&.index(phone_telecom)}]", 'phone-type')
     }
   end
@@ -833,14 +843,14 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   def from_secondary_phone_type_extension(element, base_path)
     phone_telecom = element&.telecom&.select { |t| t&.system == 'phone' }&.second
     {
-      value: phone_telecom&.extension&.find { |e| e.url.include?('phone-type') }&.valueString,
+      value: phone_telecom&.extension&.find { |e| e.url == SA_EXT_BASE_URL + 'phone-type' }&.valueString,
       path: str_ext_path("#{base_path}.telecom[#{element&.telecom&.index(phone_telecom)}]", 'phone-type')
     }
   end
 
   def from_interpreter_required_extension(element, base_path)
     {
-      value: element&.extension&.find { |e| e.url.include?(INTERPRETER_URL) }&.valueBoolean,
+      value: element&.extension&.find { |e| e.url == INTERPRETER_URL }&.valueBoolean,
       path: "#{base_path}.extension(#{INTERPRETER_URL}).valueBoolean"
     }
   end

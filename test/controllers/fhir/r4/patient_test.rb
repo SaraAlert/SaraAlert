@@ -909,8 +909,8 @@ class ApiControllerTest < ApiControllerTestCase
 
   test 'update monitored address' do
     mock_patient = build(:patient, monitored_address_line_1: 'Line 1', monitored_address_line_2: 'Line 2',
-      monitored_address_city: 'City', monitored_address_county: 'County',
-      monitored_address_zip: 'zip', monitored_address_state: 'Idaho', address_state: 'Idaho')
+                                   monitored_address_city: 'City', monitored_address_county: 'County',
+                                   monitored_address_zip: 'zip', monitored_address_state: 'Idaho', address_state: 'Idaho')
     @patient_1.address = [to_address_by_type_extension(mock_patient, 'Monitored'), to_address_by_type_extension(mock_patient, 'USA')]
 
     put(
@@ -931,8 +931,8 @@ class ApiControllerTest < ApiControllerTestCase
 
   test 'update foreign monitored address' do
     mock_patient = build(:patient, foreign_address_line_1: 'Line 1', foreign_address_line_2: 'Line 2',
-                         foreign_address_line_3: 'Line 3', foreign_address_city: 'City', foreign_address_country: 'Country',
-                         foreign_address_zip: 'zip', foreign_address_state: 'State')
+                                   foreign_address_line_3: 'Line 3', foreign_address_city: 'City', foreign_address_country: 'Country',
+                                   foreign_address_zip: 'zip', foreign_address_state: 'State')
     @patient_1.address = to_address_by_type_extension(mock_patient, 'Foreign')
 
     put(
@@ -1005,8 +1005,8 @@ class ApiControllerTest < ApiControllerTestCase
     body = JSON.parse(response.body)
     # report source is inserted as a collection of other basic extensions
     report_source_extensions = body['extension'].detect do |e|
-                                e['url'].eql?('http://saraalert.org/StructureDefinition/source-of-report')
-                              end ['extension']
+                                 e['url'].eql?('http://saraalert.org/StructureDefinition/source-of-report')
+                               end ['extension']
 
     report_source_extensions.each do |extension|
       if extension['url'] == 'specify'
