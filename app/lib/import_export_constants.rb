@@ -60,7 +60,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                 race_refused_to_answer vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number
                                 vaccine_1_notes vaccine_2_group_name vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number
                                 vaccine_2_notes follow_up_reason follow_up_note vaccine_3_group_name vaccine_3_product_name vaccine_3_administration_date
-                                vaccine_3_dose_number vaccine_3_notes].freeze
+                                vaccine_3_dose_number vaccine_3_notes international_telephone].freeze
 
   SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                                'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
@@ -88,7 +88,8 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                'Race Refused to Answer', 'Vaccine 1 Group Name', 'Vaccine 1 Product Name', 'Vaccine 1 Administration Date',
                                'Vaccine 1 Dose Number', 'Vaccine 1 Notes', 'Vaccine 2 Group Name', 'Vaccine 2 Product Name', 'Vaccine 2 Administration Date',
                                'Vaccine 2 Dose Number', 'Vaccine 2 Notes', 'Follow-Up Reason', 'Follow-Up Note', 'Vaccine 3 Group Name',
-                               'Vaccine 3 Product Name', 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes'].freeze
+                               'Vaccine 3 Product Name', 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes',
+                               'International Telephone'].freeze
 
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
   # of fields between Sara Alert Format and Full History Patients
@@ -122,12 +123,12 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                 monitored_address_line_1 monitored_address_city monitoring_address_state monitored_address_state monitored_address_line_2 monitored_address_zip
                 monitored_address_county foreign_monitored_address_line_1 foreign_monitored_address_city foreign_monitored_address_state
                 foreign_monitored_address_line_2 foreign_monitored_address_zip foreign_monitored_address_county preferred_contact_method primary_telephone_type
-                secondary_telephone_type email port_of_origin source_of_report source_of_report_specify flight_or_vessel_number flight_or_vessel_carrier
-                port_of_entry_into_usa additional_planned_travel_type additional_planned_travel_destination additional_planned_travel_destination_state
-                additional_planned_travel_destination_country additional_planned_travel_port_of_departure potential_exposure_location potential_exposure_country
-                contact_of_known_case_id was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel_facility_name
-                healthcare_personnel_facility_name member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan case_status gender_identity
-                sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason],
+                secondary_telephone_type international_telephone email port_of_origin source_of_report source_of_report_specify flight_or_vessel_number
+                flight_or_vessel_carrier port_of_entry_into_usa additional_planned_travel_type additional_planned_travel_destination
+                additional_planned_travel_destination_state additional_planned_travel_destination_country additional_planned_travel_port_of_departure
+                potential_exposure_location potential_exposure_country contact_of_known_case_id was_in_health_care_facility_with_known_cases_facility_name
+                laboratory_personnel_facility_name healthcare_personnel_facility_name member_of_a_common_exposure_cohort_type exposure_risk_assessment
+                monitoring_plan case_status gender_identity sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason],
     notes: %i[travel_related_notes additional_planned_travel_related_notes exposure_notes follow_up_note],
     dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
               symptom_onset first_positive_lab_at extended_isolation],
@@ -217,6 +218,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     primary_telephone_type: 'Primary Telephone Type',
     secondary_telephone: 'Secondary Telephone',
     secondary_telephone_type: 'Secondary Telephone Type',
+    international_telephone: 'International Telephone',
     email: 'Email',
     # Enrollment Info - Travel - Arrival Information
     port_of_origin: 'Port of Origin',
@@ -447,7 +449,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                 ]
               },
               rct_node(:patients, 'Contact Information', %i[preferred_contact_method preferred_contact_time primary_telephone primary_telephone_type
-                                                            secondary_telephone secondary_telephone_type email]),
+                                                            secondary_telephone secondary_telephone_type international_telephone email]),
               {
                 value: 'patients-enrollment-travel',
                 label: 'Travel',

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_01_192909) do
+ActiveRecord::Schema.define(version: 2021_09_02_182312) do
 
   create_table "active_storage_attachments", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -448,6 +448,7 @@ ActiveRecord::Schema.define(version: 2021_09_01_192909) do
     t.string "legacy_secondary_language"
     t.string "follow_up_reason"
     t.text "follow_up_note"
+    t.string "international_telephone"
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"

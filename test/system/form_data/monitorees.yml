@@ -60,6 +60,7 @@ monitoree_2:
     secondary_telephone: '5555550113'
     primary_telephone_type: 'Smartphone'
     secondary_telephone_type: 'Landline'
+    international_telephone: '+5086210369803'
     email: 'carey@example.com'
     confirm_email: 'carey@example.com'
   arrival_information:
@@ -349,6 +350,7 @@ monitoree_12:
     secondary_telephone: '5555550122'
     primary_telephone_type: 'Smartphone'
     secondary_telephone_type: 'Landline'
+    international_telephone: '+5086210369804'
     email: 'carey@example.com'
     confirm_email: 'carey@example.com'
   arrival_information:

@@ -126,6 +126,8 @@ class Patient < ApplicationRecord
 
   validates :email, on: %i[api import], email: true
 
+  validates :international_telephone, on: %i[api import], international_phone_number: true
+
   validates :assigned_user, numericality: { only_integer: true,
                                             allow_nil: true,
                                             greater_than: 0,

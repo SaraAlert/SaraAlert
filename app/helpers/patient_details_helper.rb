@@ -202,7 +202,13 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       vaccine_2_dose_number: vaccines[1]&.dose_number || '',
       vaccine_2_notes: vaccines[1]&.notes,
       follow_up_reason: follow_up_reason || '',
-      follow_up_note: follow_up_note || ''
+      follow_up_note: follow_up_note || '',
+      vaccine_3_group_name: vaccines[2]&.group_name || '',
+      vaccine_3_product_name: vaccines[2]&.product_name || '',
+      vaccine_3_administration_date: vaccines[2]&.administration_date || '',
+      vaccine_3_dose_number: vaccines[2]&.dose_number || '',
+      vaccine_3_notes: vaccines[2]&.notes,
+      international_telephone: international_telephone || ''
     }
   end
 

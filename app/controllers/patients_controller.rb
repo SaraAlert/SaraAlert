@@ -879,6 +879,7 @@ class PatientsController < ApplicationController
       :primary_telephone_type,
       :secondary_telephone,
       :secondary_telephone_type,
+      :international_telephone,
       :email,
       :preferred_contact_method,
       :preferred_contact_time,
@@ -977,6 +978,7 @@ class PatientsController < ApplicationController
       primary_telephone_type
       secondary_telephone
       secondary_telephone_type
+      international_telephone
       email
       preferred_contact_method
       preferred_contact_time

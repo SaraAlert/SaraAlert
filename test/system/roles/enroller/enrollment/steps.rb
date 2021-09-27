@@ -65,6 +65,7 @@ class EnrollmentFormSteps < ApplicationSystemTestCase
         { id: 'primary_telephone_type', type: :select, info_page: true },
         { id: 'secondary_telephone', type: :phone },
         { id: 'secondary_telephone_type', type: :select },
+        { id: 'international_telephone', type: :text },
         { id: 'email', type: :text, info_page: true },
         { id: 'confirm_email', type: :text }
       ],
