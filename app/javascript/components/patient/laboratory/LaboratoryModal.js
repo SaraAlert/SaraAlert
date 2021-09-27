@@ -53,7 +53,9 @@ class LaboratoryModal extends React.Component {
 
   render() {
     // Data is valid as long as at least one field has a value
-    const isValid = this.state.lab_type || this.state.specimen_collection || this.state.report || this.state.result;
+    const isValid = this.props.onlyPositiveResult
+      ? this.state.result && this.state.specimen_collection
+      : this.state.lab_type || this.state.specimen_collection || this.state.report || this.state.result;
     return (
       <Modal size="lg" className="laboratory-modal-container" show centered onHide={this.props.cancel}>
         <h1 className="sr-only">{this.props.editMode ? 'Edit' : 'Add New'} Lab Result</h1>
@@ -174,8 +176,8 @@ class LaboratoryModal extends React.Component {
           {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
           {/* This does not impact component functionality at all. */}
           {!isValid && (
-            <ReactTooltip id="submit-tooltip" place="top" type="dark" effect="solid">
-              Please enter at least one field.
+            <ReactTooltip id="submit-tooltip" place="top" type="dark" effect="solid" multiline={this.props.onlyPositiveResult}>
+              {this.props.onlyPositiveResult ? 'Please enter specimen collection date.' : 'Please enter at least one field.'}
             </ReactTooltip>
           )}
         </Modal.Footer>
