@@ -7,13 +7,13 @@ class Jurisdiction < ApplicationRecord
   has_ancestry
 
   # Immediate patients are those just in this jurisdiction
-  has_many :immediate_patients, class_name: 'Patient'
+  has_many :immediate_patients, class_name: 'Patient', dependent: nil
 
-  has_many :threshold_conditions, class_name: 'ThresholdCondition'
+  has_many :threshold_conditions, class_name: 'ThresholdCondition', dependent: nil
 
-  has_many :analytics, class_name: 'Analytic'
+  has_many :analytics, class_name: 'Analytic', dependent: nil
 
-  has_many :stats, class_name: 'Stat'
+  has_many :stats, class_name: 'Stat', dependent: nil
 
   # Find the USA Jurisdiction
   def self.root
@@ -41,14 +41,14 @@ class Jurisdiction < ApplicationRecord
 
   # All patients that were in the jurisdiction before (but were transferred), and are not currently in the subtree
   def transferred_out_patients
-    Patient.where(purged: false, id: Transfer.where(from_jurisdiction_id: subtree_ids).pluck(:patient_id)).where.not(jurisdiction_id: subtree_ids + [id])
+    Patient.where(purged: false, id: Transfer.where(from_jurisdiction_id: subtree_ids).select(:patient_id)).where.not(jurisdiction_id: subtree_ids + [id])
   end
 
   # All patients that were transferred into the jurisdiction in the last 24 hours
   def transferred_in_patients
     Patient.where(purged: false, id: Transfer.where(to_jurisdiction_id: subtree_ids + [id])
                               .where.not(from_jurisdiction_id: subtree_ids + [id])
-                              .where('created_at > ?', 24.hours.ago).pluck(:patient_id))
+                              .where('created_at > ?', 24.hours.ago).select(:patient_id))
            .where(jurisdiction_id: subtree_ids + [id])
   end
 
