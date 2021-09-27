@@ -189,7 +189,10 @@ describe('MonitoringStatus', () => {
 
   it('Properly renders radio buttons for updating dependents LDE', () => {
     const wrapper = getMountedWrapper(mockPatient1);
-    wrapper.find('#monitoring_status').hostNodes().simulate('change', { target: { id: 'monitoring_status', value: 'Not Monitoring' } });
+    wrapper
+      .find('#monitoring_status')
+      .hostNodes()
+      .simulate('change', { target: { id: 'monitoring_status', value: 'Not Monitoring' } });
 
     expect(wrapper.find('.update-dependent-lde').exists()).toBe(true);
     expect(wrapper.find('.update-dependent-lde').find('p').at(0).text()).toEqual(`Would you like to update the Last Date of Exposure for all household members who have Continuous Exposure turned ON and are being monitored in the Exposure Workflow?`);

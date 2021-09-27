@@ -40,15 +40,13 @@ const riskFactors = [
 ];
 
 function getWrapper(additionalProps) {
-  return shallow(<Patient current_user={mockUser1} collapse={true} edit_mode={false} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true}
-    workflow="global" headingLevel={2} {...additionalProps} />);
+  return shallow(<Patient current_user={mockUser1} collapse={true} edit_mode={false} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} {...additionalProps} />);
 }
-
 
 describe('Patient', () => {
   it('Properly renders all main components when not in edit mode', () => {
     const additionalProps = { details: mockPatient1 };
-    const wrapper = getWrapper(additionalProps)
+    const wrapper = getWrapper(additionalProps);
     expect(wrapper.find('#monitoree-details-header').exists()).toBe(true);
     expect(wrapper.find('#monitoree-details-header').find(Heading).find('span').text()).toEqual(formatName(mockPatient1));
     expect(wrapper.find('#monitoree-details-header').find(Heading).find(BadgeHoH).exists()).toBe(true);
@@ -70,7 +68,7 @@ describe('Patient', () => {
 
   it('Properly renders all main components when in edit mode', () => {
     const additionalProps = { details: mockPatient4, goto: goToMock, edit_mode: true };
-    const wrapper = getWrapper(additionalProps)
+    const wrapper = getWrapper(additionalProps);
     expect(wrapper.find('#monitoree-details-header').exists()).toBe(true);
     expect(wrapper.find('#monitoree-details-header').find(Heading).find('span').text()).toEqual(formatName(mockPatient4));
     expect(wrapper.find('#monitoree-details-header').find(Heading).find(BadgeHoH).exists()).toBe(false);
@@ -92,7 +90,7 @@ describe('Patient', () => {
 
   it('Properly renders identification section', () => {
     const additionalProps = { details: mockPatient1 };
-    const wrapper = getWrapper(additionalProps)
+    const wrapper = getWrapper(additionalProps);
     const section = wrapper.find('#identification');
     expect(section.find(Heading).children().text()).toEqual('Identification');
     expect(section.find('.edit-link').exists()).toBe(true);
@@ -114,7 +112,7 @@ describe('Patient', () => {
 
   it('Properly renders identification section when patient is a minor', () => {
     const additionalProps = { details: mockPatient5, hoh: mockPatient1 };
-    const wrapper = getWrapper(additionalProps)
+    const wrapper = getWrapper(additionalProps);
     const section = wrapper.find('#identification');
     expect(section.find(Heading).children().text()).toEqual('Identification');
     expect(section.find('.edit-link').exists()).toBe(true);
@@ -125,7 +123,7 @@ describe('Patient', () => {
 
   it('Properly renders contact information section', () => {
     const additionalProps = { details: mockPatient2, hoh: mockPatient1 };
-    const wrapper = getWrapper(additionalProps)
+    const wrapper = getWrapper(additionalProps);
     const section = wrapper.find('#contact-information');
     expect(section.find(Heading).children().text()).toEqual('Contact Information');
     expect(section.find('.edit-link').exists()).toBe(true);
@@ -155,7 +153,7 @@ describe('Patient', () => {
 
   it('Properly renders contact information section if secondary contact info is not present', () => {
     const additionalProps = { details: mockPatient1 };
-    const wrapper = getWrapper(additionalProps)
+    const wrapper = getWrapper(additionalProps);
     const section = wrapper.find('#contact-information');
     expect(section.find(Heading).children().text()).toEqual('Contact Information');
     expect(section.find('.edit-link').exists()).toBe(true);
@@ -173,7 +171,7 @@ describe('Patient', () => {
 
   it('Properly renders contact information section if SMS is blocked', () => {
     const additionalProps = { details: { ...mockPatient2, blocked_sms: true } };
-    const wrapper = getWrapper(additionalProps)
+    const wrapper = getWrapper(additionalProps);
     const primaryPhone = wrapper.find('#contact-information').find('.item-group').at(0).find('div').at(1);
     const preferredContactMethod = wrapper.find('#contact-information').find('.item-group').at(0).find('div').at(5);
     expect(primaryPhone.find('b').text()).toEqual('Phone:');
@@ -189,7 +187,7 @@ describe('Patient', () => {
 
   it('Properly renders contact information section when patient is a minor', () => {
     const additionalProps = { details: mockPatient5, hoh: mockPatient1 };
-    const wrapper = getWrapper(additionalProps)
+    const wrapper = getWrapper(additionalProps);
     const section = wrapper.find('#contact-information');
     expect(wrapper.find('#contact-information').find('.text-danger').exists()).toBe(true);
     expect(wrapper.find('#contact-information').find('.text-danger').text()).toEqual('Monitoree is a minor');
@@ -201,7 +199,7 @@ describe('Patient', () => {
 
   it('Properly renders show/hide divider when props.collapse is true', () => {
     const additionalProps = { details: mockPatient1 };
-    const wrapper = getWrapper(additionalProps)
+    const wrapper = getWrapper(additionalProps);
     expect(wrapper.find('.details-expander').exists()).toBe(true);
     expect(wrapper.find('#details-expander-link').exists()).toBe(true);
     expect(wrapper.find('.details-expander').find(FontAwesomeIcon).exists()).toBe(true);
@@ -608,7 +606,7 @@ describe('Patient', () => {
   });
 
   it('Calls props goto method when the edit buttons are clicked', () => {
-    const additionalProps = { details: mockPatient1, edit_mode: true, goto: goToMock  };
+    const additionalProps = { details: mockPatient1, edit_mode: true, goto: goToMock };
     const wrapper = getWrapper(additionalProps);
     expect(goToMock).toHaveBeenCalledTimes(0);
     wrapper
