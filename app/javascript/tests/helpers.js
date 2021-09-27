@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 /** import existing util methods already used in the application */
-import { formatName, formatNameAlt, formatRace } from '../utils/PatientDetails';
+import { formatName, formatNameAlt, formatRace, formatPhoneNumberVisually } from '../utils/PatientFormatters';
 import { formatTimestamp, formatDate } from '../utils/DateTime';
 import { convertCommonLanguageCodeToName } from '../utils/Languages';
 
@@ -80,6 +80,7 @@ export {
   formatName,
   formatNameAlt,
   formatRace,
+  formatPhoneNumberVisually,
   formatDate,
   formatTimestamp,
   convertCommonLanguageCodeToName,
