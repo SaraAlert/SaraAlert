@@ -29,7 +29,7 @@ class ApiControllerTest < ApiControllerTestCase
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['id']
     assert_equal 'Patient', json_response['resourceType']
-    assert_equal 3, json_response['telecom'].count
+    assert_equal 4, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert_equal 'Telephone call', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-method' }['valueString']
     assert_equal 'Morning', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-time' }['valueString']
@@ -201,7 +201,7 @@ class ApiControllerTest < ApiControllerTestCase
     assert_not h.first.nil?
     assert_equal 1, h.count
     assert_equal 'Patient', json_response['resourceType']
-    assert_equal 3, json_response['telecom'].count
+    assert_equal 4, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
     assert_equal 'USA, State 1',
@@ -243,7 +243,7 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal 1, h.count
     assert_equal 'state1_epi@example.com (API)', h.first.created_by
     assert_equal 'Patient', json_response['resourceType']
-    assert_equal 3, json_response['telecom'].count
+    assert_equal 4, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
     assert_equal 'USA, State 1',

@@ -404,6 +404,7 @@ namespace :demo do
       patient[:primary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:primary_telephone_type].sample if patient[:primary_telephone]
       patient[:secondary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:primary_telephone] && rand < 0.5
       patient[:secondary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:secondary_telephone_type].sample if patient[:secondary_telephone]
+      patient[:international_telephone] = Faker::PhoneNumber.cell_phone_in_e164 if rand < 0.2
       patient[:email] = "#{rand(1_000_000_000..9_999_999_999)}fake@example.com" if patient[:preferred_contact_method] == 'E-mailed Web Link' || rand < 0.5
 
       # Address

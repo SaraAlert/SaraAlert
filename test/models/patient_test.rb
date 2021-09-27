@@ -2334,6 +2334,28 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?(:api)
   end
 
+  test 'validates international_telephone in api and import context' do
+    patient = valid_patient
+
+    patient.international_telephone = 'hello'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+
+    patient.international_telephone = 'a' * 51
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+
+    patient.international_telephone = '+222 333 4444'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.international_telephone = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+  end
+
   test 'ten_day_quarantine_candidates scope checks purged, monitoring, isolation, and continuous_exposure' do
     # Monitoring check
     patient = create(:patient, monitoring: true, last_date_of_exposure: 10.days.ago.utc.to_date)
