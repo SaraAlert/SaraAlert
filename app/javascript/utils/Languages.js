@@ -62,6 +62,17 @@ function convertLanguageCodesToNames(languageCodes, authToken, callback) {
 }
 
 /**
+ * This function returns the language name from the given code (only for common languages)
+ * Returns null if language code is not common (i.e. not in the list)
+ * Helper method that is primarily used in the test files
+ * @param {String} code - language code
+ * @return {String} - language name
+ */
+function convertCommonLanguageCodeToName(code) {
+  return COMMON_LANGUAGES[code];
+}
+
+/**
  * This function returns to the callback an array of all language display names (alphabetized)
  * @param {String} authToken
  * @param {Function} callback - the callback to pass the results to
@@ -110,4 +121,4 @@ function getLanguageData(authToken, callback) {
     });
 }
 
-export { getAllLanguageDisplayNames, getLanguageData, convertLanguageCodesToNames };
+export { getAllLanguageDisplayNames, getLanguageData, convertLanguageCodesToNames, convertCommonLanguageCodeToName };

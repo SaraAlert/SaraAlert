@@ -2,6 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Col, Collapse, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import _ from 'lodash';
+
 import Patient from '../../components/patient/Patient';
 import FollowUpFlagPanel from '../../components/patient/follow_up_flag/FollowUpFlagPanel';
 import InfoTooltip from '../../components/util/InfoTooltip';
@@ -11,13 +13,24 @@ import { mockUser1 } from '../mocks/mockUsers';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankIsolationMockPatient, blankExposureMockPatient } from '../mocks/mockPatients';
 import { mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 import { nameFormatter, formatDate } from '../util.js';
+import { formatRace } from '../../utils/Patient.js';
+import { convertCommonLanguageCodeToName } from '../../utils/Languages.js';
 
 const goToMock = jest.fn();
-const identificationFields = ['DOB', 'Age', 'Language', 'Sara Alert ID', 'State/Local ID', 'CDC ID', 'NNDSS ID', 'Birth Sex', 'Gender Identity', 'Sexual Orientation', 'Race', 'Ethnicity', 'Nationality'];
-const contactFields = ['Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Reporting Method'];
-const domesticAddressFields = ['Address 1', 'Address 2', 'Town/City', 'State', 'Zip', 'County'];
-const foreignAddressFields = ['Address 1', 'Address 2', 'Address 3', 'Town/City', 'State', 'Zip', 'Country'];
-const additionalTravelFields = ['Type', 'Place', 'Port of Departure', 'Start Date', 'End Date'];
+const identificationLabels = ['DOB', 'Age', 'Language', 'Sara Alert ID', 'State/Local ID', 'CDC ID', 'NNDSS ID', 'Birth Sex', 'Gender Identity', 'Sexual Orientation', 'Race', 'Ethnicity', 'Nationality'];
+const identificationFields = ['date_of_birth', 'age', 'primary_language', 'id', 'user_defined_id_statelocal', 'user_defined_id_cdc', 'user_defined_id_nndss', 'sex', 'gender_identity', 'sexual_orientation', 'race', 'ethnicity', 'nationality'];
+const contactLabels = ['Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Reporting Method'];
+const contactFields = ['primary_telephone', 'preferred_contact_time', 'primary_telephone_type', 'email', 'preferred_contact_method'];
+const secondaryContactLabels = ['Secondary Phone', 'Secondary Phone Type', 'International Phone'];
+const secondaryContactFields = ['secondary_telephone', 'secondary_telephone_type', 'international_telephone'];
+const domesticAddressLabels = ['Address 1', 'Address 2', 'Town/City', 'State', 'Zip', 'County'];
+const domesticAddressFields = ['address_line_1', 'address_line_2', 'address_city', 'address_state', 'address_zip', 'address_county'];
+const foreignAddressLabels = ['Address 1', 'Address 2', 'Address 3', 'Town/City', 'State', 'Zip', 'Country'];
+const foreignAddressFields = ['foreign_address_line_1', 'foreign_address_line_2', 'foreign_address_line_3', 'foreign_address_city', 'foreign_address_state', 'foreign_address_zip', 'foreign_address_country'];
+const monitoringAddressLabels = domesticAddressLabels;
+const monitoringAddressFields = ['monitored_address_line_1', 'monitored_address_line_2', 'monitored_address_city', 'monitored_address_state', 'monitored_address_zip', 'monitored_address_county'];
+const plannedTravelLabels = ['Type', 'Place', 'Port of Departure', 'Start Date', 'End Date'];
+const plannedTravelFields = ['additional_planned_travel_type', ['additional_planned_travel_destination_country', 'additional_planned_travel_destination_state'], 'additional_planned_travel_port_of_departure', 'additional_planned_travel_start_date', 'additional_planned_travel_end_date'];
 const riskFactors = [
   { key: 'Close Contact with a Known Case', val: mockPatient2.contact_of_known_case_id },
   { key: 'Member of a Common Exposure Cohort', val: mockPatient2.member_of_a_common_exposure_cohort_type },
@@ -78,9 +91,18 @@ describe('Patient', () => {
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient1.id + '/edit?step=0&nav=global');
     expect(section.find('.text-danger').exists()).toBeFalsy();
-    identificationFields.forEach((field, index) => {
-      expect(section.find('b').at(index).text()).toEqual(field + ':');
-    });
+
+    section
+      .find('.item-group')
+      .children()
+      .forEach((item, index) => {
+        let value = mockPatient1[identificationFields[parseInt(index)]];
+        value = identificationFields[parseInt(index)].includes('date') ? formatDate(value) : value;
+        value = identificationFields[parseInt(index)].includes('language') ? convertCommonLanguageCodeToName(value) : value;
+        value = identificationFields[parseInt(index)] === 'race' ? formatRace(mockPatient1) : value;
+        expect(item.find('b').text()).toEqual(identificationLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(String(value) || '--');
+      });
   });
 
   it('Properly renders identification section when patient is a minor', () => {
@@ -88,47 +110,66 @@ describe('Patient', () => {
     const section = wrapper.find('#identification');
     expect(section.find(Heading).children().text()).toEqual('Identification');
     expect(section.find('.edit-link').exists()).toBeTruthy();
-    identificationFields.forEach((field, index) => {
-      expect(section.find('b').at(index).text()).toEqual(field + ':');
-    });
+    expect(section.find('.item-group').children().at(0).text()).toEqual(`DOB: ${formatDate(mockPatient5.date_of_birth)} (Minor)`);
     expect(section.find('.text-danger').exists()).toBeTruthy();
     expect(section.find('.text-danger').text()).toEqual(' (Minor)');
   });
 
   it('Properly renders contact information section', () => {
+    const wrapper = shallow(<Patient details={mockPatient2} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
+    const section = wrapper.find('#contact-information');
+    expect(section.find(Heading).children().text()).toEqual('Contact Information');
+    expect(section.find('.edit-link').exists()).toBeTruthy();
+    expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient2.id + '/edit?step=2&nav=global');
+    expect(section.find('.text-danger').exists()).toBeFalsy();
+
+    // primary contact information
+    section
+      .find('.item-group')
+      .at(0)
+      .children()
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(contactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient2[contactFields[parseInt(index)]] || '--');
+      });
+
+    // secondary contact information
+    section
+      .find('.item-group')
+      .at(1)
+      .children()
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(secondaryContactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient2[secondaryContactFields[parseInt(index)]] || '--');
+      });
+  });
+
+  it('Properly renders contact information section if secondary contact info is not present', () => {
     const wrapper = shallow(<Patient details={mockPatient1} collapse={true} edit_mode={false} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} other_household_members={[]} can_modify_subject_status={true} workflow="global" headingLevel={2} />);
     const section = wrapper.find('#contact-information');
     expect(section.find(Heading).children().text()).toEqual('Contact Information');
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient1.id + '/edit?step=2&nav=global');
-    expect(wrapper.find('#contact-information').find('.text-danger').exists()).toBeFalsy();
-    contactFields.forEach((field, index) => {
-      expect(section.find('b').at(index).text()).toEqual(field + ':');
-    });
+    expect(section.find('.text-danger').exists()).toBeFalsy();
+    expect(section.find('.item-group').length).toEqual(1);
+    section
+      .find('.item-group')
+      .children()
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(contactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient1[contactFields[parseInt(index)]] || '--');
+      });
   });
 
   it('Properly renders contact information section if SMS is blocked', () => {
     const wrapper = shallow(<Patient details={{ ...mockPatient2, blocked_sms: true }} collapse={true} edit_mode={false} jurisdiction_paths={mockJurisdictionPaths} headingLevel={2} />);
-    const section = wrapper.find('#contact-information');
-    const primaryPhone = section.find('.item-group').find('div').at(1);
-    const preferredContactTime = section.find('.item-group').find('div').at(2);
-    const primaryPhoneType = section.find('.item-group').find('div').at(3);
-    const secondaryPhone = section.find('.item-group').find('div').at(4).find('div').at(1);
-    const secondaryPhoneType = section.find('.item-group').find('div').at(4).find('div').at(2);
-    const internationalPhone = section.find('.item-group').find('div').at(4).find('div').at(3);
-    const email = section.find('.item-group').find('div').at(8);
-    const preferredContactMethod = section.find('.item-group').find('div').at(9);
+    const primaryPhone = wrapper.find('#contact-information').find('.item-group').at(0).find('div').at(1);
+    const preferredContactMethod = wrapper.find('#contact-information').find('.item-group').at(0).find('div').at(5);
     expect(primaryPhone.find('b').text()).toEqual('Phone:');
     expect(primaryPhone.find('span').at(0).text()).toEqual(mockPatient2.primary_telephone);
     expect(primaryPhone.find('span').at(1).text().includes('SMS Blocked')).toBeTruthy();
     expect(primaryPhone.find(InfoTooltip).exists()).toBeTruthy();
     expect(primaryPhone.find(InfoTooltip).prop('tooltipTextKey')).toEqual('blockedSMS');
-    expect(preferredContactTime.find('span').text()).toEqual(mockPatient2.preferred_contact_time);
-    expect(primaryPhoneType.find('span').text()).toEqual(mockPatient2.primary_telephone_type);
-    expect(secondaryPhone.find('span').text()).toEqual(mockPatient2.secondary_telephone);
-    expect(secondaryPhoneType.find('span').text()).toEqual(mockPatient2.secondary_telephone_type);
-    expect(internationalPhone.find('span').text()).toEqual(mockPatient2.international_telephone);
-    expect(email.find('span').text()).toEqual(mockPatient2.email);
     expect(preferredContactMethod.find('b').text()).toEqual('Preferred Reporting Method:');
     expect(preferredContactMethod.find('span').text().includes('SMS Texted Weblink')).toBeTruthy();
     expect(preferredContactMethod.find(InfoTooltip).exists()).toBeTruthy();
@@ -140,10 +181,10 @@ describe('Patient', () => {
     const section = wrapper.find('#contact-information');
     expect(wrapper.find('#contact-information').find('.text-danger').exists()).toBeTruthy();
     expect(wrapper.find('#contact-information').find('.text-danger').text()).toEqual('Monitoree is a minor');
-    expect(section.find('.item-group').find('a').exists()).toBeTruthy();
-    expect(section.find('.item-group').children().at(1).text()).toEqual(`View contact info for Head of Household:${mockPatient1.first_name} ${mockPatient1.middle_name} ${mockPatient1.last_name}`);
-    expect(section.find('.item-group').find('a').props().href).toContain('patients/' + mockPatient1.id);
-    expect(section.find('.item-group').find('a').text()).toEqual(mockPatient1.first_name + ' ' + mockPatient1.middle_name + ' ' + mockPatient1.last_name);
+    expect(section.find('.minor-info').find('a').exists()).toBeTruthy();
+    expect(section.find('.minor-info').children().at(1).text()).toEqual(`View contact info for Head of Household:${mockPatient1.first_name} ${mockPatient1.middle_name} ${mockPatient1.last_name}`);
+    expect(section.find('.minor-info').find('a').props().href).toContain('patients/' + mockPatient1.id);
+    expect(section.find('.minor-info').find('a').text()).toEqual(mockPatient1.first_name + ' ' + mockPatient1.middle_name + ' ' + mockPatient1.last_name);
   });
 
   it('Properly renders show/hide divider when props.collapse is true', () => {
@@ -184,13 +225,17 @@ describe('Patient', () => {
     expect(section.find(Heading).children().text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient2.id + '/edit?step=1&nav=global');
-    expect(section.find(Row).find(Col).length).toEqual(1);
-    const domesticAddressColumn = section.find(Row).find(Col);
-    expect(domesticAddressColumn.prop('sm')).toEqual(24);
-    expect(domesticAddressColumn.find('p').text()).toEqual('Home Address (USA)');
-    domesticAddressFields.forEach((field, index) => {
-      expect(domesticAddressColumn.find('b').at(index).text()).toEqual(field + ':');
-    });
+    expect(section.find('.item-group').length).toEqual(1);
+    expect(section.find('.item-group').prop('sm')).toEqual(24);
+    expect(section.find('.item-group').find('p').text()).toEqual('Home Address (USA)');
+    section
+      .find('.item-group')
+      .children()
+      .filter('div')
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(domesticAddressLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient2[domesticAddressFields[parseInt(index)]] || '--');
+      });
   });
 
   it('Properly renders address section for domestic address and monitoring address', () => {
@@ -199,19 +244,29 @@ describe('Patient', () => {
     expect(section.find(Heading).children().text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient1.id + '/edit?step=1&nav=global');
-    expect(section.find(Row).find(Col).length).toEqual(2);
-    const domesticAddressColumn = section.find(Row).find(Col).at(0);
-    const monitoringAddressColumn = section.find(Row).find(Col).at(1);
+    expect(section.find('.item-group').length).toEqual(2);
+
+    const domesticAddressColumn = section.find('.item-group').at(0);
     expect(domesticAddressColumn.prop('sm')).toEqual(12);
     expect(domesticAddressColumn.find('p').text()).toEqual('Home Address (USA)');
-    domesticAddressFields.forEach((field, index) => {
-      expect(domesticAddressColumn.find('b').at(index).text()).toEqual(field + ':');
-    });
+    domesticAddressColumn
+      .children()
+      .filter('div')
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(domesticAddressLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient1[domesticAddressFields[parseInt(index)]] || '--');
+      });
+
+    const monitoringAddressColumn = section.find('.item-group').at(1);
     expect(monitoringAddressColumn.prop('sm')).toEqual(12);
     expect(monitoringAddressColumn.find('p').text()).toEqual('Monitoring Address');
-    domesticAddressFields.forEach((field, index) => {
-      expect(monitoringAddressColumn.find('b').at(index).text()).toEqual(field + ':');
-    });
+    monitoringAddressColumn
+      .children()
+      .filter('div')
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(monitoringAddressLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient1[monitoringAddressFields[parseInt(index)]] || '--');
+      });
   });
 
   it('Properly renders address section for foreign address with no monitoring address', () => {
@@ -220,13 +275,17 @@ describe('Patient', () => {
     expect(section.find(Heading).children().text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient5.id + '/edit?step=1&nav=global');
-    expect(section.find(Row).find(Col).length).toEqual(1);
-    const foreignAddressColumn = section.find(Row).find(Col);
-    expect(foreignAddressColumn.prop('sm')).toEqual(24);
-    expect(foreignAddressColumn.find('p').text()).toEqual('Home Address (Foreign)');
-    foreignAddressFields.forEach((field, index) => {
-      expect(foreignAddressColumn.find('b').at(index).text()).toEqual(field + ':');
-    });
+    expect(section.find('.item-group').length).toEqual(1);
+    expect(section.find('.item-group').prop('sm')).toEqual(24);
+    expect(section.find('.item-group').find('p').text()).toEqual('Home Address (Foreign)');
+    section
+      .find('.item-group')
+      .children()
+      .filter('div')
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(foreignAddressLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient5[foreignAddressFields[parseInt(index)]] || '--');
+      });
   });
 
   it('Properly renders address section for foreign address and monitoring address', () => {
@@ -235,19 +294,29 @@ describe('Patient', () => {
     expect(section.find(Heading).children().text()).toEqual('Address');
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient4.id + '/edit?step=1&nav=global');
-    expect(section.find(Row).find(Col).length).toEqual(2);
-    const foreignAddressColumn = section.find(Row).find(Col).at(0);
-    const monitoringAddressColumn = section.find(Row).find(Col).at(1);
+    expect(section.find('.item-group').length).toEqual(2);
+
+    const foreignAddressColumn = section.find('.item-group').at(0);
     expect(foreignAddressColumn.prop('sm')).toEqual(12);
     expect(foreignAddressColumn.find('p').text()).toEqual('Home Address (Foreign)');
-    foreignAddressFields.forEach((field, index) => {
-      expect(foreignAddressColumn.find('b').at(index).text()).toEqual(field + ':');
-    });
+    foreignAddressColumn
+      .children()
+      .filter('div')
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(foreignAddressLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient4[foreignAddressFields[parseInt(index)]] || '--');
+      });
+
+    const monitoringAddressColumn = section.find('.item-group').at(1);
     expect(monitoringAddressColumn.prop('sm')).toEqual(12);
     expect(monitoringAddressColumn.find('p').text()).toEqual('Monitoring Address');
-    domesticAddressFields.forEach((field, index) => {
-      expect(monitoringAddressColumn.find('b').at(index).text()).toEqual(field + ':');
-    });
+    monitoringAddressColumn
+      .children()
+      .filter('div')
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(monitoringAddressLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient4[`foreign_${monitoringAddressFields[parseInt(index)]}`] || '--');
+      });
   });
 
   it('Properly renders arrival information section', () => {
@@ -312,9 +381,21 @@ describe('Patient', () => {
     expect(section.find('.edit-link').exists()).toBeTruthy();
     expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient1.id + '/edit?step=4&nav=global');
     expect(section.find('.none-text').exists()).toBeFalsy();
-    additionalTravelFields.forEach((field, index) => {
-      expect(section.find('b').at(index).text()).toEqual(field + ':');
-    });
+    section
+      .find('.item-group')
+      .children()
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(plannedTravelLabels[parseInt(index)] + ':');
+        let value;
+        if (_.isArray(plannedTravelFields[parseInt(index)])) {
+          let arrayValues = [];
+          plannedTravelFields[parseInt(index)].forEach(field => arrayValues.push(mockPatient1[`${field}`]));
+          value = arrayValues.join(' ');
+        } else {
+          value = plannedTravelFields[parseInt(index)].includes('date') ? formatDate(mockPatient1[plannedTravelFields[parseInt(index)]]) : mockPatient1[plannedTravelFields[parseInt(index)]];
+        }
+        expect(item.find('span').text()).toEqual(value || '--');
+      });
     expect(section.find('.notes-section').exists()).toBeTruthy();
     expect(wrapper.find('.notes-section').find(Button).exists()).toBeFalsy();
     expect(section.find('.notes-section').find('p').text()).toEqual('Notes');
