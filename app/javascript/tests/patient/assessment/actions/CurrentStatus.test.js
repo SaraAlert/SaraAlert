@@ -19,93 +19,93 @@ function getWrapper(status, isolation) {
 describe('CurrentStatus', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper('exposure_symptomatic', false);
-    expect(wrapper.find('h2').exists()).toBeTruthy();
-    expect(wrapper.find('b').at(0).text().includes('Workflow:')).toBeTruthy();
-    expect(wrapper.find(Badge).exists()).toBeTruthy();
-    expect(wrapper.find('b').at(1).text().includes('Notification status is')).toBeTruthy();
-    expect(wrapper.find(EligibilityTooltip).exists()).toBeTruthy();
+    expect(wrapper.find('h2').exists()).toBe(true);
+    expect(wrapper.find('b').at(0).text()).toContain('Workflow:');
+    expect(wrapper.find(Badge).exists()).toBe(true);
+    expect(wrapper.find('b').at(1).text()).toContain('Notification status is');
+    expect(wrapper.find(EligibilityTooltip).exists()).toBe(true);
   });
 
   it('Correctly renders exposure symptomatic status', () => {
     const wrapper = getWrapper('exposure_symptomatic', false);
-    expect(wrapper.find('b').at(0).text().includes('Exposure Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Exposure Workflow');
     expect(wrapper.find(Badge).text()).toEqual('symptomatic');
     expect(wrapper.find(Badge).prop('variant')).toEqual('danger');
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 
   it('Correctly renders exposure asymptomatic status', () => {
     const wrapper = getWrapper('exposure_asymptomatic', false);
-    expect(wrapper.find('b').at(0).text().includes('Exposure Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Exposure Workflow');
     expect(wrapper.find(Badge).text()).toEqual('asymptomatic');
     expect(wrapper.find(Badge).prop('variant')).toEqual('success');
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 
   it('Correctly renders exposure non-reporting status', () => {
     const wrapper = getWrapper('exposure_non_reporting', false);
-    expect(wrapper.find('b').at(0).text().includes('Exposure Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Exposure Workflow');
     expect(wrapper.find(Badge).text()).toEqual('non-reporting');
     expect(wrapper.find(Badge).prop('variant')).toEqual('warning');
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 
   it('Correctly renders exposure PUI status', () => {
     const wrapper = getWrapper('exposure_under_investigation', false);
-    expect(wrapper.find('b').at(0).text().includes('Exposure Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Exposure Workflow');
     expect(wrapper.find(Badge).text()).toEqual('PUI');
     expect(wrapper.find(Badge).prop('variant')).toEqual('dark');
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 
   it('Correctly renders purged status', () => {
     const wrapper = getWrapper('purged', false);
-    expect(wrapper.find('b').at(0).text().includes('Exposure Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Exposure Workflow');
     expect(wrapper.find(Badge).text()).toEqual('purged');
-    expect(wrapper.find(Badge).find('.badge-muted').exists()).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(Badge).find('.badge-muted').exists()).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 
   it('Correctly renders closed status', () => {
     const wrapper = getWrapper('closed', false);
-    expect(wrapper.find('b').at(0).text().includes('Exposure Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Exposure Workflow');
     expect(wrapper.find(Badge).text()).toEqual('not currently being monitored');
     expect(wrapper.find(Badge).prop('variant')).toEqual('secondary');
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 
   it('Correctly renders isolation requires review status', () => {
     const wrapper = getWrapper('isolation_requiring_review', true);
-    expect(wrapper.find('b').at(0).text().includes('Isolation Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Isolation Workflow');
     expect(wrapper.find(Badge).text()).toEqual('requires review');
     expect(wrapper.find(Badge).prop('variant')).toEqual('danger');
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 
   it('Correctly renders isolation requires review (symptomatic non test based) status', () => {
     const wrapper = getWrapper('isolation_symp_non_test_based', true);
-    expect(wrapper.find('b').at(0).text().includes('Isolation Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Isolation Workflow');
     expect(wrapper.find(Badge).text()).toEqual('requires review (symptomatic non test based)');
     expect(wrapper.find(Badge).prop('variant')).toEqual('danger');
-    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
     expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('At least 10 days have passed since the Symptom Onset Date and at least 24 hours have passed since the case last reported “Yes” for fever or use of fever-reducing medicine to the system. The system does not collect information on severity of symptoms. Public health will need to validate if other symptoms have improved.');
   });
 
   it('Correctly renders isolation requires review (asymptomatic non test based) status', () => {
     const wrapper = getWrapper('isolation_asymp_non_test_based', true);
-    expect(wrapper.find('b').at(0).text().includes('Isolation Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Isolation Workflow');
     expect(wrapper.find(Badge).text()).toEqual('requires review (asymptomatic non test based)');
     expect(wrapper.find(Badge).prop('variant')).toEqual('danger');
-    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
     expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('At least 10 days have passed since the specimen collection date of a positive laboratory test and the monitoree has never reported symptoms.');
   });
 
   it('Correctly renders isolation requires review (test based) status', () => {
     const wrapper = getWrapper('isolation_test_based', true);
-    expect(wrapper.find('b').at(0).text().includes('Isolation Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Isolation Workflow');
     expect(wrapper.find(Badge).text()).toEqual('requires review (test based)');
     expect(wrapper.find(Badge).prop('variant')).toEqual('danger');
-    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
     expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(
       'Two negative laboratory results have been documented and at least 24 hours have passed since the case last reported “Yes” for fever or use of fever-reducing medicine to the system. The system does not validate the type of test, time between specimen collection, or if the tests were consecutive. Public health will need to validate that the test results meet the latest guidance prior to discontinuing isolation. The system does not collect information on severity of symptoms. Public health will also need to validate if other symptoms have improved.'
     );
@@ -113,24 +113,24 @@ describe('CurrentStatus', () => {
 
   it('Correctly renders isolation non-reporting status', () => {
     const wrapper = getWrapper('isolation_non_reporting', true);
-    expect(wrapper.find('b').at(0).text().includes('Isolation Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Isolation Workflow');
     expect(wrapper.find(Badge).text()).toEqual('non-reporting');
     expect(wrapper.find(Badge).prop('variant')).toEqual('warning');
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 
   it('Correctly renders isolation reporting status', () => {
     const wrapper = getWrapper('isolation_reporting', true);
-    expect(wrapper.find('b').at(0).text().includes('Isolation Workflow')).toBeTruthy();
+    expect(wrapper.find('b').at(0).text()).toContain('Isolation Workflow');
     expect(wrapper.find(Badge).text()).toEqual('reporting');
     expect(wrapper.find(Badge).prop('variant')).toEqual('success');
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 
   it('Displays unknown status message if status is not valid', () => {
     const wrapper = getWrapper('fake_status', false);
-    expect(wrapper.find(Badge).exists()).toBeFalsy();
+    expect(wrapper.find(Badge).exists()).toBe(false);
     expect(wrapper.find('b').at(0).find('span').text()).toEqual('unknown');
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 });

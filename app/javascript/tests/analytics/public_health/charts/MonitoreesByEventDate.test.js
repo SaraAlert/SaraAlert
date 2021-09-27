@@ -18,14 +18,14 @@ function getWrapper() {
 describe('MonitoreesByEventDate', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find(Card).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).exists()).toBeTruthy();
+    expect(wrapper.find(Card).exists()).toBe(true);
+    expect(wrapper.find(Card.Header).exists()).toBe(true);
     expect(wrapper.find(Card.Header).text()).toEqual('Monitorees by Event Date (Active Records Only)');
-    expect(wrapper.find(Card.Body).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Form.Group).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Form.Label).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).exists()).toBe(true);
+    expect(wrapper.find(Card.Body).find(Form.Group).exists()).toBe(true);
+    expect(wrapper.find(Card.Body).find(Form.Label).exists()).toBe(true);
     expect(wrapper.find(Card.Body).find(Form.Label).text()).toEqual('Time Resolution');
-    expect(wrapper.find(Card.Body).find(Form.Control).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Form.Control).exists()).toBe(true);
     expect(wrapper.find(Card.Body).find(Form.Control).find('option').length).toEqual(timeResolutionOptions.length);
     timeResolutionOptions.forEach((option, index) => {
       expect(wrapper.find(Card.Body).find(Form.Control).find('option').at(index).text()).toEqual(option);
@@ -39,13 +39,13 @@ describe('MonitoreesByEventDate', () => {
 
     graphInfo.forEach((graph, index) => {
       expect(wrapper.find(Col).at(index).find('.h5').text()).toEqual(graph.title);
-      expect(wrapper.find(Col).at(index).find(ResponsiveContainer).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).find(CartesianGrid).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).find(XAxis).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).find(YAxis).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).find(Tooltip).exists()).toBeTruthy();
-      expect(wrapper.find(Col).at(index).find(BarChart).find(Bar).exists()).toBeTruthy();
+      expect(wrapper.find(Col).at(index).find(ResponsiveContainer).exists()).toBe(true);
+      expect(wrapper.find(Col).at(index).find(BarChart).exists()).toBe(true);
+      expect(wrapper.find(Col).at(index).find(BarChart).find(CartesianGrid).exists()).toBe(true);
+      expect(wrapper.find(Col).at(index).find(BarChart).find(XAxis).exists()).toBe(true);
+      expect(wrapper.find(Col).at(index).find(BarChart).find(YAxis).exists()).toBe(true);
+      expect(wrapper.find(Col).at(index).find(BarChart).find(Tooltip).exists()).toBe(true);
+      expect(wrapper.find(Col).at(index).find(BarChart).find(Bar).exists()).toBe(true);
       expect(wrapper.find(Col).at(index).find('.h6').text()).toEqual(graph.axisLabel);
     });
   });

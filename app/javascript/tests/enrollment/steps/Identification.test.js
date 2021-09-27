@@ -30,7 +30,7 @@ describe('Identification', () => {
   it('Properly renders all main components', () => {
     const wrapper = mount(<Identification goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} race_options={race_options} />);
     requiredStrings.forEach(requiredString => {
-      expect(wrapper.text().includes(requiredString)).toBe(true);
+      expect(wrapper.text()).toContain(requiredString);
     });
   });
 

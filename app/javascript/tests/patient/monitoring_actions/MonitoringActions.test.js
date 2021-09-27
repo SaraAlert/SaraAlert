@@ -21,14 +21,14 @@ describe('MonitoringActions', () => {
   it('Properly renders all main components', () => {
     const wrapper = shallow(<MonitoringActions patient={mockPatient1} household_members={[]} isolation={false} authenticity_token={mockToken} jurisdiction_paths={mockJurisdictionPaths} current_user={mockUser1} assigned_users={assigned_users} user_can_transfer={false} monitoring_reasons={mockMonitoringReasons} workflow={'global'} />);
 
-    expect(wrapper.find(Form).exists()).toBeTruthy();
+    expect(wrapper.find(Form).exists()).toBe(true);
     expect(wrapper.find(Form.Group).length).toEqual(7);
-    expect(wrapper.find(AssignedUser).exists()).toBeTruthy();
-    expect(wrapper.find(CaseStatus).exists()).toBeTruthy();
-    expect(wrapper.find(ExposureRiskAssessment).exists()).toBeTruthy();
-    expect(wrapper.find(Jurisdiction).exists()).toBeTruthy();
-    expect(wrapper.find(MonitoringPlan).exists()).toBeTruthy();
-    expect(wrapper.find(MonitoringStatus).exists()).toBeTruthy();
-    expect(wrapper.find(PublicHealthAction).exists()).toBeTruthy();
+    expect(wrapper.find(AssignedUser).exists()).toBe(true);
+    expect(wrapper.find(CaseStatus).exists()).toBe(true);
+    expect(wrapper.find(ExposureRiskAssessment).exists()).toBe(true);
+    expect(wrapper.find(Jurisdiction).exists()).toBe(true);
+    expect(wrapper.find(MonitoringPlan).exists()).toBe(true);
+    expect(wrapper.find(MonitoringStatus).exists()).toBe(true);
+    expect(wrapper.find(PublicHealthAction).exists()).toBe(true);
   });
 });

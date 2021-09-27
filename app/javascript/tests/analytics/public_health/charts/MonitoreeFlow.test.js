@@ -61,16 +61,16 @@ function getWrapper() {
 describe('MonitoreeFlow', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find(Card).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).exists()).toBeTruthy();
+    expect(wrapper.find(Card).exists()).toBe(true);
+    expect(wrapper.find(Card.Header).exists()).toBe(true);
     expect(wrapper.find(Card.Header).text()).toEqual('Monitoree Flow Over Time (All Records)');
-    expect(wrapper.find(Card.Body).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('.analytics-table-header').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).exists()).toBe(true);
+    expect(wrapper.find(Card.Body).find('.analytics-table-header').exists()).toBe(true);
     expect(wrapper.find(Card.Body).find('.analytics-table-header').length).toEqual(2);
-    expect(wrapper.find(Card.Body).find('table').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('table').exists()).toBe(true);
     expect(wrapper.find(Card.Body).find('table').length).toEqual(2);
-    expect(wrapper.find(Card.Body).find('.info-text').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('.info-text').find('i').hasClass('fa-info-circle')).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('.info-text').exists()).toBe(true);
+    expect(wrapper.find(Card.Body).find('.info-text').find('i').hasClass('fa-info-circle')).toBe(true);
     expect(wrapper.find(Card.Body).find('.info-text').text()).toContain('Cumulative includes all incoming and outgoing counts ever recorded for this jurisdiction');
   });
 

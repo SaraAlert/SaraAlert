@@ -39,14 +39,14 @@ afterEach(() => {
 describe('PatientsTable', () => {
   it('Properly renders all main components for the exposure workflow', () => {
     const wrapper = getExposureWrapper();
-    expect(wrapper.find('#search').exists()).toBeTruthy();
-    expect(wrapper.find('#tab-description').exists()).toBeTruthy();
-    expect(wrapper.find('#clear-all-filters').exists()).toBeTruthy();
-    expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(AdvancedFilter)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(CustomTable)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(DropdownButton)).toBeTruthy();
+    expect(wrapper.find('#search').exists()).toBe(true);
+    expect(wrapper.find('#tab-description').exists()).toBe(true);
+    expect(wrapper.find('#clear-all-filters').exists()).toBe(true);
+    expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBe(true);
+    expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBe(true);
+    expect(wrapper.containsMatchingElement(AdvancedFilter)).toBe(true);
+    expect(wrapper.containsMatchingElement(CustomTable)).toBe(true);
+    expect(wrapper.containsMatchingElement(DropdownButton)).toBe(true);
     expect(wrapper.find(Dropdown.Item).length).toEqual(4);
 
     const defaultTab = Object.keys(mockExposureTabs)[0];
@@ -55,14 +55,14 @@ describe('PatientsTable', () => {
 
   it('Properly renders all main components for the isolation workflow', () => {
     const wrapper = getIsolationWrapper();
-    expect(wrapper.find('#search').exists()).toBeTruthy();
-    expect(wrapper.find('#tab-description').exists()).toBeTruthy();
-    expect(wrapper.find('#clear-all-filters').exists()).toBeTruthy();
-    expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(AdvancedFilter)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(CustomTable)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(DropdownButton)).toBeTruthy();
+    expect(wrapper.find('#search').exists()).toBe(true);
+    expect(wrapper.find('#tab-description').exists()).toBe(true);
+    expect(wrapper.find('#clear-all-filters').exists()).toBe(true);
+    expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBe(true);
+    expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBe(true);
+    expect(wrapper.containsMatchingElement(AdvancedFilter)).toBe(true);
+    expect(wrapper.containsMatchingElement(CustomTable)).toBe(true);
+    expect(wrapper.containsMatchingElement(DropdownButton)).toBe(true);
     expect(wrapper.find(Dropdown.Item).length).toEqual(4);
 
     const defaultTab = Object.keys(mockIsolationTabs)[0];
@@ -71,14 +71,14 @@ describe('PatientsTable', () => {
 
   it('Properly renders all main components for the global workflow', () => {
     const wrapper = getGlobalWrapper();
-    expect(wrapper.find('#search').exists()).toBeTruthy();
-    expect(wrapper.find('#tab-description').exists()).toBeTruthy();
-    expect(wrapper.find('#clear-all-filters').exists()).toBeTruthy();
-    expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(AdvancedFilter)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(CustomTable)).toBeTruthy();
-    expect(wrapper.containsMatchingElement(DropdownButton)).toBeTruthy();
+    expect(wrapper.find('#search').exists()).toBe(true);
+    expect(wrapper.find('#tab-description').exists()).toBe(true);
+    expect(wrapper.find('#clear-all-filters').exists()).toBe(true);
+    expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBe(true);
+    expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBe(true);
+    expect(wrapper.containsMatchingElement(AdvancedFilter)).toBe(true);
+    expect(wrapper.containsMatchingElement(CustomTable)).toBe(true);
+    expect(wrapper.containsMatchingElement(DropdownButton)).toBe(true);
     expect(wrapper.find(Dropdown.Item).length).toEqual(3);
 
     const defaultTab = Object.keys(mockIsolationTabs)[0];
@@ -95,17 +95,17 @@ describe('PatientsTable', () => {
       expect(_.size(wrapper.state('table').displayedColData)).toEqual(0);
       expect(_.size(wrapper.state('table').rowData)).toEqual(0);
       expect(wrapper.state('table').totalRows).toEqual(0);
-      expect(wrapper.state('loading')).toBeFalsy();
-      expect(wrapper.state('actionsEnabled')).toBeFalsy();
+      expect(wrapper.state('loading')).toBe(false);
+      expect(wrapper.state('actionsEnabled')).toBe(false);
       expect(_.size(wrapper.state('selectedPatients'))).toEqual(0);
-      expect(wrapper.state('selectAll')).toBeFalsy();
+      expect(wrapper.state('selectAll')).toBe(false);
       expect(wrapper.state('jurisdiction_paths')).toEqual({});
       expect(_.size(wrapper.state('assigned_users'))).toEqual(0);
       expect(wrapper.state('query').workflow).toEqual('exposure');
       expect(wrapper.state('query').tab).toEqual(Object.keys(mockExposureTabs)[0]);
       expect(wrapper.state('query').jurisdiction).toEqual(mockJurisdiction1.id);
       expect(wrapper.state('query').scope).toEqual('all');
-      expect(wrapper.state('query').user).toEqual(null);
+      expect(wrapper.state('query').user).toBeNull();
       expect(wrapper.state('query').search).toEqual('');
       expect(wrapper.state('query').page).toEqual(0);
       expect(wrapper.state('query').entries).toEqual(25);
@@ -123,63 +123,63 @@ describe('PatientsTable', () => {
   it('Inputting text into search bar calls update table function', () => {
     const wrapper = getExposureWrapper();
     const handleSearchChangeSpy = jest.spyOn(wrapper.instance(), 'updateTable');
-    expect(handleSearchChangeSpy).toHaveBeenCalledTimes(0);
+    expect(handleSearchChangeSpy).not.toHaveBeenCalled();
     expect(wrapper.state('query').search).toEqual('');
     wrapper.find('#search').simulate('change', { target: { id: 'search', value: 'search' } });
     expect(wrapper.state('query').search).toEqual('search');
-    expect(handleSearchChangeSpy).toHaveBeenCalledTimes(1);
+    expect(handleSearchChangeSpy).toHaveBeenCalled();
   });
 
   it('Clicking "Close Records" option displays Close Records modal', () => {
     const wrapper = getExposureWrapper();
-    expect(wrapper.find(CloseRecords).exists()).toBeFalsy();
-    expect(wrapper.find(Dropdown.Item).at(0).text().includes(dropdownOptions[0])).toBeTruthy();
+    expect(wrapper.find(CloseRecords).exists()).toBe(false);
+    expect(wrapper.find(Dropdown.Item).at(0).text()).toContain(dropdownOptions[0]);
     wrapper.find(Dropdown.Item).at(0).simulate('click');
-    expect(wrapper.find(CloseRecords).exists()).toBeTruthy();
+    expect(wrapper.find(CloseRecords).exists()).toBe(true);
   });
 
   it('Clicking "Update Case Status" option displays Update Case Status modal', () => {
     const wrapper = getExposureWrapper();
-    expect(wrapper.find(UpdateCaseStatus).exists()).toBeFalsy();
-    expect(wrapper.find(Dropdown.Item).at(1).text().includes(dropdownOptions[1])).toBeTruthy();
+    expect(wrapper.find(UpdateCaseStatus).exists()).toBe(false);
+    expect(wrapper.find(Dropdown.Item).at(1).text()).toContain(dropdownOptions[1]);
     wrapper.find(Dropdown.Item).at(1).simulate('click');
-    expect(wrapper.find(UpdateCaseStatus).exists()).toBeTruthy();
+    expect(wrapper.find(UpdateCaseStatus).exists()).toBe(true);
   });
 
   it('Clicking "Update Assigned User" option displays Update Assigned User modal', () => {
     const wrapper = getExposureWrapper();
-    expect(wrapper.find(UpdateAssignedUser).exists()).toBeFalsy();
-    expect(wrapper.find(Dropdown.Item).at(2).text().includes(dropdownOptions[2])).toBeTruthy();
+    expect(wrapper.find(UpdateAssignedUser).exists()).toBe(false);
+    expect(wrapper.find(Dropdown.Item).at(2).text()).toContain(dropdownOptions[2]);
     wrapper.find(Dropdown.Item).at(2).simulate('click');
-    expect(wrapper.find(UpdateAssignedUser).exists()).toBeTruthy();
+    expect(wrapper.find(UpdateAssignedUser).exists()).toBe(true);
   });
 
   it('Clicking "Flag for Follow-up" option displays Flag for Follow-up modal', () => {
     const wrapper = getExposureWrapper();
-    expect(wrapper.find(FollowUpFlag).exists()).toBeFalsy();
-    expect(wrapper.find(Dropdown.Item).at(3).text().includes(dropdownOptions[3])).toBeTruthy();
+    expect(wrapper.find(FollowUpFlag).exists()).toBe(false);
+    expect(wrapper.find(Dropdown.Item).at(3).text()).toContain(dropdownOptions[3]);
     wrapper.find(Dropdown.Item).at(3).simulate('click');
-    expect(wrapper.find(FollowUpFlag).exists()).toBeTruthy();
+    expect(wrapper.find(FollowUpFlag).exists()).toBe(true);
   });
 
   it('Calls updateAssignedUsers and updateTable methods when component mounts', () => {
     const instance = getExposureWrapper().instance();
     const updateAssignedUsersSpy = jest.spyOn(instance, 'updateAssignedUsers');
-    expect(updateAssignedUsersSpy).toHaveBeenCalledTimes(0);
+    expect(updateAssignedUsersSpy).not.toHaveBeenCalled();
     instance.componentDidMount();
-    expect(updateAssignedUsersSpy).toHaveBeenCalledTimes(1);
+    expect(updateAssignedUsersSpy).toHaveBeenCalled();
   });
 
   it('Properly renders all tabs on exposure dashboard', () => {
     const wrapper = getExposureWrapper();
     for (var key of Object.keys(mockExposureTabs)) {
-      expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
+      expect(wrapper.find('#' + key + '_tab').exists()).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')
           .find('.large-tab')
           .exists()
-      ).toBeTruthy();
+      ).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')
@@ -191,7 +191,7 @@ describe('PatientsTable', () => {
           .find('#' + key + '_tab')
           .find('.small-tab')
           .exists()
-      ).toBeTruthy();
+      ).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')
@@ -203,7 +203,7 @@ describe('PatientsTable', () => {
           .find('#' + key + '_tab')
           .find(Badge)
           .exists()
-      ).toBeTruthy();
+      ).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')
@@ -216,13 +216,13 @@ describe('PatientsTable', () => {
   it('Properly renders all tabs on isolation dashboard', () => {
     const wrapper = getIsolationWrapper();
     for (var key of Object.keys(mockIsolationTabs)) {
-      expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
+      expect(wrapper.find('#' + key + '_tab').exists()).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')
           .find('.large-tab')
           .exists()
-      ).toBeTruthy();
+      ).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')
@@ -234,7 +234,7 @@ describe('PatientsTable', () => {
           .find('#' + key + '_tab')
           .find('.small-tab')
           .exists()
-      ).toBeTruthy();
+      ).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')
@@ -246,7 +246,7 @@ describe('PatientsTable', () => {
           .find('#' + key + '_tab')
           .find(Badge)
           .exists()
-      ).toBeTruthy();
+      ).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')
@@ -259,13 +259,13 @@ describe('PatientsTable', () => {
   it('Properly renders all tabs on global dashboard', () => {
     const wrapper = getGlobalWrapper();
     for (var key of Object.keys(mockGlobalTabs)) {
-      expect(wrapper.find('#' + key + '_tab').exists()).toBeTruthy();
+      expect(wrapper.find('#' + key + '_tab').exists()).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')
           .find('.large-tab')
           .exists()
-      ).toBeTruthy();
+      ).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')
@@ -277,7 +277,7 @@ describe('PatientsTable', () => {
           .find('#' + key + '_tab')
           .find('.small-tab')
           .exists()
-      ).toBeTruthy();
+      ).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')
@@ -289,7 +289,7 @@ describe('PatientsTable', () => {
           .find('#' + key + '_tab')
           .find(Badge)
           .exists()
-      ).toBeTruthy();
+      ).toBe(true);
       expect(
         wrapper
           .find('#' + key + '_tab')

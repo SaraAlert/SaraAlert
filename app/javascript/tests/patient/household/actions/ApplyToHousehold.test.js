@@ -23,39 +23,39 @@ describe('ApplyToHousehold', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper();
     expect(wrapper.find('p').text()).toEqual('Apply this change to:');
-    expect(wrapper.find(Form.Group).exists()).toBeTruthy();
+    expect(wrapper.find(Form.Group).exists()).toBe(true);
     expect(wrapper.find(Form.Check).length).toEqual(2);
     expect(wrapper.find('#apply_to_household_no').prop('label')).toEqual('This monitoree only');
-    expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeTruthy();
+    expect(wrapper.find('#apply_to_household_no').prop('checked')).toBe(true);
     expect(wrapper.find('#apply_to_household_yes').prop('label')).toEqual('This monitoree and selected household members');
-    expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeFalsy();
-    expect(wrapper.find(HouseholdMemberTable).exists()).toBeFalsy();
+    expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBe(false);
+    expect(wrapper.find(HouseholdMemberTable).exists()).toBe(false);
   });
 
   it('Clicking "Apply to Household" radio button shows table of household members', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find(HouseholdMemberTable).exists()).toBeFalsy();
+    expect(wrapper.find(HouseholdMemberTable).exists()).toBe(false);
     wrapper.find('#apply_to_household_yes').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
-    expect(wrapper.find(HouseholdMemberTable).exists()).toBeTruthy();
+    expect(wrapper.find(HouseholdMemberTable).exists()).toBe(true);
     wrapper.find('#apply_to_household_no').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
-    expect(wrapper.find(HouseholdMemberTable).exists()).toBeFalsy();
+    expect(wrapper.find(HouseholdMemberTable).exists()).toBe(false);
   });
 
   it('Clicking radio buttons updates state and calls handleApplyHouseholdChange prop', () => {
     const wrapper = getWrapper();
     expect(handleApplyHouseholdChangeMock).toHaveBeenCalledTimes(0);
-    expect(wrapper.state('applyToHousehold')).toBeFalsy();
-    expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeTruthy();
-    expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeFalsy();
+    expect(wrapper.state('applyToHousehold')).toBe(false);
+    expect(wrapper.find('#apply_to_household_no').prop('checked')).toBe(true);
+    expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBe(false);
     wrapper.find('#apply_to_household_yes').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     expect(handleApplyHouseholdChangeMock).toHaveBeenCalledTimes(1);
-    expect(wrapper.state('applyToHousehold')).toBeTruthy();
-    expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeFalsy();
-    expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeTruthy();
+    expect(wrapper.state('applyToHousehold')).toBe(true);
+    expect(wrapper.find('#apply_to_household_no').prop('checked')).toBe(false);
+    expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBe(true);
     wrapper.find('#apply_to_household_no').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
     expect(handleApplyHouseholdChangeMock).toHaveBeenCalledTimes(2);
-    expect(wrapper.state('applyToHousehold')).toBeFalsy();
-    expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeTruthy();
-    expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeFalsy();
+    expect(wrapper.state('applyToHousehold')).toBe(false);
+    expect(wrapper.find('#apply_to_household_no').prop('checked')).toBe(true);
+    expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBe(false);
   });
 });

@@ -16,22 +16,22 @@ describe('FirstPositiveLaboratory', () => {
   it('Properly renders a button to enter a lab result if lab is null', () => {
     const wrapper = getWrapper(null);
     expect(wrapper.find(Button).text()).toEqual('Enter Lab Result');
-    expect(wrapper.find('#edit-first_positive_lab').exists()).toBeFalsy();
-    expect(wrapper.find('#delete-first_positive_lab').exists()).toBeFalsy();
-    expect(wrapper.find('.first-positive-lab-result-field-name').exists()).toBeFalsy();
+    expect(wrapper.find('#edit-first_positive_lab').exists()).toBe(false);
+    expect(wrapper.find('#delete-first_positive_lab').exists()).toBe(false);
+    expect(wrapper.find('.first-positive-lab-result-field-name').exists()).toBe(false);
   });
 
   it('Properly opens the laboratory modal when user clicks on the enter lab result button', () => {
     const wrapper = getWrapper(null);
     wrapper.find(Button).simulate('click');
-    expect(wrapper.find(LaboratoryModal).exists()).toBeTruthy();
+    expect(wrapper.find(LaboratoryModal).exists()).toBe(true);
   });
 
   it('Properly renders lab result details when lab is present', () => {
     const wrapper = getWrapper(mockLaboratory1);
-    expect(wrapper.find(LaboratoryModal).exists()).toBeFalsy();
-    expect(wrapper.find('#edit-first_positive_lab').exists()).toBeTruthy();
-    expect(wrapper.find('#delete-first_positive_lab').exists()).toBeTruthy();
+    expect(wrapper.find(LaboratoryModal).exists()).toBe(false);
+    expect(wrapper.find('#edit-first_positive_lab').exists()).toBe(true);
+    expect(wrapper.find('#delete-first_positive_lab').exists()).toBe(true);
     expect(wrapper.find('.first-positive-lab-result-field-name').length).toEqual(4);
     expect(wrapper.find('.first-positive-lab-result-field-value').length).toEqual(4);
     expect(wrapper.find('.first-positive-lab-result-field-name').at(0).text()).toEqual('Type: ');
@@ -47,7 +47,7 @@ describe('FirstPositiveLaboratory', () => {
   it('Properly opens LaboratoryModal when the edit button is clicked', () => {
     const wrapper = getWrapper(mockLaboratory1);
     wrapper.find('#edit-first_positive_lab').simulate('click');
-    expect(wrapper.find(LaboratoryModal).exists()).toBeTruthy();
+    expect(wrapper.find(LaboratoryModal).exists()).toBe(true);
   });
 
   it('Properly calls onChange with a null lab when the delete button is clicked', () => {

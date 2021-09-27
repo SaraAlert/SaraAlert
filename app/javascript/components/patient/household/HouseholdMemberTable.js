@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import moment from 'moment-timezone';
 import _ from 'lodash';
-import { formatNameAlt, formatDateOfBirthTableCell } from '../../../utils/Patient';
+import { formatNameAlt, formatDateOfBirthTableCell } from '../../../utils/PatientDetails';
 
 import { patientHref } from '../../../utils/Navigation';
 import BadgeHoH from '../icons/BadgeHoH';
