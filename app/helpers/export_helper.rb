@@ -274,11 +274,10 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
         patient_details[:status] = patient.status_as_string if fields.include?(:status)
         patient_details[:contact_became_case_at] =
           if patient.isolation && patient.enrolled_workflow == 'Exposure'
-            patient_details[:exposure_to_isolation_at]
-          elsif !patient.isolation && patient.enrolled_workflow == 'Exposure' && (%w[Confirmed
-                                                                                     Probable].include?(patient[:case_status]) || ['Meets Case Definition',
-                                                                                                                                   'Case Confirmed'].include?(patient[:monitoring_reason]))
-            patient_details[:closed_at]
+            patient[:exposure_to_isolation_at]&.strftime('%F')
+          elsif !patient.isolation && patient.enrolled_workflow == 'Exposure' &&
+                (%w[Confirmed Probable].include?(patient[:case_status]) || ['Meets Case Definition', 'Case Confirmed'].include?(patient[:monitoring_reason]))
+            patient[:closed_at]&.strftime('%F')
           end
 
         # populate creator if requested

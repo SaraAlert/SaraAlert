@@ -60,7 +60,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                 race_refused_to_answer vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number
                                 vaccine_1_notes vaccine_2_group_name vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number
                                 vaccine_2_notes follow_up_reason follow_up_note vaccine_3_group_name vaccine_3_product_name vaccine_3_administration_date
-                                vaccine_3_dose_number vaccine_3_notes international_telephone enrolled_workflow contact_became_case_at].freeze
+                                vaccine_3_dose_number vaccine_3_notes international_telephone].freeze
 
   SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                                'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
@@ -89,13 +89,15 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                'Vaccine 1 Dose Number', 'Vaccine 1 Notes', 'Vaccine 2 Group Name', 'Vaccine 2 Product Name', 'Vaccine 2 Administration Date',
                                'Vaccine 2 Dose Number', 'Vaccine 2 Notes', 'Follow-Up Reason', 'Follow-Up Note', 'Vaccine 3 Group Name',
                                'Vaccine 3 Product Name', 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes',
-                               'International Telephone' 'Enrolled Workflow', 'Became Case At'].freeze
+                               'International Telephone'].freeze
 
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
   # of fields between Sara Alert Format and Full History Patients
-  FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SARA_ALERT_FORMAT_FIELDS + %i[first_positive_lab_at extended_isolation]).freeze
+  FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SARA_ALERT_FORMAT_FIELDS + %i[first_positive_lab_at extended_isolation enrolled_workflow
+                                                                        contact_became_case_at]).freeze
 
-  FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SARA_ALERT_FORMAT_HEADERS + ['First Positive Lab', 'Extended Isolation Date']).freeze
+  FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SARA_ALERT_FORMAT_HEADERS + ['First Positive Lab', 'Extended Isolation Date', 'Enrolled Workflow',
+                                                                                 'Became Case At']).freeze
 
   FULL_HISTORY_ASSESSMENTS_FIELDS = %i[patient_id symptomatic who_reported created_at updated_at symptoms].freeze
 
@@ -128,7 +130,8 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                 additional_planned_travel_destination_state additional_planned_travel_destination_country additional_planned_travel_port_of_departure
                 potential_exposure_location potential_exposure_country contact_of_known_case_id was_in_health_care_facility_with_known_cases_facility_name
                 laboratory_personnel_facility_name healthcare_personnel_facility_name member_of_a_common_exposure_cohort_type exposure_risk_assessment
-                monitoring_plan case_status gender_identity sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason enrolled_workflow],
+                monitoring_plan case_status gender_identity sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason
+                enrolled_workflow],
     notes: %i[travel_related_notes additional_planned_travel_related_notes exposure_notes follow_up_note],
     dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
               symptom_onset first_positive_lab_at extended_isolation contact_became_case_at],
