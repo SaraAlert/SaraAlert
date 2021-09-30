@@ -75,9 +75,8 @@ describe('CloseContactTable', () => {
   });
 
   it('Properly fills the table with data when a monitoree has more than zero close contacts', () => {
-    const patient = mockPatient2;
-    const closeContactsOfPatient = _.values(mockCloseContacts).filter(x => x.id === patient.id);
-    const wrapper = getMountedWrapper(patient, true);
+    const closeContactsOfPatient = _.values(mockCloseContacts).filter(x => x.id === mockPatient2.id);
+    const wrapper = getMountedWrapper(mockPatient2, true);
     expect(wrapper.find('tbody').find('tr').length).toEqual(closeContactsOfPatient.length);
     closeContactsOfPatient.forEach(cc => {
       expect(wrapper.text()).toContain(cc['first_name']);
@@ -109,9 +108,8 @@ describe('CloseContactTable', () => {
   });
 
   it('Properly renders the "View Record" enrollment dropdown if the Close Contact is already enrolled', async () => {
-    const patient = mockPatient2;
-    const closeContactsOfPatient = _.values(mockCloseContacts).filter(x => x.id === patient.id);
-    const wrapper = getMountedWrapper(patient, true);
+    const closeContactsOfPatient = _.values(mockCloseContacts).filter(x => x.id === mockPatient2.id);
+    const wrapper = getMountedWrapper(mockPatient2, true);
     // If the close_contact has a patient_id, the `View Record` option should be present
     expect(closeContactsOfPatient[0].patient_id).not.toBeNull();
     wrapper.find('DropdownToggle').at(0).simulate('click');
@@ -123,9 +121,8 @@ describe('CloseContactTable', () => {
   });
 
   it('Properly renders the "Enroll" enrollment dropdown if the Close Contact is not enrolled and the user can enroll', () => {
-    const patient = mockPatient2;
-    const closeContactsOfPatient = _.values(mockCloseContacts).filter(x => x.id === patient.id);
-    const wrapper = getMountedWrapper(patient, true);
+    const closeContactsOfPatient = _.values(mockCloseContacts).filter(x => x.id === mockPatient2.id);
+    const wrapper = getMountedWrapper(mockPatient2, true);
     // If the close_contact has a patient_id, the `Enroll` option should be present
     expect(closeContactsOfPatient[1].patient_id).toBeNull();
     wrapper.find('DropdownToggle').at(1).simulate('click');
@@ -146,8 +143,7 @@ describe('CloseContactTable', () => {
   });
 
   it('Properly calls the contact attempt function when logging a Manual Contact Attempt', () => {
-    const patient = mockPatient2;
-    const closeContactsOfPatient = _.values(mockCloseContacts).filter(x => x.id === patient.id);
+    const closeContactsOfPatient = _.values(mockCloseContacts).filter(x => x.id === mockPatient2.id);
     const wrapper = getMountedWrapper(mockPatient2, true);
     const handleContactAttempt = jest.spyOn(wrapper.instance(), 'handleContactAttempt');
     wrapper.instance().forceUpdate();
@@ -161,8 +157,7 @@ describe('CloseContactTable', () => {
   });
 
   it('Properly calls the delete function when the button is clicked', () => {
-    const patient = mockPatient2;
-    const wrapper = getMountedWrapper(patient, true);
+    const wrapper = getMountedWrapper(mockPatient2, true);
     const toggleDeleteModal = jest.spyOn(wrapper.instance(), 'toggleDeleteModal');
     wrapper.instance().forceUpdate();
     expect(wrapper.find(DeleteDialog).exists()).toBe(false);
