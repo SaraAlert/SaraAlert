@@ -1,20 +1,22 @@
-.nav-tabs {
-  .nav-link {
-    border-top-left-radius: 0 !important;
-    border-top-right-radius: 0 !important;
-
-    &:hover {
-      border-color:#b5b5b5;
-      background-color:white;
+.dashboard {
+  .nav-tabs {
+    .nav-link {
+      border-top-left-radius: 0 !important;
+      border-top-right-radius: 0 !important;
+  
+      &:hover {
+        border-color:#b5b5b5;
+        background-color:white;
+      }
+  
+      .small-tab {
+        display: none !important;
+      }
     }
-
-    .small-tab {
-      display: none !important;
+  
+    .nav-item:last-child {
+      margin-left: auto;
     }
-  }
-
-  .nav-item:last-child {
-    margin-left: auto;
   }
 }
 

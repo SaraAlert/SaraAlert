@@ -64,6 +64,10 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  primaryContact: <div>The Primary Contact is used by the system for automated symptom reporting if this record is eligible to receive them</div>,
+
+  alternateContact: <div>The Alternate Contact will NOT be used by the system for automated symptom reporting</div>,
+
   /* MONITORING ACTIONS */
   monitoringStatus: (
     <div>

@@ -237,70 +237,134 @@ class Patient extends React.Component {
               </Heading>
               {this.renderEditLink('Contact Information', 2)}
             </div>
-            {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
-              <div className="minor-info">
-                <span className="text-danger">Monitoree is a minor</span>
-                {!this.props.details.head_of_household && this.props.hoh && (
+            <Row>
+              <Col sm={12}>
+                <div>
+                  <span className="subsection-title">Primary Contact</span>
+                  <InfoTooltip tooltipTextKey="primaryContact" location="right" />
+                </div>
+                {/* HIDE IF NOT SELF REPORTING */}
+                {/* {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
+                  <div className="minor-info mb-2">
+                    <span className="text-danger">Monitoree is a minor</span>
+                    {!this.props.details.head_of_household && this.props.hoh && (
+                      <div>
+                        View contact info for Head of Household:
+                        <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
+                          {formatName(this.props.hoh)}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )} */}
+                <div className="item-group">
                   <div>
-                    View contact info for Head of Household:
-                    <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
-                      {formatName(this.props.hoh)}
-                    </a>
+                    <b>Contact Type:</b> <span>{this.props.details.contact_type || '--'}</span>
+                  </div>
+                  <div>
+                    <b>Contact Name:</b> <span>{this.props.details.contact_name || '--'}</span>
+                  </div>
+                </div>
+                <div className="item-group">
+                  <div>
+                    <b>Phone:</b>{' '}
+                    <span>{this.props.details.primary_telephone ? `${formatPhoneNumberVisually(this.props.details.primary_telephone)}` : '--'}</span>
+                    {this.props.details.blocked_sms && (
+                      <span className="font-weight-bold pl-2">
+                        SMS Blocked
+                        <InfoTooltip tooltipTextKey="blockedSMS" location="top" />
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <b>Preferred Contact Time:</b>{' '}
+                    <span>
+                      {customPreferredContactTimeOptions[this.props.details.preferred_contact_time] || this.props.details.preferred_contact_time || '--'}
+                      {customPreferredContactTimeOptions[this.props.details.preferred_contact_time] && (
+                        <InfoTooltip tooltipTextKey="customPreferredContactTime" location="right" />
+                      )}
+                    </span>
+                  </div>
+                  <div>
+                    <b>Primary Telephone Type:</b> <span>{this.props.details.primary_telephone_type || '--'}</span>
+                  </div>
+                  <div>
+                    <b>Email:</b> <span>{this.props.details.email || '--'}</span>
+                  </div>
+                  <div>
+                    <b>Preferred Reporting Method:</b>{' '}
+                    {(!this.props.details.blocked_sms || !this.props.details.preferred_contact_method?.includes('SMS')) && (
+                      <span>{this.props.details.preferred_contact_method || '--'}</span>
+                    )}
+                    {this.props.details.blocked_sms && this.props.details.preferred_contact_method?.includes('SMS') && (
+                      <span className="font-weight-bold text-danger">
+                        {this.props.details.preferred_contact_method}
+                        <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top" />
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {(this.props.details.secondary_telephone || this.props.details.international_telephone) && (
+                  <div className="item-group">
+                    <div>
+                      <b>Secondary Phone:</b> <span>{formatPhoneNumberVisually(this.props.details.secondary_telephone) || '--'}</span>
+                    </div>
+                    <div>
+                      <b>Secondary Phone Type:</b> <span>{this.props.details.secondary_telephone_type || '--'}</span>
+                    </div>
+                    <div>
+                      <b>International Phone:</b> <span>{this.props.details.international_telephone || '--'}</span>
+                    </div>
                   </div>
                 )}
-              </div>
-            )}
-            <div className="item-group">
-              <div>
-                <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${formatPhoneNumberVisually(this.props.details.primary_telephone)}` : '--'}</span>
-                {this.props.details.blocked_sms && (
-                  <span className="font-weight-bold pl-2">
-                    SMS Blocked
-                    <InfoTooltip tooltipTextKey="blockedSMS" location="top" />
-                  </span>
-                )}
-              </div>
-              <div>
-                <b>Preferred Contact Time:</b>{' '}
-                <span>
-                  {customPreferredContactTimeOptions[this.props.details.preferred_contact_time] || this.props.details.preferred_contact_time || '--'}
-                  {customPreferredContactTimeOptions[this.props.details.preferred_contact_time] && (
-                    <InfoTooltip tooltipTextKey="customPreferredContactTime" location="right" />
-                  )}
-                </span>
-              </div>
-              <div>
-                <b>Primary Telephone Type:</b> <span>{this.props.details.primary_telephone_type || '--'}</span>
-              </div>
-              <div>
-                <b>Email:</b> <span>{this.props.details.email || '--'}</span>
-              </div>
-              <div>
-                <b>Preferred Reporting Method:</b>{' '}
-                {(!this.props.details.blocked_sms || !this.props.details.preferred_contact_method?.includes('SMS')) && (
-                  <span>{this.props.details.preferred_contact_method || '--'}</span>
-                )}
-                {this.props.details.blocked_sms && this.props.details.preferred_contact_method?.includes('SMS') && (
-                  <span className="font-weight-bold text-danger">
-                    {this.props.details.preferred_contact_method}
-                    <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top" />
-                  </span>
-                )}
-              </div>
-            </div>
-            {(this.props.details.secondary_telephone || this.props.details.international_telephone) && (
-              <div className="item-group">
+              </Col>
+              {/* TO DO HIDE IN CERTAIN CASES? and update col width */}
+              <Col sm={12}>
                 <div>
-                  <b>Secondary Phone:</b> <span>{formatPhoneNumberVisually(this.props.details.secondary_telephone) || '--'}</span>
+                  <span className="subsection-title">Alternate Contact</span>
+                  <InfoTooltip tooltipTextKey="alternateContact" location="right" />
                 </div>
-                <div>
-                  <b>Secondary Phone Type:</b> <span>{this.props.details.secondary_telephone_type || '--'}</span>
+                <div className="item-group">
+                  <div>
+                    <b>Contact Type:</b> <span>{this.props.details.alternate_contact_type || '--'}</span>
+                  </div>
+                  <div>
+                    <b>Contact Name:</b> <span>{this.props.details.alternate_contact_name || '--'}</span>
+                  </div>
                 </div>
-                <div>
-                  <b>International Phone:</b> <span>{this.props.details.international_telephone || '--'}</span>
+                <div className="item-group">
+                  <div>
+                    <b>Phone:</b>{' '}
+                    <span>{this.props.details.primary_telephone ? `${formatPhoneNumberVisually(this.props.details.alternate_primary_telephone)}` : '--'}</span>
+                  </div>
+                  <div>
+                    <b>Preferred Contact Time:</b> <span>{this.props.details.alternate_preferred_contact_time || '--'}</span>
+                  </div>
+                  <div>
+                    <b>Primary Telephone Type:</b> <span>{this.props.details.alternate_primary_telephone_type || '--'}</span>
+                  </div>
+                  <div>
+                    <b>Email:</b> <span>{this.props.details.alternate_email || '--'}</span>
+                  </div>
+                  <div>
+                    <b>Preferred Reporting Method:</b> <span>{this.props.details.alternate_preferred_contact_method || '--'}</span>
+                  </div>
                 </div>
-              </div>
-            )}
+                {(this.props.details.alternate_secondary_telephone || this.props.details.alternate_international_telephone) && (
+                  <div className="item-group">
+                    <div>
+                      <b>Secondary Phone:</b> <span>{formatPhoneNumberVisually(this.props.details.alternate_secondary_telephone) || '--'}</span>
+                    </div>
+                    <div>
+                      <b>Secondary Phone Type:</b> <span>{this.props.details.alternate_secondary_telephone_type || '--'}</span>
+                    </div>
+                    <div>
+                      <b>International Phone:</b> <span>{this.props.details.alternate_international_telephone || '--'}</span>
+                    </div>
+                  </div>
+                )}
+              </Col>
+            </Row>
           </Col>
         </Row>
         {!this.props.edit_mode && (
