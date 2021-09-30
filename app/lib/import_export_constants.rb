@@ -97,7 +97,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                                                         contact_became_case_at]).freeze
 
   FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SARA_ALERT_FORMAT_HEADERS + ['First Positive Lab', 'Extended Isolation Date', 'Enrolled Workflow',
-                                                                                 'Became Case At']).freeze
+                                                                                 'Exposure Monitorees that became Cases at']).freeze
 
   FULL_HISTORY_ASSESSMENTS_FIELDS = %i[patient_id symptomatic who_reported created_at updated_at symptoms].freeze
 
