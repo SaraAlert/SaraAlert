@@ -75,6 +75,7 @@ class PatientsController < ApplicationController
                            contact_of_known_case: !@close_contact.nil?,
                            contact_of_known_case_id: @close_contact.nil? ? '' : @close_contact.patient_id,
                            exposure_notes: @close_contact.nil? ? '' : @close_contact.notes,
+                           contact_type: 'Self-Reporter',
                            preferred_contact_method: 'Unknown')
   end
 
@@ -875,6 +876,8 @@ class PatientsController < ApplicationController
       :foreign_monitored_address_line_2,
       :foreign_monitored_address_zip,
       :foreign_monitored_address_county,
+      :contact_type,
+      :contact_name,
       :primary_telephone,
       :primary_telephone_type,
       :secondary_telephone,
@@ -883,6 +886,16 @@ class PatientsController < ApplicationController
       :email,
       :preferred_contact_method,
       :preferred_contact_time,
+      :alternate_contact_type,
+      :alternate_contact_name,
+      :alternate_primary_telephone,
+      :alternate_primary_telephone_type,
+      :alternate_secondary_telephone,
+      :alternate_secondary_telephone_type,
+      :alternate_international_telephone,
+      :alternate_email,
+      :alternate_preferred_contact_method,
+      :alternate_preferred_contact_time,
       :port_of_origin,
       :source_of_report,
       :source_of_report_specify,
@@ -974,6 +987,8 @@ class PatientsController < ApplicationController
       foreign_monitored_address_line_2
       foreign_monitored_address_zip
       foreign_monitored_address_county
+      contact_type
+      contact_name
       primary_telephone
       primary_telephone_type
       secondary_telephone
@@ -982,6 +997,16 @@ class PatientsController < ApplicationController
       email
       preferred_contact_method
       preferred_contact_time
+      alternate_contact_type
+      alternate_contact_name
+      alternate_primary_telephone
+      alternate_primary_telephone_type
+      alternate_secondary_telephone
+      alternate_secondary_telephone_type
+      alternate_international_telephone
+      alternate_email
+      alternate_preferred_contact_method
+      alternate_preferred_contact_time
       port_of_origin
       source_of_report
       source_of_report_specify

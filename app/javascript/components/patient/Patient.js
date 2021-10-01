@@ -239,7 +239,7 @@ class Patient extends React.Component {
             </div>
             <Row>
               <Col sm={12}>
-                <div>
+                <div className="pb-2">
                   <span className="subsection-title">Primary Contact</span>
                   <InfoTooltip tooltipTextKey="primaryContact" location="right" />
                 </div>
@@ -320,7 +320,7 @@ class Patient extends React.Component {
               </Col>
               {/* TO DO HIDE IN CERTAIN CASES? and update col width */}
               <Col sm={12}>
-                <div>
+                <div className="pb-2">
                   <span className="subsection-title">Alternate Contact</span>
                   <InfoTooltip tooltipTextKey="alternateContact" location="right" />
                 </div>
@@ -335,7 +335,9 @@ class Patient extends React.Component {
                 <div className="item-group">
                   <div>
                     <b>Phone:</b>{' '}
-                    <span>{this.props.details.primary_telephone ? `${formatPhoneNumberVisually(this.props.details.alternate_primary_telephone)}` : '--'}</span>
+                    <span>
+                      {this.props.details.alternate_primary_telephone ? `${formatPhoneNumberVisually(this.props.details.alternate_primary_telephone)}` : '--'}
+                    </span>
                   </div>
                   <div>
                     <b>Preferred Contact Time:</b> <span>{this.props.details.alternate_preferred_contact_time || '--'}</span>

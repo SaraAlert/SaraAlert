@@ -454,6 +454,16 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.boolean "enrolled_isolation"
     t.datetime "isolation_to_exposure_at", precision: 6
     t.datetime "exposure_to_isolation_at", precision: 6
+    t.string "contact_type", default: "Unknown"
+    t.string "contact_name"
+    t.string "alternate_contact_type"
+    t.string "alternate_contact_name"
+    t.string "alternate_preferred_contact_method"
+    t.string "alternate_preferred_contact_time"
+    t.string "alternate_primary_telephone"
+    t.string "alternate_primary_telephone_type"
+    t.string "alternate_secondary_telephone"
+    t.string "alternate_email"
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
