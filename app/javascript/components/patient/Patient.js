@@ -84,6 +84,17 @@ class Patient extends React.Component {
       return <React.Fragment>No monitoree details to show.</React.Fragment>;
     }
 
+    const showAlternateContact =
+      this.props.details.alternate_contact_type ||
+      this.props.details.alternate_contact_name ||
+      this.props.details.alternate_preferred_contact_method ||
+      this.props.details.alternate_preferred_contact_time ||
+      this.props.details.alternate_primary_telephone ||
+      this.props.details.alternate_primary_telephone_type ||
+      this.props.details.alternate_secondary_telephone ||
+      this.props.details.alternate_secondary_telephone_type ||
+      this.props.details.alternate_international_telephone ||
+      this.props.details.alternate_email;
     const showDomesticAddress =
       this.props.details.address_line_1 ||
       this.props.details.address_line_2 ||
@@ -176,7 +187,7 @@ class Patient extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Col id="identification" lg={14} className="col-xxl-12">
+          <Col id="identification" md={24} lg={showAlternateContact ? 12 : 14} className="col-xxl-12">
             <div className="section-header">
               <Heading level={rootHeaderLevel + 1} className="section-title">
                 Identification
@@ -230,7 +241,7 @@ class Patient extends React.Component {
               </Col>
             </Row>
           </Col>
-          <Col id="contact-information" lg={10} className="col-xxl-12">
+          <Col id="contact-information" md={24} lg={showAlternateContact ? 12 : 10} className="col-xxl-12">
             <div className="section-header">
               <Heading level={rootHeaderLevel + 1} className="section-title">
                 Contact Information
@@ -238,32 +249,36 @@ class Patient extends React.Component {
               {this.renderEditLink('Contact Information', 2)}
             </div>
             <Row>
-              <Col sm={12}>
+              <Col sm={showAlternateContact ? 12 : 24}>
                 <div className="pb-2">
                   <span className="subsection-title">Primary Contact</span>
                   <InfoTooltip tooltipTextKey="primaryContact" location="right" />
                 </div>
-                {/* HIDE IF NOT SELF REPORTING */}
-                {/* {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
-                  <div className="minor-info mb-2">
-                    <span className="text-danger">Monitoree is a minor</span>
-                    {!this.props.details.head_of_household && this.props.hoh && (
-                      <div>
-                        View contact info for Head of Household:
-                        <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
-                          {formatName(this.props.hoh)}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                )} */}
                 <div className="item-group">
                   <div>
                     <b>Contact Type:</b> <span>{this.props.details.contact_type || '--'}</span>
                   </div>
-                  <div>
-                    <b>Contact Name:</b> <span>{this.props.details.contact_name || '--'}</span>
-                  </div>
+                  {this.props.details.contact_type === 'Self-Reporter' ? (
+                    <React.Fragment>
+                      {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
+                        <div className="minor-info mb-2">
+                          <span className="text-danger">Monitoree is a minor</span>
+                          {/* {!this.props.details.head_of_household && this.props.hoh && (
+                            <div>
+                              View contact info for Head of Household:
+                              <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
+                                {formatName(this.props.hoh)}
+                              </a>
+                            </div>
+                          )} */}
+                        </div>
+                      )}
+                    </React.Fragment>
+                  ) : (
+                    <div>
+                      <b>Contact Name:</b> <span>{this.props.details.contact_name || '--'}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="item-group">
                   <div>
@@ -318,54 +333,73 @@ class Patient extends React.Component {
                   </div>
                 )}
               </Col>
-              {/* TO DO HIDE IN CERTAIN CASES? and update col width */}
-              <Col sm={12}>
-                <div className="pb-2">
-                  <span className="subsection-title">Alternate Contact</span>
-                  <InfoTooltip tooltipTextKey="alternateContact" location="right" />
-                </div>
-                <div className="item-group">
-                  <div>
-                    <b>Contact Type:</b> <span>{this.props.details.alternate_contact_type || '--'}</span>
+              {showAlternateContact && (
+                <Col sm={showAlternateContact ? 12 : 24}>
+                  <div className="pb-2">
+                    <span className="subsection-title">Alternate Contact</span>
+                    <InfoTooltip tooltipTextKey="alternateContact" location="right" />
                   </div>
-                  <div>
-                    <b>Contact Name:</b> <span>{this.props.details.alternate_contact_name || '--'}</span>
-                  </div>
-                </div>
-                <div className="item-group">
-                  <div>
-                    <b>Phone:</b>{' '}
-                    <span>
-                      {this.props.details.alternate_primary_telephone ? `${formatPhoneNumberVisually(this.props.details.alternate_primary_telephone)}` : '--'}
-                    </span>
-                  </div>
-                  <div>
-                    <b>Preferred Contact Time:</b> <span>{this.props.details.alternate_preferred_contact_time || '--'}</span>
-                  </div>
-                  <div>
-                    <b>Primary Telephone Type:</b> <span>{this.props.details.alternate_primary_telephone_type || '--'}</span>
-                  </div>
-                  <div>
-                    <b>Email:</b> <span>{this.props.details.alternate_email || '--'}</span>
-                  </div>
-                  <div>
-                    <b>Preferred Reporting Method:</b> <span>{this.props.details.alternate_preferred_contact_method || '--'}</span>
-                  </div>
-                </div>
-                {(this.props.details.alternate_secondary_telephone || this.props.details.alternate_international_telephone) && (
                   <div className="item-group">
                     <div>
-                      <b>Secondary Phone:</b> <span>{formatPhoneNumberVisually(this.props.details.alternate_secondary_telephone) || '--'}</span>
+                      <b>Contact Type:</b> <span>{this.props.details.alternate_contact_type || '--'}</span>
+                    </div>
+                    {this.props.details.alternate_contact_type === 'Self-Reporter' ? (
+                    <React.Fragment>
+                      {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
+                        <div className="minor-info mb-2">
+                          <span className="text-danger">Monitoree is a minor</span>
+                          {/* {!this.props.details.head_of_household && this.props.hoh && (
+                            <div>
+                              View contact info for Head of Household:
+                              <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
+                                {formatName(this.props.hoh)}
+                              </a>
+                            </div>
+                          )} */}
+                        </div>
+                      )}
+                    </React.Fragment>
+                  ) : (
+                    <div>
+                      <b>Contact Name:</b> <span>{this.props.details.alternate_contact_name || '--'}</span>
+                    </div>
+                  )}
+                  </div>
+                  <div className="item-group">
+                    <div>
+                      <b>Phone:</b>{' '}
+                      <span>
+                        {this.props.details.alternate_primary_telephone ? `${formatPhoneNumberVisually(this.props.details.alternate_primary_telephone)}` : '--'}
+                      </span>
                     </div>
                     <div>
-                      <b>Secondary Phone Type:</b> <span>{this.props.details.alternate_secondary_telephone_type || '--'}</span>
+                      <b>Preferred Contact Time:</b> <span>{this.props.details.alternate_preferred_contact_time || '--'}</span>
                     </div>
                     <div>
-                      <b>International Phone:</b> <span>{this.props.details.alternate_international_telephone || '--'}</span>
+                      <b>Primary Telephone Type:</b> <span>{this.props.details.alternate_primary_telephone_type || '--'}</span>
+                    </div>
+                    <div>
+                      <b>Email:</b> <span>{this.props.details.alternate_email || '--'}</span>
+                    </div>
+                    <div>
+                      <b>Preferred Reporting Method:</b> <span>{this.props.details.alternate_preferred_contact_method || '--'}</span>
                     </div>
                   </div>
-                )}
-              </Col>
+                  {(this.props.details.alternate_secondary_telephone || this.props.details.alternate_international_telephone) && (
+                    <div className="item-group">
+                      <div>
+                        <b>Secondary Phone:</b> <span>{formatPhoneNumberVisually(this.props.details.alternate_secondary_telephone) || '--'}</span>
+                      </div>
+                      <div>
+                        <b>Secondary Phone Type:</b> <span>{this.props.details.alternate_secondary_telephone_type || '--'}</span>
+                      </div>
+                      <div>
+                        <b>International Phone:</b> <span>{this.props.details.alternate_international_telephone || '--'}</span>
+                      </div>
+                    </div>
+                  )}
+                </Col>
+              )}
             </Row>
           </Col>
         </Row>

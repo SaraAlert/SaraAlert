@@ -122,7 +122,7 @@ class Contact extends React.Component {
     // Clear contact name if contact type is set to self reporter (for primary and alternate)
     if (event.target.id === 'contact_type' || event.target.id === 'alternate_contact_type') {
       if (event.target.value === 'Self-Reporter') {
-        updates[event.target.id.replace('type', 'name')] = null;
+        updates[event.target.id.replace('type', 'name')] = '';
       }
     }
 
@@ -431,11 +431,12 @@ class Contact extends React.Component {
               onChange={this.handleChange}>
               <option></option>
               <option>Unknown</option>
-              <option>E-mailed Web Link</option>
-              <option>SMS Texted Weblink</option>
+              {!alternate && <option>E-mailed Web Link</option>}
+              {alternate && <option>Email</option>}
+              {!alternate && <option>SMS Texted Weblink</option>}
               <option>Telephone call</option>
               <option>SMS Text-message</option>
-              <option>Opt-out</option>
+              {!alternate && <option>Opt-out</option>}
             </Form.Control>
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors[`${prepend}preferred_contact_method`]}
