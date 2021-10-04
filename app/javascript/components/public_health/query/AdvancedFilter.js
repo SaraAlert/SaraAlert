@@ -50,10 +50,7 @@ class AdvancedFilter extends React.Component {
 
     // Get all assigned user options for assigned user multi-select advanced filter
     let assignedUsersIndex = advancedFilterOptions.findIndex(x => x.name === 'assigned-user');
-    let allAssignedUsers = _.values(this.props.all_assigned_users).map(assigned_user => {
-      return { value: assigned_user, label: assigned_user };
-    });
-    advancedFilterOptions[Number(assignedUsersIndex)].options = allAssignedUsers;
+    advancedFilterOptions[Number(assignedUsersIndex)].options = _.values(this.props.all_assigned_users);
 
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
@@ -885,6 +882,15 @@ class AdvancedFilter extends React.Component {
    * @param {Array} value - Current values selected
    */
   renderMultiStatement = (filter, index, value) => {
+    let options = [];
+    if (filter.name === 'jurisdiction') {
+      options = filter.options;
+    } else {
+      options = filter.options.map(option => {
+        return { value: option, label: option };
+      });
+    }
+
     return (
       <React.Fragment>
         <div className="d-flex justify-content-between py-0 my-0">
@@ -892,7 +898,7 @@ class AdvancedFilter extends React.Component {
             closeMenuOnSelect={false}
             isMulti
             value={value}
-            options={filter.options}
+            options={options}
             className="advanced-filter-multi-select w-100"
             placeholder=""
             aria-label="Advanced Filter Multi-select Options"
