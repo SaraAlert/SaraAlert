@@ -160,7 +160,7 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
                                       .where.not(label: nil).where.not(name: nil).order(:label).distinct.pluck(:name, :label).transpose
 
     # Empty symptoms check
-    return [] unless symptom_names_and_labels.present?
+    return [] if symptom_names_and_labels.blank?
 
     data[:assessments][:checked].concat(symptom_names_and_labels.first.map(&:to_sym))
     data[:assessments][:headers].concat(symptom_names_and_labels.second)
