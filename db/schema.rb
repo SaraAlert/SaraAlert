@@ -258,9 +258,7 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "status", default: "Missing"
-    t.integer "exposure_to_isolation_active"
-    t.integer "exposure_to_isolation_not_active"
-    t.integer "cases_closed_in_exposure"
+    t.integer "exposure_to_isolation"
     t.integer "isolation_to_exposure"
     t.index ["analytic_id"], name: "index_monitoree_snapshots_on_analytic_id"
   end
@@ -331,13 +329,13 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.bigint "responder_id"
     t.bigint "creator_id"
     t.bigint "jurisdiction_id"
-    t.binary "submission_token", limit: 64
+    t.binary "submission_token", limit: 200
     t.boolean "monitoring", default: true
-    t.string "monitoring_reason", limit: 64
+    t.string "monitoring_reason", limit: 200
     t.boolean "purged", default: false
-    t.string "exposure_risk_assessment", limit: 32
-    t.string "monitoring_plan", limit: 64, default: "None"
-    t.string "public_health_action", limit: 64, default: "None"
+    t.string "exposure_risk_assessment", limit: 200
+    t.string "monitoring_plan", limit: 200, default: "None"
+    t.string "public_health_action", limit: 200, default: "None"
     t.datetime "last_assessment_reminder_sent"
     t.string "user_defined_id_statelocal", limit: 200
     t.string "user_defined_id_cdc", limit: 200
@@ -347,15 +345,15 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.string "last_name", limit: 200
     t.date "date_of_birth"
     t.integer "age"
-    t.string "sex", limit: 16
+    t.string "sex", limit: 200
     t.boolean "white"
     t.boolean "black_or_african_american"
     t.boolean "american_indian_or_alaska_native"
     t.boolean "asian"
     t.boolean "native_hawaiian_or_other_pacific_islander"
-    t.string "ethnicity", limit: 32
-    t.string "primary_language", limit: 64
-    t.string "secondary_language", limit: 64
+    t.string "ethnicity", limit: 200
+    t.string "primary_language", limit: 200
+    t.string "secondary_language", limit: 200
     t.boolean "interpretation_required"
     t.string "nationality", limit: 200
     t.string "address_line_1", limit: 200
@@ -383,20 +381,20 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.string "foreign_monitored_address_line_2", limit: 200
     t.string "foreign_monitored_address_zip", limit: 200
     t.string "foreign_monitored_address_county", limit: 200
-    t.string "primary_telephone", limit: 16
-    t.string "primary_telephone_type", limit: 16
-    t.string "secondary_telephone", limit: 16
-    t.string "secondary_telephone_type", limit: 16
+    t.string "primary_telephone", limit: 200
+    t.string "primary_telephone_type", limit: 200
+    t.string "secondary_telephone", limit: 200
+    t.string "secondary_telephone_type", limit: 200
     t.string "email", limit: 200
-    t.string "preferred_contact_method", limit: 32
-    t.string "preferred_contact_time", limit: 16
+    t.string "preferred_contact_method", limit: 200
+    t.string "preferred_contact_time", limit: 200
     t.string "port_of_origin", limit: 200
-    t.string "source_of_report", limit: 32
+    t.string "source_of_report", limit: 200
     t.string "flight_or_vessel_number", limit: 200
     t.string "flight_or_vessel_carrier", limit: 200
     t.string "port_of_entry_into_usa", limit: 200
     t.text "travel_related_notes"
-    t.string "additional_planned_travel_type", limit: 16
+    t.string "additional_planned_travel_type", limit: 200
     t.string "additional_planned_travel_destination", limit: 200
     t.string "additional_planned_travel_destination_state", limit: 200
     t.string "additional_planned_travel_destination_country", limit: 200
@@ -427,7 +425,7 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.string "source_of_report_specify", limit: 200
     t.boolean "pause_notifications", default: false
     t.date "symptom_onset"
-    t.string "case_status", limit: 16
+    t.string "case_status", limit: 200
     t.integer "assigned_user"
     t.boolean "continuous_exposure", default: false
     t.datetime "latest_assessment_at"
@@ -435,25 +433,22 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.integer "negative_lab_count", default: 0
     t.datetime "latest_transfer_at"
     t.bigint "latest_transfer_from"
-    t.string "gender_identity", limit: 128
-    t.string "sexual_orientation", limit: 64
+    t.string "gender_identity", limit: 200
+    t.string "sexual_orientation", limit: 200
     t.boolean "user_defined_symptom_onset"
     t.date "extended_isolation"
     t.boolean "head_of_household"
-    t.string "time_zone", limit: 64, default: "America/New_York"
+    t.string "time_zone", limit: 200, default: "America/New_York"
     t.boolean "race_other"
     t.boolean "race_unknown"
     t.boolean "race_refused_to_answer"
     t.boolean "latest_assessment_symptomatic", default: false
     t.date "first_positive_lab_at"
-    t.string "legacy_primary_language", limit: 64
-    t.string "legacy_secondary_language", limit: 64
-    t.string "follow_up_reason", limit: 64
+    t.string "legacy_primary_language", limit: 200
+    t.string "legacy_secondary_language", limit: 200
+    t.string "follow_up_reason", limit: 200
     t.text "follow_up_note"
-    t.string "international_telephone", limit: 50
-    t.string "enrolled_workflow"
-    t.datetime "isolation_to_exposure_at", precision: 6
-    t.datetime "exposure_to_isolation_at", precision: 6
+    t.string "international_telephone", limit: 200
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"

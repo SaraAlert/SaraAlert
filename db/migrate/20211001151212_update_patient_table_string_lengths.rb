@@ -4,13 +4,13 @@ class UpdatePatientTableStringLengths < ActiveRecord::Migration[6.1]
     change_column :patients, :first_name, :string, limit: 200
     change_column :patients, :last_name, :string, limit: 200
     change_column :patients, :middle_name, :string, limit: 200
-    change_column :patients, :sex, :string, limit: 16
-    change_column :patients, :gender_identity, :string, limit: 128
-    change_column :patients, :sexual_orientation, :string, limit: 64
-    change_column :patients, :ethnicity, :string, limit: 32
+    change_column :patients, :sex, :string, limit: 200
+    change_column :patients, :gender_identity, :string, limit: 200
+    change_column :patients, :sexual_orientation, :string, limit: 200
+    change_column :patients, :ethnicity, :string, limit: 200
     change_column :patients, :nationality, :string, limit: 200
-    change_column :patients, :primary_language, :string, limit: 64
-    change_column :patients, :secondary_language, :string, limit: 64
+    change_column :patients, :primary_language, :string, limit: 200
+    change_column :patients, :secondary_language, :string, limit: 200
     change_column :patients, :user_defined_id_statelocal, :string, limit: 200
     change_column :patients, :user_defined_id_cdc, :string, limit: 200
     change_column :patients, :user_defined_id_nndss, :string, limit: 200
@@ -43,13 +43,13 @@ class UpdatePatientTableStringLengths < ActiveRecord::Migration[6.1]
     change_column :patients, :foreign_monitored_address_county, :string, limit: 200
 
     # Contact
-    change_column :patients, :preferred_contact_method, :string, limit: 32
-    change_column :patients, :preferred_contact_time, :string, limit: 16
-    change_column :patients, :primary_telephone, :string, limit: 16
-    change_column :patients, :primary_telephone_type, :string, limit: 16
-    change_column :patients, :secondary_telephone, :string, limit: 16
-    change_column :patients, :secondary_telephone_type, :string, limit: 16
-    change_column :patients, :international_telephone, :string, limit: 50
+    change_column :patients, :preferred_contact_method, :string, limit: 200
+    change_column :patients, :preferred_contact_time, :string, limit: 200
+    change_column :patients, :primary_telephone, :string, limit: 200
+    change_column :patients, :primary_telephone_type, :string, limit: 200
+    change_column :patients, :secondary_telephone, :string, limit: 200
+    change_column :patients, :secondary_telephone_type, :string, limit: 200
+    change_column :patients, :international_telephone, :string, limit: 200
     change_column :patients, :email, :string, limit: 200
 
     # Arrival
@@ -57,11 +57,11 @@ class UpdatePatientTableStringLengths < ActiveRecord::Migration[6.1]
     change_column :patients, :flight_or_vessel_number, :string, limit: 200
     change_column :patients, :flight_or_vessel_carrier, :string, limit: 200
     change_column :patients, :port_of_entry_into_usa, :string, limit: 200
-    change_column :patients, :source_of_report, :string, limit: 32
+    change_column :patients, :source_of_report, :string, limit: 200
     change_column :patients, :source_of_report_specify, :string, limit: 200
 
     # Additional Planned Travel
-    change_column :patients, :additional_planned_travel_type, :string, limit: 16
+    change_column :patients, :additional_planned_travel_type, :string, limit: 200
     change_column :patients, :additional_planned_travel_destination, :string, limit: 200
     change_column :patients, :additional_planned_travel_destination_state, :string, limit: 200
     change_column :patients, :additional_planned_travel_destination_country, :string, limit: 200
@@ -77,18 +77,18 @@ class UpdatePatientTableStringLengths < ActiveRecord::Migration[6.1]
     change_column :patients, :member_of_a_common_exposure_cohort_type, :string, limit: 200
 
     # Monitoring
-    change_column :patients, :exposure_risk_assessment, :string, limit: 32
-    change_column :patients, :monitoring_plan, :string, limit: 64
-    change_column :patients, :case_status, :string, limit: 16
-    change_column :patients, :public_health_action, :string, limit: 64
-    change_column :patients, :monitoring_reason, :string, limit: 64
-    change_column :patients, :follow_up_reason, :string, limit: 64
+    change_column :patients, :exposure_risk_assessment, :string, limit: 200
+    change_column :patients, :monitoring_plan, :string, limit: 200
+    change_column :patients, :case_status, :string, limit: 200
+    change_column :patients, :public_health_action, :string, limit: 200
+    change_column :patients, :monitoring_reason, :string, limit: 200
+    change_column :patients, :follow_up_reason, :string, limit: 200
 
     # Other
-    change_column :patients, :legacy_primary_language, :string, limit: 64
-    change_column :patients, :legacy_secondary_language, :string, limit: 64
-    change_column :patients, :time_zone, :string, limit: 64
-    change_column :patients, :submission_token, :binary, limit: 64
+    change_column :patients, :legacy_primary_language, :string, limit: 200
+    change_column :patients, :legacy_secondary_language, :string, limit: 200
+    change_column :patients, :time_zone, :string, limit: 200
+    change_column :patients, :submission_token, :binary, limit: 200
   end
 
   def down
