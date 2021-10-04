@@ -53,7 +53,7 @@ class UserMailer < ApplicationMailer
   end
 
   def cache_analytics_job_email(cached, not_cached, eligible)
-    return unless ADMIN_OPTIONS['job_run_email'].present?
+    return if ADMIN_OPTIONS['job_run_email'].blank?
 
     @cached = cached
     @not_cached = not_cached
