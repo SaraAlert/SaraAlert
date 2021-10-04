@@ -4,6 +4,13 @@ title: Release Notes
 parent: API
 nav_order: 1
 ---
+
+# 1.37.0
+* Add support for writing all Sara Alert data elements which can be imported via manual Excel imports. See the [list of supported fields](/api/#what-can-the-sara-alert-api-do) for more details.
+* Add support for reading and writing "International Telephone" via the API.
+
+***
+
 # 1.36.0
 * Add support for bulk export via the API according to the FHIR bulk data [specification](https://hl7.org/fhir/uv/bulkdata/). See the [bulk data export](/api/fhir-api-specification.html#bulk-data-export) section for full details.
 * Add support for reading all Sara Alert data elements via the API. See the [list of supported fields](/api/#what-can-the-sara-alert-api-do) for more details. The [FHIR Interface Specification](/api/fhir-api-specification.html) contains additional information about how Sara Alert fields are represented in FHIR.
