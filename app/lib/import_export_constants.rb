@@ -287,7 +287,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     closed_at: 'Closure Date',
     monitoring_reason: 'Reason For Closure',
     expected_purge_ts: 'Expected Purge Date',
-    contact_became_case_at: 'Became Case At',
+    contact_became_case_at: 'Exposure Monitorees that became Cases at',
     # Monitoring Info - Reporting Info
     responder_id: 'ID of Reporter',
     head_of_household: 'Head of Household',

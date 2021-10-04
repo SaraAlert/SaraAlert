@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Card, Col, Row } from 'react-bootstrap';
 import { formatPercentage } from '../../../../utils/Analytics';
 
-const RELEASE_DATE = '10/5/2021';
+const RELEASE_DATE = '11/2/2021';
 const WORKFLOWS = ['Exposure', 'Isolation'];
 const MONITOREE_FLOW_HEADERS = ['Yesterday', 'Last 7 Days', 'Last 14 Days', 'Total'];
 
@@ -61,7 +61,7 @@ class MonitoreeFlow extends React.Component {
           percentage: formatPercentage(thisTimeFrameData?.cases_closed_in_exposure, exposureToIsolationTotal),
         },
         exposure_to_isolation_total: {
-          value: exposureToIsolationTotal,
+          value: exposureToIsolationTotal || 0,
           percentage: null,
         },
       };
@@ -274,7 +274,8 @@ class MonitoreeFlow extends React.Component {
           <Row>{this.workflowTableData.map((data, index) => this.renderWorkflowTable(data, index))}</Row>
           <div className="text-center text-secondary info-text mb-4">
             <i className="fas fa-info-circle mr-1"></i>
-            Cumulative includes incoming and outgoing counts recorded for this jurisdiction (excluding today’s counts)
+            Cumulative includes incoming and outgoing counts recorded for this jurisdiction (excluding today’s counts). All counts calculated based on UTC time
+            zone
           </div>
           <Row>
             {this.renderExposureToCaseTable(this.exposureToCaseTableData)}
@@ -282,7 +283,8 @@ class MonitoreeFlow extends React.Component {
           </Row>
           <div className="text-center text-secondary info-text mb-1">
             <i className="fas fa-info-circle mr-1"></i>
-            Cumulative includes counts of the monitorees that met the criteria listed in the tables after {RELEASE_DATE} (excluding today’s counts)
+            Cumulative includes counts of the monitorees that met the criteria listed in the tables after {RELEASE_DATE} (excluding today’s counts). All counts
+            calculated based on UTC time zone
           </div>
         </Card.Body>
       </Card>

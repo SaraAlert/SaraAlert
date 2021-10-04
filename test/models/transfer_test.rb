@@ -178,11 +178,11 @@ class TransferTest < ActiveSupport::TestCase
     end
     assert_equal(0, Transfer.in_time_frame('Invalid').size)
 
-    assert_difference("Transfer.in_time_frame('Last 24 Hours').size", 1) do
+    assert_difference("Transfer.in_time_frame('Yesterday').size", 1) do
       create(:transfer)
     end
 
-    assert_no_difference("Transfer.in_time_frame('Last 24 Hours').size") do
+    assert_no_difference("Transfer.in_time_frame('Yesterday').size") do
       create(:transfer).update(created_at: DateTime.now.utc.beginning_of_day - 25.hours)
     end
 

@@ -537,11 +537,7 @@ namespace :demo do
       patient[:enrolled_workflow] = patient[:isolation] ? 'Isolation' : 'Exposure'
       if rand < 0.5 # switch workflows once
         patient[:isolation] = !patient[:isolation]
-        if patient[:isolation]
-          patient[:exposure_to_isolation_at] = beginning_of_day - rand(21).days
-        else
-          patient[:isolation_to_exposure_at] = beginning_of_day - rand(21).days
-        end
+        patient[patient[:isolation] ? :exposure_to_isolation_at : :isolation_to_exposure_at] = beginning_of_day - rand(21).days
         if rand < 0.1 # switch workflows again
           patient[:isolation] = !patient[:isolation]
           if patient[:isolation]
