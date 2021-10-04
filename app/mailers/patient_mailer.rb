@@ -11,7 +11,7 @@ class PatientMailer < ApplicationMailer
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     @patients = patient.active_dependents.uniq.map do |dependent|
-      { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
+      { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by(id: dependent.jurisdiction_id).unique_identifier }
     end
     @lang = patient.select_language(:email)
     @contact_info = patient.jurisdiction.contact_info
@@ -177,7 +177,7 @@ class PatientMailer < ApplicationMailer
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     @patients = patient.active_dependents.uniq.map do |dependent|
-      { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
+      { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by(id: dependent.jurisdiction_id).unique_identifier }
     end
     # Update last send attempt timestamp before SMTP call
     patient.last_assessment_reminder_sent = DateTime.now
