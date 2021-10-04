@@ -929,100 +929,11 @@ The `http://saraalert.org/StructureDefinition/reason-for-closure` extension repr
 }
 ```
 
-The `http://saraalert.org/StructureDefinition/additional-planned-travel-end-date` extension represents the end date for a monitoree's additional planned travel. This field is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-end-date",
-  "valueDate": "2021-06-25"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination` extension represents the destination for a monitoree's additional planned travel. This field is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination",
-  "valueString": "Pourosside"
-}
-```
-
-
-The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination-state` extension represents the destination state for a monitoree's additional planned travel. This field is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-state",
-  "valueString": "District of Columbia"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination-country` extension represents the destination country for a monitoree's additional planned travel. This field is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-country",
-  "valueString": "Albania"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure` extension represents the port of departure for a monitoree's additional planned travel. This field is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure",
-  "valueString": "New Natalia"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/additional-planned-travel-type` extension represents the type of a monitoree's additional planned travel. This field is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-type",
-  "valueString": "International"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/case-status` extension represents the case status of a monitoree. This field is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/case-status",
-  "valueString": "Confirmed"
-}
-```
-
 The `http://saraalert.org/StructureDefinition/closed-at` extension represents the time at which a monitoree was closed. This field is read-only.
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/closed-at",
   "valueDateTime": "2021-07-07T18:10:47+00:00"
-}
-```
-
-The `http://hl7.org/fhir/StructureDefinition/patient-genderIdentity` extension represents the gender identity of a monitoree. This field is read-only.
-```json
-{
-  "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
-  "valueCodeableConcept": {
-    "coding": [
-      {
-        "system": "http://hl7.org/fhir/gender-identity",
-        "code": "transgender-female"
-      }
-    ],
-    "text": "Transgender Female (Male-to-Female [MTF])"
-  }
-}
-```
-
-The `http://saraalert.org/StructureDefinition/sexual-orientation` extension represents the sexual orientation of a monitoree. This field is read-only.
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/sexual-orientation",
-  "valueCodeableConcept": {
-    "coding": [
-      {
-        "system": "http://snomed.info/sct",
-        "code": "38628009"
-      }
-    ],
-    "text": "Lesbian, Gay, or Homosexual"
-  }
 }
 ```
 
@@ -1106,106 +1017,6 @@ The complex `http://saraalert.org/StructureDefinition/transfer` extension repres
   "url": "http://saraalert.org/StructureDefinition/transfer"
 }
 ```
-
-The complex `http://saraalert.org/StructureDefinition/exposure-risk-factors` extension represents the exposure risk factors that apply for the monitoree. This field is read-only.
-```json
-{
-  "extension": [
-    {
-      "extension": [
-        {
-          "url": "contact-of-known-case",
-          "valueBoolean": true
-        },
-        {
-          "url": "contact-of-known-case-id",
-          "valueString": "00929074, 01304440, 00162388"
-        }
-      ],
-      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case"
-    },
-    {
-      "extension": [
-        {
-          "url": "was-in-health-care-facility-with-known-cases",
-          "valueBoolean": true
-        },
-        {
-          "url": "was-in-health-care-facility-with-known-cases-facility-name",
-          "valueString": "Facility123"
-        }
-      ],
-      "url": "http://saraalert.org/StructureDefinition/was-in-health-care-facility-with-known-cases"
-    },
-    {
-      "extension": [
-        {
-          "url": "laboratory-personnel",
-          "valueBoolean": true
-        },
-        {
-          "url": "laboratory-personnel-facility-name",
-          "valueString": "Facility123"
-        }
-      ],
-      "url": "http://saraalert.org/StructureDefinition/laboratory-personnel"
-    },
-    {
-      "extension": [
-        {
-          "url": "healthcare-personnel",
-          "valueBoolean": true
-        },
-        {
-          "url": "healthcare-personnel-facility-name",
-          "valueString": "Facility123"
-        }
-      ],
-      "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
-    },
-    {
-      "extension": [
-        {
-          "url": "member-of-a-common-exposure-cohort",
-          "valueBoolean": true
-        },
-        {
-          "url": "member-of-a-common-exposure-cohort-type",
-          "valueString": "Cruiseline cohort"
-        }
-      ],
-      "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
-      "valueBoolean": false
-    },
-    {
-      "url": "http://saraalert.org/StructureDefinition/crew-on-passenger-or-cargo-flight",
-      "valueBoolean": false
-    }
-  ],
-  "url": "http://saraalert.org/StructureDefinition/exposure-risk-factors"
-}
-```
-
-The complex `http://saraalert.org/StructureDefinition/source-of-report` extension represents the source of the report for a monitoree's arrival information. This field is read-only.
-```json
-{
-  "extension": [
-    {
-      "url": "source-of-report",
-      "valueString": "Other"
-    },
-    {
-      "url": "specify",
-      "valueString": "Pipey"
-    }
-  ],
-  "url": "http://saraalert.org/StructureDefinition/source-of-report"
-}
-```
-
 
 
 <a name="read-get-obs"/>
@@ -3165,7 +2976,7 @@ Use `http://saraalert.org/StructureDefinition/phone-type` to specify the type of
 ]
 ```
 
-Use `http://saraalert.org/StructureDefinition/address-type` to specify the type of an address (options are: `USA`, `Foreign`, `Monitored`, and `ForeignMonitored`). Note that this extension should be placed on an element in the `Patient.address` array. If this extension is not present on an address in the `Patient.address` array, the address is assumed to be a `USA` address. Addresses of type `Monitored` or `ForeignMonitored` are read-only.
+Use `http://saraalert.org/StructureDefinition/address-type` to specify the type of an address (options are: `USA`, `Foreign`, `Monitored`, and `ForeignMonitored`). Note that this extension should be placed on an element in the `Patient.address` array. If this extension is not present on an address in the `Patient.address` array, the address is assumed to be a `USA` address.
 ```json
 "address": [
   {
@@ -3191,6 +3002,222 @@ Use `http://saraalert.org/StructureDefinition/address-type` to specify the type 
 ]
 ```
 
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-end-date` extension represents the end date for a monitoree's additional planned travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-end-date",
+  "valueDate": "2021-06-25"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination` extension represents the destination for a monitoree's additional planned travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination",
+  "valueString": "Pourosside"
+}
+```
+
+
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination-state` extension represents the destination state for a monitoree's additional planned travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-state",
+  "valueString": "District of Columbia"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination-country` extension represents the destination country for a monitoree's additional planned travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-country",
+  "valueString": "Albania"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure` extension represents the port of departure for a monitoree's additional planned travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure",
+  "valueString": "New Natalia"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/additional-planned-travel-type` extension represents the type of a monitoree's additional planned travel.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-type",
+  "valueString": "International"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/port-of-entry-into-usa` extension represents the port of entry into the USA for a monitoree.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/port-of-entry-into-usa",
+  "valueString": "Anamaria"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/case-status` extension represents the case status of a monitoree.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/case-status",
+  "valueString": "Confirmed"
+}
+```
+
+The `http://hl7.org/fhir/StructureDefinition/patient-genderIdentity` extension represents the gender identity of a monitoree.
+```json
+{
+  "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/gender-identity",
+        "code": "transgender-female"
+      }
+    ],
+    "text": "Transgender Female (Male-to-Female [MTF])"
+  }
+}
+```
+
+The `http://saraalert.org/StructureDefinition/sexual-orientation` extension represents the sexual orientation of a monitoree.
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/sexual-orientation",
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "38628009"
+      }
+    ],
+    "text": "Lesbian, Gay, or Homosexual"
+  }
+}
+```
+
+The complex `http://saraalert.org/StructureDefinition/exposure-risk-factors` extension represents the exposure risk factors that apply for the monitoree.
+```json
+{
+  "extension": [
+    {
+      "extension": [
+        {
+          "url": "contact-of-known-case",
+          "valueBoolean": true
+        },
+        {
+          "url": "contact-of-known-case-id",
+          "valueString": "00929074, 01304440, 00162388"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/contact-of-known-case"
+    },
+    {
+      "extension": [
+        {
+          "url": "was-in-health-care-facility-with-known-cases",
+          "valueBoolean": true
+        },
+        {
+          "url": "was-in-health-care-facility-with-known-cases-facility-name",
+          "valueString": "Facility123"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/was-in-health-care-facility-with-known-cases"
+    },
+    {
+      "extension": [
+        {
+          "url": "laboratory-personnel",
+          "valueBoolean": true
+        },
+        {
+          "url": "laboratory-personnel-facility-name",
+          "valueString": "Facility123"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/laboratory-personnel"
+    },
+    {
+      "extension": [
+        {
+          "url": "healthcare-personnel",
+          "valueBoolean": true
+        },
+        {
+          "url": "healthcare-personnel-facility-name",
+          "valueString": "Facility123"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
+    },
+    {
+      "extension": [
+        {
+          "url": "member-of-a-common-exposure-cohort",
+          "valueBoolean": true
+        },
+        {
+          "url": "member-of-a-common-exposure-cohort-type",
+          "valueString": "Cruiseline cohort"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
+      "valueBoolean": false
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/crew-on-passenger-or-cargo-flight",
+      "valueBoolean": false
+    }
+  ],
+  "url": "http://saraalert.org/StructureDefinition/exposure-risk-factors"
+}
+```
+
+The complex `http://saraalert.org/StructureDefinition/source-of-report` extension represents the source of the report for a monitoree's arrival information.
+```json
+{
+  "extension": [
+    {
+      "url": "source-of-report",
+      "valueString": "Other"
+    },
+    {
+      "url": "specify",
+      "valueString": "Pipey"
+    }
+  ],
+  "url": "http://saraalert.org/StructureDefinition/source-of-report"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/international-telephone` indicates if a telephone number is international. Note that this extension should be placed on an element in the `Patient.telecom` array, and only has meaning when `Patient.telecom.system` is `phone`. If this extension is not present on a telecom in the `Patient.telecom` array, the telephone number is assumed to not be international.
+```json
+"telecom": [
+  {
+    "system": "phone",
+    "value": "+15555555555",
+    "rank": 1
+  },
+  {
+    "extension": [
+      {
+        "url": "http://saraalert.org/StructureDefinition/international-telephone",
+        "valueBoolean": true
+      }
+    ],
+    "system": "phone",
+    "value": "+44 5555 555555"
+  }
+]
+```
 ### POST `[base]/RelatedPerson`
 
 <a name="create-post-related"/>
