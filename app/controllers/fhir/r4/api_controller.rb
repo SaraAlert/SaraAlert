@@ -212,7 +212,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       # Check for duplicates
       if request.headers['If-None-Exist'].present?
-        search_params = request.headers['If-None-Exist'].split('&').map { |p| p.split('=', 2) }.select { |p| p.size == 2 }.to_h
+        search_params = Rack::Utils.parse_nested_query(request.headers['If-None-Exist'])
         num_matches = search_patients(search_params).size
         err_msg = "There #{num_matches > 1 ? 'are' : 'is'} #{num_matches} potential duplicate patient#{num_matches > 1 ? 's' : ''}"
         status_precondition_failed_with_custom_errors([err_msg]) && return if num_matches.positive?
@@ -276,7 +276,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       # Check for duplicates
       if entry&.request&.ifNoneExist.present?
-        search_params = entry.request.ifNoneExist.split('&').map { |p| p.split('=', 2) }.select { |p| p.size == 2 }.to_h
+        search_params = Rack::Utils.parse_nested_query(entry.request.ifNoneExist)
         num_matches = search_patients(search_params).size
         err_msg = "There #{num_matches > 1 ? 'are' : 'is'} #{num_matches} potential duplicate patient#{num_matches > 1 ? 's' : ''}"
         status_precondition_failed_with_custom_errors([err_msg]) && return if num_matches.positive?
@@ -339,7 +339,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_not_acceptable && return unless accept_header?
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
-    search_params = params.slice('family', 'given', 'telecom', 'email', 'state-local-id', 'birthDate', 'subject', 'active', '_count', '_id', 'patient')
+    search_params = params.slice('family', 'given', 'telecom', 'email', 'state-local-id', 'birthdate', 'subject', 'active', '_count', '_id', 'patient')
 
     case resource_type
     when 'patient'
@@ -1069,7 +1069,7 @@ class Fhir::R4::ApiController < ApplicationApiController
         query = query.where('email like ?', "%#{search}%")
       when 'state-local-id'
         query = query.where('lower(user_defined_id_statelocal) like ?', "#{search&.downcase}%")
-      when 'birthDate'
+      when 'birthdate'
         query = query.where(date_of_birth: search)
       when '_id'
         query = query.where(id: search)
