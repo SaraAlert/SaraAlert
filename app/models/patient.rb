@@ -9,6 +9,9 @@ class Patient < ApplicationRecord
   include ActiveModel::Validations
   include FhirHelper
 
+  ISOLATION_CASE_STATUS = %w[Confirmed Probable]
+  CONTACT_TO_CASE_MONITORING_REASONS = ['Meets Case Definition', 'Case Confirmed']
+
   columns.each do |column|
     case column.type
     when :text

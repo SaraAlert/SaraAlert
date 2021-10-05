@@ -277,7 +277,8 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
           if patient.isolation && !patient.enrolled_isolation
             patient[:exposure_to_isolation_at]&.strftime('%F')
           elsif !patient.isolation && !patient.enrolled_isolation &&
-                (%w[Confirmed Probable].include?(patient[:case_status]) || ['Meets Case Definition', 'Case Confirmed'].include?(patient[:monitoring_reason]))
+                (Patient::ISOLATION_CASE_STATUS.include?(patient[:case_status]) ||
+                Patient::CONTACT_TO_CASE_MONITORING_REASONS.include?(patient[:monitoring_reason]))
             patient[:closed_at]&.strftime('%F')
           end
 
