@@ -1,5 +1,7 @@
 class AddColumnsForCaseDevelopmentAnalytics < ActiveRecord::Migration[6.1]
   def change
+    ActiveRecord::Base.record_timestamps = false
+
     # remove existing snapshot columns that track workflow changes since the definition has changed for how these should be tracked
     remove_column :monitoree_snapshots, :isolation_to_exposure, :integer
     remove_column :monitoree_snapshots, :exposure_to_isolation, :integer
@@ -14,5 +16,7 @@ class AddColumnsForCaseDevelopmentAnalytics < ActiveRecord::Migration[6.1]
     add_column :patients, :enrolled_isolation, :boolean
     add_column :patients, :isolation_to_exposure_at, :datetime, precision: 6
     add_column :patients, :exposure_to_isolation_at, :datetime, precision: 6
+
+    ActiveRecord::Base.record_timestamps = true
   end
 end
