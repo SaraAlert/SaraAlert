@@ -364,10 +364,12 @@ class Contact extends React.Component {
                         currentTarget: { id: 'preferred_contact_time' },
                       })
                     }
-                    className="mb-1"
                     styles={preferredContactTimeSelectStyling}
                     theme={theme => bootstrapSelectTheme(theme, 'lg')}
                   />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['preferred_contact_time']}
+                  </Form.Control.Feedback>
                   {![null, ''].includes(this.state.current.patient.preferred_contact_time) && (
                     <React.Fragment>
                       {[null, ''].includes(this.state.current.patient.preferred_contact_method) &&
@@ -384,7 +386,7 @@ class Contact extends React.Component {
                         )}
                     </React.Fragment>
                   )}
-                  <div className="mt-2">
+                  <div className="mt-3">
                     <span className="font-weight-bold">Morning: </span>
                     <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
                     <br />
@@ -394,9 +396,6 @@ class Contact extends React.Component {
                     <span className="font-weight-bold">Evening: </span>
                     <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
                   </div>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['preferred_contact_time']}
-                  </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
               <Form.Row>
