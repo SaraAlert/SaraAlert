@@ -10,7 +10,7 @@ describe('Breadcrumb', () => {
     mockBreadcrumbs1.forEach((crumb, index) => {
       if (crumb.href === null) {
         expect(wrapper.find('li').at(index).text()).toEqual(crumb.value);
-        expect(wrapper.find('li').at(index).find('a').exists()).toEqual(false);
+        expect(wrapper.find('li').at(index).find('a').exists()).toBe(false);
       } else {
         expect(wrapper.find('li').at(index).find('a').text()).toEqual(crumb.value);
         expect(wrapper.find('li').at(index).find('a').prop('href')).toEqual(`${window.BASE_PATH}${crumb.href}`);

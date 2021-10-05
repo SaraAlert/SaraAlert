@@ -17,25 +17,25 @@ const tableData = [
 describe('WorkflowTable', () => {
   it('Properly renders all main components', () => {
     const wrapper = shallow(<WorkflowTable title={tableTitle} rowHeaders={tableRows} data={tableData} />);
-    expect(wrapper.find('.analytics-table-header').exists()).toBeTruthy();
+    expect(wrapper.find('.analytics-table-header').exists()).toBe(true);
     expect(wrapper.find('.analytics-table-header').text()).toEqual(tableTitle);
-    expect(wrapper.find(InfoTooltip).exists()).toBeFalsy();
-    expect(wrapper.find('table').exists()).toBeTruthy();
+    expect(wrapper.find(InfoTooltip).exists()).toBe(false);
+    expect(wrapper.find('table').exists()).toBe(true);
   });
 
   it('Properly renders workflow table', () => {
     const wrapper = shallow(<WorkflowTable title={tableTitle} rowHeaders={tableRows} data={tableData} />);
-    expect(wrapper.find('table').exists()).toBeTruthy();
-    expect(wrapper.find('thead').exists()).toBeTruthy();
-    expect(wrapper.find('thead').find('.header').exists()).toBeTruthy();
+    expect(wrapper.find('table').exists()).toBe(true);
+    expect(wrapper.find('thead').exists()).toBe(true);
+    expect(wrapper.find('thead').find('.header').exists()).toBe(true);
     tableColumns.forEach((col, c_index) => {
       expect(wrapper.find('thead').find('th').at(c_index).text()).toEqual(col);
     });
-    expect(wrapper.find('tbody').exists()).toBeTruthy();
+    expect(wrapper.find('tbody').exists()).toBe(true);
     expect(wrapper.find('tbody').find('tr').length).toEqual(tableData.length);
     tableData.forEach((rowData, r_index) => {
       expect(wrapper.find('tbody').find('tr').at(r_index).find('td').at(0).text()).toEqual(tableRows[parseInt(r_index)]);
-      expect(wrapper.find('tbody').find('tr').at(r_index).find('td').at(0).hasClass('total-column')).toBeFalsy();
+      expect(wrapper.find('tbody').find('tr').at(r_index).find('td').at(0).hasClass('total-column')).toBe(false);
       rowData.forEach((cellData, c_index) => {
         expect(
           wrapper
@@ -61,7 +61,7 @@ describe('WorkflowTable', () => {
 
   it('Renders info tooltip in header if props.tooltipKey is defined', () => {
     const wrapper = shallow(<WorkflowTable title={tableTitle} tooltipKey={'analyticsAgeTip'} rowHeaders={tableRows} data={tableData} />);
-    expect(wrapper.find('.analytics-table-header').find(InfoTooltip).exists()).toBeTruthy();
+    expect(wrapper.find('.analytics-table-header').find(InfoTooltip).exists()).toBe(true);
     expect(wrapper.find('.analytics-table-header').find(InfoTooltip).prop('tooltipTextKey')).toEqual('analyticsAgeTip');
   });
 });

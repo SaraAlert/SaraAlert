@@ -19,10 +19,10 @@ function getWrapper() {
 describe('ExposureRiskAssessment', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find(Form.Label).text().includes('EXPOSURE RISK ASSESSMENT')).toBeTruthy();
-    expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(Form.Label).text()).toContain('EXPOSURE RISK ASSESSMENT');
+    expect(wrapper.find(InfoTooltip).exists()).toBe(true);
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('exposureRiskAssessment');
-    expect(wrapper.find('#exposure_risk_assessment').exists()).toBeTruthy();
+    expect(wrapper.find('#exposure_risk_assessment').exists()).toBe(true);
     expect(wrapper.find('option').length).toEqual(5);
     exposureRiskAssessmentOptions.forEach((value, index) => {
       expect(wrapper.find('option').at(index).text()).toEqual(value);
@@ -32,9 +32,9 @@ describe('ExposureRiskAssessment', () => {
 
   it('Changing Exposure Risk Assessment opens modal', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    expect(wrapper.find(Modal).exists()).toBe(false);
     wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
-    expect(wrapper.find(Modal).exists()).toBeTruthy();
+    expect(wrapper.find(Modal).exists()).toBe(true);
   });
 
   it('Properly renders modal and sets state correctly', () => {
@@ -42,18 +42,18 @@ describe('ExposureRiskAssessment', () => {
     wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
 
     // renders properly
-    expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Title).exists()).toBe(true);
     expect(wrapper.find(Modal.Title).text()).toEqual('Exposure Risk Assessment');
-    expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Body).exists()).toBe(true);
     expect(wrapper.find(Modal.Body).find('p').text()).toEqual(`Are you sure you want to change exposure risk assessment to "High"?`);
-    expect(wrapper.find(Modal.Body).find(ApplyToHousehold).exists()).toBeFalsy();
-    expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Body).find(ApplyToHousehold).exists()).toBe(false);
+    expect(wrapper.find(Modal.Footer).exists()).toBe(true);
     expect(wrapper.find(Button).at(0).text()).toEqual('Cancel');
     expect(wrapper.find(Button).at(1).text()).toEqual('Submit');
 
     // sets state correctly
-    expect(wrapper.state('showExposureRiskAssessmentModal')).toBeTruthy();
-    expect(wrapper.state('apply_to_household')).toBeFalsy();
+    expect(wrapper.state('showExposureRiskAssessmentModal')).toBe(true);
+    expect(wrapper.state('apply_to_household')).toBe(false);
     expect(wrapper.state('apply_to_household_ids')).toEqual([]);
     expect(wrapper.state('exposure_risk_assessment')).toEqual('High');
     expect(wrapper.state('reasoning')).toEqual('');
@@ -63,35 +63,35 @@ describe('ExposureRiskAssessment', () => {
     const wrapper = mount(<ExposureRiskAssessment patient={mockPatient1} household_members={[mockPatient2, mockPatient3, mockPatient4]} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} authenticity_token={mockToken} workflow={'global'} />);
     wrapper
       .find('#exposure_risk_assessment')
-      .at(1)
+      .hostNodes()
       .simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
 
     // initial radio button state
-    expect(wrapper.find(ApplyToHousehold).exists()).toBeTruthy();
-    expect(wrapper.find(CustomTable).exists()).toBeFalsy();
-    expect(wrapper.state('apply_to_household')).toBeFalsy();
-    expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeTruthy();
-    expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeFalsy();
+    expect(wrapper.find(ApplyToHousehold).exists()).toBe(true);
+    expect(wrapper.find(CustomTable).exists()).toBe(false);
+    expect(wrapper.state('apply_to_household')).toBe(false);
+    expect(wrapper.find('#apply_to_household_no').hostNodes().prop('checked')).toBe(true);
+    expect(wrapper.find('#apply_to_household_yes').hostNodes().prop('checked')).toBe(false);
 
     // change to apply to all of household
     wrapper
       .find('#apply_to_household_yes')
-      .at(1)
+      .hostNodes()
       .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
-    expect(wrapper.find(CustomTable).exists()).toBeTruthy();
-    expect(wrapper.state('apply_to_household')).toBeTruthy();
-    expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeFalsy();
-    expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeTruthy();
+    expect(wrapper.find(CustomTable).exists()).toBe(true);
+    expect(wrapper.state('apply_to_household')).toBe(true);
+    expect(wrapper.find('#apply_to_household_no').hostNodes().prop('checked')).toBe(false);
+    expect(wrapper.find('#apply_to_household_yes').hostNodes().prop('checked')).toBe(true);
 
     // change back to just this monitoree
     wrapper
       .find('#apply_to_household_no')
-      .at(1)
+      .hostNodes()
       .simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
-    expect(wrapper.find(CustomTable).exists()).toBeFalsy();
-    expect(wrapper.state('apply_to_household')).toBeFalsy();
-    expect(wrapper.find('#apply_to_household_no').at(1).prop('checked')).toBeTruthy();
-    expect(wrapper.find('#apply_to_household_yes').at(1).prop('checked')).toBeFalsy();
+    expect(wrapper.find(CustomTable).exists()).toBe(false);
+    expect(wrapper.state('apply_to_household')).toBe(false);
+    expect(wrapper.find('#apply_to_household_no').hostNodes().prop('checked')).toBe(true);
+    expect(wrapper.find('#apply_to_household_yes').hostNodes().prop('checked')).toBe(false);
   });
 
   it('Adding reasoning updates state', () => {
@@ -99,7 +99,7 @@ describe('ExposureRiskAssessment', () => {
     const handleChangeSpy = jest.spyOn(wrapper.instance(), 'handleReasoningChange');
     wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
 
-    expect(wrapper.find('#reasoning').exists()).toBeTruthy();
+    expect(wrapper.find('#reasoning').exists()).toBe(true);
     wrapper.find('#reasoning').simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
     expect(handleChangeSpy).toHaveBeenCalled();
     expect(wrapper.state('reasoning')).toEqual('insert reasoning text here');
@@ -110,13 +110,13 @@ describe('ExposureRiskAssessment', () => {
     wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
 
     // closes modal
-    expect(wrapper.find(Modal).exists()).toBeTruthy();
+    expect(wrapper.find(Modal).exists()).toBe(true);
     wrapper.find(Button).at(0).simulate('click');
-    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    expect(wrapper.find(Modal).exists()).toBe(false);
 
     // resets state
-    expect(wrapper.state('showExposureRiskAssessmentModal')).toBeFalsy();
-    expect(wrapper.state('apply_to_household')).toBeFalsy();
+    expect(wrapper.state('showExposureRiskAssessmentModal')).toBe(false);
+    expect(wrapper.state('apply_to_household')).toBe(false);
     expect(wrapper.state('apply_to_household_ids')).toEqual([]);
     expect(wrapper.state('exposure_risk_assessment')).toEqual(mockPatient1.exposure_risk_assessment);
     expect(wrapper.state('reasoning')).toEqual('');
@@ -127,7 +127,7 @@ describe('ExposureRiskAssessment', () => {
     const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
 
     wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
-    expect(submitSpy).toHaveBeenCalledTimes(0);
+    expect(submitSpy).not.toHaveBeenCalled();
     wrapper.find(Button).at(1).simulate('click');
     expect(submitSpy).toHaveBeenCalled();
   });

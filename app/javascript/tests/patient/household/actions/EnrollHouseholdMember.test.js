@@ -10,19 +10,19 @@ function getWrapper(isHoh) {
 describe('EnrollHouseholdMember', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper(true);
-    expect(wrapper.find(Button).exists()).toBeTruthy();
-    expect(wrapper.find(Button).text().includes('Enroll Household Member')).toBeTruthy();
-    expect(wrapper.find('i').hasClass('fa-user-plus')).toBeTruthy();
-    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    expect(wrapper.find(Button).exists()).toBe(true);
+    expect(wrapper.find(Button).text()).toContain('Enroll Household Member');
+    expect(wrapper.find('i').hasClass('fa-user-plus')).toBe(true);
+    expect(wrapper.find(Modal).exists()).toBe(false);
   });
 
   it('Clicking the "Enroll Household Member" button opens modal', () => {
     const wrapper = getWrapper(true);
-    expect(wrapper.state('showModal')).toBeFalsy();
-    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    expect(wrapper.state('showModal')).toBe(false);
+    expect(wrapper.find(Modal).exists()).toBe(false);
     wrapper.find(Button).simulate('click');
-    expect(wrapper.state('showModal')).toBeTruthy();
-    expect(wrapper.find(Modal).exists()).toBeTruthy();
+    expect(wrapper.state('showModal')).toBe(true);
+    expect(wrapper.find(Modal).exists()).toBe(true);
   });
 
   it('Properly renders modal for head of household', () => {
@@ -33,7 +33,7 @@ describe('EnrollHouseholdMember', () => {
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
     expect(wrapper.find(Modal.Footer).find(Button).at(0).text()).toEqual('Cancel');
     expect(wrapper.find(Modal.Footer).find(Button).at(1).text()).toEqual('Continue');
-    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('href').includes('/patients/123/group?nav=global')).toBeTruthy();
+    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('href')).toContain('/patients/123/group?nav=global');
   });
 
   it('Properly renders modal for single household member (no depenedents)', () => {
@@ -44,28 +44,28 @@ describe('EnrollHouseholdMember', () => {
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
     expect(wrapper.find(Modal.Footer).find(Button).at(0).text()).toEqual('Cancel');
     expect(wrapper.find(Modal.Footer).find(Button).at(1).text()).toEqual('Continue');
-    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('href').includes('/patients/123/group?nav=global')).toBeTruthy();
+    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('href')).toContain('/patients/123/group?nav=global');
   });
 
   it('Clicking Cancel button closes modal and resets state', () => {
     const wrapper = getWrapper(true);
     wrapper.find(Button).simulate('click');
-    expect(wrapper.state('showModal')).toBeTruthy();
-    expect(wrapper.find(Modal).exists()).toBeTruthy();
+    expect(wrapper.state('showModal')).toBe(true);
+    expect(wrapper.find(Modal).exists()).toBe(true);
     wrapper.find(Modal.Footer).find(Button).at(0).simulate('click');
-    expect(wrapper.state('showModal')).toBeFalsy();
-    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    expect(wrapper.state('showModal')).toBe(false);
+    expect(wrapper.find(Modal).exists()).toBe(false);
   });
 
   it('Clicking Continue button disables the button and triggers loading spinner', () => {
     const wrapper = getWrapper(true);
     wrapper.find(Button).simulate('click');
-    expect(wrapper.state('loading')).toBeFalsy();
-    expect(wrapper.find('.spinner-border').exists()).toBeFalsy();
-    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBeFalsy();
+    expect(wrapper.state('loading')).toBe(false);
+    expect(wrapper.find('.spinner-border').exists()).toBe(false);
+    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBe(false);
     wrapper.find(Modal.Footer).find(Button).at(1).simulate('click');
-    expect(wrapper.state('loading')).toBeTruthy();
-    expect(wrapper.find('.spinner-border').exists()).toBeTruthy();
-    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBeTruthy();
+    expect(wrapper.state('loading')).toBe(true);
+    expect(wrapper.find('.spinner-border').exists()).toBe(true);
+    expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBe(true);
   });
 });

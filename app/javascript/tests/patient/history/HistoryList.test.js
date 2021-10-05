@@ -32,11 +32,11 @@ function getWrapper() {
 describe('HistoryList', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find('#histories').exists()).toBeTruthy();
+    expect(wrapper.find('#histories').exists()).toBe(true);
     expect(wrapper.find('.patient-card-header').text()).toContain('History');
-    expect(wrapper.find('.patient-card-header').find(InfoTooltip).exists()).toBeTruthy();
+    expect(wrapper.find('.patient-card-header').find(InfoTooltip).exists()).toBe(true);
     expect(wrapper.find('.patient-card-header').find(InfoTooltip).prop('tooltipTextKey')).toEqual('history');
-    expect(wrapper.find('#history-filters').exists()).toBeTruthy();
+    expect(wrapper.find('#history-filters').exists()).toBe(true);
     expect(wrapper.find(Select).length).toEqual(2);
     expect(wrapper.find(Select).at(0).prop('placeholder')).toEqual('Filter by Creator');
     expect(wrapper.find(Select).at(0).prop('options')[0].label).toEqual('History Creator');
@@ -58,16 +58,16 @@ describe('HistoryList', () => {
         expect(option.label).toEqual(historyTypes[Number(index)]);
         expect(option.value).toEqual(historyTypes[Number(index)]);
       });
-    expect(wrapper.find(Card.Body).find(History).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Pagination).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find(Card).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(History).exists()).toBe(true);
+    expect(wrapper.find(Card.Body).find(Pagination).exists()).toBe(true);
+    expect(wrapper.find(Card.Body).find(Card).exists()).toBe(true);
     expect(wrapper.find(Card.Body).find(Card.Header).text()).toEqual('Add Comment');
-    expect(wrapper.find(Card.Body).find('#comment').exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('.character-limit-text').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find('#comment').exists()).toBe(true);
+    expect(wrapper.find(Card.Body).find('.character-limit-text').exists()).toBe(true);
     expect(wrapper.find(Card.Body).find('.character-limit-text').text()).toEqual('10000 characters remaining');
-    expect(wrapper.find(Card.Body).find(Button).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Button).exists()).toBe(true);
     expect(wrapper.find(Card.Body).find(Button).text()).toEqual(' Add Comment');
-    expect(wrapper.find(Card.Body).find(Button).find('i').hasClass('fa-comment-dots')).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Button).find('i').hasClass('fa-comment-dots')).toBe(true);
   });
 
   it('Selecting history creators in dropdown properly updates state', () => {
@@ -156,29 +156,29 @@ describe('HistoryList', () => {
 
   it('Disables "Add Comment" button when text input is empty', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
+    expect(wrapper.find(Button).prop('disabled')).toBe(true);
     wrapper.find('#comment').simulate('change', { target: { id: 'comment', value: 'adding comment' } });
-    expect(wrapper.find(Button).prop('disabled')).toBeFalsy();
+    expect(wrapper.find(Button).prop('disabled')).toBe(false);
     wrapper.find('#comment').simulate('change', { target: { id: 'comment', value: '' } });
-    expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
+    expect(wrapper.find(Button).prop('disabled')).toBe(true);
   });
 
   it('Clicking the "Add Comment" button calls the submit method', () => {
     const wrapper = getWrapper();
     const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
     wrapper.find('#comment').simulate('change', { target: { id: 'comment', value: 'adding a comment' } });
-    expect(submitSpy).toHaveBeenCalledTimes(0);
+    expect(submitSpy).not.toHaveBeenCalled();
     wrapper.find(Button).simulate('click');
-    expect(submitSpy).toHaveBeenCalledTimes(1);
+    expect(submitSpy).toHaveBeenCalled();
   });
 
   it('Clicking the "Add Comment" button disables the button and updates state', () => {
     const wrapper = getWrapper();
     wrapper.find('#comment').simulate('change', { target: { id: 'comment', value: 'adding a comment' } });
-    expect(wrapper.state('loading')).toBeFalsy();
-    expect(wrapper.find(Button).prop('disabled')).toBeFalsy();
+    expect(wrapper.state('loading')).toBe(false);
+    expect(wrapper.find(Button).prop('disabled')).toBe(false);
     wrapper.find(Button).simulate('click');
-    expect(wrapper.state('loading')).toBeTruthy();
-    expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
+    expect(wrapper.state('loading')).toBe(true);
+    expect(wrapper.find(Button).prop('disabled')).toBe(true);
   });
 });

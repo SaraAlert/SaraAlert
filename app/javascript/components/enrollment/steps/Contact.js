@@ -9,7 +9,7 @@ import Select from 'react-select';
 
 import InfoTooltip from '../../util/InfoTooltip';
 import PhoneInput from '../../util/PhoneInput';
-import { phoneSchemaValidator } from '../../../utils/Patient';
+import { phoneSchemaValidator } from '../../../utils/PatientFormatters';
 import {
   customPreferredContactTimeOptions,
   customPreferredContactTimeGroupedOptions,

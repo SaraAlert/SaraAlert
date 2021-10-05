@@ -22,9 +22,9 @@ function getWrapperBulkAction(patients) {
 describe('FollowUpFlag', () => {
   it('Properly renders all main components when not a bulk action', () => {
     const wrapper = getWrapperIndividual(mockPatient1, [], false);
-    expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
-    expect(wrapper.find('#set_flag_for_follow_up').exists()).toBeFalsy();
-    expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBeFalsy();
+    expect(wrapper.find(Modal.Body).exists()).toBe(true);
+    expect(wrapper.find('#set_flag_for_follow_up').exists()).toBe(false);
+    expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBe(false);
     expect(wrapper.find(Form.Control).length).toEqual(2);
     expect(wrapper.find('option').length).toEqual(11);
     followUpFlagOptions.forEach((value, index) => {
@@ -32,20 +32,20 @@ describe('FollowUpFlag', () => {
     });
     expect(wrapper.find(Form.Label).at(0).text()).toContain('Please select a reason for being flagged for follow-up.');
     expect(wrapper.find(Form.Label).at(1).text()).toEqual('Please include any additional details:');
-    expect(wrapper.find(ApplyToHousehold).exists()).toBeFalsy();
-    expect(wrapper.find('#bulk_action_apply_to_household').exists()).toBeFalsy();
-    expect(wrapper.find('#follow_up_flag_cancel_button').exists()).toBeTruthy();
-    expect(wrapper.find('#follow_up_flag_submit_button').exists()).toBeTruthy();
-    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBeTruthy();
+    expect(wrapper.find(ApplyToHousehold).exists()).toBe(false);
+    expect(wrapper.find('#bulk_action_apply_to_household').exists()).toBe(false);
+    expect(wrapper.find('#follow_up_flag_cancel_button').exists()).toBe(true);
+    expect(wrapper.find('#follow_up_flag_submit_button').exists()).toBe(true);
+    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBe(true);
     expect(wrapper.find('#follow_up_flag_submit_button').find('span').text()).toEqual('Submit');
-    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
   });
 
   it('Properly renders all main components for patient with a flag already set when not a bulk action', () => {
     const wrapper = getWrapperIndividual(mockPatient5, [], false);
-    expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
-    expect(wrapper.find('#set_flag_for_follow_up').exists()).toBeFalsy();
-    expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBeFalsy();
+    expect(wrapper.find(Modal.Body).exists()).toBe(true);
+    expect(wrapper.find('#set_flag_for_follow_up').exists()).toBe(false);
+    expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBe(false);
     expect(wrapper.find(Form.Control).length).toEqual(2);
     expect(wrapper.find('option').length).toEqual(11);
     followUpFlagOptions.forEach((value, index) => {
@@ -53,38 +53,38 @@ describe('FollowUpFlag', () => {
     });
     expect(wrapper.find(Form.Label).at(0).text()).toContain('Please select a reason for being flagged for follow-up.');
     expect(wrapper.find(Form.Label).at(1).text()).toEqual('Please include any additional details:');
-    expect(wrapper.find(ApplyToHousehold).exists()).toBeFalsy();
-    expect(wrapper.find('#bulk_action_apply_to_household').exists()).toBeFalsy();
-    expect(wrapper.find('#follow_up_flag_cancel_button').exists()).toBeTruthy();
-    expect(wrapper.find('#follow_up_flag_submit_button').exists()).toBeTruthy();
-    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBeFalsy();
+    expect(wrapper.find(ApplyToHousehold).exists()).toBe(false);
+    expect(wrapper.find('#bulk_action_apply_to_household').exists()).toBe(false);
+    expect(wrapper.find('#follow_up_flag_cancel_button').exists()).toBe(true);
+    expect(wrapper.find('#follow_up_flag_submit_button').exists()).toBe(true);
+    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBe(false);
     expect(wrapper.find('#follow_up_flag_submit_button').find('span').text()).toEqual('Update');
   });
 
   it('Properly renders all main components when clearing the flag and not a bulk action', () => {
     const wrapper = getWrapperIndividual(mockPatient5, [], true);
-    expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
-    expect(wrapper.find('#set_flag_for_follow_up').exists()).toBeFalsy();
-    expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBeFalsy();
+    expect(wrapper.find(Modal.Body).exists()).toBe(true);
+    expect(wrapper.find('#set_flag_for_follow_up').exists()).toBe(false);
+    expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBe(false);
     expect(wrapper.find(Form.Control).length).toEqual(1);
-    expect(wrapper.find('option').exists()).toBeFalsy();
+    expect(wrapper.find('option').exists()).toBe(false);
     expect(wrapper.find(Form.Label).at(0).text()).toContain('Please include any additional details for clearing the follow-up flag:');
-    expect(wrapper.find(ApplyToHousehold).exists()).toBeFalsy();
-    expect(wrapper.find('#bulk_action_apply_to_household').exists()).toBeFalsy();
-    expect(wrapper.find('#follow_up_flag_cancel_button').exists()).toBeTruthy();
-    expect(wrapper.find('#follow_up_flag_submit_button').exists()).toBeTruthy();
-    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBeFalsy();
+    expect(wrapper.find(ApplyToHousehold).exists()).toBe(false);
+    expect(wrapper.find('#bulk_action_apply_to_household').exists()).toBe(false);
+    expect(wrapper.find('#follow_up_flag_cancel_button').exists()).toBe(true);
+    expect(wrapper.find('#follow_up_flag_submit_button').exists()).toBe(true);
+    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBe(false);
     expect(wrapper.find('#follow_up_flag_submit_button').find('span').text()).toEqual('Clear');
   });
 
   it('When a bulk action, properly renders all main components', () => {
     const wrapper = getWrapperBulkAction([mockPatient1.linelist]);
-    expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
-    expect(wrapper.find('#set_flag_for_follow_up').exists()).toBeTruthy();
-    expect(wrapper.find('#set_flag_for_follow_up').prop('checked')).toBeTruthy();
-    expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBeTruthy();
-    expect(wrapper.find('#clear_flag_for_follow_up').prop('checked')).toBeFalsy();
-    expect(wrapper.find('#clear_flag_for_follow_up').prop('disabled')).toBeTruthy();
+    expect(wrapper.find(Modal.Body).exists()).toBe(true);
+    expect(wrapper.find('#set_flag_for_follow_up').exists()).toBe(true);
+    expect(wrapper.find('#set_flag_for_follow_up').prop('checked')).toBe(true);
+    expect(wrapper.find('#clear_flag_for_follow_up').exists()).toBe(true);
+    expect(wrapper.find('#clear_flag_for_follow_up').prop('checked')).toBe(false);
+    expect(wrapper.find('#clear_flag_for_follow_up').prop('disabled')).toBe(true);
     expect(wrapper.find(ReactTooltip).length).toEqual(2);
     expect(wrapper.find(ReactTooltip).at(0).find('div').text()).toEqual('None of the selected monitorees have a flag set');
     expect(wrapper.find(ReactTooltip).at(1).find('div').text()).toEqual('Please select a reason for follow-up');
@@ -95,11 +95,11 @@ describe('FollowUpFlag', () => {
     });
     expect(wrapper.find(Form.Label).at(0).text()).toContain('Please select a reason for being flagged for follow-up.');
     expect(wrapper.find(Form.Label).at(1).text()).toEqual('Please include any additional details:');
-    expect(wrapper.find(ApplyToHousehold).exists()).toBeFalsy();
-    expect(wrapper.find('#bulk_action_apply_to_household').exists()).toBeTruthy();
-    expect(wrapper.find('#follow_up_flag_cancel_button').exists()).toBeTruthy();
-    expect(wrapper.find('#follow_up_flag_submit_button').exists()).toBeTruthy();
-    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBeTruthy();
+    expect(wrapper.find(ApplyToHousehold).exists()).toBe(false);
+    expect(wrapper.find('#bulk_action_apply_to_household').exists()).toBe(true);
+    expect(wrapper.find('#follow_up_flag_cancel_button').exists()).toBe(true);
+    expect(wrapper.find('#follow_up_flag_submit_button').exists()).toBe(true);
+    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBe(true);
     expect(wrapper.find('#follow_up_flag_submit_button').find('span').text()).toEqual('Submit');
   });
 
@@ -109,18 +109,18 @@ describe('FollowUpFlag', () => {
     // componentDidMount is called when mounted and that calls an async method (updateTable),
     // as a result, we added a timeout to give it time to resolve.
     setTimeout(() => {
-      expect(wrapper.state('apply_to_household')).toBeFalsy();
+      expect(wrapper.state('apply_to_household')).toBe(false);
       expect(wrapper.state('apply_to_household_ids')).toEqual([]);
-      expect(wrapper.state('no_members_selected')).toBeFalsy();
-      expect(wrapper.state('bulk_action_apply_to_household')).toBeFalsy();
-      expect(wrapper.state('clear_flag_disabled')).toBeTruthy();
-      expect(wrapper.state('clear_flag')).toBeFalsy();
+      expect(wrapper.state('no_members_selected')).toBe(false);
+      expect(wrapper.state('bulk_action_apply_to_household')).toBe(false);
+      expect(wrapper.state('clear_flag_disabled')).toBe(true);
+      expect(wrapper.state('clear_flag')).toBe(false);
       expect(wrapper.state('clear_flag_reason')).toEqual('');
       expect(wrapper.state('follow_up_reason')).toEqual('');
       expect(wrapper.state('follow_up_note')).toEqual('');
       expect(wrapper.state('initial_follow_up_reason')).toEqual('');
       expect(wrapper.state('initial_follow_up_note')).toEqual('');
-      expect(wrapper.state('loading')).toBeFalsy();
+      expect(wrapper.state('loading')).toBe(false);
     }, 500);
   });
 
@@ -130,25 +130,25 @@ describe('FollowUpFlag', () => {
     // componentDidMount is called when mounted and that calls an async method (updateTable),
     // as a result, we added a timeout to give it time to resolve.
     setTimeout(() => {
-      expect(wrapper.state('apply_to_household')).toBeFalsy();
+      expect(wrapper.state('apply_to_household')).toBe(false);
       expect(wrapper.state('apply_to_household_ids')).toEqual([]);
-      expect(wrapper.state('no_members_selected')).toBeFalsy();
-      expect(wrapper.state('bulk_action_apply_to_household')).toBeFalsy();
-      expect(wrapper.state('clear_flag_disabled')).toBeFalsy();
-      expect(wrapper.state('clear_flag')).toBeFalsy();
+      expect(wrapper.state('no_members_selected')).toBe(false);
+      expect(wrapper.state('bulk_action_apply_to_household')).toBe(false);
+      expect(wrapper.state('clear_flag_disabled')).toBe(false);
+      expect(wrapper.state('clear_flag')).toBe(false);
       expect(wrapper.state('clear_flag_reason')).toEqual('');
       expect(wrapper.state('follow_up_reason')).toEqual(mockPatient5.follow_up_reason);
       expect(wrapper.state('follow_up_note')).toEqual(mockPatient5.follow_up_note);
       expect(wrapper.state('initial_follow_up_reason')).toEqual(mockPatient5.follow_up_reason);
       expect(wrapper.state('initial_follow_up_note')).toEqual(mockPatient5.follow_up_note);
-      expect(wrapper.state('loading')).toBeFalsy();
+      expect(wrapper.state('loading')).toBe(false);
     }, 500);
   });
 
   it('Submit button disabled until a reason for follow-up is selected', () => {
     const wrapper = getWrapperIndividual(mockPatient1, [], false);
-    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
+    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
     expect(wrapper.find(ReactTooltip).find('div').text()).toEqual('Please select a reason for follow-up');
 
     // Select a reason for follow-up
@@ -156,16 +156,16 @@ describe('FollowUpFlag', () => {
       .find(Form.Control)
       .at(0)
       .simulate('change', { target: { id: 'follow_up_reason', value: 'Quality Assurance' }, persist: jest.fn() });
-    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBeFalsy();
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBe(false);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
 
     // Clear reason for follow-up
     wrapper
       .find(Form.Control)
       .at(0)
       .simulate('change', { target: { id: 'follow_up_reason', value: '' }, persist: jest.fn() });
-    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBeTruthy();
-    expect(wrapper.find(ReactTooltip).exists()).toBeTruthy();
+    expect(wrapper.find('#follow_up_flag_submit_button').prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
     expect(wrapper.find(ReactTooltip).find('div').text()).toEqual('Please select a reason for follow-up');
   });
 
@@ -183,7 +183,7 @@ describe('FollowUpFlag', () => {
 
   it('ApplyToHousehold component renders when monitoree is in a household', () => {
     const wrapper = getWrapperIndividual(mockPatient1, [mockPatient3], false);
-    expect(wrapper.find(ApplyToHousehold).exists()).toBeTruthy();
+    expect(wrapper.find(ApplyToHousehold).exists()).toBe(true);
   });
 
   it('When a bulk action, pre-populates the follow-up reason and note if only one monitoree selected', () => {
@@ -206,11 +206,11 @@ describe('FollowUpFlag', () => {
 
   it('When a bulk action, clear flag option disabled when the selected monitorees do not currently have a flag set', () => {
     const wrapper = getWrapperBulkAction([mockPatient1.linelist, mockPatient1.linelist]);
-    expect(wrapper.find('#clear_flag_for_follow_up').prop('disabled')).toBeTruthy();
+    expect(wrapper.find('#clear_flag_for_follow_up').prop('disabled')).toBe(true);
   });
 
   it('When a bulk action, clear flag option enabled when one of the selected monitorees does currently have a flag set', () => {
     const wrapper = getWrapperBulkAction([mockPatient1.linelist, mockPatient3.linelist]);
-    expect(wrapper.find('#clear_flag_for_follow_up').prop('disabled')).toBeFalsy();
+    expect(wrapper.find('#clear_flag_for_follow_up').prop('disabled')).toBe(false);
   });
 });

@@ -91,16 +91,16 @@ function getWrapper() {
 describe('PreferredReportingMethod', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find(Card).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Header).exists()).toBeTruthy();
+    expect(wrapper.find(Card).exists()).toBe(true);
+    expect(wrapper.find(Card.Header).exists()).toBe(true);
     expect(wrapper.find(Card.Header).text()).toEqual('Monitorees by Reporting Method (Active Records Only)');
-    expect(wrapper.find(Card.Body).exists()).toBeTruthy();
-    expect(wrapper.find(Card.Body).find('table').exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).exists()).toBe(true);
+    expect(wrapper.find(Card.Body).find('table').exists()).toBe(true);
   });
 
   it('Properly renders reporting method table', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find('thead').exists()).toBeTruthy();
+    expect(wrapper.find('thead').exists()).toBe(true);
     expect(wrapper.find('thead').find('th').length).toEqual(columnHeaders.length + 2);
     columnHeaders.forEach((col, c_index) => {
       expect(
@@ -111,7 +111,7 @@ describe('PreferredReportingMethod', () => {
           .text()
       ).toEqual(col);
     });
-    expect(wrapper.find('tbody').exists()).toBeTruthy();
+    expect(wrapper.find('tbody').exists()).toBe(true);
     expect(wrapper.find('tbody').find('tr').length).toEqual(exposureRowHeaders.length + isolationRowHeaders.length + 2);
     expect(wrapper.find('tbody').find('tr').at(0).find('td').at(0).text()).toEqual('Exposure Workflow');
     exposureRowHeaders.forEach((row, r_index) => {

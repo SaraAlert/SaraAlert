@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
 
-import { phoneSchemaValidator } from '../../../utils/Patient';
+import { phoneSchemaValidator } from '../../../utils/PatientFormatters';
 
 import _ from 'lodash';
 import moment from 'moment';

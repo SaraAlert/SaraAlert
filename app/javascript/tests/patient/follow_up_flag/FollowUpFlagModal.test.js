@@ -16,11 +16,11 @@ function getWrapperIndividual(patient, clear_flag) {
 describe('FollowUpFlagModal', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapperIndividual(mockPatient1, false);
-    expect(wrapper.find('#follow-up-flag-modal').exists()).toBeTruthy();
-    expect(wrapper.find(Modal).exists()).toBeTruthy();
-    expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
+    expect(wrapper.find('#follow-up-flag-modal').exists()).toBe(true);
+    expect(wrapper.find(Modal).exists()).toBe(true);
+    expect(wrapper.find(Modal.Title).exists()).toBe(true);
     expect(wrapper.find(Modal.Title).text()).toEqual('Flag for Follow-Up');
-    expect(wrapper.find(FollowUpFlag).exists()).toBeTruthy();
+    expect(wrapper.find(FollowUpFlag).exists()).toBe(true);
   });
 
   it('Properly sets modal title for a patient with a flag set when clearing the flag', () => {

@@ -130,9 +130,9 @@ describe('UpdateCaseStatus', () => {
       expect(wrapper.state('follow_up')).toEqual('Continue Monitoring in Isolation Workflow');
       expect(wrapper.find('p').at(2).text()).toContain('The selected monitorees will be moved to the isolation workflow and placed in the requiring review, non-reporting, or reporting line list as appropriate.');
       wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
-      expect(wrapper.state('apply_to_household')).toBeFalsy();
+      expect(wrapper.state('apply_to_household')).toBe(false);
       wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
-      expect(wrapper.state('apply_to_household')).toBeTruthy();
+      expect(wrapper.state('apply_to_household')).toBe(true);
     });
   });
 
@@ -147,11 +147,11 @@ describe('UpdateCaseStatus', () => {
       expect(wrapper.state('case_status')).toEqual(case_status_option);
       expect(wrapper.find('p').at(1).text()).toContain('The selected cases will remain in the isolation workflow.');
       // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
-      expect(wrapper.find(Form.Control).at(1).exists()).toBeFalsy();
+      expect(wrapper.find(Form.Control).at(1).exists()).toBe(false);
       wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
-      expect(wrapper.state('apply_to_household')).toBeFalsy();
+      expect(wrapper.state('apply_to_household')).toBe(false);
       wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
-      expect(wrapper.state('apply_to_household')).toBeTruthy();
+      expect(wrapper.state('apply_to_household')).toBe(true);
     });
   });
 
@@ -164,7 +164,7 @@ describe('UpdateCaseStatus', () => {
         .first()
         .simulate('change', { target: { id: 'case_status', type: 'change', value: case_status_option }, persist: jest.fn() });
       expect(wrapper.state('case_status')).toEqual(case_status_option);
-      expect(wrapper.state('allSelectedAreClosed')).toBeTruthy();
+      expect(wrapper.state('allSelectedAreClosed')).toBe(true);
 
       // When all are closed, there is no follow-up dropdown, so this shoud be 3, instead of the usual 4
       expect(wrapper.find(Form.Control).length).toEqual(3);
@@ -201,11 +201,11 @@ describe('UpdateCaseStatus', () => {
 
       expect(wrapper.find('p').at(1).text()).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
       // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
-      expect(wrapper.find(Form.Control).at(1).exists()).toBeFalsy();
+      expect(wrapper.find(Form.Control).at(1).exists()).toBe(false);
       wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
-      expect(wrapper.state('apply_to_household')).toBeFalsy();
+      expect(wrapper.state('apply_to_household')).toBe(false);
       wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
-      expect(wrapper.state('apply_to_household')).toBeTruthy();
+      expect(wrapper.state('apply_to_household')).toBe(true);
     });
   });
 
@@ -221,11 +221,11 @@ describe('UpdateCaseStatus', () => {
 
       expect(wrapper.find('p').at(1).text()).toContain('The selected cases will remain in the exposure workflow.');
       // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
-      expect(wrapper.find(Form.Control).at(1).exists()).toBeFalsy();
+      expect(wrapper.find(Form.Control).at(1).exists()).toBe(false);
       wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
-      expect(wrapper.state('apply_to_household')).toBeFalsy();
+      expect(wrapper.state('apply_to_household')).toBe(false);
       wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
-      expect(wrapper.state('apply_to_household')).toBeTruthy();
+      expect(wrapper.state('apply_to_household')).toBe(true);
     });
   });
 

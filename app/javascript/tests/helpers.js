@@ -1,19 +1,9 @@
 import moment from 'moment';
+
+/** import existing util methods already used in the application */
+import { formatName, formatNameAlt, formatRace, formatPhoneNumberVisually } from '../utils/PatientFormatters';
 import { formatTimestamp, formatDate } from '../utils/DateTime';
-
-/** formats patient name as it is done when the field is displayed */
-function nameFormatter(patient) {
-  return `${patient.first_name ? patient.first_name : ''}${patient.middle_name ? ' ' + patient.middle_name : ''}${
-    patient.last_name ? ' ' + patient.last_name : ''
-  }`;
-}
-
-/** formats patient name with last name first (ex: Smith, John Harold) */
-function nameFormatterAlt(patient) {
-  return `${patient.last_name ? patient.last_name + ',' : ''}${patient.first_name ? ' ' + patient.first_name : ''}${
-    patient.middle_name ? ' ' + patient.middle_name : ''
-  }`;
-}
+import { convertCommonLanguageCodeToName } from '../utils/Languages';
 
 /** formats address line 1 (number/street/etc) as it is done when the field is displayed */
 function addressLine1Formatter(patient) {
@@ -87,13 +77,16 @@ function sortByDescending(patients, field) {
 }
 
 export {
-  nameFormatter,
-  nameFormatterAlt,
+  formatName,
+  formatNameAlt,
+  formatRace,
+  formatPhoneNumberVisually,
+  formatDate,
+  formatTimestamp,
+  convertCommonLanguageCodeToName,
   addressLine1Formatter,
   addressLine2Formatter,
   addressFullFormatter,
-  formatDate,
-  formatTimestamp,
   sortByNameAscending,
   sortByNameDescending,
   sortByDateAscending,
