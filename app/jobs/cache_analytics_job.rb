@@ -409,7 +409,9 @@ class CacheAnalyticsJob < ApplicationJob
                                                                                                          .size
                                                                                   : nil,
                         cases_closed_in_exposure: workflow == 'Isolation' ? monitorees.where(case_status: Patient::ISOLATION_CASE_STATUS)
-                                                                                      .or(monitorees.where(monitoring_reason: Patient::CONTACT_TO_CASE_MONITORING_REASONS))
+                                                                                      .or(monitorees.where(
+                                                                                            monitoring_reason: Patient::CONTACT_TO_CASE_MONITORING_REASONS
+                                                                                          ))
                                                                                       .where(isolation: false)
                                                                                       .where(enrolled_isolation: false)
                                                                                       .closed_in_time_frame(time_frame)

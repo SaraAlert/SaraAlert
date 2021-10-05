@@ -9,8 +9,8 @@ class Patient < ApplicationRecord
   include ActiveModel::Validations
   include FhirHelper
 
-  ISOLATION_CASE_STATUS = %w[Confirmed Probable]
-  CONTACT_TO_CASE_MONITORING_REASONS = ['Meets Case Definition', 'Case Confirmed']
+  ISOLATION_CASE_STATUS = %w[Confirmed Probable].freeze
+  CONTACT_TO_CASE_MONITORING_REASONS = ['Meets Case Definition', 'Case Confirmed'].freeze
 
   columns.each do |column|
     case column.type
@@ -161,7 +161,7 @@ class Patient < ApplicationRecord
   }
   before_create do
     set_time_zone
-    self.enrolled_isolation ? 'Isolation' : 'Exposure'
+    enrolled_isolation ? 'Isolation' : 'Exposure'
   end
 
   around_save :inform_responder, if: :responder_id_changed?
