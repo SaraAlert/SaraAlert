@@ -65,8 +65,8 @@ class Import extends React.Component {
         this.submit(this.state.phased[0], 0, true);
       });
     } else {
-      // if there are no monitorees/cases to import, go back to root after pressing the import button
-      location.reload();
+      // if there are no monitorees/cases to import, go back to workflow after pressing the import button
+      location.href = `${window.BASE_PATH}/public_health/${this.props.workflow}`;
     }
   };
 
@@ -95,8 +95,8 @@ class Import extends React.Component {
               this.submit(this.state.phased[num + 1], num + 1, bypass);
             }
           } else if (this.state.phased.length != 0) {
-            // if there are no monitorees/cases to import, and import wasn't done one at a time go back to root after pressing the import button
-            location.reload();
+            // if there are no monitorees/cases to import, and import wasn't done one at a time go back to workflow after pressing the import button
+            location.href = `${window.BASE_PATH}/public_health/${this.props.workflow}`;
           }
         });
       })
@@ -179,7 +179,7 @@ class Import extends React.Component {
 
   render() {
     if (this.state.patients.length === this.state.accepted.length + this.state.rejected.length && this.state.errors.length == 0) {
-      location.href = `${window.BASE_PATH}/`;
+      location.href = `${window.BASE_PATH}/public_health/${this.props.workflow}`;
     }
     return (
       <React.Fragment>
