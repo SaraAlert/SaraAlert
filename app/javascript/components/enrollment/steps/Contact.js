@@ -49,24 +49,19 @@ class Contact extends React.Component {
         },
       });
     }
-    // There are two instances when a user might already have an email that we'd want to prefill the confirm email field
-    // One is editing an existing monitoree. The other is when enrolling a close contact
-    if (this.state.current.patient.email) {
-      this.setState(state => {
-        const current = { ...state.current };
-        current.patient.confirm_email = state.current.patient.email;
-        return { current };
-      });
-    }
 
-    // do the same for alternate contact email
-    if (this.state.current.patient.alternate_email) {
-      this.setState(state => {
-        const current = { ...state.current };
-        current.patient.alternate_confirm_email = state.current.patient.alternate_email;
-        return { current };
-      });
-    }
+    // There are two instances when a user might already have an email or alt email that we'd want to prefill the confirm email field
+    // One is editing an existing monitoree. The other is when enrolling a close contact
+    // Always preset the confirm email field to the defined email OR null (this is to ensure the yup validation works)
+    // email and alternate_email fields MUST be set to null if they are undefined in order for the yup validation to work as well
+    this.setState(state => {
+      const current = { ...state.current };
+      current.patient.email = state.current.patient.email || '';
+      current.patient.alternate_email = state.current.patient.alternate_email || '';
+      current.patient.confirm_email = state.current.patient.email || '';
+      current.patient.confirm_alternate_email = state.current.patient.alternate_email || '';
+      return { current };
+    });
   }
 
   handleChange = event => {
@@ -168,7 +163,7 @@ class Contact extends React.Component {
           alternate_secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           alternate_international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 50 characters.'),
           alternate_email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.'),
-          alternate_confirm_email: yup.string().oneOf([yup.ref('alternate_email'), null], 'Confirm Email must match.'),
+          confirm_alternate_email: yup.string().oneOf([yup.ref('alternate_email'), null], 'Confirm Email must match.'),
           alternate_preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           alternate_preferred_contact_time: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
@@ -199,7 +194,7 @@ class Contact extends React.Component {
           alternate_secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           alternate_international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 50 characters.'),
           alternate_email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.'),
-          alternate_confirm_email: yup.string().oneOf([yup.ref('alternate_email'), null], 'Confirm Email must match.'),
+          confirm_alternate_email: yup.string().oneOf([yup.ref('alternate_email'), null], 'Confirm Email must match.'),
           alternate_preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           alternate_preferred_contact_time: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
@@ -223,7 +218,7 @@ class Contact extends React.Component {
           alternate_secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           alternate_international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 50 characters.'),
           alternate_email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.'),
-          alternate_confirm_email: yup.string().oneOf([yup.ref('alternate_email'), null], 'Confirm Email must match.'),
+          confirm_alternate_email: yup.string().oneOf([yup.ref('alternate_email'), null], 'Confirm Email must match.'),
           alternate_preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           alternate_preferred_contact_time: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
@@ -257,7 +252,7 @@ class Contact extends React.Component {
         alternate_secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         alternate_international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 50 characters.'),
         alternate_email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.'),
-        alternate_confirm_email: yup.string().oneOf([yup.ref('alternate_email'), null], 'Confirm Email must match.'),
+        confirm_alternate_email: yup.string().oneOf([yup.ref('alternate_email'), null], 'Confirm Email must match.'),
         alternate_preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         alternate_preferred_contact_time: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
       });
@@ -749,7 +744,7 @@ var schema = yup.object().shape({
   alternate_secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   alternate_international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 50 characters.').nullable(),
   alternate_email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  alternate_confirm_email: yup
+  confirm_alternate_email: yup
     .string()
     .oneOf([yup.ref('alternate_email'), null], 'Confirm Email must match.')
     .nullable(),
