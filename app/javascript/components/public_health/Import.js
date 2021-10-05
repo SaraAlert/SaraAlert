@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, ProgressBar, Row } from 'react-bootstrap';
 import { formatDate } from '../../utils/DateTime';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
-import { formatPhoneNumberVisually } from '../../utils/Patient';
+import { formatPhoneNumberVisually } from '../../utils/PatientFormatters';
 
 import axios from 'axios';
 import moment from 'moment-timezone';

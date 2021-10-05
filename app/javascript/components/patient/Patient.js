@@ -13,7 +13,7 @@ import { Heading } from '../../utils/Heading';
 import { navQueryParam, patientHref } from '../../utils/Navigation';
 import { customPreferredContactTimeOptions } from '../../data/preferredContactTimeOptions';
 import { convertLanguageCodesToNames } from '../../utils/Languages';
-import { formatName, formatPhoneNumberVisually, formatRace, isMinor } from '../../utils/Patient';
+import { formatName, formatPhoneNumberVisually, formatRace, isMinor } from '../../utils/PatientFormatters';
 
 let rootHeaderLevel;
 

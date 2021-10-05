@@ -31,7 +31,7 @@ describe('CloseRecords', () => {
       });
     expect(wrapper.find(Form.Group).at(1).find(Form.Label).text()).toEqual('Please include any additional details:');
     expect(wrapper.find('.character-limit-text').text()).toContain('characters remaining');
-    expect(wrapper.find('#apply_to_household').exists()).toBeTruthy();
+    expect(wrapper.find('#apply_to_household').exists()).toBe(true);
     expect(wrapper.find(Modal.Footer).find(Button).at(0).text()).toEqual('Cancel');
     expect(wrapper.find(Modal.Footer).find(Button).at(1).text()).toEqual('Submit');
   });
@@ -70,11 +70,11 @@ describe('CloseRecords', () => {
 
   it('Properly toggles the Apply to Household option', () => {
     const wrapper = getWrapper();
-    expect(wrapper.state('apply_to_household')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBe(false);
     wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true } });
-    expect(wrapper.state('apply_to_household')).toBeTruthy();
+    expect(wrapper.state('apply_to_household')).toBe(true);
     wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false } });
-    expect(wrapper.state('apply_to_household')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBe(false);
   });
 
   it('Properly calls the close method', () => {

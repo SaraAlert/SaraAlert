@@ -22,23 +22,23 @@ function getMountedWrapper() {
 describe('AssessmentModal', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper(true);
-    expect(wrapper.find(Modal).exists()).toBeTruthy();
-    expect(wrapper.find(Modal).prop('show')).toBeTruthy();
-    expect(wrapper.find(Modal.Header).exists()).toBeTruthy();
-    expect(wrapper.find(Modal.Header).prop('closeButton')).toBeTruthy();
-    expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
-    expect(wrapper.find(Assessment).exists()).toBeTruthy();
+    expect(wrapper.find(Modal).exists()).toBe(true);
+    expect(wrapper.find(Modal).prop('show')).toBe(true);
+    expect(wrapper.find(Modal.Header).exists()).toBe(true);
+    expect(wrapper.find(Modal.Header).prop('closeButton')).toBe(true);
+    expect(wrapper.find(Modal.Body).exists()).toBe(true);
+    expect(wrapper.find(Assessment).exists()).toBe(true);
   });
 
   it('Hides modal when props.show is false', () => {
     const wrapper = getWrapper(false);
-    expect(wrapper.find(Modal).exists()).toBeTruthy();
-    expect(wrapper.find(Modal).prop('show')).toBeFalsy();
+    expect(wrapper.find(Modal).exists()).toBe(true);
+    expect(wrapper.find(Modal).prop('show')).toBe(false);
   });
 
   it('Clicking the close button calls onClose', () => {
     const wrapper = getMountedWrapper();
-    expect(onCloseMock).toHaveBeenCalledTimes(0);
+    expect(onCloseMock).not.toHaveBeenCalled();
     wrapper.find(CloseButton).simulate('click');
     expect(onCloseMock).toHaveBeenCalled();
   });

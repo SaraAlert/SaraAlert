@@ -2,11 +2,11 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
+import _ from 'lodash';
 import MoveToHousehold from '../../../../components/patient/household/actions/MoveToHousehold';
 import CustomTable from '../../../../components/layout/CustomTable';
 import { mockPatient1 } from '../../../mocks/mockPatients';
-import { nameFormatterAlt } from '../../../util.js';
-import _ from 'lodash';
+import { formatNameAlt } from '../../../helpers';
 
 const mockToken = 'testMockTokenString12345';
 
@@ -18,38 +18,38 @@ describe('MoveToHousehold', () => {
   it('Properly renders Move to Household button', () => {
     const wrapper = getWrapper();
     expect(wrapper.find(Button).length).toEqual(1);
-    expect(wrapper.find(Button).text().includes('Move To Household')).toBeTruthy();
-    expect(wrapper.find('i').hasClass('fa-house-user')).toBeTruthy();
-    expect(wrapper.find(Button).prop('disabled')).toBeFalsy();
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(Button).text()).toContain('Move To Household');
+    expect(wrapper.find('i').hasClass('fa-house-user')).toBe(true);
+    expect(wrapper.find(Button).prop('disabled')).toBe(false);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 
   it('Clicking the Move to Household button opens modal', () => {
     const wrapper = getWrapper();
-    expect(wrapper.state('showModal')).toBeFalsy();
-    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    expect(wrapper.state('showModal')).toBe(false);
+    expect(wrapper.find(Modal).exists()).toBe(false);
     wrapper.find(Button).simulate('click');
-    expect(wrapper.state('showModal')).toBeTruthy();
-    expect(wrapper.find(Modal).exists()).toBeTruthy();
+    expect(wrapper.state('showModal')).toBe(true);
+    expect(wrapper.find(Modal).exists()).toBe(true);
   });
 
   it('Properly renders Move to Household modal', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    expect(wrapper.find(Modal).exists()).toBeTruthy();
-    expect(wrapper.find(Modal.Header).exists()).toBeTruthy();
+    expect(wrapper.find(Modal).exists()).toBe(true);
+    expect(wrapper.find(Modal.Header).exists()).toBe(true);
     expect(wrapper.find(Modal.Header).text()).toEqual('Move To Household');
-    expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
-    expect(wrapper.find(Modal.Body).find(Form.Label).text()).toEqual(`Please select the new monitoree that will respond for ${nameFormatterAlt(mockPatient1)}.`);
-    expect(wrapper.find(Modal.Body).find(Form.Label).find('b').text()).toEqual(nameFormatterAlt(mockPatient1));
+    expect(wrapper.find(Modal.Body).exists()).toBe(true);
+    expect(wrapper.find(Modal.Body).find(Form.Label).text()).toEqual(`Please select the new monitoree that will respond for ${formatNameAlt(mockPatient1)}.`);
+    expect(wrapper.find(Modal.Body).find(Form.Label).find('b').text()).toEqual(formatNameAlt(mockPatient1));
 
-    expect(_.unescape(wrapper.find(Modal.Body).find('p').text())).toEqual(`You may select from the provided existing Head of Households and monitorees who are self reporting. ${nameFormatterAlt(mockPatient1)} will be immediately moved into the selected monitoree's household.`);
-    expect(wrapper.find(Modal.Body).find(InputGroup).exists()).toBeTruthy();
-    expect(wrapper.find(Modal.Body).find('#search-input').exists()).toBeTruthy();
+    expect(_.unescape(wrapper.find(Modal.Body).find('p').text())).toEqual(`You may select from the provided existing Head of Households and monitorees who are self reporting. ${formatNameAlt(mockPatient1)} will be immediately moved into the selected monitoree's household.`);
+    expect(wrapper.find(Modal.Body).find(InputGroup).exists()).toBe(true);
+    expect(wrapper.find(Modal.Body).find('#search-input').exists()).toBe(true);
     expect(wrapper.find(Modal.Body).find('#search-input').prop('value')).toEqual('');
-    expect(wrapper.find(Modal.Body).find(CustomTable).exists()).toBeTruthy();
-    expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
-    expect(wrapper.find('#move-to-household-cancel-button').exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Body).find(CustomTable).exists()).toBe(true);
+    expect(wrapper.find(Modal.Footer).exists()).toBe(true);
+    expect(wrapper.find('#move-to-household-cancel-button').exists()).toBe(true);
   });
 
   it('Changing search input updates state and calls updateTable', () => {
@@ -69,11 +69,11 @@ describe('MoveToHousehold', () => {
   it('Clicking the cancel button in Move to Household modal closes modal', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    expect(wrapper.state('showModal')).toBeTruthy();
-    expect(wrapper.find(Modal).exists()).toBeTruthy();
+    expect(wrapper.state('showModal')).toBe(true);
+    expect(wrapper.find(Modal).exists()).toBe(true);
     wrapper.find('#move-to-household-cancel-button').simulate('click');
-    expect(wrapper.state('showModal')).toBeFalsy();
-    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    expect(wrapper.state('showModal')).toBe(false);
+    expect(wrapper.find(Modal).exists()).toBe(false);
   });
 
   it('Clicking the cancel button in Move to Household modal resets state', () => {

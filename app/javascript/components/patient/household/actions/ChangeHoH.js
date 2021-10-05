@@ -3,7 +3,7 @@ import axios from 'axios';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import reportError from '../../../util/ReportError';
-import { formatNameAlt } from '../../../../utils/Patient';
+import { formatNameAlt } from '../../../../utils/PatientFormatters';
 
 class ChangeHoH extends React.Component {
   constructor(props) {

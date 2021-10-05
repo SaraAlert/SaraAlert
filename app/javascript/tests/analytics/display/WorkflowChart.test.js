@@ -16,24 +16,24 @@ const chartData = [
 describe('WorkflowChart', () => {
   it('Properly renders all main components', () => {
     const wrapper = shallow(<WorkflowChart title={chartTitle} data={chartData} />);
-    expect(wrapper.find('.analytics-chart-borders').exists()).toBeTruthy();
-    expect(wrapper.find('h5').exists()).toBeTruthy();
+    expect(wrapper.find('.analytics-chart-borders').exists()).toBe(true);
+    expect(wrapper.find('h5').exists()).toBe(true);
     expect(wrapper.find('h5').text()).toEqual(chartTitle);
-    expect(wrapper.find(InfoTooltip).exists()).toBeFalsy();
-    expect(wrapper.find(ResponsiveContainer).exists()).toBeTruthy();
-    expect(wrapper.find(BarChart).exists()).toBeTruthy();
-    expect(wrapper.find(CartesianGrid).exists()).toBeTruthy();
-    expect(wrapper.find(XAxis).exists()).toBeTruthy();
-    expect(wrapper.find(YAxis).exists()).toBeTruthy();
-    expect(wrapper.find(Tooltip).exists()).toBeTruthy();
-    expect(wrapper.find(Legend).exists()).toBeTruthy();
-    expect(wrapper.find(Bar).exists()).toBeTruthy();
+    expect(wrapper.find(InfoTooltip).exists()).toBe(false);
+    expect(wrapper.find(ResponsiveContainer).exists()).toBe(true);
+    expect(wrapper.find(BarChart).exists()).toBe(true);
+    expect(wrapper.find(CartesianGrid).exists()).toBe(true);
+    expect(wrapper.find(XAxis).exists()).toBe(true);
+    expect(wrapper.find(YAxis).exists()).toBe(true);
+    expect(wrapper.find(Tooltip).exists()).toBe(true);
+    expect(wrapper.find(Legend).exists()).toBe(true);
+    expect(wrapper.find(Bar).exists()).toBe(true);
     expect(wrapper.find(Bar).length).toEqual(2);
   });
 
   it('Renders info tooltip in header if props.tooltipKey is defined', () => {
     const wrapper = shallow(<WorkflowChart title={chartTitle} tooltipKey={'analyticsAgeTip'} data={chartData} />);
-    expect(wrapper.find('h5').find(InfoTooltip).exists()).toBeTruthy();
+    expect(wrapper.find('h5').find(InfoTooltip).exists()).toBe(true);
     expect(wrapper.find('h5').find(InfoTooltip).prop('tooltipTextKey')).toEqual('analyticsAgeTip');
   });
 });

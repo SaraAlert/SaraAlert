@@ -18,23 +18,23 @@ describe('UpdateAssignedUser', () => {
     const wrapper = getWrapper([mockPatient1, mockPatient2]);
     expect(wrapper.state('assigned_user')).toEqual(21);
     expect(wrapper.state('initial_assigned_user')).toEqual(21);
-    expect(wrapper.state('apply_to_household')).toBeFalsy();
-    expect(wrapper.state('loading')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBe(false);
+    expect(wrapper.state('loading')).toBe(false);
   });
 
   it('Properly renders all main components', () => {
     const wrapper = getWrapper([mockPatient1, mockPatient2]);
     expect(wrapper.find(Modal.Body).find('div').at(0).text()).toContain('Please input the desired Assigned User to be associated with all selected monitorees:');
-    expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
-    expect(wrapper.find('#assigned_user_input').exists()).toBeTruthy();
-    expect(wrapper.find('#assigned_users').exists()).toBeTruthy();
+    expect(wrapper.find(InfoTooltip).exists()).toBe(true);
+    expect(wrapper.find('#assigned_user_input').exists()).toBe(true);
+    expect(wrapper.find('#assigned_users').exists()).toBe(true);
     wrapper
       .find('#assigned_users')
       .find('option')
       .forEach((option, index) => {
         expect(option.text()).toEqual(mockAssignedUserDatalist[Number(index)]);
       });
-    expect(wrapper.find('#apply_to_household').exists()).toBeTruthy();
+    expect(wrapper.find('#apply_to_household').exists()).toBe(true);
     expect(wrapper.find(Modal.Footer).find(Button).at(0).text()).toEqual('Cancel');
     expect(wrapper.find(Modal.Footer).find(Button).at(1).text()).toEqual('Submit');
     expect(wrapper.find(Form.Control).prop('value')).toEqual(21);
@@ -66,11 +66,11 @@ describe('UpdateAssignedUser', () => {
 
   it('Properly toggles the Apply to Household option', () => {
     const wrapper = getWrapper([mockPatient1, mockPatient6]);
-    expect(wrapper.state('apply_to_household')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBe(false);
     wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: true }, persist: jest.fn() });
-    expect(wrapper.state('apply_to_household')).toBeTruthy();
+    expect(wrapper.state('apply_to_household')).toBe(true);
     wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
-    expect(wrapper.state('apply_to_household')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBe(false);
   });
 
   it('Properly calls the close method', () => {

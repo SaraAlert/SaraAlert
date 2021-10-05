@@ -11,6 +11,7 @@ class FollowUpFlagPanel extends React.Component {
     this.state = {
       showUpdateFlagModal: false,
       showClearFlagModal: false,
+      expandFollowUpNotes: false,
     };
   }
 
