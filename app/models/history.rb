@@ -73,7 +73,7 @@ class History < ApplicationRecord
   scope :in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Yesterday'
-      where('histories.created_at >= ?', DateTime.now.utc - 24.hours)
+      where('histories.created_at >= ? AND histories.created_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 7 Days'
       where('histories.created_at >= ? AND histories.created_at < ?', (DateTime.now.utc - 7.days).beginning_of_day, DateTime.now.utc.beginning_of_day)
     when 'Last 14 Days'

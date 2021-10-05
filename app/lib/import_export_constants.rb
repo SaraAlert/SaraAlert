@@ -131,7 +131,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                 potential_exposure_location potential_exposure_country contact_of_known_case_id was_in_health_care_facility_with_known_cases_facility_name
                 laboratory_personnel_facility_name healthcare_personnel_facility_name member_of_a_common_exposure_cohort_type exposure_risk_assessment
                 monitoring_plan case_status gender_identity sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason],
-    notes: %i[travel_related_notes additional_planned_travel_related_notes exposure_notes follow_up_note enrolled_workflow],
+    notes: %i[travel_related_notes additional_planned_travel_related_notes exposure_notes follow_up_note],
     dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
               symptom_onset first_positive_lab_at extended_isolation contact_became_case_at],
     times: %i[preferred_contact_time],
