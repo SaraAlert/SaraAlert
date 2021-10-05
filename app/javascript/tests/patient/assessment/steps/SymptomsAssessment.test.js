@@ -19,14 +19,14 @@ afterEach(() => {
 describe('SymptomsAssessment', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
-    expect(wrapper.find(Card.Header).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Header).exists()).toBe(true);
     expect(wrapper.find(Card.Header).text()).toEqual(`${mockTranslations['eng']['html']['weblink']['title']} (AA-39)`);
-    expect(wrapper.find(Card.Body).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).exists()).toBe(true);
     expect(wrapper.find(Card.Body).find(Form.Row).at(0).text()).toEqual(mockTranslations['eng']['html']['weblink']['bool-title']);
-    expect(wrapper.find(Card.Body).find(Form.Group).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Form.Group).exists()).toBe(true);
     expect(wrapper.find(Card.Body).find(Form.Check).length).toEqual(17);
     expect(wrapper.find(Card.Body).find(Form.Control).length).toEqual(2);
-    expect(wrapper.find(Card.Body).find(Button).exists()).toBeTruthy();
+    expect(wrapper.find(Card.Body).find(Button).exists()).toBe(true);
     expect(wrapper.find(Card.Body).find(Button).text()).toEqual(mockTranslations['eng']['html']['weblink']['submit']);
   });
 
@@ -34,8 +34,8 @@ describe('SymptomsAssessment', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
     const checkboxes = wrapper.find(Form.Check);
     checkboxes.forEach(cb => {
-      expect(cb.prop('checked')).toBeFalsy();
-      expect(cb.prop('disabled')).toBeFalsy();
+      expect(cb.prop('checked')).toBe(false);
+      expect(cb.prop('disabled')).toBe(false);
     });
     const formControls = wrapper.find(Form.Control);
     formControls.forEach(fc => {
@@ -54,10 +54,10 @@ describe('SymptomsAssessment', () => {
       });
     boolSymptoms.forEach((symp, index) => {
       expect(wrapper.find(Form.Check).at(index).prop('checked')).toEqual(symp.value);
-      expect(wrapper.find(Form.Check).at(index).prop('disabled')).toBeFalsy();
+      expect(wrapper.find(Form.Check).at(index).prop('disabled')).toBe(false);
     });
-    expect(wrapper.find(Form.Check).at(16).prop('checked')).toBeFalsy();
-    expect(wrapper.find(Form.Check).at(16).prop('disabled')).toBeTruthy();
+    expect(wrapper.find(Form.Check).at(16).prop('checked')).toBe(false);
+    expect(wrapper.find(Form.Check).at(16).prop('disabled')).toBe(true);
     const formControls = wrapper.find(Form.Control);
     formControls.forEach(fc => {
       expect(fc.prop('value')).toEqual('');
@@ -68,8 +68,8 @@ describe('SymptomsAssessment', () => {
     const wrapper = getWrapper(mockAssessment2, mockSymptoms2, '777');
     const checkboxes = wrapper.find(Form.Check);
     checkboxes.forEach(cb => {
-      expect(cb.prop('checked')).toBeFalsy();
-      expect(cb.prop('disabled')).toBeFalsy();
+      expect(cb.prop('checked')).toBe(false);
+      expect(cb.prop('disabled')).toBe(false);
     });
     const formControls = wrapper.find(Form.Control);
     expect(formControls.at(0).prop('value')).toEqual(5);
@@ -81,11 +81,11 @@ describe('SymptomsAssessment', () => {
     wrapper.find('#no-symptoms-check').simulate('change', { target: { value: true } });
     wrapper.find(Form.Check).forEach(cb => {
       if (cb.prop('id') === 'no-symptoms-check') {
-        expect(cb.prop('checked')).toBeTruthy();
-        expect(cb.prop('disabled')).toBeFalsy();
+        expect(cb.prop('checked')).toBe(true);
+        expect(cb.prop('disabled')).toBe(false);
       } else {
-        expect(cb.prop('checked')).toBeFalsy();
-        expect(cb.prop('disabled')).toBeTruthy();
+        expect(cb.prop('checked')).toBe(false);
+        expect(cb.prop('disabled')).toBe(true);
       }
     });
   });
@@ -96,14 +96,14 @@ describe('SymptomsAssessment', () => {
     checkbox.simulate('change', { target: { id: checkbox.prop('id'), checked: true } });
     wrapper.find(Form.Check).forEach(cb => {
       if (checkbox.prop('id') === cb.prop('id')) {
-        expect(cb.prop('checked')).toBeTruthy();
-        expect(cb.prop('disabled')).toBeFalsy();
+        expect(cb.prop('checked')).toBe(true);
+        expect(cb.prop('disabled')).toBe(false);
       } else if (cb.prop('id') === 'no-symptoms-check') {
-        expect(cb.prop('checked')).toBeFalsy();
-        expect(cb.prop('disabled')).toBeTruthy();
+        expect(cb.prop('checked')).toBe(false);
+        expect(cb.prop('disabled')).toBe(true);
       } else {
-        expect(cb.prop('checked')).toBeFalsy();
-        expect(cb.prop('disabled')).toBeFalsy();
+        expect(cb.prop('checked')).toBe(false);
+        expect(cb.prop('disabled')).toBe(false);
       }
     });
   });
@@ -111,11 +111,11 @@ describe('SymptomsAssessment', () => {
   it('Clicking "I am not experiencing any symptoms" updates state correctly', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
     wrapper.find('#no-symptoms-check').simulate('change', { target: { value: true } });
-    expect(wrapper.state('noSymptomsCheckbox')).toBeTruthy();
+    expect(wrapper.state('noSymptomsCheckbox')).toBe(true);
     expect(wrapper.state('selectedBoolSymptomCount')).toEqual(0);
     wrapper.state('reportState').symptoms.forEach(symp => {
       if (symp.type === 'BoolSymptom') {
-        expect(symp.value).toEqual(false);
+        expect(symp.value).toBe(false);
       }
     });
   });
@@ -125,7 +125,7 @@ describe('SymptomsAssessment', () => {
     const checkbox = wrapper.find(Form.Check).at(0);
     const checkboxId = checkbox.prop('id');
     checkbox.simulate('change', { target: { id: checkboxId, checked: true } });
-    expect(wrapper.state('noSymptomsCheckbox')).toBeFalsy();
+    expect(wrapper.state('noSymptomsCheckbox')).toBe(false);
     expect(wrapper.state('selectedBoolSymptomCount')).toEqual(1);
     wrapper.state('reportState').symptoms.forEach(symp => {
       if (symp.type === 'BoolSymptom') {
@@ -136,14 +136,14 @@ describe('SymptomsAssessment', () => {
 
   it('Clicking the submit button calls and props.submit when creating a new report', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
-    expect(submitMock).toHaveBeenCalledTimes(0);
+    expect(submitMock).not.toHaveBeenCalled();
     wrapper.find(Button).simulate('click');
     expect(submitMock).toHaveBeenCalled();
   });
 
   it('Clicking the submit button calls props.submit when editing a report with no new changes', () => {
     const wrapper = getWrapper(mockAssessment1, mockSymptoms1, '777');
-    expect(submitMock).toHaveBeenCalledTimes(0);
+    expect(submitMock).not.toHaveBeenCalled();
     wrapper.find(Button).simulate('click');
     expect(submitMock).toHaveBeenCalled();
   });
@@ -155,12 +155,12 @@ describe('SymptomsAssessment', () => {
     const checkbox = wrapper.find(Form.Check).at(7);
     checkbox.simulate('change', { target: { id: checkbox.prop('id'), checked: true } });
 
-    expect(navigateSpy).toHaveBeenCalledTimes(0);
-    expect(handleSubmitSpy).toHaveBeenCalledTimes(0);
-    expect(submitMock).toHaveBeenCalledTimes(0);
+    expect(navigateSpy).not.toHaveBeenCalled();
+    expect(handleSubmitSpy).not.toHaveBeenCalled();
+    expect(submitMock).not.toHaveBeenCalled();
     wrapper.find(Button).simulate('click');
     expect(navigateSpy).toHaveBeenCalled();
     expect(handleSubmitSpy).toHaveBeenCalled();
-    expect(submitMock).toHaveBeenCalledTimes(0);
+    expect(submitMock).not.toHaveBeenCalled();
   });
 });

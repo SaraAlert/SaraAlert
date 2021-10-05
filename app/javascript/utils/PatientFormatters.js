@@ -1,9 +1,8 @@
 import React from 'react';
 import moment from 'moment-timezone';
 import libphonenumber from 'google-libphonenumber';
-
 import IconMinor from '../components/patient/icons/IconMinor';
-import { formatDate } from '../utils/DateTime';
+import { formatDate } from './DateTime';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
@@ -109,13 +108,13 @@ function formatRace(patient) {
 }
 
 /**
- * helper function to determine if a given date of birth would make someone a minor.
+ * Helper function to determine if a given date of birth would make someone a minor.
  * @param {*} date : a date of birth value in YYYY-MM-DD format
  * @returns boolean true if patient is under 18, false if not
  */
-function isMinor(date) {
+ function isMinor(date) {
   return moment(date, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years'));
-}
+ }
 
 /**
  * Formats values in the date of birth column to be human readable and include whether that DOB indicates a minor.

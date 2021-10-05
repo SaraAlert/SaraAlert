@@ -37,7 +37,7 @@ import EligibilityTooltip from '../util/EligibilityTooltip';
 import confirmDialog from '../util/ConfirmDialog';
 import { patientHref } from '../../utils/Navigation';
 import { formatDate, formatTimestamp } from '../../utils/DateTime';
-import { formatDateOfBirthTableCell } from '../../utils/Patient';
+import { formatDateOfBirthTableCell } from '../../utils/PatientFormatters';
 
 class PatientsTable extends React.Component {
   constructor(props) {

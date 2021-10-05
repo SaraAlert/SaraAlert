@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Dropdown, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { formatDate } from '../../../utils/DateTime';
-import { formatPhoneNumberVisually, phoneNumberToE164Format } from '../../../utils/Patient';
+import { formatPhoneNumberVisually, phoneNumberToE164Format } from '../../../utils/PatientFormatters';
 
 import axios from 'axios';
 import _ from 'lodash';

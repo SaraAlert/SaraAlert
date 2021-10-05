@@ -25,19 +25,19 @@ function getWrapper() {
 describe('Report', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper();
-    expect(wrapper.find(Carousel).exists()).toBeTruthy();
-    expect(wrapper.find(Carousel.Item).exists()).toBeTruthy();
+    expect(wrapper.find(Carousel).exists()).toBe(true);
+    expect(wrapper.find(Carousel.Item).exists()).toBe(true);
     expect(wrapper.find(Carousel.Item).length).toEqual(2);
-    expect(wrapper.find(Carousel.Item).at(0).find(SymptomsAssessment).exists()).toBeTruthy();
-    expect(wrapper.find(Carousel.Item).at(1).find(AssessmentCompleted).exists()).toBeTruthy();
+    expect(wrapper.find(Carousel.Item).at(0).find(SymptomsAssessment).exists()).toBe(true);
+    expect(wrapper.find(Carousel.Item).at(1).find(AssessmentCompleted).exists()).toBe(true);
   });
 
   it('Calling goto method properly updates index and updates state correctly', () => {
     const wrapper = getWrapper();
     expect(wrapper.find(Carousel).prop('activeIndex')).toEqual(0);
     expect(wrapper.state('index')).toEqual(0);
-    expect(wrapper.state('direction')).toEqual(null);
-    expect(wrapper.state('lastIndex')).toEqual(null);
+    expect(wrapper.state('direction')).toBeNull();
+    expect(wrapper.state('lastIndex')).toBeNull();
     wrapper.instance().goto(1);
     expect(wrapper.find(Carousel).prop('activeIndex')).toEqual(1);
     expect(wrapper.state('index')).toEqual(1);

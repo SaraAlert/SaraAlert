@@ -4,7 +4,7 @@ import { Form, Row, Col, Button, Modal, InputGroup, OverlayTrigger, Tooltip } fr
 import axios from 'axios';
 import _ from 'lodash';
 import { formatDate } from '../../../../utils/DateTime';
-import { formatNameAlt } from '../../../../utils/Patient';
+import { formatNameAlt } from '../../../../utils/PatientFormatters';
 
 import BadgeHoH from '../../icons/BadgeHoH';
 import CustomTable from '../../../layout/CustomTable';

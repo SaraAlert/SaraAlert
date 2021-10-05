@@ -15,7 +15,7 @@ describe('Contact', () => {
   it('Properly renders all main components', () => {
     const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} patient={mockPatient1} />);
     requiredStrings.forEach(requiredString => {
-      expect(wrapper.text().includes(requiredString)).toBe(true);
+      expect(wrapper.text()).toContain(requiredString);
     });
   });
 

@@ -15,36 +15,36 @@ describe('RemoveFromHousehold', () => {
   it('Properly renders Remove from Household button', () => {
     const wrapper = getWrapper();
     expect(wrapper.find(Button).length).toEqual(1);
-    expect(wrapper.find(Button).text().includes('Remove From Household')).toBeTruthy();
-    expect(wrapper.find('i').hasClass('fa-house-user')).toBeTruthy();
-    expect(wrapper.find(Button).prop('disabled')).toBeFalsy();
-    expect(wrapper.find(ReactTooltip).exists()).toBeFalsy();
+    expect(wrapper.find(Button).text()).toContain('Remove From Household');
+    expect(wrapper.find('i').hasClass('fa-house-user')).toBe(true);
+    expect(wrapper.find(Button).prop('disabled')).toBe(false);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
   });
 
   it('Clicking the Remove to Household button opens modal', () => {
     const wrapper = getWrapper();
-    expect(wrapper.state('showModal')).toBeFalsy();
-    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    expect(wrapper.state('showModal')).toBe(false);
+    expect(wrapper.find(Modal).exists()).toBe(false);
     wrapper.find(Button).simulate('click');
-    expect(wrapper.state('showModal')).toBeTruthy();
-    expect(wrapper.find(Modal).exists()).toBeTruthy();
+    expect(wrapper.state('showModal')).toBe(true);
+    expect(wrapper.find(Modal).exists()).toBe(true);
   });
 
   it('Properly renders Remove from Household modal if removeEligible', () => {
     const wrapper = getWrapper();
     wrapper.setState({ removeEligible: true }, () => {
       wrapper.find(Button).simulate('click');
-      expect(wrapper.find(Modal).exists()).toBeTruthy();
-      expect(wrapper.find(Modal.Header).exists()).toBeTruthy();
+      expect(wrapper.find(Modal).exists()).toBe(true);
+      expect(wrapper.find(Modal.Header).exists()).toBe(true);
       expect(wrapper.find(Modal.Title).text()).toEqual('Remove Monitoree From Household');
-      expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
+      expect(wrapper.find(Modal.Body).exists()).toBe(true);
       expect(wrapper.find(Modal.Body).find(Form.Label).text()).toEqual('This monitoree will be removed from their household and will be responsible for their own responses.');
-      expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
+      expect(wrapper.find(Modal.Footer).exists()).toBe(true);
       expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
       expect(wrapper.find(Modal.Footer).find(Button).at(0).text()).toEqual('Cancel');
-      expect(wrapper.find(Modal.Footer).find(Button).at(0).prop('disabled')).toBeFalsy();
+      expect(wrapper.find(Modal.Footer).find(Button).at(0).prop('disabled')).toBe(false);
       expect(wrapper.find(Modal.Footer).find(Button).at(1).text()).toEqual('Remove');
-      expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBeFalsy();
+      expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBe(false);
     });
   });
 
@@ -52,17 +52,17 @@ describe('RemoveFromHousehold', () => {
     const wrapper = getWrapper();
     wrapper.setState({ removeEligible: false }, () => {
       wrapper.find(Button).simulate('click');
-      expect(wrapper.find(Modal).exists()).toBeTruthy();
-      expect(wrapper.find(Modal.Header).exists()).toBeTruthy();
+      expect(wrapper.find(Modal).exists()).toBe(true);
+      expect(wrapper.find(Modal.Header).exists()).toBe(true);
       expect(wrapper.find(Modal.Title).text()).toEqual('Cannot Remove Monitoree From Household');
-      expect(wrapper.find(Modal.Body).exists()).toBeTruthy();
+      expect(wrapper.find(Modal.Body).exists()).toBe(true);
       expect(wrapper.find(Modal.Body).find(Form.Label).text()).toEqual('This monitoree cannot be removed from their household until their email and primary telephone number differ from those of the current head of household.');
-      expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
+      expect(wrapper.find(Modal.Footer).exists()).toBe(true);
       expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
       expect(wrapper.find(Modal.Footer).find(Button).at(0).text()).toEqual('Cancel');
-      expect(wrapper.find(Modal.Footer).find(Button).at(0).prop('disabled')).toBeFalsy();
+      expect(wrapper.find(Modal.Footer).find(Button).at(0).prop('disabled')).toBe(false);
       expect(wrapper.find(Modal.Footer).find(Button).at(1).text()).toEqual('Remove');
-      expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBeTruthy();
+      expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBe(true);
     });
   });
 
@@ -71,7 +71,7 @@ describe('RemoveFromHousehold', () => {
     const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
     wrapper.setState({ removeEligible: true }, () => {
       wrapper.find(Button).simulate('click');
-      expect(submitSpy).toHaveBeenCalledTimes(0);
+      expect(submitSpy).not.toHaveBeenCalled();
       wrapper.find(Modal.Footer).find(Button).at(1).simulate('click');
       expect(submitSpy).toHaveBeenCalled();
     });
@@ -81,13 +81,13 @@ describe('RemoveFromHousehold', () => {
     const wrapper = getWrapper();
     wrapper.setState({ removeEligible: true }, () => {
       wrapper.find(Button).simulate('click');
-      expect(wrapper.state('loading')).toBeFalsy();
-      expect(wrapper.state('showModal')).toBeTruthy();
-      expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBeFalsy();
+      expect(wrapper.state('loading')).toBe(false);
+      expect(wrapper.state('showModal')).toBe(true);
+      expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBe(false);
       wrapper.find(Modal.Footer).find(Button).at(1).simulate('click');
-      expect(wrapper.state('loading')).toBeTruthy();
-      expect(wrapper.state('showModal')).toBeTruthy();
-      expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBeTruthy();
+      expect(wrapper.state('loading')).toBe(true);
+      expect(wrapper.state('showModal')).toBe(true);
+      expect(wrapper.find(Modal.Footer).find(Button).at(1).prop('disabled')).toBe(true);
     });
   });
 
@@ -95,11 +95,11 @@ describe('RemoveFromHousehold', () => {
     const wrapper = getWrapper();
     wrapper.setState({ removeEligible: true }, () => {
       wrapper.find(Button).simulate('click');
-      expect(wrapper.state('showModal')).toBeTruthy();
-      expect(wrapper.find(Modal).exists()).toBeTruthy();
+      expect(wrapper.state('showModal')).toBe(true);
+      expect(wrapper.find(Modal).exists()).toBe(true);
       wrapper.find(Modal.Footer).find(Button).at(0).simulate('click');
-      expect(wrapper.state('showModal')).toBeFalsy();
-      expect(wrapper.find(Modal).exists()).toBeFalsy();
+      expect(wrapper.state('showModal')).toBe(false);
+      expect(wrapper.find(Modal).exists()).toBe(false);
     });
   });
 });

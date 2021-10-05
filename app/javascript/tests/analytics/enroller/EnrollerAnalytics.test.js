@@ -8,7 +8,7 @@ import { mockEnrollerStatistics1 } from '../../mocks/mockEnrollerStatistics';
 describe('EnrollerAnalytics', () => {
   it('Properly Renders Both EnrollerStatistics Cards correctly', () => {
     const wrapper = shallow(<EnrollerAnalytics user={mockUser1} stats={mockEnrollerStatistics1} />);
-    expect(wrapper.find(EnrollerStatistics).exists()).toBeTruthy();
+    expect(wrapper.find(EnrollerStatistics).exists()).toBe(true);
     expect(wrapper.find(EnrollerStatistics).length).toEqual(2);
 
     expect(wrapper.find(EnrollerStatistics).at(0).prop('title')).toEqual('System Statistics');

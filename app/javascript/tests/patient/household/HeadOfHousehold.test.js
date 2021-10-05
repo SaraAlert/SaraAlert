@@ -19,16 +19,16 @@ describe('HeadOfHousehold', () => {
     // if user can add group
     expect(wrapper1.find(Row).length).toEqual(2);
     expect(wrapper1.find(Row).at(0).find('div').text()).toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
-    expect(wrapper1.find(HouseholdMemberTable).exists()).toBeTruthy();
-    expect(wrapper1.find(ChangeHoH).exists()).toBeTruthy();
-    expect(wrapper1.find(EnrollHouseholdMember).exists()).toBeTruthy();
-    expect(wrapper1.find(EnrollHouseholdMember).prop('isHoh')).toBeTruthy();
+    expect(wrapper1.find(HouseholdMemberTable).exists()).toBe(true);
+    expect(wrapper1.find(ChangeHoH).exists()).toBe(true);
+    expect(wrapper1.find(EnrollHouseholdMember).exists()).toBe(true);
+    expect(wrapper1.find(EnrollHouseholdMember).prop('isHoh')).toBe(true);
 
     // if user can't add group
     expect(wrapper2.find(Row).length).toEqual(2);
     expect(wrapper2.find(Row).at(0).find('div').text()).toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
-    expect(wrapper2.find(HouseholdMemberTable).exists()).toBeTruthy();
-    expect(wrapper2.find(ChangeHoH).exists()).toBeTruthy();
-    expect(wrapper2.find(EnrollHouseholdMember).exists()).toBeFalsy();
+    expect(wrapper2.find(HouseholdMemberTable).exists()).toBe(true);
+    expect(wrapper2.find(ChangeHoH).exists()).toBe(true);
+    expect(wrapper2.find(EnrollHouseholdMember).exists()).toBe(false);
   });
 });
