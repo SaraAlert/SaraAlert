@@ -116,7 +116,7 @@ class Contact extends React.Component {
 
     // Clear contact name if contact type is set to self reporter (for primary and alternate)
     if (event.target.id === 'contact_type' || event.target.id === 'alternate_contact_type') {
-      if (event.target.value === 'Self-Reporter') {
+      if (event.target.value === 'Self') {
         updates[event.target.id.replace('type', 'name')] = '';
       }
     }
@@ -381,7 +381,7 @@ class Contact extends React.Component {
               value={this.state.current.patient[`${prepend}contact_type`] || ''}
               onChange={this.handleChange}>
               {alternate && <option></option>}
-              <option>Self-Reporter</option>
+              <option>Self</option>
               <option>Parent/Guardian</option>
               <option>Spouse/Partner</option>
               <option>Caregiver</option>
@@ -396,7 +396,7 @@ class Contact extends React.Component {
               {this.state.errors[`${prepend}contact_type`]}
             </Form.Control.Feedback>
           </Form.Group>
-          {this.state.current.patient[`${prepend}contact_type`] !== 'Self-Reporter' && (
+          {this.state.current.patient[`${prepend}contact_type`] !== 'Self' && (
             <Form.Group as={Col} lg="12" controlId={`${prepend}contact_name`}>
               <Form.Label className="input-label">CONTACT NAME{schema?.fields[`${prepend}contact_name`]?._exclusive?.required && ' *'}</Form.Label>
               <Form.Control

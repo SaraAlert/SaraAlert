@@ -258,7 +258,7 @@ class Patient extends React.Component {
                   <div>
                     <b>Contact Type:</b> <span>{this.props.details.contact_type || '--'}</span>
                   </div>
-                  {this.props.details.contact_type === 'Self-Reporter' ? (
+                  {this.props.details.contact_type === 'Self' ? (
                     <React.Fragment>
                       {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
                         <div className="minor-info mb-2">
@@ -343,7 +343,7 @@ class Patient extends React.Component {
                     <div>
                       <b>Contact Type:</b> <span>{this.props.details.alternate_contact_type || '--'}</span>
                     </div>
-                    {this.props.details.alternate_contact_type === 'Self-Reporter' ? (
+                    {this.props.details.alternate_contact_type === 'Self' ? (
                     <React.Fragment>
                       {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
                         <div className="minor-info mb-2">

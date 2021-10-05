@@ -75,7 +75,7 @@ class PatientsController < ApplicationController
                            contact_of_known_case: !@close_contact.nil?,
                            contact_of_known_case_id: @close_contact.nil? ? '' : @close_contact.patient_id,
                            exposure_notes: @close_contact.nil? ? '' : @close_contact.notes,
-                           contact_type: 'Self-Reporter',
+                           contact_type: 'Self',
                            preferred_contact_method: 'Unknown')
   end
 
