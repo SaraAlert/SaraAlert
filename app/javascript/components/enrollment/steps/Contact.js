@@ -110,14 +110,6 @@ class Contact extends React.Component {
     let modified = this.state.modified;
     const updates = { [event.target.id]: value };
 
-    // Clear preferred_contact_time if preferred_contact_method is changed from sms/phone/email
-    if (
-      event.target.id === 'preferred_contact_method' &&
-      !['SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'E-mailed Web Link'].includes(this.state.current.patient.preferred_contact_method)
-    ) {
-      updates.preferred_contact_time = '';
-    }
-
     this.setState(
       {
         current: { ...current, blocked_sms, patient: { ...current.patient, ...updates } },
@@ -343,56 +335,68 @@ class Contact extends React.Component {
                     {this.state.errors['preferred_contact_method']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                {['SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'E-mailed Web Link'].includes(
-                  this.state.current.patient.preferred_contact_method
-                ) && (
-                  <Form.Group as={Col} lg="12" id="preferred_contact_time_wrapper" controlId="preferred_contact_time">
-                    <Form.Label className="input-label">
-                      PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
-                      <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
-                    </Form.Label>
-                    <Select
-                      inputId="preferred_contact_time-select"
-                      name="preferred_contact_time"
-                      value={{
-                        label:
-                          customPreferredContactTimeOptions[this.state.current.patient.preferred_contact_time] ||
-                          this.state.current.patient.preferred_contact_time ||
-                          '',
-                        value: this.state.current.patient.preferred_contact_time || '',
-                      }}
-                      placeholder=""
-                      options={basicPreferredContactTimeOptions.concat(
-                        [...new Set([this.state.current.patient.preferred_contact_time, this.props.patient.preferred_contact_time])]
-                          .filter(value => Object.keys(customPreferredContactTimeOptions).includes(value))
-                          .map(value => {
-                            return { label: customPreferredContactTimeOptions[`${value}`], value };
-                          })
-                      )}
-                      onChange={e =>
-                        this.handleChange({
-                          target: { id: 'preferred_contact_time', value: e.value },
-                          currentTarget: { id: 'preferred_contact_time' },
+                <Form.Group as={Col} lg="12" id="preferred_contact_time_wrapper" controlId="preferred_contact_time">
+                  <Form.Label className="input-label">
+                    PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
+                    <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
+                  </Form.Label>
+                  <Select
+                    inputId="preferred_contact_time-select"
+                    name="preferred_contact_time"
+                    value={{
+                      label:
+                        customPreferredContactTimeOptions[this.state.current.patient.preferred_contact_time] ||
+                        this.state.current.patient.preferred_contact_time ||
+                        '',
+                      value: this.state.current.patient.preferred_contact_time || '',
+                    }}
+                    placeholder=""
+                    options={basicPreferredContactTimeOptions.concat(
+                      [...new Set([this.state.current.patient.preferred_contact_time, this.props.patient.preferred_contact_time])]
+                        .filter(value => Object.keys(customPreferredContactTimeOptions).includes(value))
+                        .map(value => {
+                          return { label: customPreferredContactTimeOptions[`${value}`], value };
                         })
-                      }
-                      styles={preferredContactTimeSelectStyling}
-                      theme={theme => bootstrapSelectTheme(theme, 'lg')}
-                    />
-                    <div className="mt-3">
-                      <span className="font-weight-bold">Morning: </span>
-                      <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
-                      <br />
-                      <span className="font-weight-bold">Afternoon: </span>
-                      <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
-                      <br />
-                      <span className="font-weight-bold">Evening: </span>
-                      <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
-                    </div>
-                    <Form.Control.Feedback className="d-block" type="invalid">
-                      {this.state.errors['preferred_contact_time']}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                )}
+                    )}
+                    onChange={e =>
+                      this.handleChange({
+                        target: { id: 'preferred_contact_time', value: e.value },
+                        currentTarget: { id: 'preferred_contact_time' },
+                      })
+                    }
+                    styles={preferredContactTimeSelectStyling}
+                    theme={theme => bootstrapSelectTheme(theme, 'lg')}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['preferred_contact_time']}
+                  </Form.Control.Feedback>
+                  {![null, ''].includes(this.state.current.patient.preferred_contact_time) && (
+                    <React.Fragment>
+                      {[null, ''].includes(this.state.current.patient.preferred_contact_method) &&
+                        this.renderWarningBanner(
+                          'The monitoree will not be sent reminders while they do not have a Preferred Reporting Method selected.',
+                          false,
+                          'warning'
+                        )}
+                      {['Unknown', 'Opt-out'].includes(this.state.current.patient.preferred_contact_method) &&
+                        this.renderWarningBanner(
+                          'The monitoree will not be sent reminders while they have Opt-out or Unknown selected for their Preferred Reporting Method.',
+                          false,
+                          'warning'
+                        )}
+                    </React.Fragment>
+                  )}
+                  <div className="mt-3">
+                    <span className="font-weight-bold">Morning: </span>
+                    <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
+                    <br />
+                    <span className="font-weight-bold">Afternoon: </span>
+                    <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
+                    <br />
+                    <span className="font-weight-bold">Evening: </span>
+                    <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
+                  </div>
+                </Form.Group>
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} lg="12" controlId="primary_telephone">
