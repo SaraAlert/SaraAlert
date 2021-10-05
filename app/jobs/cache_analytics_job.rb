@@ -379,7 +379,7 @@ class CacheAnalyticsJob < ApplicationJob
   def self.all_monitoree_snapshots(analytic_id, monitorees, subjur_ids)
     counts = []
     MONITOREE_SNAPSHOT_TIME_FRAMES.map do |time_frame|
-      exposure_to_isolation = monitorees.where(isolation: true, enrolled_workflow: 'Exposure').exposure_to_isolation_in_time_frame(time_frame)
+      exposure_to_isolation = monitorees.where(isolation: true, enrolled_isolation: false).exposure_to_isolation_in_time_frame(time_frame)
       WORKFLOWS.map do |workflow|
         counts.append(MonitoreeSnapshot.new(
                         analytic_id: analytic_id,
@@ -412,11 +412,11 @@ class CacheAnalyticsJob < ApplicationJob
                                                                                       .or(monitorees.where(monitoring_reason: ['Meets Case Definition',
                                                                                                                                'Case Confirmed']))
                                                                                       .where(isolation: false)
-                                                                                      .where(enrolled_workflow: 'Exposure')
+                                                                                      .where(enrolled_isolation: false)
                                                                                       .closed_in_time_frame(time_frame)
                                                                                       .size
                                                                           : nil,
-                        isolation_to_exposure: workflow == 'Exposure' ? monitorees.where(isolation: false, enrolled_workflow: 'Isolation')
+                        isolation_to_exposure: workflow == 'Exposure' ? monitorees.where(isolation: false, enrolled_isolation: true)
                                                                                   .isolation_to_exposure_in_time_frame(time_frame)
                                                                                   .size
                                                                       : nil,

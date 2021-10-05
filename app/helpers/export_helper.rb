@@ -266,6 +266,7 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
         patient_details[:name] = patient.displayed_name if fields.include?(:name)
         patient_details[:age] = patient.calc_current_age if fields.include?(:age)
         patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Exposure'
+        patient_details[:enrolled_workflow] = patient[:enrolled_isolation] ? 'Isolation' : 'Exposure'
         patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
         patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
         patient_details[:end_of_monitoring] = patient.end_of_monitoring if fields.include?(:end_of_monitoring)
@@ -273,9 +274,9 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
         patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase if fields.include?(:full_status)
         patient_details[:status] = patient.status_as_string if fields.include?(:status)
         patient_details[:contact_became_case_at] =
-          if patient.isolation && patient.enrolled_workflow == 'Exposure'
+          if patient.isolation && !patient.enrolled_isolation
             patient[:exposure_to_isolation_at]&.strftime('%F')
-          elsif !patient.isolation && patient.enrolled_workflow == 'Exposure' &&
+          elsif !patient.isolation && !patient.enrolled_isolation &&
                 (%w[Confirmed Probable].include?(patient[:case_status]) || ['Meets Case Definition', 'Case Confirmed'].include?(patient[:monitoring_reason]))
             patient[:closed_at]&.strftime('%F')
           end

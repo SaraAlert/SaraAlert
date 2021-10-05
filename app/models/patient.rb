@@ -158,7 +158,7 @@ class Patient < ApplicationRecord
   }
   before_create do
     set_time_zone
-    self.enrolled_workflow = isolation ? 'Isolation' : 'Exposure'
+    self.enrolled_isolation ? 'Isolation' : 'Exposure'
   end
 
   around_save :inform_responder, if: :responder_id_changed?

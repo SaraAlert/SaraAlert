@@ -11,7 +11,7 @@ class AddColumnsForCaseDevelopmentAnalytics < ActiveRecord::Migration[6.1]
     add_column :monitoree_snapshots, :isolation_to_exposure, :integer
 
     # add new fields to patient that are used to calculate the new snapshot values
-    add_column :patients, :enrolled_workflow, :string
+    add_column :patients, :enrolled_isolation, :boolean
     add_column :patients, :isolation_to_exposure_at, :datetime, precision: 6
     add_column :patients, :exposure_to_isolation_at, :datetime, precision: 6
   end

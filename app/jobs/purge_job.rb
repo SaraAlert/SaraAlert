@@ -71,7 +71,7 @@ class PurgeJob < ApplicationJob
        black_or_african_american american_indian_or_alaska_native asian
        native_hawaiian_or_other_pacific_islander race_other race_unknown
        race_refused_to_answer ethnicity purged continuous_exposure time_zone
-       case_status enrolled_workflow exposure_to_isolation_at isolation_to_exposure_at]
+       case_status enrolled_isolation exposure_to_isolation_at isolation_to_exposure_at]
   end
 
   private

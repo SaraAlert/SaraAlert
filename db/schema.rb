@@ -451,7 +451,7 @@ ActiveRecord::Schema.define(version: 2021_09_11_182500) do
     t.string "follow_up_reason", limit: 200
     t.text "follow_up_note"
     t.string "international_telephone", limit: 200
-    t.string "enrolled_workflow"
+    t.boolean "enrolled_isolation"
     t.datetime "isolation_to_exposure_at", precision: 6
     t.datetime "exposure_to_isolation_at", precision: 6
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
