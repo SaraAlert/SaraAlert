@@ -266,13 +266,18 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
         patient_details[:name] = patient.displayed_name if fields.include?(:name)
         patient_details[:age] = patient.calc_current_age if fields.include?(:age)
         patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Exposure'
-        patient_details[:enrolled_workflow] = patient[:enrolled_isolation] ? 'Isolation' : 'Exposure'
         patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
         patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
         patient_details[:end_of_monitoring] = patient.end_of_monitoring if fields.include?(:end_of_monitoring)
         patient_details[:expected_purge_ts] = patient.expected_purge_date_exp if fields.include?(:expected_purge_ts)
         patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase if fields.include?(:full_status)
         patient_details[:status] = patient.status_as_string if fields.include?(:status)
+        patient_details[:enrolled_workflow] = case patient[:enrolled_isolation]
+                                              when true
+                                                'Isolation'
+                                              when false
+                                                'Exposure'
+                                              end
         patient_details[:contact_became_case_at] =
           if patient.isolation && !patient.enrolled_isolation
             patient[:exposure_to_isolation_at]&.strftime('%F')
