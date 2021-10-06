@@ -69,13 +69,17 @@ class AdvancedFilter extends React.Component {
       this.setState({ savedFilters: response.data }, () => {
         // Apply filter if it exists in local storage
         let sessionFilter = this.getLocalStorage(`SaraFilter`);
-        if (this.props.updateStickySettings && parseInt(sessionFilter)) {
-          this.setFilter(
-            this.state.savedFilters.find(filter => {
-              return filter.id === parseInt(sessionFilter);
-            }),
-            true
-          );
+        if (this.props.updateStickySettings) {
+          if (parseInt(sessionFilter)) {
+            this.setFilter(
+              this.state.savedFilters.find(filter => {
+                return filter.id === parseInt(sessionFilter);
+              }),
+              true
+            );
+          } else if (JSON.parse(sessionFilter)) {
+            this.setState({ activeFilterOptions: JSON.parse(sessionFilter) }, this.apply);
+          }
         }
       });
     });
@@ -179,8 +183,8 @@ class AdvancedFilter extends React.Component {
     };
     this.setState({ showAdvancedFilterModal: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilterOptions, keepStickySettings);
-      if (this.props.updateStickySettings && this.state.activeFilter) {
-        this.setLocalStorage(`SaraFilter`, this.state.activeFilter.id);
+      if (this.props.updateStickySettings) {
+        this.setLocalStorage(`SaraFilter`, this.state.activeFilter?.id || JSON.stringify(this.state.activeFilterOptions));
       }
     });
   };
