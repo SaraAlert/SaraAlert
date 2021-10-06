@@ -210,12 +210,13 @@ class Fhir::R4::ApiController < ApplicationApiController
     when 'patient'
       return if doorkeeper_authorize!(*PATIENT_WRITE_SCOPES)
 
-      # Check for duplicates
+      # Duplicate detection check
       if request.headers['If-None-Exist'].present?
-        search_params = Rack::Utils.parse_nested_query(request.headers['If-None-Exist'])
-        num_matches = search_patients(search_params).size
-        err_msg = "There #{num_matches > 1 ? 'are' : 'is'} #{num_matches} potential duplicate patient#{num_matches > 1 ? 's' : ''}"
-        status_precondition_failed_with_custom_errors([err_msg]) && return if num_matches.positive?
+        matches = search_patients(Rack::Utils.parse_nested_query(request.headers['If-None-Exist']))
+        num_matches = matches.size
+        status_ok(matches.first.as_fhir) && return if num_matches == 1
+
+        status_precondition_failed_with_custom_errors(["There are #{num_matches} potential duplicate patients"]) && return if num_matches > 1
       end
 
       resource = save_patient(*build_patient(contents), request_body)
@@ -274,12 +275,15 @@ class Fhir::R4::ApiController < ApplicationApiController
     contents.entry&.each_with_index do |entry, index|
       next unless entry.resource&.resourceType&.downcase == 'patient'
 
-      # Check for duplicates
+      # Duplicate detection check
       if entry&.request&.ifNoneExist.present?
-        search_params = Rack::Utils.parse_nested_query(entry.request.ifNoneExist)
-        num_matches = search_patients(search_params).size
-        err_msg = "There #{num_matches > 1 ? 'are' : 'is'} #{num_matches} potential duplicate patient#{num_matches > 1 ? 's' : ''}"
-        status_precondition_failed_with_custom_errors([err_msg]) && return if num_matches.positive?
+        matches = search_patients(Rack::Utils.parse_nested_query(entry&.request&.ifNoneExist))
+        num_matches = matches.size
+        status_ok(matches.first.as_fhir) && return if num_matches == 1
+
+        if num_matches > 1
+          status_precondition_failed_with_custom_errors(["There are #{num_matches} potential duplicate patients"], "Bundle.entry[#{index}].resource") && return
+        end
       end
 
       resource, fhir_map = build_patient(entry&.resource)
@@ -339,7 +343,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_not_acceptable && return unless accept_header?
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
-    search_params = params.slice('family', 'given', 'telecom', 'email', 'state-local-id', 'birthdate', 'subject', 'active', '_count', '_id', 'patient')
+    search_params = params.slice('family', 'given', 'telecom', 'email', 'birthdate', 'identifier', 'subject', 'active', '_count', '_id', 'patient')
 
     case resource_type
     when 'patient'
@@ -947,9 +951,13 @@ class Fhir::R4::ApiController < ApplicationApiController
   end
 
   # 412 precondition failed with custom error messages
-  def status_precondition_failed_with_custom_errors(errors = [])
+  def status_precondition_failed_with_custom_errors(errors, path = nil)
+    outcome = FHIR::OperationOutcome.new(issue: [])
+    errors.each do |error|
+      outcome.issue << FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'processing', diagnostics: error, expression: path)
+    end
     respond_to do |format|
-      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :precondition_failed }
+      format.any { render json: outcome.to_json, status: :precondition_failed }
     end
   end
 
@@ -1067,10 +1075,13 @@ class Fhir::R4::ApiController < ApplicationApiController
         query = query.where('primary_telephone like ?', Phonelib.parse(search, 'US').full_e164)
       when 'email'
         query = query.where('email like ?', "%#{search}%")
-      when 'state-local-id'
-        query = query.where('lower(user_defined_id_statelocal) like ?', "#{search&.downcase}%")
       when 'birthdate'
         query = query.where(date_of_birth: search)
+      when 'identifier'
+        (identifier, value) = search.split('|')
+        next if value.nil?
+
+        query = query.where('lower(user_defined_id_statelocal) like ?', "#{value&.downcase}%") if identifier == 'http://saraalert.org/SaraAlert/state-local-id'
       when '_id'
         query = query.where(id: search)
       when 'active'

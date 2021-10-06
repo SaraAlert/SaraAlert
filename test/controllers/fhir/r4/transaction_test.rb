@@ -23,6 +23,7 @@ class TransactionTest < ApiControllerTestCase
       :patient,
       address_state: 'Oregon',
       date_of_birth: 25.years.ago,
+      user_defined_id_statelocal: 'EX-930575',
       first_name: first_name,
       last_name: last_name,
       last_date_of_exposure: 4.days.ago.to_date,
@@ -191,8 +192,19 @@ class TransactionTest < ApiControllerTestCase
     assert_match(/Bundle\.entry\[1\]\.resource\.code\.coding\[0\]/, json_response['issue'][0]['expression'][0])
   end
 
-  test 'should be precondition failed when duplicate detection is enabled and duplicates are present for transactions' do
-    @bundle.entry[0].request.ifNoneExist = "birthDate=#{@bundle.entry[0].resource.birthDate}"
+  test 'should be ok when duplicate detection is enabled and 1 potential duplicate is found' do
+    @bundle.entry[0].request.ifNoneExist = "identifier=http://saraalert.org/SaraAlert/state-local-id|#{@bundle.entry[0].resource.identifier[0].value}&" \
+                                           "birthdate=#{@bundle.entry[0].resource.birthDate}"
+    post(
+      '/fhir/r4',
+      params: @bundle.to_json,
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+  end
+
+  test 'should be precondition failed when duplicate detection is enabled and multiple potential duplicates are found' do
+    @bundle.entry[0].request.ifNoneExist = "birthdate=#{@bundle.entry[0].resource.birthDate}"
     post(
       '/fhir/r4',
       params: @bundle.to_json,
@@ -200,7 +212,9 @@ class TransactionTest < ApiControllerTestCase
     )
     assert_response :precondition_failed
     json_response = JSON.parse(response.body)
-    assert_match(/There are 3 potential duplicate patients/, json_response['issue'][0]['diagnostics'])
+    assert_match(/There are #{Patient.where(date_of_birth: @bundle.entry[0].resource.birthDate).size} potential duplicate patients/,
+                 json_response['issue'][0]['diagnostics'])
+    assert_equal(['Bundle.entry[0].resource'], json_response['issue'][0]['expression'])
   end
 
   test 'should create a Patient and Observation via transaction' do

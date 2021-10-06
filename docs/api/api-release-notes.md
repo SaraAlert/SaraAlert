@@ -5,7 +5,7 @@ parent: API
 nav_order: 1
 ---
 # 1.38.0
-* Add support for patient search by `birthdate` and `state-local-id`
+* Add support for patient search by `birthdate` and `identifier=http://saraalert.org/SaraAlert/state-local-id`
 * Add support for duplicate detection when creating Patients
 
 ***
