@@ -657,17 +657,17 @@ class Contact extends React.Component {
               {this.state.errors[`${prepend}email`]}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} lg="12" controlId={`${prepend}confirm_email`}>
-            <Form.Label className="input-label">CONFIRM E-MAIL ADDRESS{schema?.fields[`${prepend}confirm_email`]?._exclusive?.required && ' *'}</Form.Label>
+          <Form.Group as={Col} lg="12" controlId={`confirm_${prepend}email`}>
+            <Form.Label className="input-label">CONFIRM E-MAIL ADDRESS{schema?.fields[`confirm_${prepend}email`]?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
-              isInvalid={this.state.errors[`${prepend}confirm_email`]}
+              isInvalid={this.state.errors[`confirm_${prepend}email`]}
               size="lg"
               className="form-square"
-              value={this.state.current.patient[`${prepend}confirm_email`] || ''}
+              value={this.state.current.patient[`confirm_${prepend}email`] || ''}
               onChange={this.handleChange}
             />
             <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors[`${prepend}confirm_email`]}
+              {this.state.errors[`confirm_${prepend}email`]}
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
