@@ -165,27 +165,27 @@ class UpdatePatientTableStringLengths < ActiveRecord::Migration[6.1]
     end
 
     ActiveRecord::Base.record_timestamps = false
-
     remove_current_indexes
 
-    STRING_FIELDS.each { |field| change_column :patients, field, :string, limit: NEW_LIMIT }
-    BINARY_FIELDS.each { |field| change_column :patients, field, :binary, limit: NEW_LIMIT }
-
-    add_current_indexes
-
-    ActiveRecord::Base.record_timestamps = true
+    begin
+      STRING_FIELDS.each { |field| change_column :patients, field, :string, limit: NEW_LIMIT }
+      BINARY_FIELDS.each { |field| change_column :patients, field, :binary, limit: NEW_LIMIT }
+    ensure
+      add_current_indexes
+      ActiveRecord::Base.record_timestamps = true
+    end
   end
 
   def down
     ActiveRecord::Base.record_timestamps = false
-
     remove_current_indexes
 
-    STRING_FIELDS.each { |field| change_column :patients, field, :string, limit: OLD_LIMIT }
-    BINARY_FIELDS.each { |field| change_column :patients, field, :binary, limit: OLD_LIMIT }
-
-    add_current_indexes
-
-    ActiveRecord::Base.record_timestamps = true
+    begin
+      STRING_FIELDS.each { |field| change_column :patients, field, :string, limit: OLD_LIMIT }
+      BINARY_FIELDS.each { |field| change_column :patients, field, :binary, limit: OLD_LIMIT }
+    ensure
+      add_current_indexes
+      ActiveRecord::Base.record_timestamps = true
+    end
   end
 end
