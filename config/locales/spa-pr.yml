@@ -8,6 +8,7 @@ spa-pr:
       weblink:
         title: 'Reporte diario'
         bool-title: 'Por favor, seleccione los síntomas que está sintiendo actualmente.'
+        supplemental-title: 'Responda Sí o No a las siguientes preguntas adicionales.'
         instruction1: 'Si Usted no reportó ningún síntoma, por favor siga las recomendaciones provistas por su departamento de salud local.'
         instruction2: >-
           Si Usted reportó algún síntoma, su departamento de salud local se comunicará pronto con Usted. Si tiene alguna inquietud inmediata, llame a su
@@ -18,6 +19,8 @@ spa-pr:
           caso.
         submit: 'Enviar'
         thank_you: '¡Gracias por completar su informe diario!'
+        'yes': 'Sí'
+        'no': 'No'
       email:
         shared:
           greeting: 'Estimado/a %{name},'

@@ -9,6 +9,7 @@ const mockTranslations = {
       weblink: {
         title: 'Daily Self-Report',
         'bool-title': 'Please select all symptoms which you are experiencing.',
+        'supplemental-title': 'Please respond Yes or No to the following additional questions.',
         instruction1: 'If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.',
         instruction2:
           "'If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please contact your medical provider or local health department. Avoid close contact with other people and stay at home.'",
@@ -16,6 +17,8 @@ const mockTranslations = {
         instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.',
         submit: 'Submit',
         thank_you: 'Thank You For Completing Your Self Report',
+        yes: 'Yes',
+        no: 'No',
       },
       email: {
         shared: {
@@ -164,6 +167,7 @@ const mockTranslations = {
       weblink: {
         title: 'Reporte diario',
         'bool-title': 'Por favor, seleccione los síntomas que está sintiendo actualmente.',
+        'supplemental-title': 'Responda Sí o No a las siguientes preguntas adicionales.',
         instruction1: 'Si Usted no reportó ningún síntoma, por favor siga las recomendaciones proveídas por su departamento de salud local.',
         instruction2:
           "'Si Usted reportó algún síntoma, su departamento de salud local se comunicará pronto con Usted. Si tiene alguna inquietud inmediata, llame a su proveedor médico o al departamento de salud local. Evite el contacto cercano con otras personas y quédese en casa por favor.'",
@@ -172,6 +176,8 @@ const mockTranslations = {
           "'Por favor utilice la información de contacto a continuación para ponerse en contacto con un funcionario de salud pública que esté a cargo de su caso'",
         submit: 'Enviar',
         thank_you: '¡Gracias por completar su informe diario!',
+        yes: 'Sí',
+        no: 'No',
       },
       email: {
         shared: {
@@ -318,6 +324,7 @@ const mockTranslations = {
       weblink: {
         title: 'Reporte diario',
         'bool-title': 'Por favor, seleccione los síntomas que está sintiendo actualmente.',
+        'supplemental-title': 'Responda Sí o No a las siguientes preguntas adicionales.',
         instruction1: 'Si Usted no reportó ningún síntoma, por favor siga las recomendaciones provistas por su departamento de salud local.',
         instruction2:
           "'Si Usted reportó algún síntoma, su departamento de salud local se comunicará pronto con Usted. Si tiene alguna inquietud inmediata, llame a su proveedor médico o al departamento de salud local. Evite el contacto cercano con otras personas y quédese en casa por favor.'",
@@ -326,6 +333,8 @@ const mockTranslations = {
           "'Por favor utilice la información de contacto a continuación para ponerse en contacto con un funcionario de salud pública que esté a cargo de su caso.'",
         submit: 'Enviar',
         thank_you: '¡Gracias por completar su informe diario!',
+        yes: 'Sí',
+        no: 'No',
       },
       email: {
         shared: {
@@ -473,6 +482,7 @@ const mockTranslations = {
       weblink: {
         title: 'Rapport quotidien',
         'bool-title': 'Veuillez sélectionner tous les symptômes que vous présentez.',
+        'supplemental-title': 'Veuillez répondre Oui ou Non aux questions supplémentaires suivantes.',
         instruction1:
           "'Si vous n''avez pas signalé aucun symptôme, veuillez continuer à suivre les recommandations fournies par votre autorité de santé publique locale.'",
         instruction2:
@@ -481,6 +491,8 @@ const mockTranslations = {
         instruction4: 'Veuillez utiliser les coordonnées ci-dessous si vous souhaitez nous contacter au sujet de votre cas.',
         submit: 'Envoyer',
         thank_you: "Merci d'avoir complété votre rapport quotidien !",
+        yes: 'Oui',
+        no: 'Non',
       },
       email: {
         shared: {
@@ -630,6 +642,7 @@ const mockTranslations = {
       weblink: {
         title: 'Warbixinta Maalinlaha ah',
         'bool-title': 'Fadlan xulo dhammaan astaamaha aad dareemayso.',
+        'supplemental-title': "Fadlan ka jawaab Haa ama Maya su'aalaha dheeraadka ah ee soo socda.",
         instruction1: 'If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.',
         instruction2:
           "'If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please contact your medical provider or local health department. Avoid close contact with other people and stay at home.'",
@@ -637,6 +650,8 @@ const mockTranslations = {
         instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.',
         submit: 'Gudbi',
         thank_you: 'Waad ku mahadsantahay bogida warbixintaada maalinlaha ah!',
+        yes: 'Haa',
+        no: 'Maya',
       },
       email: {
         shared: {
@@ -786,6 +801,7 @@ const mockTranslations = {
       weblink: {
         title: '일일 자기 보고서',
         'bool-title': '겪고 계신 모든 증상을 선택해 주십시오.',
+        'supplemental-title': '다음 추가 질문에 대해 예 또는 아니요 로 응답하십시오.',
         instruction1: '아무 증상도 보고하지 않으셨다면, 계속해서 지역 보건부가 제공하는 권고사항을 따라 주십시오.',
         instruction2:
           '어떠한 증상을 보고하셨다면, 곧 지역 보건부로부터 연락을 받으시게 됩니다. 즉각적인 대처가 필요한 경우는 의료 제공자나 지역 보건부에 문의하시기 바랍니다. 다른 사람들과의 접촉을 피하고 집에 머물러 주십시오.',
@@ -793,6 +809,8 @@ const mockTranslations = {
         instruction4: '아래의 연락처 정보를 이용하여 귀하의 케이스를 담당하고 있는 공중 보건인과 연락을 취하실 수 있습니다.',
         submit: '제출',
         thank_you: '자기 보고서를 작성해 주셔서 감사합니다.',
+        yes: '예',
+        no: '아니요',
       },
       email: {
         shared: {
@@ -940,6 +958,7 @@ const mockTranslations = {
       weblink: {
         title: 'Tự Báo cáo Hàng ngày',
         'bool-title': 'Xin vui lòng chọn tất cả các triệu chứng mà bạn đang gặp phải.',
+        'supplemental-title': 'Hãy trả lời Có hoặc Không đối với các câu hỏi bổ sung sau đây.',
         instruction1: 'Nếu bạn không báo cáo bất kỳ triệu chứng nào, vui lòng tiếp tục làm theo các khuyến nghị do sở y tế địa phương cung cấp.',
         instruction2:
           'Nếu bạn báo cáo bất kỳ triệu chứng nào, bộ phận y tế địa phương của bạn sẽ sớm liên hệ với bạn. Nếu bạn có bất kỳ thắc mắc nào, ngay lập tức, xin vui lòng liên hệ với nhà cung cấp dịch vụ y tế hoặc sở y tế địa phương. Tránh tiếp xúc gần gũi với người khác và xin vui lòng ở nhà.',
@@ -947,6 +966,8 @@ const mockTranslations = {
         instruction4: 'Xin vui lòng sử dụng thông tin liên hệ bên dưới để liên hệ với một quan chức y tế công cộng quản lý trường hợp của bạn.',
         submit: 'Gửi đi',
         thank_you: 'Cảm ơn bạn đã hoàn thành bản báo cáo của mình.',
+        yes: 'Có',
+        no: 'Không',
       },
       email: {
         shared: {
@@ -1097,6 +1118,7 @@ const mockTranslations = {
       weblink: {
         title: 'Заполнение ежедневного опросника',
         'bool-title': 'Пожалуйста, выберите все симптомы, которые у вас есть на данный момент',
+        'supplemental-title': 'Ответьте Да или Нет на следующие дополнительные вопросы.',
         instruction1: 'Если Вы сообщили о каких-либо симптомах, с Вами в скором времени всяжутся сотрудники местного отдела общественного здравоохранения.',
         instruction2:
           'Если у Вас возникли неотложные причины для беспокойства, пожалуйста незамедлительно свяжитесь со своим лечащим врачом или местным отделом общественного здравоохранения. Пожалуйста, избегайте близкого контакта с людьми и оставайтесь дома.',
@@ -1109,6 +1131,8 @@ const mockTranslations = {
         email: 'Электронная почта',
         phone: 'Телефон',
         webpage: 'Сайт',
+        yes: 'Да',
+        no: 'Нет',
       },
       email: {
         shared: {
@@ -1262,6 +1286,7 @@ const mockTranslations = {
       weblink: {
         title: 'التقرير الذاتي اليومي',
         'bool-title': 'الرجاء تحديد جميع الأعراض التي تعاني منها',
+        'supplemental-title': 'يرجى الإجاب بنعم أو لا على الأسئلة الإضافية التالية.',
         instruction1: 'إذا لم تبلغ عن أي أعراض ، فيرجى الاستمرار في اتباع التوصيات المقدمة من وزارة الصحة المحلية.',
         instruction2:
           'إذا أبلغت عن أي أعراض ، فستتواصل إدارة الصحة المحلية قريبًا. إذا كان لديك أي مخاوف فورية ، يرجى الاتصال بمزود الخدمة الطبية أو الصحة المحلية',
@@ -1269,6 +1294,8 @@ const mockTranslations = {
         instruction4: 'يرجى استخدام معلومات الاتصال أدناه للتواصل مع مسؤول الصحة العامة الذي يتابع حالتك.',
         submit: 'إرسال',
         thank_you: 'أشكركم',
+        yes: 'بنعم',
+        no: 'لا',
       },
       email: {
         shared: {
@@ -1415,6 +1442,7 @@ const mockTranslations = {
       weblink: {
         title: '日常自我报告 ',
         'bool-title': '请选择您正经历的所有症状',
+        'supplemental-title': '请回答是或否以下问题。',
         instruction1: '如果您没有报告任何症状，请继续遵循由当地卫生部门提供的建议。',
         instruction2:
           '如果您报告了任何症状，当地卫生部门将会尽快与您联系。如果您有任何紧急问题，请联系您的医疗服务提供者或当地卫生部门。避免与其他人密切接触，并留在家中。',
@@ -1422,6 +1450,8 @@ const mockTranslations = {
         instruction4: '请使用下面的联系信息与负责您病例的公共健康官员联系。',
         submit: '提交',
         thank_you: '感谢您完成您的自我报告',
+        yes: '是',
+        no: '否',
       },
       email: {
         shared: {

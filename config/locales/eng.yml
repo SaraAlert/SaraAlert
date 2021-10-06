@@ -8,6 +8,7 @@ eng:
       weblink:
         title: 'Daily Self-Report'
         bool-title: 'Please select all symptoms which you are experiencing.'
+        supplemental-title: 'Please respond Yes or No to the following additional questions.'
         instruction1: 'If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.'
         instruction2: >-
           If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please contact your medical
@@ -16,6 +17,8 @@ eng:
         instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.'
         submit: 'Submit'
         thank_you: 'Thank You For Completing Your Self Report'
+        'yes': 'Yes'
+        'no': 'No'
       email:
         shared:
           greeting: 'Dear %{name},'

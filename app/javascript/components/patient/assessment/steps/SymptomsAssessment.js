@@ -13,9 +13,7 @@ class SymptomsAssessment extends React.Component {
       loading: false,
       noSymptomsCheckbox: false,
       // ensure this is updated when editing a report
-      selectedBoolSymptomCount: this.props.symptoms.filter(x => {
-        return x.type === 'BoolSymptom' && x.value;
-      }).length,
+      selectedBoolSymptomCount: this.getSortedSymptomsByType(this.props.symptoms, 'BoolSymptom', false).filter(x => x.value).length,
     };
   }
 
@@ -60,16 +58,20 @@ class SymptomsAssessment extends React.Component {
     }
   };
 
+  handleSupplementalBoolChange = (name, value) => {
+    let report = this.state.reportState;
+    report.symptoms.find(s => s.name === name).value = value;
+    this.setState({ reportState: report });
+  };
+
   handleNoSymptomChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     this.setState({ noSymptomsCheckbox: value }, () => {
       // Make sure pre-selected options are cleared
       if (this.state.noSymptomsCheckbox) {
         let report = { ...this.state.reportState };
-        for (const symptom in report?.symptoms) {
-          if (report?.symptoms[parseInt(symptom)]?.type == 'BoolSymptom') {
-            report.symptoms[parseInt(symptom)].value = false;
-          }
+        for (const symptom of this.getSortedSymptomsByType(report?.symptoms, 'BoolSymptom', false)) {
+          symptom.value = false;
         }
         this.setState({ reportState: report });
       }
@@ -77,9 +79,7 @@ class SymptomsAssessment extends React.Component {
   };
 
   updateBoolSymptomCount = () => {
-    let trueBoolSymptoms = this.state.reportState.symptoms.filter(s => {
-      return s.type === 'BoolSymptom' && s.value;
-    });
+    let trueBoolSymptoms = this.getSortedSymptomsByType(this.state.reportState.symptoms, 'BoolSymptom', false).filter(s => s.value);
     this.setState({ selectedBoolSymptomCount: trueBoolSymptoms.length });
   };
 
@@ -142,6 +142,14 @@ class SymptomsAssessment extends React.Component {
     }
     return reportState;
   };
+
+  getSortedSymptomsByType(symptoms, type, supplemental) {
+    return symptoms
+      .filter(s => s.type == type && !!s.supplemental == supplemental)
+      .sort((a, b) => {
+        return a?.name?.localeCompare(b?.name);
+      });
+  }
 
   noSymptom = () => {
     let noSymptomsChecked = this.state.noSymptomsCheckbox;
@@ -231,6 +239,44 @@ class SymptomsAssessment extends React.Component {
     );
   };
 
+  boolSupplementalSymptom = symp => {
+    const key = `key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
+    const id = `${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
+
+    return (
+      <Form.Group key={key} className="pl-1">
+        <Form.Row>
+          <Form.Label className="input-label" key={key + '_label'} htmlFor={id}>
+            <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]?.name || symp.name}</b>{' '}
+            {this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes
+              ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes
+              : ''}
+          </Form.Label>
+        </Form.Row>
+        <Form.Row>
+          <Form.Check
+            type="radio"
+            id={`${id}_yes`}
+            key={`${key}_yes`}
+            name={`${id}_radio`}
+            label={this.props.translations[this.props.lang]['html']['weblink']['yes']}
+            defaultChecked={symp.value}
+            inline
+            onChange={() => this.handleSupplementalBoolChange(symp.name, true)}></Form.Check>
+          <Form.Check
+            type="radio"
+            id={`${id}_no`}
+            key={`${key}_no`}
+            name={`${id}_radio`}
+            defaultChecked={symp.value == false}
+            label={this.props.translations[this.props.lang]['html']['weblink']['no']}
+            inline
+            onChange={() => this.handleSupplementalBoolChange(symp.name, false)}></Form.Check>
+        </Form.Row>
+      </Form.Group>
+    );
+  };
+
   render() {
     return (
       <Card className="mx-0 card-square">
@@ -250,27 +296,22 @@ class SymptomsAssessment extends React.Component {
           </Form.Row>
           <Form.Row>
             <Form.Group className="pt-1">
-              {this.state.reportState.symptoms
-                .filter(x => {
-                  return x.type === 'BoolSymptom';
-                })
-                .sort((a, b) => {
-                  return a?.name?.localeCompare(b?.name);
-                })
-                .map(symp => this.boolSymptom(symp))}
+              {this.getSortedSymptomsByType(this.state.reportState.symptoms, 'BoolSymptom', false).map(symp => this.boolSymptom(symp))}
               {this.noSymptom()}
-              {this.state.reportState.symptoms
-                .filter(x => {
-                  return x.type === 'IntegerSymptom';
-                })
-                .map(symp => this.intOrFloatSymptom(symp))}
-              {this.state.reportState.symptoms
-                .filter(x => {
-                  return x.type === 'FloatSymptom';
-                })
-                .map(symp => this.intOrFloatSymptom(symp))}
+              {this.getSortedSymptomsByType(this.state.reportState.symptoms, 'IntegerSymptom', false).map(symp => this.intOrFloatSymptom(symp))}
+              {this.getSortedSymptomsByType(this.state.reportState.symptoms, 'FloatSymptom', false).map(symp => this.intOrFloatSymptom(symp))}
             </Form.Group>
           </Form.Row>
+          {this.getSortedSymptomsByType(this.state.reportState.symptoms, 'BoolSymptom', true).length > 0 && (
+            <Form.Group>
+              <Form.Row>
+                <Form.Label className="input-label pt-3 pb-3">{this.props.translations[this.props.lang]['html']['weblink']['supplemental-title']}</Form.Label>
+              </Form.Row>
+              <Form.Group>
+                {this.getSortedSymptomsByType(this.state.reportState.symptoms, 'BoolSymptom', true).map(symp => this.boolSupplementalSymptom(symp))}
+              </Form.Group>
+            </Form.Group>
+          )}
           <Form.Row className="pt-4">
             <Button variant="primary" block size="lg" className="btn-block btn-square" disabled={this.state.loading} onClick={this.navigate}>
               {this.state.loading && (

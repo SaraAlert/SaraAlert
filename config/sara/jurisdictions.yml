@@ -50,6 +50,7 @@
             required: false
             threshold_operator: 'Equal'
             group: 2
+            supplemental: true
         'Chills':
             value: true
             type: 'BoolSymptom'

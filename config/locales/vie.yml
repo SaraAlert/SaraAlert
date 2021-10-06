@@ -8,6 +8,7 @@ vie:
       weblink:
         title: 'Tự Báo cáo Hàng ngày'
         bool-title: 'Xin vui lòng chọn tất cả các triệu chứng mà bạn đang gặp phải.'
+        supplemental-title: 'Hãy trả lời Có hoặc Không đối với các câu hỏi bổ sung sau đây.'
         instruction1: 'Nếu bạn không báo cáo bất kỳ triệu chứng nào, vui lòng tiếp tục làm theo các khuyến nghị do sở y tế địa phương cung cấp.'
         instruction2: >-
           Nếu bạn báo cáo bất kỳ triệu chứng nào, bộ phận y tế địa phương của bạn sẽ sớm liên hệ với bạn. Nếu bạn có bất kỳ thắc mắc nào, ngay lập tức, xin vui
@@ -16,6 +17,8 @@ vie:
         instruction4: 'Xin vui lòng sử dụng thông tin liên hệ bên dưới để liên hệ với một quan chức y tế công cộng quản lý trường hợp của bạn.'
         submit: 'Gửi đi'
         thank_you: 'Cảm ơn bạn đã hoàn thành bản báo cáo của mình.'
+        'yes': 'Có'
+        'no': 'Không'
       email:
         shared:
           greeting: 'Kính gửi %{name},'

@@ -24,7 +24,9 @@ describe('SymptomsAssessment', () => {
     expect(wrapper.find(Card.Body).exists()).toBe(true);
     expect(wrapper.find(Card.Body).find(Form.Row).at(0).text()).toEqual(mockTranslations['eng']['html']['weblink']['bool-title']);
     expect(wrapper.find(Card.Body).find(Form.Group).exists()).toBe(true);
-    expect(wrapper.find(Card.Body).find(Form.Check).length).toEqual(17);
+    expect(wrapper.find(Card.Body).find(Form.Check).find({ type: 'checkbox' }).length).toEqual(16);
+    expect(wrapper.find(Card.Body).find(Form.Group).at(1).find(Form.Row).at(0).text()).toEqual(mockTranslations['eng']['html']['weblink']['supplemental-title']);
+    expect(wrapper.find(Card.Body).find(Form.Check).find({ type: 'radio' }).length).toEqual(2);
     expect(wrapper.find(Card.Body).find(Form.Control).length).toEqual(2);
     expect(wrapper.find(Card.Body).find(Button).exists()).toBe(true);
     expect(wrapper.find(Card.Body).find(Button).text()).toEqual(mockTranslations['eng']['html']['weblink']['submit']);
@@ -32,7 +34,7 @@ describe('SymptomsAssessment', () => {
 
   it('Properly renders symptom checkboxes when creating a new report', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
-    const checkboxes = wrapper.find(Form.Check);
+    const checkboxes = wrapper.find(Form.Check).find({ type: 'checkbox' });
     checkboxes.forEach(cb => {
       expect(cb.prop('checked')).toBe(false);
       expect(cb.prop('disabled')).toBe(false);
@@ -47,7 +49,7 @@ describe('SymptomsAssessment', () => {
     const wrapper = getWrapper(mockAssessment1, mockSymptoms1, '777');
     const boolSymptoms = mockSymptoms1
       .filter(x => {
-        return x.type === 'BoolSymptom';
+        return x.type === 'BoolSymptom' && !x.supplemental;
       })
       .sort((a, b) => {
         return a?.name?.localeCompare(b?.name);
@@ -56,8 +58,8 @@ describe('SymptomsAssessment', () => {
       expect(wrapper.find(Form.Check).at(index).prop('checked')).toEqual(symp.value);
       expect(wrapper.find(Form.Check).at(index).prop('disabled')).toBe(false);
     });
-    expect(wrapper.find(Form.Check).at(16).prop('checked')).toBe(false);
-    expect(wrapper.find(Form.Check).at(16).prop('disabled')).toBe(true);
+    expect(wrapper.find(Form.Check).at(14).prop('checked')).toBe(false);
+    expect(wrapper.find(Form.Check).at(14).prop('disabled')).toBe(true);
     const formControls = wrapper.find(Form.Control);
     formControls.forEach(fc => {
       expect(fc.prop('value')).toEqual('');
@@ -76,6 +78,23 @@ describe('SymptomsAssessment', () => {
     expect(formControls.at(1).prop('value')).toEqual(1);
   });
 
+  it('Properly renders supplemental questions when editing a report', () => {
+    const wrapper = getWrapper(mockAssessment2, mockSymptoms2, '777');
+    const radio = wrapper.find(Form.Check).find({ type: 'radio' });
+    const boolSupplementals = mockSymptoms2
+      .filter(x => {
+        return x.type === 'BoolSymptom' && x.supplemental;
+      })
+      .sort((a, b) => {
+        return a?.name?.localeCompare(b?.name);
+      });
+    boolSupplementals.forEach((symp, index) => {
+      // Yes button should be checked if true, otherwise neither is checked
+      expect(radio.at(2 * index).prop('checked')).toEqual(symp.value);
+      expect(radio.at(2 * index + 1).prop('checked')).toBe(false);
+    });
+  });
+
   it('Clicking "I am not experiencing any symptoms" disables all bool symptom checkboxes', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
     wrapper.find('#no-symptoms-check').simulate('change', { target: { value: true } });
@@ -83,7 +102,7 @@ describe('SymptomsAssessment', () => {
       if (cb.prop('id') === 'no-symptoms-check') {
         expect(cb.prop('checked')).toBe(true);
         expect(cb.prop('disabled')).toBe(false);
-      } else {
+      } else if (cb.prop('type') == 'checkbox') {
         expect(cb.prop('checked')).toBe(false);
         expect(cb.prop('disabled')).toBe(true);
       }
@@ -92,7 +111,7 @@ describe('SymptomsAssessment', () => {
 
   it('Clicking any bool symptom disables the "I am not experiencing any symptoms" checkbox', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
-    const checkbox = wrapper.find(Form.Check).at(0);
+    const checkbox = wrapper.find(Form.Check).find({ type: 'checkbox' }).at(0);
     checkbox.simulate('change', { target: { id: checkbox.prop('id'), checked: true } });
     wrapper.find(Form.Check).forEach(cb => {
       if (checkbox.prop('id') === cb.prop('id')) {
@@ -101,7 +120,7 @@ describe('SymptomsAssessment', () => {
       } else if (cb.prop('id') === 'no-symptoms-check') {
         expect(cb.prop('checked')).toBe(false);
         expect(cb.prop('disabled')).toBe(true);
-      } else {
+      } else if (cb.type == 'checkbox') {
         expect(cb.prop('checked')).toBe(false);
         expect(cb.prop('disabled')).toBe(false);
       }
@@ -122,7 +141,7 @@ describe('SymptomsAssessment', () => {
 
   it('Clicking any bool symptom updates state correctly', () => {
     const wrapper = getWrapper({}, mockNewSymptoms, 'new');
-    const checkbox = wrapper.find(Form.Check).at(0);
+    const checkbox = wrapper.find(Form.Check).find({ type: 'checkbox' }).at(0);
     const checkboxId = checkbox.prop('id');
     checkbox.simulate('change', { target: { id: checkboxId, checked: true } });
     expect(wrapper.state('noSymptomsCheckbox')).toBe(false);
@@ -130,6 +149,18 @@ describe('SymptomsAssessment', () => {
     wrapper.state('reportState').symptoms.forEach(symp => {
       if (symp.type === 'BoolSymptom') {
         expect(symp.value).toEqual(checkboxId.includes(symp.name));
+      }
+    });
+  });
+
+  it('Clicking any supplemental bool symptom updates state correctly', () => {
+    const wrapper = getWrapper({}, mockNewSymptoms, 'new');
+    const checkbox = wrapper.find(Form.Check).find({ type: 'radio' }).at(0);
+    const checkboxId = checkbox.prop('id');
+    checkbox.simulate('change', { target: { id: checkboxId, checked: true } });
+    wrapper.state('reportState').symptoms.forEach(symp => {
+      if (symp.type === 'BoolSymptom') {
+        expect(symp.value).toEqual(checkboxId.startsWith(symp.name));
       }
     });
   });

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_01_151212) do
+ActiveRecord::Schema.define(version: 2021_10_06_232125) do
 
   create_table "active_storage_attachments", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -509,6 +509,7 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.boolean "required", default: true
     t.string "threshold_operator", default: "Less Than"
     t.integer "group", default: 1
+    t.boolean "supplemental", default: false
     t.index ["condition_id"], name: "index_symptoms_on_condition_id"
     t.index ["name", "bool_value", "condition_id"], name: "symptoms_index_chain_1"
   end

@@ -94,7 +94,7 @@ class AssessmentsController < ApplicationController
         assessment_placeholder = assessment_placeholder.merge(params.permit(:error_code).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit(:response_status).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
-        assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes required] }).to_h)
+        assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes required supplemental] }).to_h)
         assessment_placeholder['patient_submission_token'] = submission_token_from_params
         # The generic 'experiencing_symptoms' boolean is used in cases where a user does not specify _which_ symptoms they are experiencing,
         # a value of true will result in an assessment being marked as symptomatic regardless of if symptoms are specified
@@ -132,7 +132,7 @@ class AssessmentsController < ApplicationController
       threshold_condition = ThresholdCondition.find_by(threshold_condition_hash: threshold_condition_hash)
       redirect_to(root_url) && return unless threshold_condition
 
-      reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
+      reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required supplemental] }).to_h['symptoms']
 
       typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
 

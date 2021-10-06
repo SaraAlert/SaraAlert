@@ -82,7 +82,7 @@ module AssessmentQueryHelper
 
     # Get all threshold symptoms associated with the distinct threshold condition hashes
     Symptom.where(condition_id: threshold_conditions.keys)
-           .select(%i[condition_id name label type required threshold_operator bool_value int_value float_value])
+           .select(%i[condition_id name label type required threshold_operator bool_value int_value float_value supplemental])
            .each { |symptom| threshold_conditions[symptom[:condition_id]][:symptoms][symptom[:name]] = symptom }
 
     # Enable threshold symptoms to be found by threshold_condition_hash
@@ -97,7 +97,7 @@ module AssessmentQueryHelper
 
     # Query relevant fields for all associated symptoms and include them in the reported conditions
     Symptom.where(condition_id: reported_conditions.keys)
-           .select(%i[name condition_id type bool_value int_value float_value])
+           .select(%i[name condition_id type bool_value int_value float_value supplemental])
            .each { |symptom| reported_conditions[symptom[:condition_id]][:symptoms].append(symptom) }
 
     # Construct table data

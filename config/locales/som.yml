@@ -8,6 +8,7 @@ som:
       weblink:
         title: 'Warbixinta Maalinlaha ah'
         bool-title: 'Fadlan xulo dhammaan astaamaha aad dareemayso.'
+        supplemental-title: "Fadlan ka jawaab Haa ama Maya su'aalaha dheeraadka ah ee soo socda."
         instruction1: 'If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.'
         instruction2: >-
           If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please contact your medical
@@ -16,6 +17,8 @@ som:
         instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.'
         submit: 'Gudbi'
         thank_you: 'Waad ku mahadsantahay bogida warbixintaada maalinlaha ah!'
+        'yes': 'Haa'
+        'no': 'Maya'
       email:
         shared:
           greeting: 'Gacaliye/Gacaliso %{name},'

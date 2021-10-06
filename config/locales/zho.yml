@@ -8,12 +8,15 @@ zho:
       weblink:
         title: '日常自我报告 '
         bool-title: '请选择您正经历的所有症状'
+        supplemental-title: '请回答是或否以下问题。'
         instruction1: '如果您没有报告任何症状，请继续遵循由当地卫生部门提供的建议。'
         instruction2: '如果您报告了任何症状，当地卫生部门将会尽快与您联系。如果您有任何紧急问题，请联系您的医疗服务提供者或当地卫生部门。避免与其他人密切接触，并留在家中。'
         instruction3: '如果您遇到紧急医疗情况，请拨打911，并让他们知道你正在接受卫生部门的监控。'
         instruction4: '请使用下面的联系信息与负责您病例的公共健康官员联系。'
         submit: '提交'
         thank_you: '感谢您完成您的自我报告'
+        'yes': '是'
+        'no': '否'
       email:
         shared:
           greeting: '亲爱的%{name},'

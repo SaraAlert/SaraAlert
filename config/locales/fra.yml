@@ -8,6 +8,7 @@ fra:
       weblink:
         title: 'Rapport quotidien'
         bool-title: 'Veuillez sélectionner tous les symptômes que vous présentez.'
+        supplemental-title: 'Veuillez répondre Oui ou Non aux questions supplémentaires suivantes.'
         instruction1: >-
           Si vous n'avez pas signalé aucun symptôme, veuillez continuer à suivre les recommandations fournies par votre autorité de santé publique locale.
         instruction2: >-
@@ -18,6 +19,8 @@ fra:
         instruction4: 'Veuillez utiliser les coordonnées ci-dessous si vous souhaitez nous contacter au sujet de votre cas.'
         submit: 'Envoyer'
         thank_you: 'Merci d''avoir complété votre rapport quotidien !'
+        'yes': 'Oui'
+        'no': 'Non'
       email:
         shared:
           greeting: 'Cher/Chère %{name},'
