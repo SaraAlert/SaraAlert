@@ -158,6 +158,12 @@ class UpdatePatientTableStringLengths < ActiveRecord::Migration[6.1]
   # NOTE: removing and adding indexes significantly improves performance
 
   def up
+    STRING_FIELDS.each do |field|
+      if Patient.where("length(#{field}) > 200").exists?
+        raise StandardError.new "Deteced string value over 200 characters in column #{field}. Aborting migration."
+      end
+    end
+
     ActiveRecord::Base.record_timestamps = false
 
     remove_current_indexes
