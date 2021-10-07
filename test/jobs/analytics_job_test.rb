@@ -155,7 +155,13 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     state_1_jur = usa_jur.children.first
     county_1_jur = state_1_jur.children.first
     patient = create(:patient, jurisdiction_id: county_1_jur.id)
-    Transfer.create(who_id: 1, patient_id: patient.id, from_jurisdiction_id: state_1_jur.id, to_jurisdiction_id: county_1_jur.id)
+    Transfer.create(
+      who_id: 1,
+      patient_id: patient.id,
+      from_jurisdiction_id: state_1_jur.id,
+      to_jurisdiction_id: county_1_jur.id,
+      created_at: Date.yesterday.to_datetime
+    )
 
     usa_jur_snapshot = CacheAnalyticsJob.all_monitoree_snapshots(usa_jur.id, @@monitorees, usa_jur.subtree_ids).first
     assert_equal(0, usa_jur_snapshot[:transferred_in])
@@ -177,7 +183,13 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     state_1_jur = usa_jur.children.first
     state_2_jur = usa_jur.children.second
     patient = create(:patient, jurisdiction_id: state_2_jur.id)
-    Transfer.create(who_id: 1, patient_id: patient.id, from_jurisdiction_id: state_1_jur.id, to_jurisdiction_id: state_2_jur.id)
+    Transfer.create(
+      who_id: 1,
+      patient_id: patient.id,
+      from_jurisdiction_id: state_1_jur.id,
+      to_jurisdiction_id: state_2_jur.id,
+      created_at: Date.yesterday.to_datetime
+    )
 
     usa_jur_snapshot = CacheAnalyticsJob.all_monitoree_snapshots(usa_jur.id, @@monitorees, usa_jur.subtree_ids).first
     assert_equal(0, usa_jur_snapshot[:transferred_in])
