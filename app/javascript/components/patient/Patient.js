@@ -254,33 +254,28 @@ class Patient extends React.Component {
                   <span className="subsection-title">Primary Contact</span>
                   <InfoTooltip tooltipTextKey="primaryContact" location="right" />
                 </div>
+                {this.props.details.contact_type === 'Self' && this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
+                  <div className="minor-info mb-3">
+                    <b className="text-danger">Monitoree is a minor</b>
+                    {!this.props.details.head_of_household && this.props.hoh && (
+                      <div>
+                        Reporting responsibility is handled by:
+                        <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
+                          {formatName(this.props.hoh)}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="item-group">
                   <div>
                     <b>Contact Type:</b> <span>{this.props.details.contact_type || '--'}</span>
                   </div>
-                  {this.props.details.contact_type === 'Self' ? (
-                    <React.Fragment>
-                      {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
-                        <div className="minor-info mb-2">
-                          <span className="text-danger">Monitoree is a minor</span>
-                          {/* {!this.props.details.head_of_household && this.props.hoh && (
-                            <div>
-                              View contact info for Head of Household:
-                              <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
-                                {formatName(this.props.hoh)}
-                              </a>
-                            </div>
-                          )} */}
-                        </div>
-                      )}
-                    </React.Fragment>
-                  ) : (
+                  {this.props.details.contact_type !== 'Self' && (
                     <div>
                       <b>Contact Name:</b> <span>{this.props.details.contact_name || '--'}</span>
                     </div>
                   )}
-                </div>
-                <div className="item-group">
                   <div>
                     <b>Phone:</b>{' '}
                     <span>{this.props.details.primary_telephone ? `${formatPhoneNumberVisually(this.props.details.primary_telephone)}` : '--'}</span>
@@ -339,33 +334,28 @@ class Patient extends React.Component {
                     <span className="subsection-title">Alternate Contact</span>
                     <InfoTooltip tooltipTextKey="alternateContact" location="right" />
                   </div>
+                  {this.props.details.alternate_contact_type === 'Self' && this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
+                    <div className="minor-info mb-2">
+                      <b className="text-danger">Monitoree is a minor</b>
+                      {/* {!this.props.details.head_of_household && this.props.hoh && (
+                      <div>
+                        Reporting responsibility is handled by:
+                        <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
+                          {formatName(this.props.hoh)}
+                        </a>
+                      </div>
+                    )} */}
+                    </div>
+                  )}
                   <div className="item-group">
                     <div>
                       <b>Contact Type:</b> <span>{this.props.details.alternate_contact_type || '--'}</span>
                     </div>
-                    {this.props.details.alternate_contact_type === 'Self' ? (
-                    <React.Fragment>
-                      {this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
-                        <div className="minor-info mb-2">
-                          <span className="text-danger">Monitoree is a minor</span>
-                          {/* {!this.props.details.head_of_household && this.props.hoh && (
-                            <div>
-                              View contact info for Head of Household:
-                              <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
-                                {formatName(this.props.hoh)}
-                              </a>
-                            </div>
-                          )} */}
-                        </div>
-                      )}
-                    </React.Fragment>
-                  ) : (
-                    <div>
-                      <b>Contact Name:</b> <span>{this.props.details.alternate_contact_name || '--'}</span>
-                    </div>
-                  )}
-                  </div>
-                  <div className="item-group">
+                    {this.props.details.alternate_contact_type !== 'Self' && (
+                      <div>
+                        <b>Contact Name:</b> <span>{this.props.details.alternate_contact_name || '--'}</span>
+                      </div>
+                    )}
                     <div>
                       <b>Phone:</b>{' '}
                       <span>
