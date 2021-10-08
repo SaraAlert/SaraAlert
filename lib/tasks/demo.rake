@@ -396,6 +396,8 @@ namespace :demo do
       patient[:user_defined_id_nndss] = Faker::Code.rut if rand < 0.2
 
       # Contact Information
+      patient[:contact_type] = ValidationHelper::VALID_PATIENT_ENUMS[:contact_type].reject(&:blank?).sample
+      patient[:contact_name] = Faker::Name.name unless patient[:contact_type] == 'Self'
       patient[:preferred_contact_method] = ValidationHelper::VALID_PATIENT_ENUMS[:preferred_contact_method].sample
       if ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include?(patient[:preferred_contact_method]) && rand < 0.8
         patient[:preferred_contact_time] = rand < 0.6 ? ['Morning', 'Afternoon', 'Evening', ''].sample : rand(0..23)
@@ -406,6 +408,19 @@ namespace :demo do
       patient[:secondary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:secondary_telephone_type].sample if patient[:secondary_telephone]
       patient[:international_telephone] = Faker::PhoneNumber.cell_phone_in_e164 if rand < 0.2
       patient[:email] = "#{rand(1_000_000_000..9_999_999_999)}fake@example.com" if patient[:preferred_contact_method] == 'E-mailed Web Link' || rand < 0.5
+
+      if rand < 0.4 # populate alternate contact info sometimes
+        patient[:alternate_contact_type] = ValidationHelper::VALID_PATIENT_ENUMS[:alternate_contact_type].sample
+        patient[:alternate_contact_name] = Faker::Name.name unless patient[:alternate_contact_type] == 'Self'
+        patient[:preferred_contact_method] = ValidationHelper::VALID_PATIENT_ENUMS[:alternate_preferred_contact_method].sample
+        patient[:preferred_contact_time] = ValidationHelper::VALID_PATIENT_ENUMS[:alternate_preferred_contact_time].sample
+        patient[:alternate_primary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:alternate_preferred_contact_method] != 'E-mailed Web Link' || rand < 0.5
+        patient[:alternate_primary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:alternate_primary_telephone_type].sample if patient[:alternate_primary_telephone]
+        patient[:alternate_secondary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:alternate_primary_telephone] && rand < 0.5
+        patient[:alternate_secondary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:alternate_secondary_telephone_type].sample if patient[:alternate_secondary_telephone]
+        patient[:alternate_international_telephone] = Faker::PhoneNumber.cell_phone_in_e164 if rand < 0.2
+        patient[:alternate_email] = "#{rand(1_000_000_000..9_999_999_999)}fake@example.com" if patient[:alternate_preferred_contact_method] == 'E-mailed Web Link' || rand < 0.5
+      end
 
       # Address
       if rand < 0.8
