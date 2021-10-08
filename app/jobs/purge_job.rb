@@ -13,6 +13,9 @@ class PurgeJob < ApplicationJob
     not_purged = []
     job_info[:eligible] = eligible.count
 
+    # Set everything else to nil
+    mask = patient_attribute_mask
+
     # Loop through and purge
     eligible.find_each do |monitoree|
       next if monitoree.active_dependents.count.positive?
@@ -22,12 +25,6 @@ class PurgeJob < ApplicationJob
       monitoree.histories.destroy_all
       monitoree.contact_attempts.destroy_all
       monitoree.vaccines.destroy_all
-
-      attributes = Patient.new.attributes.keys
-      attributes -= PurgeJob.attributes_to_keep
-      # Set everything else to nil
-      mask = attributes.collect { |a| [a, nil] }.to_h.symbolize_keys
-      mask[:purged] = true
       monitoree.update!(mask)
       monitoree.responder.refresh_head_of_household if monitoree.responder_id != monitoree.id
       purged << { id: monitoree.id }
@@ -77,6 +74,12 @@ class PurgeJob < ApplicationJob
   end
 
   private
+
+  def patient_attribute_mask
+    mask = (Patient.new.attributes.keys - PurgeJob.attributes_to_keep).index_with { |_a| nil }.symbolize_keys
+    mask[:purged] = true
+    mask
+  end
 
   def calculate_total_emails(total_monitorees)
     total_emails = (total_monitorees.to_f / ADMIN_OPTIONS['job_run_email_group_size'].to_i).ceil
