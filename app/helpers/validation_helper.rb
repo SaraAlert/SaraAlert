@@ -178,10 +178,16 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     monitored_address_state: [*VALID_STATES, nil, ''],
     foreign_monitored_address_state: [*VALID_STATES, nil, ''],
     # contact info
+    contact_type: ['Self', 'Parent/Guardian', 'Spouse/Partner', 'Caregiver', 'Healthcare Provider', 'Facility Representative', 'Group Home Manager/Administrator', 'Surrogate/Proxy', 'Other', 'Unknown', nil, ''],
     preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown', nil, ''],
+    preferred_contact_time: TIME_OPTIONS.keys.map(&:to_s) + [nil, ''],
     primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
     secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
-    preferred_contact_time: TIME_OPTIONS.keys.map(&:to_s) + [nil, ''],
+    alternate_contact_type: ['Self', 'Parent/Guardian', 'Spouse/Partner', 'Caregiver', 'Healthcare Provider', 'Facility Representative', 'Group Home Manager/Administrator', 'Surrogate/Proxy', 'Other', 'Unknown', nil, ''],
+    alternate_preferred_contact_method: ['Email', 'Telephone call', 'SMS Text-message', 'Unknown', nil, ''],
+    alternate_preferred_contact_time: ['Morning', 'Afternoon', 'Evening', nil, ''],
+    alternate_primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
+    alternate_secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
     # arrival
     source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other', nil, ''],
     # additional planned travel
@@ -251,6 +257,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     monitored_address_state: { label: 'Monitored Address State', checks: [:state] },
     foreign_monitored_address_state: { label: 'Foreign Monitored Address State', checks: [:state] },
     # contact info
+    contact_type: { label: 'Contact Type', checks: [:enum] },
+    contact_name: { label: 'Contact Type', checks: [] },
     preferred_contact_method: { label: 'Preferred Contact Method', checks: [:enum] },
     preferred_contact_time: { label: 'Preferred Contact Time', checks: %i[time] },
     primary_telephone: { label: 'Primary Telephone', checks: [:phone] },
@@ -259,6 +267,16 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     secondary_telephone_type: { label: 'Secondary Telephone Type', checks: [:enum] },
     email: { label: 'Email', checks: [:email] },
     international_telephone: { label: 'International Telephone', checks: [] },
+    alternate_contact_type: { label: 'Contact Type', checks: [:enum] },
+    alternate_contact_name: { label: 'Contact Type', checks: [] },
+    alternate_preferred_contact_method: { label: 'Preferred Contact Method', checks: [:enum] },
+    alternate_preferred_contact_time: { label: 'Preferred Contact Time', checks: %i[:enum] },
+    alternate_primary_telephone: { label: 'Primary Telephone', checks: [:phone] },
+    alternate_primary_telephone_type: { label: 'Primary Telephone Type', checks: [:enum] },
+    alternate_secondary_telephone: { label: 'Secondary Telephone', checks: [:phone] },
+    alternate_secondary_telephone_type: { label: 'Secondary Telephone Type', checks: [:enum] },
+    alternate_email: { label: 'Email', checks: [:email] },
+    alternate_international_telephone: { label: 'International Telephone', checks: [] },
     # arrival info
     date_of_departure: { label: 'Date of Departure', checks: [:date] },
     date_of_arrival: { label: 'Date of Arrival', checks: [:date] },

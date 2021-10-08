@@ -65,11 +65,17 @@ class Patient < ApplicationRecord
      primary_language
      secondary_language
      ethnicity
+     sex
+     contact_type
      preferred_contact_method
      preferred_contact_time
-     sex
      primary_telephone_type
      secondary_telephone_type
+     alternate_contact_type
+     alternate_preferred_contact_time
+     alternate_primary_telephone_type
+     alternate_primary_telephone_type
+     alternate_secondary_telephone_type
      additional_planned_travel_type
      case_status
      public_health_action
