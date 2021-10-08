@@ -337,14 +337,6 @@ class Patient extends React.Component {
                   {this.props.details.alternate_contact_type === 'Self' && this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
                     <div className="minor-info mb-2">
                       <b className="text-danger">Monitoree is a minor</b>
-                      {/* {!this.props.details.head_of_household && this.props.hoh && (
-                      <div>
-                        Reporting responsibility is handled by:
-                        <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
-                          {formatName(this.props.hoh)}
-                        </a>
-                      </div>
-                    )} */}
                     </div>
                   )}
                   <div className="item-group">

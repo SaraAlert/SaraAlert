@@ -93,9 +93,9 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                'Vaccine 2 Dose Number', 'Vaccine 2 Notes', 'Follow-Up Reason', 'Follow-Up Note', 'Vaccine 3 Group Name',
                                'Vaccine 3 Product Name', 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes',
                                'International Telephone', 'Primary Contact Type', 'Primary Contact Name', 'Alternate Contact Type', 'Alternate Contact Name',
-                               'Alternate Contact Preferred Contact Method', 'Alternate Contact Preferred Contact Time', 'Alternate Contact Primary Telephone',
-                               'Alternate Contact Primary Telephone Type', 'Alternate Contact Secondary Telephone',
-                               'Alternate Contact Secondary Telephone Type', 'Alternate Contact International Telephone', 'Alternate Contact Email'].freeze
+                               'Alternate Preferred Contact Method', 'Alternate Preferred Contact Time', 'Alternate Primary Telephone',
+                               'Alternate Primary Telephone Type', 'Alternate Secondary Telephone',
+                               'Alternate Secondary Telephone Type', 'Alternate International Telephone', 'Alternate Email'].freeze
 
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
   # of fields between Sara Alert Format and Full History Patients
@@ -235,14 +235,14 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     email: 'Email',
     alternate_contact_type: 'Alternate Contact Type',
     alternate_contact_name: 'Alternate Contact Name',
-    alternate_emailpreferred_contact_method: 'Alternate Contact Preferred Contact Method',
-    alternate_emailpreferred_contact_time: 'Alternate Contact Preferred Contact Time',
-    alternate_emailprimary_telephone: 'Alternate Contact Primary Telephone',
-    alternate_emailprimary_telephone_type: 'Alternate Contact Primary Telephone Type',
-    alternate_emailsecondary_telephone: 'Alternate Contact Secondary Telephone',
-    alternate_emailsecondary_telephone_type: 'Alternate Contact Secondary Telephone Type',
-    alternate_emailinternational_telephone: 'Alternate Contact International Telephone',
-    alternate_email: 'Alternate Contact Email',
+    alternate_preferred_contact_method: 'Alternate Preferred Contact Method',
+    alternate_preferred_contact_time: 'Alternate Preferred Contact Time',
+    alternate_primary_telephone: 'Alternate Primary Telephone',
+    alternate_primary_telephone_type: 'Alternate Primary Telephone Type',
+    alternate_secondary_telephone: 'Alternate Secondary Telephone',
+    alternate_secondary_telephone_type: 'Alternate Secondary Telephone Type',
+    alternate_international_telephone: 'Alternate International Telephone',
+    alternate_email: 'Alternate Email',
     # Enrollment Info - Travel - Arrival Information
     port_of_origin: 'Port of Origin',
     date_of_departure: 'Date of Departure',
@@ -473,8 +473,19 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                                                         foreign_monitored_address_zip foreign_monitored_address_county])
                 ]
               },
-              rct_node(:patients, 'Contact Information', %i[preferred_contact_method preferred_contact_time primary_telephone primary_telephone_type
-                                                            secondary_telephone secondary_telephone_type international_telephone email]),
+              {
+                value: 'patients-contact_information',
+                label: 'Contact Information',
+                children: [
+                  rct_node(:patients, 'Primary Contact Information', %i[contact_type contact_name preferred_contact_method preferred_contact_time
+                                                                        primary_telephone primary_telephone_type secondary_telephone secondary_telephone_type
+                                                                        international_telephone email]),
+                  rct_node(:patients, 'Alternate Contact Information', %i[alternate_contact_type alternate_contact_name alternate_preferred_contact_method
+                                                                          alternate_preferred_contact_time alternate_primary_telephone
+                                                                          alternate_primary_telephone_type alternate_secondary_telephone
+                                                                          alternate_secondary_telephone_type alternate_international_telephone alternate_email])
+                ]
+              },
               {
                 value: 'patients-enrollment-travel',
                 label: 'Travel',
