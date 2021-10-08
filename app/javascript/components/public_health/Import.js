@@ -286,6 +286,14 @@ class Import extends React.Component {
                         <b>Monitored Zip:</b> {patient.monitored_address_zip}
                       </Col>
                       <Col>
+                        <b>Contact Type:</b> {patient.contact_type || 'Unknown'}
+                        <br />
+                        {patient.contact_type !== 'Self' && (
+                          <React.Fragment>
+                            <b>Contact Name:</b> {patient.contact_name}
+                            <br />
+                          </React.Fragment>
+                        )}
                         <b>Phone Number 1:</b> {formatPhoneNumberVisually(patient.primary_telephone)}
                         <br />
                         <b>Phone Number 2:</b> {formatPhoneNumberVisually(patient.secondary_telephone)}

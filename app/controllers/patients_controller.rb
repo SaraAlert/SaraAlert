@@ -160,6 +160,9 @@ class PatientsController < ApplicationController
     valid_jurisdiction = current_user.jurisdiction.subtree_ids.include?(patient.jurisdiction_id) unless patient.jurisdiction_id.nil?
     patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction
 
+    # If contact type is not set, default to "Unknown"
+    patient.contact_type = 'Unknown' if patient.contact_type.nil?
+
     # Generate submission token for assessments
     patient.submission_token = patient.new_submission_token
 

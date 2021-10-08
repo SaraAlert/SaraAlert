@@ -60,7 +60,10 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                 race_refused_to_answer vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number
                                 vaccine_1_notes vaccine_2_group_name vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number
                                 vaccine_2_notes follow_up_reason follow_up_note vaccine_3_group_name vaccine_3_product_name vaccine_3_administration_date
-                                vaccine_3_dose_number vaccine_3_notes international_telephone].freeze
+                                vaccine_3_dose_number vaccine_3_notes international_telephone contact_type contact_name alternate_contact_type
+                                alternate_contact_name alternate_preferred_contact_method alternate_preferred_contact_time alternate_primary_telephone
+                                alternate_primary_telephone_type alternate_secondary_telephone alternate_secondary_telephone_type
+                                alternate_international_telephone alternate_email].freeze
 
   SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                                'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
@@ -89,7 +92,10 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                'Vaccine 1 Dose Number', 'Vaccine 1 Notes', 'Vaccine 2 Group Name', 'Vaccine 2 Product Name', 'Vaccine 2 Administration Date',
                                'Vaccine 2 Dose Number', 'Vaccine 2 Notes', 'Follow-Up Reason', 'Follow-Up Note', 'Vaccine 3 Group Name',
                                'Vaccine 3 Product Name', 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes',
-                               'International Telephone'].freeze
+                               'International Telephone', 'Primary Contact Type', 'Primary Contact Name', 'Alternate Contact Type', 'Alternate Contact Name',
+                               'Alternate Contact Preferred Contact Method', 'Alternate Contact Preferred Contact Time', 'Alternate Contact Primary Telephone',
+                               'Alternate Contact Primary Telephone Type', 'Alternate Contact Secondary Telephone',
+                               'Alternate Contact Secondary Telephone Type', 'Alternate Contact International Telephone', 'Alternate Contact Email'].freeze
 
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
   # of fields between Sara Alert Format and Full History Patients
@@ -130,13 +136,16 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                 additional_planned_travel_destination_state additional_planned_travel_destination_country additional_planned_travel_port_of_departure
                 potential_exposure_location potential_exposure_country contact_of_known_case_id was_in_health_care_facility_with_known_cases_facility_name
                 laboratory_personnel_facility_name healthcare_personnel_facility_name member_of_a_common_exposure_cohort_type exposure_risk_assessment
-                monitoring_plan case_status gender_identity sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason],
+                monitoring_plan case_status gender_identity sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason contact_type
+                contact_name alternate_contact_type alternate_contact_name alternate_preferred_contact_method alternate_preferred_contact_time
+                alternate_primary_telephone_type alternate_secondary_telephone_type alternate_international_telephone
+                alternate_email],
     notes: %i[travel_related_notes additional_planned_travel_related_notes exposure_notes follow_up_note],
     dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
               symptom_onset first_positive_lab_at extended_isolation contact_became_case_at],
     times: %i[preferred_contact_time],
     timestamps: %i[created_at updated_at closed_at latest_assessment_at latest_transfer_at last_assessment_reminder_sent],
-    phones: %i[primary_telephone secondary_telephone],
+    phones: %i[primary_telephone secondary_telephone alternate_primary_telephone alternate_secondary_telephone],
     booleans: %i[interpretation_required isolation continuous_exposure contact_of_known_case travel_to_affected_country_or_area
                  was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight
                  member_of_a_common_exposure_cohort head_of_household pause_notifications],
@@ -214,6 +223,8 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     foreign_monitored_address_zip: 'Foreign Monitored Address Zip',
     foreign_monitored_address_county: 'Foreign Monitored Address County',
     # Enrollment Info - Contact Information
+    contact_type: 'Contact Type',
+    contact_name: 'Contact Name',
     preferred_contact_method: 'Preferred Contact Method',
     preferred_contact_time: 'Preferred Contact Time',
     primary_telephone: 'Primary Telephone',
@@ -222,6 +233,16 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     secondary_telephone_type: 'Secondary Telephone Type',
     international_telephone: 'International Telephone',
     email: 'Email',
+    alternate_contact_type: 'Alternate Contact Type',
+    alternate_contact_name: 'Alternate Contact Name',
+    alternate_emailpreferred_contact_method: 'Alternate Contact Preferred Contact Method',
+    alternate_emailpreferred_contact_time: 'Alternate Contact Preferred Contact Time',
+    alternate_emailprimary_telephone: 'Alternate Contact Primary Telephone',
+    alternate_emailprimary_telephone_type: 'Alternate Contact Primary Telephone Type',
+    alternate_emailsecondary_telephone: 'Alternate Contact Secondary Telephone',
+    alternate_emailsecondary_telephone_type: 'Alternate Contact Secondary Telephone Type',
+    alternate_emailinternational_telephone: 'Alternate Contact International Telephone',
+    alternate_email: 'Alternate Contact Email',
     # Enrollment Info - Travel - Arrival Information
     port_of_origin: 'Port of Origin',
     date_of_departure: 'Date of Departure',
