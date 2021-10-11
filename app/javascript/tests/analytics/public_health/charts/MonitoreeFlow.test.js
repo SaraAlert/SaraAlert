@@ -92,8 +92,8 @@ describe('MonitoreeFlow', () => {
     expect(wrapper.find(Card.Body).find('.info-text').exists()).toBe(true);
     expect(wrapper.find(Card.Body).find('.info-text').length).toEqual(2);
     expect(wrapper.find(Card.Body).find('.info-text').find('i.fa-info-circle').length).toEqual(2);
-    expect(wrapper.find(Card.Body).find('.info-text').at(0).text()).toContain('Cumulative includes incoming and outgoing counts recorded for this jurisdiction (excluding today’s counts). All counts calculated based on UTC time zone');
-    expect(wrapper.find(Card.Body).find('.info-text').at(1).text()).toContain('Cumulative includes counts of the monitorees that met the criteria listed in the tables after 11/2/2021 (excluding today’s counts). All counts calculated based on UTC time zone');
+    expect(wrapper.find(Card.Body).find('.info-text').at(0).text()).toEqual('Cumulative includes incoming and outgoing counts recorded for this jurisdiction (excluding today’s counts). All counts calculated based on UTC time zone.');
+    expect(wrapper.find(Card.Body).find('.info-text').at(1).text()).toEqual('Cumulative includes counts of the monitorees that met the criteria listed in the tables after 11/2/2021 (excluding today’s counts). All counts calculated based on UTC time zone.');
   });
 
   it('Properly renders "Exposure" monitoree flow table', () => {

@@ -155,9 +155,6 @@ class PatientsController < ApplicationController
     # Set the creator as the current user
     patient.creator = current_user
 
-    # Set the enrolled_isolation bool based on isolation bool value
-    patient.enrolled_isolation = patient.isolation
-
     # Set the subject jurisdiction to the creator's jurisdiction if jurisdiction is not assigned or not assignable by the current user
     valid_jurisdiction = current_user.jurisdiction.subtree_ids.include?(patient.jurisdiction_id) unless patient.jurisdiction_id.nil?
     patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction

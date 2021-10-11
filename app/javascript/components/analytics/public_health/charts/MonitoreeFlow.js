@@ -275,7 +275,7 @@ class MonitoreeFlow extends React.Component {
           <div className="text-center text-secondary info-text mb-4">
             <i className="fas fa-info-circle mr-1"></i>
             Cumulative includes incoming and outgoing counts recorded for this jurisdiction (excluding today’s counts). All counts calculated based on UTC time
-            zone
+            zone.
           </div>
           <Row>
             {this.renderExposureToCaseTable(this.exposureToCaseTableData)}
@@ -284,7 +284,7 @@ class MonitoreeFlow extends React.Component {
           <div className="text-center text-secondary info-text mb-1">
             <i className="fas fa-info-circle mr-1"></i>
             Cumulative includes counts of the monitorees that met the criteria listed in the tables after {RELEASE_DATE} (excluding today’s counts). All counts
-            calculated based on UTC time zone
+            calculated based on UTC time zone.
           </div>
         </Card.Body>
       </Card>

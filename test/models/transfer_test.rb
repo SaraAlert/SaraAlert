@@ -183,7 +183,7 @@ class TransferTest < ActiveSupport::TestCase
     end
 
     assert_difference("Transfer.in_time_frame('Yesterday').size", 1) do
-      create(:transfer).update(created_at: DateTime.now.utc.beginning_of_day - 1.hours)
+      create(:transfer).update(created_at: DateTime.now.utc.beginning_of_day - 1.hour)
     end
 
     assert_difference("Transfer.in_time_frame('Last 14 Days').size", 1) do
