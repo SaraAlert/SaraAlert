@@ -31,6 +31,7 @@ storage
 public/packs
 public/packs-test
 app/javascript/tests
+vendor
 
 goals.txt
 docker-compose.prod.yml
