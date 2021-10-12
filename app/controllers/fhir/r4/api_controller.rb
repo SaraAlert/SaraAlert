@@ -214,7 +214,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       if request.headers['If-None-Exist'].present?
         matches = search_patients(Rack::Utils.parse_nested_query(request.headers['If-None-Exist']))
         num_matches = matches.size
-        status_ok(matches.first.as_fhir) && return if num_matches == 1
+        return head :ok if num_matches == 1
 
         status_precondition_failed_with_custom_errors(["There are #{num_matches} potential duplicate patients"]) && return if num_matches > 1
       end
@@ -279,7 +279,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       if entry&.request&.ifNoneExist.present?
         matches = search_patients(Rack::Utils.parse_nested_query(entry&.request&.ifNoneExist))
         num_matches = matches.size
-        status_ok(matches.first.as_fhir) && return if num_matches == 1
+        patients << { resource: {}, fhir_map: {}, full_url: entry.fullUrl } && next if num_matches == 1
 
         if num_matches > 1
           status_precondition_failed_with_custom_errors(["There are #{num_matches} potential duplicate patients"], "Bundle.entry[#{index}].resource") && return
@@ -310,6 +310,15 @@ class Fhir::R4::ApiController < ApplicationApiController
         ) && return
       end
 
+      # Observation cannot reference a Patient that is considered a duplicate
+      unless referenced_patient.is_a?(Patient)
+        status_unprocessable_entity_with_custom_errors(
+          ['Observation resources must reference the fullUrl of a Patient in the same Bundle, but the Observation referenced the fullUrl of a Patient with ' \
+           'one existing duplicate.'],
+          "Bundle.entry[#{index}].resource.subject.reference"
+        ) && return
+      end
+
       resource, fhir_map = build_model_from_fhir(Laboratory, entry&.resource, :laboratory_from_fhir)
       change_fhir_map_context!(fhir_map, 'Observation', "Bundle.entry[#{index}].resource")
       referenced_patient.laboratories << resource
@@ -324,7 +333,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     saved_patients = []
     ActiveRecord::Base.transaction do
       patients.each do |patient|
-        saved_patients << save_patient(patient[:resource], patient[:fhir_map], request_body)
+        # Saved patient is added if not a duplicate otherwise patient with fullUrl is added instead to indicate duplicate in order
+        saved_patients << (patient[:fhir_map].empty? ? patient : save_patient(patient[:resource], patient[:fhir_map], request_body))
       end
     end
 
@@ -1078,7 +1088,7 @@ class Fhir::R4::ApiController < ApplicationApiController
       when 'birthdate'
         query = query.where(date_of_birth: search)
       when 'identifier'
-        (identifier, value) = search.split('|')
+        (identifier, value) = search.split('|', 2)
         next if value.nil?
 
         query = query.where('lower(user_defined_id_statelocal) like ?', "#{value&.downcase}%") if identifier == 'http://saraalert.org/SaraAlert/state-local-id'

@@ -176,7 +176,7 @@ class TransactionTest < ApiControllerTestCase
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
     assert_match(/State.*not an acceptable value/, json_response['issue'][0]['diagnostics'])
-    assert_match(/Bundle\.entry\[0\]\.resource\.address\[0\]\.state/, json_response['issue'][0]['expression'][0])
+    assert_match(/Bundle\.entry\[0\]\.resource\.address\[0\]\.stat/, json_response['issue'][0]['expression'][0])
   end
 
   test 'should be unprocessable entity via transaction when Observation is invalid' do
@@ -192,7 +192,7 @@ class TransactionTest < ApiControllerTestCase
     assert_match(/Bundle\.entry\[1\]\.resource\.code\.coding\[0\]/, json_response['issue'][0]['expression'][0])
   end
 
-  test 'should be ok when duplicate detection is enabled and 1 potential duplicate is found' do
+  test 'should be unprocessable entity via transaction when duplicate detection is enabled and 1 potential duplicate is found with an Observation' do
     @bundle.entry[0].request.ifNoneExist = "identifier=http://saraalert.org/SaraAlert/state-local-id|#{@bundle.entry[0].resource.identifier[0].value}&" \
                                            "birthdate=#{@bundle.entry[0].resource.birthDate}"
     post(
@@ -200,10 +200,29 @@ class TransactionTest < ApiControllerTestCase
       params: @bundle.to_json,
       headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
     )
-    assert_response :ok
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal('Observation resources must reference the fullUrl of a Patient in the same Bundle, but the Observation referenced the fullUrl of a Patient ' \
+                 'with one existing duplicate.', json_response['issue'][0]['diagnostics'])
+    assert_match(/Bundle\.entry\[1\]\.resource\.subject\.reference/, json_response['issue'][0]['expression'][0])
   end
 
-  test 'should be precondition failed when duplicate detection is enabled and multiple potential duplicates are found' do
+  test 'should be ok via transaction when duplicate detection is enabled and 1 potential duplicate is found' do
+    @bundle.entry[0].request.ifNoneExist = "identifier=http://saraalert.org/SaraAlert/state-local-id|#{@bundle.entry[0].resource.identifier[0].value}&" \
+                                           "birthdate=#{@bundle.entry[0].resource.birthDate}"
+    @bundle.entry[1] = nil
+    post(
+      '/fhir/r4',
+      params: @bundle.to_json,
+      headers: { Authorization: "Bearer #{@system_everything_token.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal(@bundle.entry[0].fullUrl, json_response['entry'][0]['fullUrl'])
+    assert_equal('200 OK', json_response['entry'][0]['response']['status'])
+  end
+
+  test 'should be precondition failed via transaction when duplicate detection is enabled and multiple potential duplicates are found' do
     @bundle.entry[0].request.ifNoneExist = "birthdate=#{@bundle.entry[0].resource.birthDate}"
     post(
       '/fhir/r4',
