@@ -487,9 +487,9 @@ class Contact extends React.Component {
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors[`${prepend}preferred_contact_time`]}
             </Form.Control.Feedback>
-            {!alternate && ![null, ''].includes(this.state.current.patient.preferred_contact_time) && (
+            {!alternate && this.state.current.patient.preferred_contact_time && (
               <React.Fragment>
-                {[null, ''].includes(this.state.current.patient.preferred_contact_method) &&
+                {!this.state.current.patient.preferred_contact_method &&
                   this.renderWarningBanner(
                     'The monitoree will not be sent reminders while they do not have a Preferred Reporting Method selected.',
                     false,
