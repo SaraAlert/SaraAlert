@@ -10,15 +10,17 @@ import InfoTooltip from '../../components/util/InfoTooltip';
 import BadgeHoH from '../../components/patient/icons/BadgeHoH';
 import { Heading } from '../../utils/Heading';
 import { mockUser1 } from '../mocks/mockUsers';
-import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, blankIsolationMockPatient, blankExposureMockPatient } from '../mocks/mockPatients';
+import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, mockPatient6, blankIsolationMockPatient, blankExposureMockPatient } from '../mocks/mockPatients';
 import { mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 import { formatName, formatDate, formatRace, convertCommonLanguageCodeToName } from '../helpers';
 
 const goToMock = jest.fn();
 const identificationLabels = ['DOB', 'Age', 'Language', 'Sara Alert ID', 'State/Local ID', 'CDC ID', 'NNDSS ID', 'Birth Sex', 'Gender Identity', 'Sexual Orientation', 'Race', 'Ethnicity', 'Nationality'];
 const identificationFields = ['date_of_birth', 'age', 'primary_language', 'id', 'user_defined_id_statelocal', 'user_defined_id_cdc', 'user_defined_id_nndss', 'sex', 'gender_identity', 'sexual_orientation', 'race', 'ethnicity', 'nationality'];
-const contactLabels = ['Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Reporting Method'];
-const contactFields = ['primary_telephone', 'preferred_contact_time', 'primary_telephone_type', 'email', 'preferred_contact_method'];
+const contactLabels = ['Contact Type', 'Contact Name', 'Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Reporting Method'];
+const contactFields = ['contact_type', 'contact_name', 'primary_telephone', 'preferred_contact_time', 'primary_telephone_type', 'email', 'preferred_contact_method'];
+const selfContactLabels = _.filter(contactLabels, l => l !== 'Contact Name');
+const selfContactFields = _.filter(contactFields, l => l !== 'contact_name');
 const secondaryContactLabels = ['Secondary Phone', 'Secondary Phone Type', 'International Phone'];
 const secondaryContactFields = ['secondary_telephone', 'secondary_telephone_type', 'international_telephone'];
 const domesticAddressLabels = ['Address 1', 'Address 2', 'Town/City', 'State', 'Zip', 'County'];
@@ -121,14 +123,15 @@ describe('Patient', () => {
     expect(section.find('.text-danger').text()).toEqual(' (Minor)');
   });
 
-  it('Properly renders contact information section', () => {
-    const additionalProps = { details: mockPatient2, hoh: mockPatient1 };
+  it('Properly renders contact information section without alternate contact', () => {
+    const additionalProps = { details: mockPatient2 };
     const wrapper = getWrapper(additionalProps);
     const section = wrapper.find('#contact-information');
     expect(section.find(Heading).children().text()).toEqual('Contact Information');
     expect(section.find('.edit-link').exists()).toBe(true);
     expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient2.id + '/edit?step=2&nav=global');
     expect(section.find('.text-danger').exists()).toBe(false);
+    expect(section.children().find(Col).length).toEqual(1);
 
     // primary contact information
     section
@@ -136,8 +139,8 @@ describe('Patient', () => {
       .at(0)
       .children()
       .forEach((item, index) => {
-        expect(item.find('b').text()).toEqual(contactLabels[parseInt(index)] + ':');
-        expect(item.find('span').text()).toEqual(mockPatient2[contactFields[parseInt(index)]] || '--');
+        expect(item.find('b').text()).toEqual(selfContactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient2[selfContactFields[parseInt(index)]] || '--');
       });
 
     // secondary contact information
@@ -151,7 +154,7 @@ describe('Patient', () => {
       });
   });
 
-  it('Properly renders contact information section if secondary contact info is not present', () => {
+  it('Properly renders contact information section with alternate contact', () => {
     const additionalProps = { details: mockPatient1 };
     const wrapper = getWrapper(additionalProps);
     const section = wrapper.find('#contact-information');
@@ -159,23 +162,106 @@ describe('Patient', () => {
     expect(section.find('.edit-link').exists()).toBe(true);
     expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient1.id + '/edit?step=2&nav=global');
     expect(section.find('.text-danger').exists()).toBe(false);
-    expect(section.find('.item-group').length).toEqual(1);
+    expect(section.children().find(Col).length).toEqual(2);
+
+    // primary contact information
     section
+      .children()
+      .find(Col)
+      .at(0)
+      .find('.item-group')
+      .at(0)
+      .children()
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(selfContactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient1[selfContactFields[parseInt(index)]] || '--');
+      });
+
+    // secondary contact information
+    section
+      .children()
+      .find(Col)
+      .at(0)
+      .find('.item-group')
+      .at(1)
+      .children()
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(secondaryContactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient1[secondaryContactFields[parseInt(index)]] || '--');
+      });
+
+    // alternate contact information
+    section
+      .children()
+      .find(Col)
+      .at(1)
+      .find('.item-group')
+      .at(0)
+      .children()
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(contactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient1[`alternate_${contactFields[parseInt(index)]}`] || '--');
+      });
+
+    // alternate secondary contact information
+    section
+      .children()
+      .find(Col)
+      .at(1)
+      .find('.item-group')
+      .at(1)
+      .children()
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(secondaryContactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient1[`alternate_${secondaryContactFields[parseInt(index)]}`] || '--');
+      });
+  });
+
+  it('Hides secondary contact info if it is not defined', () => {
+    const additionalProps = { details: mockPatient3 };
+    const wrapper = getWrapper(additionalProps);
+    const section = wrapper.find('#contact-information');
+    expect(section.find(Heading).children().text()).toEqual('Contact Information');
+    expect(section.find('.edit-link').exists()).toBe(true);
+    expect(section.find('a').prop('href')).toEqual(window.BASE_PATH + '/patients/' + mockPatient3.id + '/edit?step=2&nav=global');
+    expect(section.find('.text-danger').exists()).toBe(false);
+    expect(section.children().find(Col).length).toEqual(2);
+
+    // primary contact information
+    expect(section.children().find(Col).at(0).find('.item-group').length).toEqual(1);
+    section
+      .children()
+      .find(Col)
+      .at(0)
       .find('.item-group')
       .children()
       .forEach((item, index) => {
         expect(item.find('b').text()).toEqual(contactLabels[parseInt(index)] + ':');
-        expect(item.find('span').text()).toEqual(mockPatient1[contactFields[parseInt(index)]] || '--');
+        expect(item.find('span').text()).toEqual(mockPatient3[contactFields[parseInt(index)]] || '--');
+      });
+
+    // alternate contact information
+    expect(section.children().find(Col).at(1).find('.item-group').length).toEqual(1);
+    section
+      .children()
+      .find(Col)
+      .at(1)
+      .find('.item-group')
+      .children()
+      .forEach((item, index) => {
+        expect(item.find('b').text()).toEqual(contactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient3[`alternate_${contactFields[parseInt(index)]}`] || '--');
       });
   });
 
   it('Properly renders contact information section if SMS is blocked', () => {
-    const additionalProps = { details: { ...mockPatient2, blocked_sms: true } };
+    const additionalProps = { details: { ...mockPatient6, blocked_sms: true } };
     const wrapper = getWrapper(additionalProps);
-    const primaryPhone = wrapper.find('#contact-information').find('.item-group').at(0).find('div').at(1);
-    const preferredContactMethod = wrapper.find('#contact-information').find('.item-group').at(0).find('div').at(5);
+    const primaryPhone = wrapper.find('#contact-information').find('.item-group').children().find('div').at(2);
+    const preferredContactMethod = wrapper.find('#contact-information').find('.item-group').children().find('div').at(6);
+
     expect(primaryPhone.find('b').text()).toEqual('Phone:');
-    expect(primaryPhone.find('span').at(0).text()).toEqual(mockPatient2.primary_telephone);
+    expect(primaryPhone.find('span').at(0).text()).toEqual(mockPatient6.primary_telephone);
     expect(primaryPhone.find('span').at(1).text()).toContain('SMS Blocked');
     expect(primaryPhone.find(InfoTooltip).exists()).toBe(true);
     expect(primaryPhone.find(InfoTooltip).prop('tooltipTextKey')).toEqual('blockedSMS');
@@ -185,16 +271,33 @@ describe('Patient', () => {
     expect(preferredContactMethod.find(InfoTooltip).prop('tooltipTextKey')).toEqual('blockedSMSContactMethod');
   });
 
-  it('Properly renders contact information section when patient is a minor', () => {
+  it('Properly renders contact information section when patient is a minor where primary contact type is "Self"', () => {
+    const additionalProps = { details: mockPatient4, hoh: mockPatient1 };
+    const wrapper = getWrapper(additionalProps);
+    const primaryContactSection = wrapper.find('#contact-information').children().find(Col).at(0);
+    const alternateContactSection = wrapper.find('#contact-information').children().find(Col).at(1);
+
+    expect(primaryContactSection.find('.minor-info').exists()).toBe(true);
+    expect(primaryContactSection.find('.text-danger').exists()).toBe(true);
+    expect(primaryContactSection.find('.text-danger').text()).toEqual('Monitoree is a minor');
+    expect(primaryContactSection.find('.minor-info').find('a').exists()).toBe(true);
+    expect(primaryContactSection.find('.minor-info').children().at(1).text()).toEqual(`Reporting responsibility is handled by: ${mockPatient1.first_name} ${mockPatient1.middle_name} ${mockPatient1.last_name}`);
+    expect(primaryContactSection.find('.minor-info').find('a').prop('href')).toContain('patients/' + mockPatient1.id);
+    expect(primaryContactSection.find('.minor-info').find('a').text()).toEqual(mockPatient1.first_name + ' ' + mockPatient1.middle_name + ' ' + mockPatient1.last_name);
+    expect(alternateContactSection.find('.minor-info').exists()).toBe(false);
+  });
+
+  it('Properly renders contact information section when patient is a minor where alternate contact type is "Self"', () => {
     const additionalProps = { details: mockPatient5, hoh: mockPatient1 };
     const wrapper = getWrapper(additionalProps);
-    const section = wrapper.find('#contact-information');
-    expect(wrapper.find('#contact-information').find('.text-danger').exists()).toBe(true);
-    expect(wrapper.find('#contact-information').find('.text-danger').text()).toEqual('Monitoree is a minor');
-    expect(section.find('.minor-info').find('a').exists()).toBe(true);
-    expect(section.find('.minor-info').children().at(1).text()).toEqual(`View contact info for Head of Household:${mockPatient1.first_name} ${mockPatient1.middle_name} ${mockPatient1.last_name}`);
-    expect(section.find('.minor-info').find('a').prop('href')).toContain('patients/' + mockPatient1.id);
-    expect(section.find('.minor-info').find('a').text()).toEqual(mockPatient1.first_name + ' ' + mockPatient1.middle_name + ' ' + mockPatient1.last_name);
+    const primaryContactSection = wrapper.find('#contact-information').children().find(Col).at(0);
+    const alternateContactSection = wrapper.find('#contact-information').children().find(Col).at(1);
+
+    expect(primaryContactSection.find('.minor-info').exists()).toBe(false);
+    expect(alternateContactSection.find('.minor-info').exists()).toBe(true);
+    expect(alternateContactSection.find('.text-danger').exists()).toBe(true);
+    expect(alternateContactSection.find('.text-danger').text()).toEqual('Monitoree is a minor');
+    expect(alternateContactSection.find('.minor-info').find('a').exists()).toBe(false);
   });
 
   it('Properly renders show/hide divider when props.collapse is true', () => {

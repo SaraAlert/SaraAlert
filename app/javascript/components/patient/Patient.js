@@ -255,12 +255,12 @@ class Patient extends React.Component {
                   <InfoTooltip tooltipTextKey="primaryContact" location="right" />
                 </div>
                 {this.props.details.contact_type === 'Self' && this.props.details.date_of_birth && isMinor(this.props.details.date_of_birth) && (
-                  <div className="minor-info mb-3">
+                  <div className="minor-info mb-2">
                     <b className="text-danger">Monitoree is a minor</b>
                     {!this.props.details.head_of_household && this.props.hoh && (
-                      <div>
-                        Reporting responsibility is handled by:
-                        <a className="pl-1" href={patientHref(this.props.hoh.id, this.props.workflow)}>
+                      <div className="mb-3">
+                        Reporting responsibility is handled by:{' '}
+                        <a href={patientHref(this.props.hoh.id, this.props.workflow)}>
                           {formatName(this.props.hoh)}
                         </a>
                       </div>
