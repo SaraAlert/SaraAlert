@@ -692,8 +692,6 @@ const mockPatient3 = {
   case_status: 'Unknown',
   closed_at: '2020-09-13T20:32:02.000Z',
   contact_name: null,
-  contact_of_known_case: false,
-  contact_of_known_case_id: null,
   contact_of_known_case: true,
   contact_of_known_case_id: '1000',
   contact_type: 'Unknown',

@@ -259,10 +259,7 @@ class Patient extends React.Component {
                     <b className="text-danger">Monitoree is a minor</b>
                     {!this.props.details.head_of_household && this.props.hoh && (
                       <div className="mb-3">
-                        Reporting responsibility is handled by:{' '}
-                        <a href={patientHref(this.props.hoh.id, this.props.workflow)}>
-                          {formatName(this.props.hoh)}
-                        </a>
+                        Reporting responsibility is handled by: <a href={patientHref(this.props.hoh.id, this.props.workflow)}>{formatName(this.props.hoh)}</a>
                       </div>
                     )}
                   </div>
