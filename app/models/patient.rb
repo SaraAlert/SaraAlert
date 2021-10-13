@@ -72,8 +72,8 @@ class Patient < ApplicationRecord
      primary_telephone_type
      secondary_telephone_type
      alternate_contact_type
+     alternate_preferred_contact_method
      alternate_preferred_contact_time
-     alternate_primary_telephone_type
      alternate_primary_telephone_type
      alternate_secondary_telephone_type
      additional_planned_travel_type
@@ -134,6 +134,7 @@ class Patient < ApplicationRecord
             if: -> { follow_up_note.present? }
 
   validates :email, on: %i[api import], email: true
+  validates :alternate_email, on: %i[api import], email: true
 
   validates :international_telephone, on: %i[api import], international_phone_number: true
 

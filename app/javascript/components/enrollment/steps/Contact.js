@@ -437,7 +437,7 @@ class Contact extends React.Component {
               {this.state.errors[`${prepend}preferred_contact_method`]}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} lg="12">
+          <Form.Group as={Col} lg="12" id="preferred_contact_time_wrapper">
             <Form.Label htmlFor={`${prepend}preferred_contact_time`} className="input-label">
               PREFERRED CONTACT TIME{schema?.fields[`${prepend}preferred_contact_time`]?._exclusive?.required && ' *'}
               <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
@@ -683,7 +683,7 @@ class Contact extends React.Component {
           <Card.Header className="h5">Monitoree Contact Information</Card.Header>
           <Card.Body>
             <Tabs
-              activeKey={this.state.selectedTab}
+              defaultActiveKey={this.state.selectedTab}
               id="patient_contact"
               className="g-border-bottom mb-3"
               onSelect={() => {

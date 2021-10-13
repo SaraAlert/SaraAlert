@@ -94,6 +94,7 @@ class PatientsController < ApplicationController
     dashboard_crumb(params.permit(:nav)[:nav], parent)
 
     @patient = Patient.new(parent.attributes.slice(*group_member_subset.map(&:to_s)))
+    @patient.contact_type = 'Unknown'
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
@@ -990,8 +991,6 @@ class PatientsController < ApplicationController
       foreign_monitored_address_line_2
       foreign_monitored_address_zip
       foreign_monitored_address_county
-      contact_type
-      contact_name
       primary_telephone
       primary_telephone_type
       secondary_telephone
@@ -1000,16 +999,6 @@ class PatientsController < ApplicationController
       email
       preferred_contact_method
       preferred_contact_time
-      alternate_contact_type
-      alternate_contact_name
-      alternate_primary_telephone
-      alternate_primary_telephone_type
-      alternate_secondary_telephone
-      alternate_secondary_telephone_type
-      alternate_international_telephone
-      alternate_email
-      alternate_preferred_contact_method
-      alternate_preferred_contact_time
       port_of_origin
       source_of_report
       source_of_report_specify

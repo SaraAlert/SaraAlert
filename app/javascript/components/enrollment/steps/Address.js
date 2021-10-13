@@ -140,7 +140,7 @@ class Address extends React.Component {
           <Card.Header className="h5">Monitoree Address</Card.Header>
           <Card.Body>
             <Tabs
-              activeKey={this.state.selectedTab}
+              defaultActiveKey={this.state.selectedTab}
               id="patient_address"
               className="g-border-bottom mb-3"
               onSelect={() => {

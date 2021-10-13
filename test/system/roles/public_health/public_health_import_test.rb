@@ -88,15 +88,13 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   end
 
   test 'import sara alert format to isolation with duplicate patient and accept duplicates' do
-    # rubocop:disable Layout/LineLength
-    @@public_health_test_helper.import_sara_alert_format('state5_epi', :isolation, 'Sara-Alert-Format-Isolation-Workflow.xlsx', :valid, nil, accept_duplicates: true)
-    # rubocop:enable Layout/LineLength
+    @@public_health_test_helper.import_sara_alert_format('state5_epi', :isolation, 'Sara-Alert-Format-Isolation-Workflow.xlsx', :valid, nil,
+                                                         accept_duplicates: true)
   end
 
   test 'import sara alert format to exposure with duplicate patient and reject duplicates' do
-    # rubocop:disable Layout/LineLength
-    @@public_health_test_helper.import_sara_alert_format('state5_epi', :exposure, 'Sara-Alert-Format-Exposure-Workflow.xlsx', :valid, nil, accept_duplicates: false)
-    # rubocop:enable Layout/LineLength
+    @@public_health_test_helper.import_sara_alert_format('state5_epi', :exposure, 'Sara-Alert-Format-Exposure-Workflow.xlsx', :valid, nil,
+                                                         accept_duplicates: false)
   end
 
   test 'import sara alert format to exposure with custom jurisdictions' do
