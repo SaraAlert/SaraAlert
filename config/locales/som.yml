@@ -46,7 +46,7 @@ som:
           info1: >-
             Haddii aad qabtid wax su'aalo ah, fadlan macluumaad hoos ku qoran u isticmaal si aad u gaadho hay'ad caafimaadka dadweynaha in caawisay kuu soo
             diiwaangelin:
-          info2: 'Haddii aad qabtid wax su''aalo ah, fadlan la xiriir xirfadlaha daryeelka caafimaadka kaasoo kaa caawiyay in lagu diiwaangeliyo.'
+          info2: "Haddii aad qabtid wax su'aalo ah, fadlan la xiriir xirfadlaha daryeelka caafimaadka kaasoo kaa caawiyay in lagu diiwaangeliyo."
     twilio:
       shared:
         experiencing_symptoms_s: 'Qofkani ma wax ka mid ah astaamaha soo socda: %{symptom_names}.'
@@ -112,8 +112,8 @@ som:
         name: 'Temperature'
         notes: 'Please enter your current temperature in degrees Fahrenheit'
       used-a-fever-reducer:
-        name: 'Isticmaalay Xanuun-baa''bi''iye'
-        notes: '24-kii saac ee la soo dhaafay, ma isticmaashay wax daawo ah oo qanshada baa''bi''isa?'
+        name: "Isticmaalay Xanuun-baa'bi'iye"
+        notes: "24-kii saac ee la soo dhaafay, ma isticmaashay wax daawo ah oo qanshada baa'bi'isa?"
       other:
         name: 'Other'
         notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'

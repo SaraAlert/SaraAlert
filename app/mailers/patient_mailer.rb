@@ -106,11 +106,18 @@ class PatientMailer < ApplicationMailer
 
     # This assumes that all of the dependents will be in the same jurisdiction and therefore have the same symptom questions
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
-    symptom_names = patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang)
+    symptom_names = patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang, simplified: true)
 
-    # Construct message contents
-    experiencing_symptoms = I18n.t("assessments.twilio.shared.experiencing_symptoms_#{plural ? 'p' : 's'}", locale: lang, name: patient.initials,
-                                                                                                            symptom_names: symptom_names)
+    # Construct message contents (use simplified version without special characters if present)
+    experiencing_symptoms = I18n.t(
+      "assessments.twilio.shared.experiencing_symptoms_#{plural ? 'p' : 's'}-simplified",
+      locale: lang,
+      name: patient.initials,
+      symptom_names: symptom_names,
+      default: I18n.t("assessments.twilio.shared.experiencing_symptoms_#{plural ? 'p' : 's'}", locale: lang, name: patient.initials,
+                                                                                               symptom_names: symptom_names)
+    )
+
     contents = I18n.t('assessments.twilio.sms.prompt.daily', locale: lang, names: patient_names.join(', '), experiencing_symptoms: experiencing_symptoms)
 
     threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]

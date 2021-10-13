@@ -24,15 +24,32 @@ class Symptom < ApplicationRecord
     where(['(name = ? OR name = ?) AND bool_value = ?', 'fever', 'used-a-fever-reducer', true])
   }
 
-  def bool_based_prompt(lang = :eng)
+  def bool_based_prompt(lang = :eng, simplified: false)
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     case type
     when 'BoolSymptom'
-      I18n.t("assessments.symptoms.#{name}.name", locale: lang)
+      if simplified
+        I18n.t("assessments.symptoms.#{name}.name-simplified", locale: lang, default: I18n.t("assessments.symptoms.#{name}.name", locale: lang))
+      else
+        I18n.t("assessments.symptoms.#{name}.name", locale: lang)
+      end
     when 'IntegerSymptom', 'FloatSymptom'
       [
-        I18n.t("assessments.symptoms.#{name}.name", locale: lang),
-        I18n.t("assessments.threshold-op.#{threshold_operator.parameterize}", locale: lang), value
+        if simplified
+          I18n.t("assessments.symptoms.#{name}.name-simplified", locale: lang, default: I18n.t("assessments.symptoms.#{name}.name", locale: lang))
+        else
+          I18n.t("assessments.symptoms.#{name}.name", locale: lang)
+        end,
+        if simplified
+          I18n.t(
+            "assessments.threshold-op.#{threshold_operator.parameterize}-simplified",
+            locale: lang,
+            default: I18n.t("assessments.threshold-op.#{threshold_operator.parameterize}", locale: lang)
+          )
+        else
+          I18n.t("assessments.threshold-op.#{threshold_operator.parameterize}", locale: lang)
+        end,
+        value
       ].to_sentence(words_connector: ' ', last_word_connector: ' ').humanize
     end
   end

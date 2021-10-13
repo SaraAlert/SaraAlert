@@ -68,7 +68,7 @@ eng:
         intro: 'Hello, this is Sara, the automated public health assistant calling for your daily report.'
         initials_age: '%{initials}, age %{age}'
         daily: 'This is the report for: %{names}. %{experiencing_symptoms}. Please reply with "Yes" or "No"'
-        try_again: 'I''m sorry, I didn''t quite get that. Let''s try again.'
+        try_again: "I'm sorry, I didn't quite get that. Let's try again."
         thanks: 'Thank you for completing your daily report! Goodbye.'
     symptoms:
       chills:
