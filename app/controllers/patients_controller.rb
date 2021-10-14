@@ -991,6 +991,7 @@ class PatientsController < ApplicationController
       foreign_monitored_address_line_2
       foreign_monitored_address_zip
       foreign_monitored_address_county
+      contact_name
       primary_telephone
       primary_telephone_type
       secondary_telephone
