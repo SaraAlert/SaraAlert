@@ -163,6 +163,11 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
 
   NORMALIZED_INVERTED_TIME_OPTIONS = TIME_OPTIONS.invert.merge({ '0': '00:00', '12': '12:00' }.invert).transform_keys(&:downcase).freeze
 
+  TELEPHONE_TYPES = ['Smartphone', 'Plain Cell', 'Landline', nil, ''].freeze
+
+  CONTACT_TYPES = ['Self', 'Parent/Guardian', 'Spouse/Partner', 'Caregiver', 'Healthcare Provider', 'Facility Representative',
+                   'Group Home Manager/Administrator', 'Surrogate/Proxy', 'Other', 'Unknown', nil, ''].freeze
+
   VALID_PATIENT_ENUMS = {
     # identification
     sex: ['Male', 'Female', 'Unknown', nil, ''],
@@ -178,18 +183,16 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     monitored_address_state: [*VALID_STATES, nil, ''],
     foreign_monitored_address_state: [*VALID_STATES, nil, ''],
     # contact info
-    contact_type: ['Self', 'Parent/Guardian', 'Spouse/Partner', 'Caregiver', 'Healthcare Provider', 'Facility Representative',
-                   'Group Home Manager/Administrator', 'Surrogate/Proxy', 'Other', 'Unknown', nil, ''],
+    contact_type: CONTACT_TYPES,
     preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown', nil, ''],
     preferred_contact_time: TIME_OPTIONS.keys.map(&:to_s) + [nil, ''],
-    primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
-    secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
-    alternate_contact_type: ['Self', 'Parent/Guardian', 'Spouse/Partner', 'Caregiver', 'Healthcare Provider', 'Facility Representative',
-                             'Group Home Manager/Administrator', 'Surrogate/Proxy', 'Other', 'Unknown', nil, ''],
+    primary_telephone_type: TELEPHONE_TYPES,
+    secondary_telephone_type: TELEPHONE_TYPES,
+    alternate_contact_type: CONTACT_TYPES,
     alternate_preferred_contact_method: ['Email', 'Telephone call', 'SMS Text-message', 'Unknown', nil, ''],
     alternate_preferred_contact_time: ['Morning', 'Afternoon', 'Evening', nil, ''],
-    alternate_primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
-    alternate_secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline', nil, ''],
+    alternate_primary_telephone_type: TELEPHONE_TYPES,
+    alternate_secondary_telephone_type: TELEPHONE_TYPES,
     # arrival
     source_of_report: ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other', nil, ''],
     # additional planned travel

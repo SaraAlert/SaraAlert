@@ -41,16 +41,27 @@ class AdvancedFilter extends React.Component {
       }
     });
 
-    // Get jurisdiction options for jurisdiction multi-select advanced filter
-    let jurisdictionIndex = advancedFilterOptions.findIndex(x => x.name === 'jurisdiction');
-    let paths = _.toPairs(this.props.jurisdiction_paths).map(([id, path]) => {
-      return { label: path, value: id };
-    });
-    advancedFilterOptions[Number(jurisdictionIndex)].options = paths;
-
-    // Get all assigned user options for assigned user multi-select advanced filter
-    let assignedUsersIndex = advancedFilterOptions.findIndex(x => x.name === 'assigned-user');
-    advancedFilterOptions[Number(assignedUsersIndex)].options = _.values(this.props.all_assigned_users);
+    // For each multi type filter, format the options in the way react-select requires
+    advancedFilterOptions
+      .filter(option => option.type === 'multi')
+      .forEach(multiFilter => {
+        const filterIndex = advancedFilterOptions.findIndex(option => option.name === multiFilter.name);
+        let formattedOptions = [];
+        if (multiFilter.name === 'jurisdiction') {
+          formattedOptions = _.toPairs(this.props.jurisdiction_paths).map(([id, path]) => {
+            return { label: path, value: id };
+          });
+        } else if (multiFilter.name === 'assigned-user') {
+          formattedOptions = this.props.all_assigned_users.map(user => {
+            return { value: user, label: user };
+          });
+        } else {
+          formattedOptions = multiFilter.options.map(option => {
+            return { value: option, label: option };
+          });
+        }
+        advancedFilterOptions[Number(filterIndex)].options = formattedOptions;
+      });
 
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
@@ -882,14 +893,14 @@ class AdvancedFilter extends React.Component {
    * @param {Array} value - Current values selected
    */
   renderMultiStatement = (filter, index, value) => {
-    let options = [];
-    if (filter.name === 'jurisdiction') {
-      options = filter.options;
-    } else {
-      options = filter.options.map(option => {
-        return { value: option, label: option };
-      });
-    }
+    // let options = [];
+    // if (filter.name === 'jurisdiction') {
+    //   options = filter.options;
+    // } else {
+    //   options = filter.options.map(option => {
+    //     return { value: option, label: option };
+    //   });
+    // }
 
     return (
       <React.Fragment>
@@ -898,7 +909,7 @@ class AdvancedFilter extends React.Component {
             closeMenuOnSelect={false}
             isMulti
             value={value}
-            options={options}
+            options={filter.options}
             className="advanced-filter-multi-select w-100"
             placeholder=""
             aria-label="Advanced Filter Multi-select Options"

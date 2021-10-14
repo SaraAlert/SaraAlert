@@ -367,18 +367,18 @@ class Contact extends React.Component {
   };
 
   renderContactFields(alternate) {
-    const prepend = alternate ? 'alternate_' : '';
+    const prefix = alternate ? 'alternate_' : '';
     return (
       <Form>
         <Form.Row>
-          <Form.Group as={Col} lg="12" controlId={`${prepend}contact_type`}>
-            <Form.Label className="input-label">CONTACT TYPE{schema?.fields[`${prepend}contact_type`]?._exclusive?.required && ' *'}</Form.Label>
+          <Form.Group as={Col} lg="12" controlId={`${prefix}contact_type`}>
+            <Form.Label className="input-label">CONTACT TYPE{schema?.fields[`${prefix}contact_type`]?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
-              isInvalid={this.state.errors[`${prepend}contact_type`]}
+              isInvalid={this.state.errors[`${prefix}contact_type`]}
               as="select"
               size="lg"
               className="form-square"
-              value={this.state.current.patient[`${prepend}contact_type`] || ''}
+              value={this.state.current.patient[`${prefix}contact_type`] || ''}
               onChange={this.handleChange}>
               {alternate && <option></option>}
               <option>Self</option>
@@ -393,36 +393,36 @@ class Contact extends React.Component {
               <option>Unknown</option>
             </Form.Control>
             <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors[`${prepend}contact_type`]}
+              {this.state.errors[`${prefix}contact_type`]}
             </Form.Control.Feedback>
           </Form.Group>
-          {this.state.current.patient[`${prepend}contact_type`] !== 'Self' && (
-            <Form.Group as={Col} lg="12" controlId={`${prepend}contact_name`}>
-              <Form.Label className="input-label">CONTACT NAME{schema?.fields[`${prepend}contact_name`]?._exclusive?.required && ' *'}</Form.Label>
+          {this.state.current.patient[`${prefix}contact_type`] !== 'Self' && (
+            <Form.Group as={Col} lg="12" controlId={`${prefix}contact_name`}>
+              <Form.Label className="input-label">CONTACT NAME{schema?.fields[`${prefix}contact_name`]?._exclusive?.required && ' *'}</Form.Label>
               <Form.Control
-                isInvalid={this.state.errors[`${prepend}contact_name`]}
+                isInvalid={this.state.errors[`${prefix}contact_name`]}
                 size="lg"
                 className="form-square"
-                value={this.state.current.patient[`${prepend}contact_name`] || ''}
+                value={this.state.current.patient[`${prefix}contact_name`] || ''}
                 onChange={this.handleChange}
               />
               <Form.Control.Feedback className="d-block" type="invalid">
-                {this.state.errors[`${prepend}contact_name`]}
+                {this.state.errors[`${prefix}contact_name`]}
               </Form.Control.Feedback>
             </Form.Group>
           )}
         </Form.Row>
         <Form.Row>
-          <Form.Group as={Col} lg="12" controlId={`${prepend}preferred_contact_method`}>
+          <Form.Group as={Col} lg="12" controlId={`${prefix}preferred_contact_method`}>
             <Form.Label className="input-label">
-              PREFERRED REPORTING METHOD{schema?.fields[`${prepend}preferred_contact_method`]?._exclusive?.required && ' *'}
+              PREFERRED REPORTING METHOD{schema?.fields[`${prefix}preferred_contact_method`]?._exclusive?.required && ' *'}
             </Form.Label>
             <Form.Control
-              isInvalid={this.state.errors[`${prepend}preferred_contact_method`]}
+              isInvalid={this.state.errors[`${prefix}preferred_contact_method`]}
               as="select"
               size="lg"
               className="form-square"
-              value={this.state.current.patient[`${prepend}preferred_contact_method`] || ''}
+              value={this.state.current.patient[`${prefix}preferred_contact_method`] || ''}
               onChange={this.handleChange}>
               <option></option>
               <option>Unknown</option>
@@ -434,12 +434,12 @@ class Contact extends React.Component {
               {!alternate && <option>Opt-out</option>}
             </Form.Control>
             <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors[`${prepend}preferred_contact_method`]}
+              {this.state.errors[`${prefix}preferred_contact_method`]}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} lg="12" id="preferred_contact_time_wrapper">
-            <Form.Label htmlFor={`${prepend}preferred_contact_time`} className="input-label">
-              PREFERRED CONTACT TIME{schema?.fields[`${prepend}preferred_contact_time`]?._exclusive?.required && ' *'}
+            <Form.Label htmlFor={`${prefix}preferred_contact_time`} className="input-label">
+              PREFERRED CONTACT TIME{schema?.fields[`${prefix}preferred_contact_time`]?._exclusive?.required && ' *'}
               <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
             </Form.Label>
             {alternate ? (
@@ -485,7 +485,7 @@ class Contact extends React.Component {
               />
             )}
             <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors[`${prepend}preferred_contact_time`]}
+              {this.state.errors[`${prefix}preferred_contact_time`]}
             </Form.Control.Feedback>
             {!alternate && this.state.current.patient.preferred_contact_time && (
               <React.Fragment>
@@ -516,9 +516,9 @@ class Contact extends React.Component {
           </Form.Group>
         </Form.Row>
         <Form.Row>
-          <Form.Group as={Col} lg="12" controlId={`${prepend}primary_telephone`}>
+          <Form.Group as={Col} lg="12" controlId={`${prefix}primary_telephone`}>
             <Form.Label className="input-label">
-              PRIMARY TELEPHONE NUMBER{schema?.fields[`${prepend}primary_telephone`]?._exclusive?.required && ' *'}
+              PRIMARY TELEPHONE NUMBER{schema?.fields[`${prefix}primary_telephone`]?._exclusive?.required && ' *'}
             </Form.Label>
             {!alternate && this.state.current.blocked_sms && (
               <span className="float-right font-weight-bold">
@@ -527,46 +527,46 @@ class Contact extends React.Component {
               </span>
             )}
             <PhoneInput
-              id={`${prepend}primary_telephone`}
-              value={this.state.current.patient[`${prepend}primary_telephone`]}
+              id={`${prefix}primary_telephone`}
+              value={this.state.current.patient[`${prefix}primary_telephone`]}
               onChange={this.handleChange}
-              isInvalid={!!this.state.errors[`${prepend}primary_telephone`]}
+              isInvalid={!!this.state.errors[`${prefix}primary_telephone`]}
             />
             <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors[`${prepend}primary_telephone`]}
+              {this.state.errors[`${prefix}primary_telephone`]}
             </Form.Control.Feedback>
             {!alternate &&
               this.state.current.patient?.preferred_contact_method?.includes('SMS') &&
               this.state.current.blocked_sms &&
               this.renderWarningBanner('SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert', true)}
           </Form.Group>
-          <Form.Group as={Col} lg="12" controlId={`${prepend}secondary_telephone`}>
+          <Form.Group as={Col} lg="12" controlId={`${prefix}secondary_telephone`}>
             <Form.Label className="input-label">
-              SECONDARY TELEPHONE NUMBER{schema?.fields[`${prepend}secondary_telephone`]?._exclusive?.required && ' *'}
+              SECONDARY TELEPHONE NUMBER{schema?.fields[`${prefix}secondary_telephone`]?._exclusive?.required && ' *'}
             </Form.Label>
             <PhoneInput
-              id={`${prepend}secondary_telephone`}
-              value={this.state.current.patient[`${prepend}secondary_telephone`]}
+              id={`${prefix}secondary_telephone`}
+              value={this.state.current.patient[`${prefix}secondary_telephone`]}
               onChange={this.handleChange}
-              isInvalid={!!this.state.errors[`${prepend}secondary_telephone`]}
+              isInvalid={!!this.state.errors[`${prefix}secondary_telephone`]}
             />
             <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors[`${prepend}secondary_telephone`]}
+              {this.state.errors[`${prefix}secondary_telephone`]}
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
         <Form.Row>
           <Col lg="12">
-            <Form.Group controlId={`${prepend}primary_telephone_type`}>
+            <Form.Group controlId={`${prefix}primary_telephone_type`}>
               <Form.Label className="input-label">
-                PRIMARY PHONE TYPE{schema?.fields[`${prepend}primary_telephone_type`]?._exclusive?.required && ' *'}
+                PRIMARY PHONE TYPE{schema?.fields[`${prefix}primary_telephone_type`]?._exclusive?.required && ' *'}
               </Form.Label>
               <Form.Control
-                isInvalid={this.state.errors[`${prepend}primary_telephone_type`]}
+                isInvalid={this.state.errors[`${prefix}primary_telephone_type`]}
                 as="select"
                 size="lg"
                 className="form-square"
-                value={this.state.current.patient[`${prepend}primary_telephone_type`] || ''}
+                value={this.state.current.patient[`${prefix}primary_telephone_type`] || ''}
                 onChange={this.handleChange}>
                 <option></option>
                 <option>Smartphone</option>
@@ -574,20 +574,20 @@ class Contact extends React.Component {
                 <option>Landline</option>
               </Form.Control>
               <Form.Control.Feedback className="d-block" type="invalid">
-                {this.state.errors[`${prepend}primary_telephone_type`]}
+                {this.state.errors[`${prefix}primary_telephone_type`]}
               </Form.Control.Feedback>
-              {this.state.current.patient[`${prepend}preferred_contact_method`] === 'SMS Texted Weblink' &&
-                this.state.current.patient[`${prepend}primary_telephone_type`] == 'Plain Cell' &&
+              {this.state.current.patient[`${prefix}preferred_contact_method`] === 'SMS Texted Weblink' &&
+                this.state.current.patient[`${prefix}primary_telephone_type`] == 'Plain Cell' &&
                 this.renderWarningBanner(
                   'Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
                 )}
-              {this.state.current.patient[`${prepend}preferred_contact_method`] === 'SMS Texted Weblink' &&
-                this.state.current.patient[`${prepend}primary_telephone_type`] == 'Landline' &&
+              {this.state.current.patient[`${prefix}preferred_contact_method`] === 'SMS Texted Weblink' &&
+                this.state.current.patient[`${prefix}primary_telephone_type`] == 'Landline' &&
                 this.renderWarningBanner(
                   'Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
                 )}
-              {this.state.current.patient[`${prepend}preferred_contact_method`] === 'SMS Text-message' &&
-                this.state.current.patient[`${prepend}primary_telephone_type`] === 'Landline' &&
+              {this.state.current.patient[`${prefix}preferred_contact_method`] === 'SMS Text-message' &&
+                this.state.current.patient[`${prefix}primary_telephone_type`] === 'Landline' &&
                 this.renderWarningBanner(
                   'Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this type of message.'
                 )}
@@ -604,16 +604,16 @@ class Contact extends React.Component {
             </div>
           </Col>
           <Col lg="12">
-            <Form.Group controlId={`${prepend}secondary_telephone_type`}>
+            <Form.Group controlId={`${prefix}secondary_telephone_type`}>
               <Form.Label className="input-label">
-                SECONDARY PHONE TYPE{schema?.fields[`${prepend}secondary_telephone_type`]?._exclusive?.required && ' *'}
+                SECONDARY PHONE TYPE{schema?.fields[`${prefix}secondary_telephone_type`]?._exclusive?.required && ' *'}
               </Form.Label>
               <Form.Control
-                isInvalid={this.state.errors[`${prepend}secondary_telephone_type`]}
+                isInvalid={this.state.errors[`${prefix}secondary_telephone_type`]}
                 as="select"
                 size="lg"
                 className="form-square"
-                value={this.state.current.patient[`${prepend}secondary_telephone_type`] || ''}
+                value={this.state.current.patient[`${prefix}secondary_telephone_type`] || ''}
                 onChange={this.handleChange}>
                 <option></option>
                 <option>Smartphone</option>
@@ -621,53 +621,53 @@ class Contact extends React.Component {
                 <option>Landline</option>
               </Form.Control>
               <Form.Control.Feedback className="d-block" type="invalid">
-                {this.state.errors[`${prepend}secondary_telephone_type`]}
+                {this.state.errors[`${prefix}secondary_telephone_type`]}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group controlId={`${prepend}international_telephone`}>
+            <Form.Group controlId={`${prefix}international_telephone`}>
               <Form.Label className="input-label">
-                INTERNATIONAL TELEPHONE NUMBER{schema?.fields[`${prepend}international_telephone`]?._exclusive?.required && ' *'}
+                INTERNATIONAL TELEPHONE NUMBER{schema?.fields[`${prefix}international_telephone`]?._exclusive?.required && ' *'}
               </Form.Label>
               <Form.Control
-                value={this.state.current.patient[`${prepend}international_telephone`] || ''}
+                value={this.state.current.patient[`${prefix}international_telephone`] || ''}
                 onChange={this.handleChange}
                 size="lg"
                 className="form-square"
-                isInvalid={this.state.errors[`${prepend}international_telephone`]}
+                isInvalid={this.state.errors[`${prefix}international_telephone`]}
               />
               <Form.Control.Feedback className="d-block" type="invalid">
-                {this.state.errors[`${prepend}international_telephone`]}
+                {this.state.errors[`${prefix}international_telephone`]}
               </Form.Control.Feedback>
-              {this.state.current.patient[`${prepend}international_telephone`] &&
+              {this.state.current.patient[`${prefix}international_telephone`] &&
                 this.renderWarningBanner('International telephone number is not used by the system for automated symptom reporting.', false, 'warning')}
             </Form.Group>
           </Col>
         </Form.Row>
         <Form.Row className="mt-2">
-          <Form.Group as={Col} lg="12" controlId={`${prepend}email`}>
-            <Form.Label className="input-label">E-MAIL ADDRESS{schema?.fields[`${prepend}email`]?._exclusive?.required && ' *'}</Form.Label>
+          <Form.Group as={Col} lg="12" controlId={`${prefix}email`}>
+            <Form.Label className="input-label">E-MAIL ADDRESS{schema?.fields[`${prefix}email`]?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
-              isInvalid={this.state.errors[`${prepend}email`]}
+              isInvalid={this.state.errors[`${prefix}email`]}
               size="lg"
               className="form-square"
-              value={this.state.current.patient[`${prepend}email`] || ''}
+              value={this.state.current.patient[`${prefix}email`] || ''}
               onChange={this.handleChange}
             />
             <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors[`${prepend}email`]}
+              {this.state.errors[`${prefix}email`]}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} lg="12" controlId={`confirm_${prepend}email`}>
-            <Form.Label className="input-label">CONFIRM E-MAIL ADDRESS{schema?.fields[`confirm_${prepend}email`]?._exclusive?.required && ' *'}</Form.Label>
+          <Form.Group as={Col} lg="12" controlId={`confirm_${prefix}email`}>
+            <Form.Label className="input-label">CONFIRM E-MAIL ADDRESS{schema?.fields[`confirm_${prefix}email`]?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
-              isInvalid={this.state.errors[`confirm_${prepend}email`]}
+              isInvalid={this.state.errors[`confirm_${prefix}email`]}
               size="lg"
               className="form-square"
-              value={this.state.current.patient[`confirm_${prepend}email`] || ''}
+              value={this.state.current.patient[`confirm_${prefix}email`] || ''}
               onChange={this.handleChange}
             />
             <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors[`confirm_${prepend}email`]}
+              {this.state.errors[`confirm_${prefix}email`]}
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
