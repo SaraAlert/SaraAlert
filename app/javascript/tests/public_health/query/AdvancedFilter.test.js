@@ -7,6 +7,7 @@ import { Button, ButtonGroup, Dropdown, Form, Modal, OverlayTrigger, ToggleButto
 import AdvancedFilter from '../../../components/public_health/query/AdvancedFilter';
 import DateInput from '../../../components/util/DateInput';
 import { advancedFilterOptions } from '../../../data/advancedFilterOptions';
+import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 import {
   mockFilter1,
   mockFilter2,
@@ -31,12 +32,14 @@ import {
   mockFilterAddressForeign,
   mockFilterLabResults,
   mockFilterAssignedUser,
+  mockFilterContactType,
   mockFilterJurisdiction,
   mockSavedFilters,
 } from '../../mocks/mockFilters';
 
 const advancedFilterUpdateMock = jest.fn();
 const mockToken = 'testMockTokenString12345';
+const assignedUsers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 21];
 const numberOptionValues = ['less-than', 'less-than-equal', 'equal', 'greater-than-equal', 'greater-than', 'between'];
 const numberOptionValuesText = ['less than', 'less than or equal to', 'equal to', 'greater than or equal to', 'greater than', 'between'];
 const dateOptionValues = ['within', 'before', 'after'];
@@ -47,7 +50,7 @@ const relativeOptionUnitValues = ['day(s)', 'week(s)', 'month(s)'];
 const relativeOptionWhenValues = ['past', 'future'];
 
 function getWrapper() {
-  return shallow(<AdvancedFilter workflow={'exposure'} advancedFilterUpdate={advancedFilterUpdateMock} updateStickySettings={true} authenticity_token={mockToken} />);
+  return shallow(<AdvancedFilter all_assigned_users={assignedUsers} jurisdiction_paths={mockJurisdictionPaths} advancedFilterUpdate={advancedFilterUpdateMock} updateStickySettings={true} authenticity_token={mockToken} />);
 }
 
 afterEach(() => {
@@ -802,20 +805,49 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find('.advanced-filter-combination-select-options').prop('value')).toEqual(selectField.options[0]);
   });
 
-  it('Properly renders advanced filter multi-select type statement', () => {
+  it('Properly renders advanced filter multi-select type statement (array of strings provided in options config)', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterContactType.filterOption.name });
+    expect(wrapper.find('.advanced-filter-multi-select').exists()).toBe(true);
+    expect(wrapper.find('.advanced-filter-multi-select').length).toEqual(1);
+    expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
+    mockFilterContactType.filterOption.options.forEach((value, index) => {
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].value).toEqual(value.value);
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].label).toEqual(value.label);
+    });
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterContactType.filterOption.tooltip);
+  });
+
+  it('Properly renders advanced filter multi-select type statement (assigned user)', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAssignedUser.filterOption.name });
-    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterAssignedUser.filterOption.name);
     expect(wrapper.find('.advanced-filter-multi-select').exists()).toBe(true);
     expect(wrapper.find('.advanced-filter-multi-select').length).toEqual(1);
     expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
     mockFilterAssignedUser.filterOption.options.forEach((value, index) => {
-      expect(wrapper.find('.advanced-filter-multi-select').find('options').at(index).prop('value')).toEqual(value.value);
-      expect(wrapper.find('.advanced-filter-multi-select').find('options').at(index).prop('label')).toEqual(value.label);
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].value).toEqual(value.value);
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].label).toEqual(value.label);
     });
     expect(wrapper.find(ReactTooltip).exists()).toBe(true);
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('If multiple Assigned Users are selected, records assigned to any of those users will be returned. Only Assigned User values currently listed in a record are selectable. Leaving this field blank will not filter out any monitorees.');
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterAssignedUser.filterOption.tooltip);
+  });
+
+  it('Properly renders advanced filter multi-select type statement (jurisdiction)', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterJurisdiction.filterOption.name });
+    expect(wrapper.find('.advanced-filter-multi-select').exists()).toBe(true);
+    expect(wrapper.find('.advanced-filter-multi-select').length).toEqual(1);
+    expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
+    mockFilterJurisdiction.filterOption.options.forEach((value, index) => {
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].value).toEqual(value.value);
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].label).toEqual(value.label);
+    });
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterJurisdiction.filterOption.tooltip);
   });
 
   it('Toggling boolean buttons properly updates state and value', () => {
