@@ -17,10 +17,10 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
   EXPORT_FORMATS = %w[csv xlsx].freeze
 
   EPI_X_FIELDS = [nil, nil, nil, :travel_related_notes, :last_name, :first_name, :middle_name, :date_of_birth, :sex, :primary_telephone, nil,
-                  :secondary_telephone, nil, nil, :address_line_1, :address_city, :address_state, :address_zip, :foreign_address_country, :email, nil,
-                  :address_line_2, :monitored_address_line_1, :monitored_address_city, :monitored_address_state, nil, nil, nil, nil, nil, nil, nil, nil,
-                  :flight_or_vessel_carrier, :flight_or_vessel_number, :date_of_departure, :port_of_entry_into_usa, :date_of_arrival, :port_of_entry_into_usa,
-                  :user_defined_id_cdc, :symptom_onset, :travel_related_notes].freeze
+                  :secondary_telephone, nil, nil, :address_line_1, :address_city, :address_state, :address_zip, :foreign_address_country, :email,
+                  :alternate_primary_telephone, :address_line_2, :monitored_address_line_1, :monitored_address_city, :monitored_address_state, :contact_name,
+                  nil, nil, nil, nil, nil, nil, nil, :flight_or_vessel_carrier, :flight_or_vessel_number, :date_of_departure, :port_of_entry_into_usa,
+                  :date_of_arrival, :port_of_entry_into_usa, :user_defined_id_cdc, :symptom_onset, :travel_related_notes].freeze
 
   EPI_X_HEADERS = %w[RecordLocatorID StatusFlag IndexCase Seat_Number Last_Name First_Name Middle_Initial DOB Gender Perm_Home_Telephone Business_Telephone
                      Perm_Cell_Pager Other_Phone Locate_Telephone Perm_Address Perm_City Perm_State Perm_Postal_Code Perm_Country Perm_Email Emergency_Telephone

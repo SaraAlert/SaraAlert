@@ -87,7 +87,9 @@ class Patient < ApplicationRecord
   end
 
   %i[primary_telephone
-     secondary_telephone].each do |phone_field|
+     secondary_telephone
+     alternate_primary_telephone
+     alternate_secondary_telephone].each do |phone_field|
     validates phone_field, on: %i[api import], phone_number: true
   end
 
@@ -133,10 +135,15 @@ class Patient < ApplicationRecord
             presence: { message: "is required when 'Follow-Up Note' is present" },
             if: -> { follow_up_note.present? }
 
-  validates :email, on: %i[api import], email: true
-  validates :alternate_email, on: %i[api import], email: true
+  %i[email
+     alternate_email].each do |email_field|
+    validates email_field, on: %i[api import], email: true
+  end
 
-  validates :international_telephone, on: %i[api import], international_phone_number: true
+  %i[international_telephone
+     alternate_international_telephone].each do |phone_field|
+    validates phone_field, on: %i[api import], international_phone_number: true
+  end
 
   validates :assigned_user, numericality: { only_integer: true,
                                             allow_nil: true,
