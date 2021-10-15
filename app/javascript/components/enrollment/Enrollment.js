@@ -186,7 +186,7 @@ class Enrollment extends React.Component {
     let maxIndex = this.state.enrollmentState.patient.isolation ? 7 : 6; // max number of enrollment steps in the carosel (6 for exposure and 7 for isolation)
 
     if (lastIndex) {
-      this.setState({ index: lastIndex, lastIndex: null });
+      this.setState({ index: Math.min(lastIndex, maxIndex), lastIndex: null });
     } else {
       this.setState({
         direction: 'next',
