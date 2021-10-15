@@ -94,7 +94,6 @@ class PatientsController < ApplicationController
     dashboard_crumb(params.permit(:nav)[:nav], parent)
 
     @patient = Patient.new(parent.attributes.slice(*group_member_subset.map(&:to_s)))
-    @patient.contact_type = 'Unknown'
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?

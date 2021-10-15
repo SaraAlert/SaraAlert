@@ -263,7 +263,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     foreign_monitored_address_state: { label: 'Foreign Monitored Address State', checks: [:state] },
     # contact info
     contact_type: { label: 'Contact Type', checks: [:enum] },
-    contact_name: { label: 'Contact Type', checks: [] },
+    contact_name: { label: 'Contact Name', checks: [] },
     preferred_contact_method: { label: 'Preferred Contact Method', checks: [:enum] },
     preferred_contact_time: { label: 'Preferred Contact Time', checks: %i[time] },
     primary_telephone: { label: 'Primary Telephone', checks: [:phone] },
