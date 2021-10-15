@@ -361,7 +361,7 @@ class Patient extends React.Component {
                       <b>Email:</b> <span>{this.props.details.alternate_email || '--'}</span>
                     </div>
                     <div>
-                      <b>Preferred Reporting Method:</b> <span>{this.props.details.alternate_preferred_contact_method || '--'}</span>
+                      <b>Preferred Contact Method:</b> <span>{this.props.details.alternate_preferred_contact_method || '--'}</span>
                     </div>
                   </div>
                   {(this.props.details.alternate_secondary_telephone || this.props.details.alternate_international_telephone) && (

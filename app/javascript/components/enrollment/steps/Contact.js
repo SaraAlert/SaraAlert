@@ -415,7 +415,7 @@ class Contact extends React.Component {
         <Form.Row>
           <Form.Group as={Col} lg="12" controlId={`${prefix}preferred_contact_method`}>
             <Form.Label className="input-label">
-              PREFERRED REPORTING METHOD{schema?.fields[`${prefix}preferred_contact_method`]?._exclusive?.required && ' *'}
+              PREFERRED {alternate ? 'CONTACT' : 'REPORTING'} METHOD{schema?.fields[`${prefix}preferred_contact_method`]?._exclusive?.required && ' *'}
             </Form.Label>
             <Form.Control
               isInvalid={this.state.errors[`${prefix}preferred_contact_method`]}

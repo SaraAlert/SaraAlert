@@ -23,6 +23,10 @@ const selfContactLabels = _.filter(contactLabels, l => l !== 'Contact Name');
 const selfContactFields = _.filter(contactFields, l => l !== 'contact_name');
 const secondaryContactLabels = ['Secondary Phone', 'Secondary Phone Type', 'International Phone'];
 const secondaryContactFields = ['secondary_telephone', 'secondary_telephone_type', 'international_telephone'];
+const alternateContactLabels = ['Contact Type', 'Contact Name', 'Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Contact Method'];
+const alternateContactFields = contactFields.map(field => `alternate_${field}`);
+const alternateSecondaryContactLabels = secondaryContactLabels;
+const alternateSecondaryContactFields = secondaryContactFields.map(field => `alternate_${field}`);
 const domesticAddressLabels = ['Address 1', 'Address 2', 'Town/City', 'State', 'Zip', 'County'];
 const domesticAddressFields = ['address_line_1', 'address_line_2', 'address_city', 'address_state', 'address_zip', 'address_county'];
 const foreignAddressLabels = ['Address 1', 'Address 2', 'Address 3', 'Town/City', 'State', 'Zip', 'Country'];
@@ -199,8 +203,8 @@ describe('Patient', () => {
       .at(0)
       .children()
       .forEach((item, index) => {
-        expect(item.find('b').text()).toEqual(contactLabels[parseInt(index)] + ':');
-        expect(item.find('span').text()).toEqual(mockPatient1[`alternate_${contactFields[parseInt(index)]}`] || '--');
+        expect(item.find('b').text()).toEqual(alternateContactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient1[alternateContactFields[parseInt(index)]] || '--');
       });
 
     // alternate secondary contact information
@@ -212,8 +216,8 @@ describe('Patient', () => {
       .at(1)
       .children()
       .forEach((item, index) => {
-        expect(item.find('b').text()).toEqual(secondaryContactLabels[parseInt(index)] + ':');
-        expect(item.find('span').text()).toEqual(mockPatient1[`alternate_${secondaryContactFields[parseInt(index)]}`] || '--');
+        expect(item.find('b').text()).toEqual(alternateSecondaryContactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient1[alternateSecondaryContactFields[parseInt(index)]] || '--');
       });
   });
 
@@ -249,8 +253,8 @@ describe('Patient', () => {
       .find('.item-group')
       .children()
       .forEach((item, index) => {
-        expect(item.find('b').text()).toEqual(contactLabels[parseInt(index)] + ':');
-        expect(item.find('span').text()).toEqual(mockPatient3[`alternate_${contactFields[parseInt(index)]}`] || '--');
+        expect(item.find('b').text()).toEqual(alternateContactLabels[parseInt(index)] + ':');
+        expect(item.find('span').text()).toEqual(mockPatient3[alternateContactFields[parseInt(index)]] || '--');
       });
   });
 
