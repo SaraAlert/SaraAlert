@@ -1,6 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Alert, Button, Card, Col, Form, Modal, Tab, Tabs } from 'react-bootstrap';
+import { Alert, Button, Card, Col, Form, Modal, Nav, Tab } from 'react-bootstrap';
+import ReactTooltip from 'react-tooltip';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 import axios from 'axios';
 import libphonenumber from 'google-libphonenumber';
@@ -33,6 +36,8 @@ class Contact extends React.Component {
       errors: {},
       modified: {},
       selectedTab: 'primary',
+      showPrimaryValidationIcon: false,
+      showAlternateValidationIcon: false,
       showCustomPreferredContactTimeModal: false,
       custom_preferred_contact_time_confirmed: false,
     };
@@ -266,7 +271,7 @@ class Contact extends React.Component {
       .validate(this.state.current.patient, { abortEarly: false })
       .then(() => {
         // No validation issues? Invoke callback (move to next step)
-        self.setState({ errors: {} }, () => {
+        self.setState({ errors: {}, showPrimaryValidationIcon: false, showAlternateValidationIcon: false }, () => {
           callback();
         });
       })
@@ -277,7 +282,16 @@ class Contact extends React.Component {
           for (var issue of err.inner) {
             issues[issue['path']] = issue['errors'];
           }
-          self.setState({ errors: issues });
+          self.setState({ errors: issues }, () => {
+            let showPrimaryValidationIcon = false;
+            let showAlternateValidationIcon = false;
+            if (this.state.selectedTab === 'primary') {
+              showAlternateValidationIcon = Object.keys(issues).filter(key => key.includes('alternate')).length > 0;
+            } else {
+              showPrimaryValidationIcon = Object.keys(issues).filter(key => !key.includes('alternate')).length > 0;
+            }
+            self.setState({ showPrimaryValidationIcon, showAlternateValidationIcon });
+          });
         }
       });
   };
@@ -294,6 +308,19 @@ class Contact extends React.Component {
         };
       },
       () => this.props.setEnrollmentState({ ...this.state.modified })
+    );
+  };
+
+  renderInvalidIcon = () => {
+    return (
+      <div style={{ display: 'inline' }}>
+        <span data-for="invalid-fields" data-tip="">
+          <FontAwesomeIcon className="text-danger ml-1" icon={faExclamationCircle} />
+        </span>
+        <ReactTooltip id="invalid-fields" multiline={true} place="right" effect="solid" className="tooltip-container">
+          All required fields in this tab must be completed and properly formatted before proceeding
+        </ReactTooltip>
+      </div>
     );
   };
 
@@ -440,7 +467,7 @@ class Contact extends React.Component {
           <Form.Group as={Col} lg="12" id="preferred_contact_time_wrapper">
             <Form.Label htmlFor={`${prefix}preferred_contact_time`} className="input-label">
               PREFERRED CONTACT TIME{schema?.fields[`${prefix}preferred_contact_time`]?._exclusive?.required && ' *'}
-              <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
+              {!alternate && <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>}
             </Form.Label>
             {alternate ? (
               <Form.Control
@@ -682,32 +709,50 @@ class Contact extends React.Component {
         <Card className="mx-2 card-square">
           <Card.Header className="h5">Monitoree Contact Information</Card.Header>
           <Card.Body>
-            <Tabs
-              defaultActiveKey={this.state.selectedTab}
-              id="patient_contact"
+            <Nav
+              variant="tabs"
+              activeKey={this.state.selectedTab}
               className="g-border-bottom mb-3"
-              onSelect={() => {
-                this.setState({ selectedTab: this.state.selectedTab === 'primary' ? 'alternate' : 'primary' });
+              onSelect={tab => {
+                this.setState({ selectedTab: tab });
               }}>
-              <Tab eventKey="primary" title="Primary Contact">
-                <Alert variant="primary">
-                  <b>
-                    Sara Alert will use the primary contact for communication with the monitoree. Automated messages will be sent to the primary contact
-                    phone/e-mail entered here.
-                  </b>
-                </Alert>
-                {this.renderContactFields()}
-              </Tab>
-              <Tab eventKey="alternate" title="Alternate Contact">
-                <Alert variant="danger">
-                  <b>
-                    Alternate Contact Information is for reference only. Sara Alert will NOT use the alternate contact phone or e-mail for automated
-                    communications.
-                  </b>
-                </Alert>
-                {this.renderContactFields(true)}
-              </Tab>
-            </Tabs>
+              <Nav.Item>
+                <Nav.Link eventKey="primary">
+                  Primary
+                  {this.state.showPrimaryValidationIcon && this.renderInvalidIcon()}
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="alternate">
+                  Alternate
+                  {this.state.showAlternateValidationIcon && this.renderInvalidIcon()}
+                </Nav.Link>
+              </Nav.Item>
+            </Nav>
+            <Tab.Content>
+              {this.state.selectedTab === 'primary' && (
+                <React.Fragment>
+                  <Alert variant="primary">
+                    <b>
+                      Sara Alert will use the primary contact for communication with the monitoree. Automated messages will be sent to the primary contact
+                      phone/e-mail entered here.
+                    </b>
+                  </Alert>
+                  {this.renderContactFields()}
+                </React.Fragment>
+              )}
+              {this.state.selectedTab === 'alternate' && (
+                <React.Fragment>
+                  <Alert variant="danger">
+                    <b>
+                      Alternate Contact Information is for reference only. Sara Alert will NOT use the alternate contact phone or e-mail for automated
+                      communications.
+                    </b>
+                  </Alert>
+                  {this.renderContactFields(true)}
+                </React.Fragment>
+              )}
+            </Tab.Content>
             {this.props.previous && this.props.showPreviousButton && (
               <Button id="enrollment-previous-button" variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
