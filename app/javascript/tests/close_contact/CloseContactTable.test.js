@@ -83,8 +83,8 @@ describe('CloseContactTable', () => {
       expect(wrapper.text()).toContain(cc['last_name']);
       expect(wrapper.text()).toContain(formatPhoneNumberVisually(cc['primary_telephone']));
       expect(wrapper.text()).toContain(cc['email']);
-      expect(wrapper.text()).toContain(Number(cc['contact_attempts']));
-      expect(wrapper.text()).toContain(Number(cc['enrolled_id']));
+      expect(wrapper.text()).toContain(String(cc['contact_attempts'] || '0'));
+      expect(wrapper.text()).toContain(String(cc['enrolled_id'] || '0'));
       expect(wrapper.text()).toContain(cc['notes']);
     });
   });

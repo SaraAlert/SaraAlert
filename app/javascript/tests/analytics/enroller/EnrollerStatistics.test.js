@@ -18,12 +18,12 @@ describe('EnrollerStatistics', () => {
     expect(wrapper.find(Card).exists());
     expect(wrapper.find(Card.Header).text()).toContain(componentProps.title);
     expect(wrapper.find(Card.Body).find('#monitoree-analytics').find('h4').at(0).text()).toContain('TOTAL MONITOREES');
-    expect(wrapper.find(Card.Body).find('#monitoree-analytics').find('h3').at(0).text()).toContain(componentProps.total_monitorees);
+    expect(wrapper.find(Card.Body).find('#monitoree-analytics').find('h3').at(0).text()).toContain(componentProps.total_monitorees.toString());
     expect(wrapper.find(Card.Body).find('#monitoree-analytics').find('h4').at(1).text()).toContain('NEW LAST 24 HOURS');
-    expect(wrapper.find(Card.Body).find('#monitoree-analytics').find('h3').at(1).text()).toContain(componentProps.new_monitorees);
+    expect(wrapper.find(Card.Body).find('#monitoree-analytics').find('h3').at(1).text()).toContain(componentProps.new_monitorees.toString());
     expect(wrapper.find(Card.Body).find('#report-analytics').find('h4').at(0).text()).toContain('TOTAL REPORTS');
-    expect(wrapper.find(Card.Body).find('#report-analytics').find('h3').at(0).text()).toContain(componentProps.total_reports);
+    expect(wrapper.find(Card.Body).find('#report-analytics').find('h3').at(0).text()).toContain(componentProps.total_reports.toString());
     expect(wrapper.find(Card.Body).find('#report-analytics').find('h4').at(1).text()).toContain('NEW LAST 24 HOURS');
-    expect(wrapper.find(Card.Body).find('#report-analytics').find('h3').at(1).text()).toContain(componentProps.new_reports);
+    expect(wrapper.find(Card.Body).find('#report-analytics').find('h3').at(1).text()).toContain(componentProps.new_reports.toString());
   });
 });
