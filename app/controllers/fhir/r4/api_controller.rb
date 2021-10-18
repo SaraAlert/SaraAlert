@@ -279,9 +279,10 @@ class Fhir::R4::ApiController < ApplicationApiController
       if entry&.request&.ifNoneExist.present?
         matches = search_patients(Rack::Utils.parse_nested_query(entry&.request&.ifNoneExist))
         num_matches = matches.size
-        patients << { resource: {}, fhir_map: {}, full_url: entry.fullUrl } && next if num_matches == 1
-
-        if num_matches > 1
+        if num_matches == 1
+          patients << { resource: {}, fhir_map: {}, full_url: entry.fullUrl }
+          next
+        elsif num_matches > 1
           status_precondition_failed_with_custom_errors(["There are #{num_matches} potential duplicate patients"], "Bundle.entry[#{index}].resource") && return
         end
       end
@@ -1091,7 +1092,7 @@ class Fhir::R4::ApiController < ApplicationApiController
         (identifier, value) = search.split('|', 2)
         next if value.nil?
 
-        query = query.where('lower(user_defined_id_statelocal) like ?', "#{value&.downcase}%") if identifier == 'http://saraalert.org/SaraAlert/state-local-id'
+        query = query.where('lower(user_defined_id_statelocal) like ?', "#{value.downcase}%") if identifier == 'http://saraalert.org/SaraAlert/state-local-id'
       when '_id'
         query = query.where(id: search)
       when 'active'
