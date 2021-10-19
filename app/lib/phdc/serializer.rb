@@ -114,16 +114,16 @@ module PHDC
       patient_role << addr
       street_address_line = Ox::Element.new(:streetAddressLine)
       street_address_line << (patient.address_line_1 || '')
-      addr << street_address_line unless patient.address_line_1.blank?
+      addr << street_address_line if patient.address_line_1.present?
       city_address = Ox::Element.new(:city)
       city_address << (patient.address_city || '')
-      addr << city_address unless patient.address_city.blank?
+      addr << city_address if patient.address_city.present?
       state_address = Ox::Element.new(:state)
       state_address << "#{@fips.state_to_fips(patient.address_state)}^#{patient.address_state}^FIPS 5-2 (State)"
-      addr << state_address unless patient.address_state.blank?
+      addr << state_address if patient.address_state.present?
       zip_address = Ox::Element.new(:postalCode)
       zip_address << (patient.address_zip || '')
-      addr << zip_address unless patient.address_zip.blank?
+      addr << zip_address if patient.address_zip.present?
       county_address = Ox::Element.new(:county)
       county_address << "#{@fips.county_to_fips(patient.address_state, patient.address_county)}^#{patient.address_county}^FIPS 6-4 (County)"
       addr << county_address unless patient.address_state.blank? || patient.address_county.blank?
@@ -147,23 +147,23 @@ module PHDC
       patient_details << name
       given_first = Ox::Element.new(:given)
       given_first << (patient.first_name || '')
-      name << given_first unless patient.first_name.blank?
+      name << given_first if patient.first_name.present?
       given_middle = Ox::Element.new(:given)
       given_middle << (patient.middle_name || '')
-      name << given_middle unless patient.middle_name.blank?
+      name << given_middle if patient.middle_name.present?
       last_name = Ox::Element.new(:family)
       last_name << (patient.last_name || '')
-      name << last_name unless patient.last_name.blank?
+      name << last_name if patient.last_name.present?
 
       # Sex
-      unless patient.sex.blank?
+      if patient.sex.present?
         patient_details << code_helper(patient.sex&.first, '2.16.840.1.113883.12.1', patient.sex, 'Administrative sex (HL7)', :administrativeGenderCode)
       end
 
       # Birthdate
       birthdate = Ox::Element.new(:birthTime)
       birthdate['value'] = patient.date_of_birth&.strftime('%Y%m%d')
-      patient_details << birthdate unless patient.date_of_birth&.strftime('%Y%m%d').blank?
+      patient_details << birthdate if patient.date_of_birth&.strftime('%Y%m%d').present?
 
       # Race
       r_oid = '2.16.840.1.113883.6.238'
@@ -180,7 +180,7 @@ module PHDC
       end
 
       # Ethnicity
-      unless patient.ethnicity.blank?
+      if patient.ethnicity.present?
         eth_code = patient.ethnicity.include?('Not') ? '2186-5' : '2135-2'
         patient_details << code_helper(eth_code, r_oid, patient.ethnicity, 'Race & Ethnicity - CDC', :ethnicGroupCode)
       end
@@ -240,12 +240,12 @@ module PHDC
         sh_section << entry_helper_code('DEM142', 'Patient Primary Language', 'CE', 'ENG', 'English')
         sh_section << entry_helper_code('NBS214', 'Patient Speaks English', 'CE', 'Y', 'Yes')
       end
-      unless patient.date_of_birth.blank?
+      if patient.date_of_birth.present?
         age = Patient.calc_current_age_base(provided_date_of_birth: patient.date_of_birth).to_s
         sh_section << entry_helper_text('INV2001', 'Patient Age Reported', 'ST', age)
         sh_section << entry_helper_code('INV2002', 'Patient Age Reported Units', 'CE', 'a', 'Year')
       end
-      sh_section << entry_helper_text('NBS213', 'Patient Gender (Transgender Information)', 'ST', patient.gender_identity) unless patient.gender_identity.blank?
+      sh_section << entry_helper_text('NBS213', 'Patient Gender (Transgender Information)', 'ST', patient.gender_identity) if patient.gender_identity.present?
 
       # Clinical Information Section
 
@@ -261,7 +261,7 @@ module PHDC
       clin_section_title = Ox::Element.new(:title)
       clin_section_title << 'CLINICAL INFORMATION'
       clin_section << clin_section_title
-      unless patient.user_defined_id_statelocal.blank?
+      if patient.user_defined_id_statelocal.present?
         clin_section << entry_helper_text('INV173', 'Investigation State Local ID', 'ST', patient.user_defined_id_statelocal, nil)
       end
       clin_section << clinical_entry_helper_code('INV169', '2.16.840.1.114222.4.5.232', 'Condition', 'PHIN Questions',
@@ -288,21 +288,20 @@ module PHDC
       qrq_entry << qrq_org
       qrq_org << code_helper('1', 'Local-codesystem-oid', 'Exposure Information', 'LocalSystem')
       qrq_org << status_code_helper('completed')
-
-      unless patient.potential_exposure_country.blank?
+      if patient.potential_exposure_country.present?
         exposure_country_code = @fips.country_to_alpha_3(patient.potential_exposure_country)
-        unless exposure_country_code.blank?
+        if exposure_country_code.present?
           code = code_helper('INV502', 'Local-codesystem-oid', 'Country of Exposure', 'LocalSystem')
           value = value_helper_code('CE', exposure_country_code, '1.0.3166.1', patient.potential_exposure_country)
           qrq_org << comp_obs_helper('OBS', 'EVN', code, value)
         end
       end
-      unless patient.potential_exposure_location.blank?
+      if patient.potential_exposure_location.present?
         code = code_helper('INV504', 'Local-codesystem-oid', 'City of Exposure', 'LocalSystem')
         value = value_helper_text('ST', patient.potential_exposure_location)
         qrq_org << comp_obs_helper('OBS', 'EVN', code, value)
       end
-      unless patient.exposure_notes.blank?
+      if patient.exposure_notes.present?
         qrq_entry_notes = entry_helper('COMP')
         grq_section << qrq_entry_notes
         qrq_org_notes = organizer_helper('CLUSTER', 'EVN')
@@ -357,7 +356,7 @@ module PHDC
     # Entry helper
     def entry_helper(type = nil)
       entry_el = Ox::Element.new(:entry)
-      entry_el['typeCode'] = type unless type.blank?
+      entry_el['typeCode'] = type if type.present?
       entry_el
     end
 
@@ -374,7 +373,7 @@ module PHDC
       code_el = Ox::Element.new(custom_tag)
       code_el['code'] = code
       code_el['codeSystem'] = system
-      code_el['codeSystemName'] = system_name unless system_name.blank?
+      code_el['codeSystemName'] = system_name if system_name.present?
       code_el['displayName'] = display
       code_el
     end
