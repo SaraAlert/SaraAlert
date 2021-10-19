@@ -32,6 +32,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   rescue_from ClientError, with: proc {}
 
   MAX_TRANSACTION_ENTRIES = 50
+  VALID_PATIENT_SEARCH_PARAMS = %w[family given telecom email birthdate identifier subject active _count _id patient].freeze
 
   # Return a resource given a type and an id.
   #
@@ -212,7 +213,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       # Duplicate detection check
       if request.headers['If-None-Exist'].present?
-        matches = search_patients(Rack::Utils.parse_nested_query(request.headers['If-None-Exist']))
+        matches = search_patients(Rack::Utils.parse_nested_query(request.headers['If-None-Exist']), if_none_exist: true)
         num_matches = matches.size
         return head :ok if num_matches == 1
 
@@ -277,7 +278,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
       # Duplicate detection check
       if entry&.request&.ifNoneExist.present?
-        matches = search_patients(Rack::Utils.parse_nested_query(entry&.request&.ifNoneExist))
+        matches = search_patients(Rack::Utils.parse_nested_query(entry&.request&.ifNoneExist), if_none_exist: true)
         num_matches = matches.size
         if num_matches == 1
           patients << { resource: {}, fhir_map: {}, full_url: entry.fullUrl }
@@ -354,7 +355,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_not_acceptable && return unless accept_header?
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
-    search_params = params.slice('family', 'given', 'telecom', 'email', 'birthdate', 'identifier', 'subject', 'active', '_count', '_id', 'patient')
+    search_params = params.slice(*VALID_PATIENT_SEARCH_PARAMS)
 
     case resource_type
     when 'patient'
@@ -1072,8 +1073,12 @@ class Fhir::R4::ApiController < ApplicationApiController
   end
 
   # Search for patients
-  def search_patients(options)
+  def search_patients(options, if_none_exist: false)
     query = accessible_patients.includes(:jurisdiction, :creator, { transfers: %i[from_jurisdiction to_jurisdiction who] })
+
+    # Do not return any patients if filtering for duplicates and no valid search params are provided
+    return [] if if_none_exist && (options.keys & VALID_PATIENT_SEARCH_PARAMS).empty?
+
     options.each do |option, search|
       next unless search.present?
 
