@@ -75,7 +75,7 @@ const exposureToCaseTotalValues = [{ number: '8' }, { number: '22' }, { number: 
 const isolationToExposureTotalValues = [{ number: '1' }, { number: '7' }, { number: '12' }, { number: '23' }];
 
 function getWrapper() {
-  return shallow(<MonitoreeFlow stats={mockAnalytics} />);
+  return shallow(<MonitoreeFlow stats={mockAnalytics} case_development_analytics_start_date={'11/2/2021'} />);
 }
 
 describe('MonitoreeFlow', () => {

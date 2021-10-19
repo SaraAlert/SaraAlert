@@ -3,7 +3,6 @@ import { PropTypes } from 'prop-types';
 import { Card, Col, Row } from 'react-bootstrap';
 import { formatPercentage } from '../../../../utils/Analytics';
 
-const RELEASE_DATE = '11/2/2021';
 const WORKFLOWS = ['Exposure', 'Isolation'];
 const MONITOREE_FLOW_HEADERS = ['Yesterday', 'Last 7 Days', 'Last 14 Days', 'Total'];
 
@@ -283,8 +282,10 @@ class MonitoreeFlow extends React.Component {
           </Row>
           <div className="text-center text-secondary info-text mb-1">
             <i className="fas fa-info-circle mr-1"></i>
-            Cumulative includes counts of the monitorees that met the criteria listed in the tables after {RELEASE_DATE} (excluding today’s counts). All counts
-            calculated based on UTC time zone.
+            Cumulative includes counts of the monitorees that met the criteria listed in the tables after {
+              this.props.case_development_analytics_start_date
+            }{' '}
+            (excluding today’s counts). All counts calculated based on UTC time zone.
           </div>
         </Card.Body>
       </Card>
@@ -294,6 +295,7 @@ class MonitoreeFlow extends React.Component {
 
 MonitoreeFlow.propTypes = {
   stats: PropTypes.object,
+  case_development_analytics_start_date: PropTypes.string,
 };
 
 export default MonitoreeFlow;
