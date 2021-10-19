@@ -21,6 +21,13 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  editingWorkflow: (
+    <div>
+      <i>Workflow</i> cannot be directly edited. To change workflow, return to the <i>Monitoree Details</i> page and update the <i>Case Status</i> of the
+      monitoree in the <i>Monitoring Actions</i> section.
+    </div>
+  ),
+
   primaryLanguage: (
     <div>
       <i>Primary Language</i> is used to determine the translations for what the monitoree sees/hears. If a language is not fully supported, a warning to users

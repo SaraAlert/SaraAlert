@@ -304,6 +304,7 @@ class Identification extends React.Component {
                   <Form.Label htmlFor="workflow-select" className="input-label">
                     WORKFLOW *
                   </Form.Label>
+                  {this.props.edit_mode && <InfoTooltip tooltipTextKey="editingWorkflow" location="right"></InfoTooltip>}
                   <Select
                     inputId="workflow-select"
                     styles={cursorPointerStyleLg}
@@ -312,6 +313,7 @@ class Identification extends React.Component {
                     onChange={e => this.handleWorkflowChange(e)}
                     placeholder=""
                     theme={theme => bootstrapSelectTheme(theme, 'lg')}
+                    isDisabled={this.props.edit_mode}
                   />
                 </Form.Group>
               </Form.Row>
@@ -644,6 +646,7 @@ Identification.propTypes = {
   next: PropTypes.func,
   setEnrollmentState: PropTypes.func,
   authenticity_token: PropTypes.string,
+  edit_mode: PropTypes.bool,
 };
 
 export default Identification;
