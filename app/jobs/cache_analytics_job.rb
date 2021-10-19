@@ -47,7 +47,7 @@ class CacheAnalyticsJob < ApplicationJob
     crew_on_passenger_or_cargo_flight: 'Crew on Passenger or Cargo Flight',
     laboratory_personnel: 'Laboratory Personnel'
   }.freeze
-  MONITOREE_SNAPSHOT_TIME_FRAMES = ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'].freeze
+  MONITOREE_SNAPSHOT_TIME_FRAMES = ['Yesterday', 'Last 7 Days', 'Last 14 Days', 'Total'].freeze
   MAX_EXPOSURE_COUNTRIES = 200
   NUM_PAST_DAYS = 28
   NUM_PAST_WEEKS = 53
@@ -379,6 +379,7 @@ class CacheAnalyticsJob < ApplicationJob
   def self.all_monitoree_snapshots(analytic_id, monitorees, subjur_ids)
     counts = []
     MONITOREE_SNAPSHOT_TIME_FRAMES.map do |time_frame|
+      exposure_to_isolation = monitorees.where(isolation: true, enrolled_isolation: false).exposure_to_isolation_in_time_frame(time_frame)
       WORKFLOWS.map do |workflow|
         counts.append(MonitoreeSnapshot.new(
                         analytic_id: analytic_id,
@@ -402,6 +403,24 @@ class CacheAnalyticsJob < ApplicationJob
                                                  .where_assoc_exists(:patient, isolation: workflow == 'Isolation')
                                                  .in_time_frame(time_frame)
                                                  .size,
+                        exposure_to_isolation_active: workflow == 'Isolation' ? exposure_to_isolation.monitoring_open.size : nil,
+                        exposure_to_isolation_not_active: workflow == 'Isolation' ? exposure_to_isolation.monitoring_closed
+                                                                                                         .or(exposure_to_isolation.purged)
+                                                                                                         .size
+                                                                                  : nil,
+                        cases_closed_in_exposure: workflow == 'Isolation' ? monitorees.where(case_status: Patient::ISOLATION_CASE_STATUS)
+                                                                                      .or(monitorees.where(
+                                                                                            monitoring_reason: Patient::CONTACT_TO_CASE_MONITORING_REASONS
+                                                                                          ))
+                                                                                      .where(isolation: false)
+                                                                                      .where(enrolled_isolation: false)
+                                                                                      .closed_in_time_frame(time_frame)
+                                                                                      .size
+                                                                          : nil,
+                        isolation_to_exposure: workflow == 'Exposure' ? monitorees.where(isolation: false, enrolled_isolation: true)
+                                                                                  .isolation_to_exposure_in_time_frame(time_frame)
+                                                                                  .size
+                                                                      : nil,
                         status: workflow
                       ))
       end

@@ -9,6 +9,9 @@ class Patient < ApplicationRecord
   include ActiveModel::Validations
   include FhirHelper
 
+  ISOLATION_CASE_STATUS = %w[Confirmed Probable].freeze
+  CONTACT_TO_CASE_MONITORING_REASONS = ['Meets Case Definition', 'Case Confirmed'].freeze
+
   columns.each do |column|
     case column.type
     when :text
@@ -156,7 +159,10 @@ class Patient < ApplicationRecord
   before_update :set_time_zone, if: proc { |patient|
     patient.monitored_address_state_changed? || patient.address_state_changed?
   }
-  before_create :set_time_zone
+  before_create do
+    set_time_zone
+    self.enrolled_isolation = isolation
+  end
 
   around_save :inform_responder, if: :responder_id_changed?
   around_destroy :inform_responder
@@ -641,8 +647,8 @@ class Patient < ApplicationRecord
   # All individuals enrolled within the given time frame
   scope :enrolled_in_time_frame, lambda { |time_frame|
     case time_frame
-    when 'Last 24 Hours'
-      where('patients.created_at >= ?', 24.hours.ago)
+    when 'Yesterday'
+      where('patients.created_at >= ? AND patients.created_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 7 Days'
       where('patients.created_at >= ? AND patients.created_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
@@ -657,14 +663,46 @@ class Patient < ApplicationRecord
   # All individuals closed within the given time frame
   scope :closed_in_time_frame, lambda { |time_frame|
     case time_frame
-    when 'Last 24 Hours'
-      where('patients.closed_at >= ?', 24.hours.ago)
+    when 'Yesterday'
+      where('patients.closed_at >= ? AND patients.closed_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 7 Days'
       where('patients.closed_at >= ? AND patients.closed_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
       where('patients.closed_at >= ? AND patients.closed_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'
-      all
+      where.not(closed_at: nil)
+    else
+      none
+    end
+  }
+
+  # All individuals moved from exposure workflow to isolation within the given time frame
+  scope :exposure_to_isolation_in_time_frame, lambda { |time_frame|
+    case time_frame
+    when 'Yesterday'
+      where('patients.exposure_to_isolation_at >= ? AND patients.exposure_to_isolation_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
+    when 'Last 7 Days'
+      where('patients.exposure_to_isolation_at >= ? AND patients.exposure_to_isolation_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
+    when 'Last 14 Days'
+      where('patients.exposure_to_isolation_at >= ?', 14.days.ago.to_date.to_datetime)
+    when 'Total'
+      where.not(exposure_to_isolation_at: nil)
+    else
+      none
+    end
+  }
+
+  # All individuals moved from isolation workflow to exposure within the given time frame
+  scope :isolation_to_exposure_in_time_frame, lambda { |time_frame|
+    case time_frame
+    when 'Yesterday'
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
+    when 'Last 7 Days'
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
+    when 'Last 14 Days'
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
+    when 'Total'
+      where.not(isolation_to_exposure_at: nil)
     else
       none
     end
@@ -1391,13 +1429,18 @@ class Patient < ApplicationRecord
   end
 
   # Handle side effects to isolation being set to false.
+  # * record exposure<->isolation timestamps
   # * extended_isolation is set to nil, since the Patient is being moves to exposure workflow.
   # * symptom_onset is set to a calculated value based on the assessments of the Patient, so they
   #   may be placed in the proper linelist in exposure workflow.
   # * user_defined_symptom_onset is set to false, since the calculated value is being used.
   def isolation_change
-    return if isolation
+    if isolation
+      self.exposure_to_isolation_at = DateTime.now
+      return
+    end
 
+    self.isolation_to_exposure_at = DateTime.now
     self.extended_isolation = nil
     # NOTE: The below will overwrite any new value they may set for symptom onset as they can not be set in the exposure workflow.
     self.user_defined_symptom_onset = false

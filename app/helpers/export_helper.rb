@@ -272,6 +272,20 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
         patient_details[:expected_purge_ts] = patient.expected_purge_date_exp if fields.include?(:expected_purge_ts)
         patient_details[:full_status] = patient.status&.to_s&.humanize&.downcase if fields.include?(:full_status)
         patient_details[:status] = patient.status_as_string if fields.include?(:status)
+        patient_details[:enrolled_workflow] = case patient[:enrolled_isolation]
+                                              when true
+                                                'Isolation'
+                                              when false
+                                                'Exposure'
+                                              end
+        patient_details[:contact_became_case_at] =
+          if patient.isolation && !patient.enrolled_isolation
+            patient[:exposure_to_isolation_at]&.strftime('%F')
+          elsif !patient.isolation && !patient.enrolled_isolation &&
+                (Patient::ISOLATION_CASE_STATUS.include?(patient[:case_status]) ||
+                Patient::CONTACT_TO_CASE_MONITORING_REASONS.include?(patient[:monitoring_reason]))
+            patient[:closed_at]&.strftime('%F')
+          end
 
         # populate creator if requested
         patient_details[:creator] = patients_creators[patient.creator_id] if fields.include?(:creator)
