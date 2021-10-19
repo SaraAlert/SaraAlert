@@ -186,11 +186,11 @@ class Enrollment extends React.Component {
     let maxIndex = this.state.enrollmentState.patient.isolation ? 7 : 6; // max number of enrollment steps in the carosel (6 for exposure and 7 for isolation)
 
     // If we are reviewing, then workflow must have changed
-    const changedWorkflow = this.state.review_mode && lastIndex !== maxIndex;
+    const workflowChange = this.state.review_mode && lastIndex !== maxIndex;
 
     if (lastIndex) {
       // If workflow has changed, route to the respective workflow specific page before review
-      this.setState({ index: changedWorkflow ? maxIndex - 1 : lastIndex, lastIndex: null });
+      this.setState({ index: workflowChange ? maxIndex - 1 : lastIndex, lastIndex: null });
     } else {
       this.setState({
         direction: 'next',
