@@ -18,6 +18,7 @@ class Assessment < ApplicationRecord
   has_one :reported_condition, class_name: 'ReportedCondition', dependent: nil
   belongs_to :patient, touch: true
 
+  before_create { self.reported_at = created_at if reported_at.nil? }
   after_create { update_patient_linelist_fields(:created) }
   after_update { update_patient_linelist_fields(:updated) }
   after_destroy { update_patient_linelist_fields(:removed) }

@@ -3,6 +3,8 @@ import { PropTypes } from 'prop-types';
 import { Card, Button, Form } from 'react-bootstrap';
 import _ from 'lodash';
 import confirmDialog from '../../../util/ConfirmDialog';
+import DateInput from '../../../util/DateInput';
+import moment from 'moment';
 
 class SymptomsAssessment extends React.Component {
   constructor(props) {
@@ -215,6 +217,12 @@ class SymptomsAssessment extends React.Component {
     );
   };
 
+  handleDateChange = newDate => {
+    let report = this.state.reportState;
+    report.reported_at = newDate;
+    this.setState({ reportState: report });
+  };
+
   intOrFloatSymptom = symp => {
     const key = `key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
     const id = `${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
@@ -235,17 +243,40 @@ class SymptomsAssessment extends React.Component {
   render() {
     return (
       <Card className="mx-0 card-square">
-        <Card.Header className="h4">
-          {this.props.translations[this.props.lang]['html']['weblink']['title']}{' '}
-          {this.props.patient_initials && this.props.patient_age !== null && (
-            <span>
-              ({this.props.patient_initials}-{this.props.patient_age})
-            </span>
-          )}
-          {this.props.patient_initials && this.props.patient_age === null && <span>({this.props.patient_initials})</span>}
-          {!this.props.patient_initials && this.props.patient_age !== null && <span>({this.props.patient_age})</span>}
-        </Card.Header>
+        {!this.props.current_user && (
+          // If this report is being edit by a user, assume header content rendered at a higher level
+          <Card.Header className="h4">
+            {this.props.translations[this.props.lang]['html']['weblink']['title']}{' '}
+            {this.props.patient_initials && this.props.patient_age !== null && (
+              <span>
+                ({this.props.patient_initials}-{this.props.patient_age})
+              </span>
+            )}
+            {this.props.patient_initials && this.props.patient_age === null && <span>({this.props.patient_initials})</span>}
+            {!this.props.patient_initials && this.props.patient_age !== null && <span>({this.props.patient_age})</span>}
+          </Card.Header>
+        )}
         <Card.Body>
+          {this.props.current_user && (
+            // Only allow users, not monitorees, to edit the report date
+            <Form.Group>
+              <Form.Row>
+                <Form.Label className="input-label mr-2 pt-1">Symptom Report for Date:</Form.Label>
+                <DateInput
+                  id="reported_at"
+                  date={this.props.assessment.reported_at ?? moment().toDate()}
+                  minDate={'2020-01-01'}
+                  maxDate={moment()}
+                  onChange={this.handleDateChange}
+                  placement="bottom"
+                  isInvalid={false}
+                  customClass="form-control-sm"
+                  ariaLabel="Assessment Reported Date Input"
+                  showTime={true}
+                />
+              </Form.Row>
+            </Form.Group>
+          )}
           <Form.Row>
             <Form.Label className="input-label pb-3">{this.props.translations[this.props.lang]['html']['weblink']['bool-title']}</Form.Label>
           </Form.Row>
@@ -298,6 +329,7 @@ SymptomsAssessment.propTypes = {
   lang: PropTypes.string,
   submit: PropTypes.func,
   idPre: PropTypes.string,
+  current_user: PropTypes.object,
 };
 
 export default SymptomsAssessment;

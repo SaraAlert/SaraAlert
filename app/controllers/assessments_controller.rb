@@ -145,6 +145,8 @@ class AssessmentsController < ApplicationController
       # Determine if a user created this assessment or a monitoree
       @assessment.who_reported = current_user.nil? ? 'Monitoree' : current_user.email
 
+      @assessment.reported_at = DateTime.strptime(params[:reported_at], '%Y-%m-%d %H:%M') unless params.permit(:reported_at)[:reported_at].nil?
+
       begin
         reported_condition.transaction do
           reported_condition.save!
@@ -216,13 +218,20 @@ class AssessmentsController < ApplicationController
       old_reporter = assessment.who_reported
       # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
       assessment.who_reported = current_user.email
+      old_reported_at = assessment.reported_at
+      assessment.reported_at = DateTime.strptime(params[:reported_at], '%Y-%m-%d %H:%M') unless params.permit(:reported_at)[:reported_at].nil?
+      reported_at_changed = old_reported_at != assessment.reported_at
 
       # Attempt to save and continue; else if failed redirect to index
       return unless assessment.save
 
       comment = 'User edited an existing report (ID: ' + assessment.id.to_s + ').'
-      unless delta.empty?
-        comment += ' Symptom updates: ' + delta.join(', ') + '.'
+      if delta.any? || reported_at_changed
+        if reported_at_changed
+          comment += " Reported at update: #{old_reported_at.in_time_zone(patient.time_zone).strftime('%m/%d/%Y %H:%M %Z')}"\
+                     " to #{assessment.reported_at.in_time_zone(patient.time_zone).strftime('%m/%d/%Y %H:%M %Z')}."
+        end
+        comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
         comment += " Reporter update: (\"#{old_reporter}\" to \"#{current_user.email}\")." unless old_reporter == current_user.email
       end
       History.report_updated(patient: patient, created_by: current_user.email, comment: comment)

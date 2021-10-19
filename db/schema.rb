@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_01_151212) do
+ActiveRecord::Schema.define(version: 2021_10_15_013855) do
 
   create_table "active_storage_attachments", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -69,6 +69,7 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.bigint "patient_id"
     t.boolean "symptomatic"
     t.string "who_reported", default: "Monitoree"
+    t.datetime "reported_at", precision: 6
     t.index ["created_at"], name: "assessments_index_chain_1"
     t.index ["patient_id", "created_at"], name: "assessments_index_chain_3"
     t.index ["symptomatic", "patient_id", "created_at"], name: "assessments_index_chain_2"

@@ -681,6 +681,7 @@ namespace :demo do
       assessments << Assessment.new(
         patient_id: patient_id,
         symptomatic: false,
+        reported_at: assessment_ts,
         created_at: assessment_ts,
         updated_at: assessment_ts
       )

@@ -11,7 +11,16 @@ class AssessmentModal extends React.Component {
   render() {
     return (
       <Modal show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
-        <Modal.Header closeButton></Modal.Header>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {this.props.translations['eng']['html']['weblink']['title']}{' '}
+            {this.props.patient_initials && this.props.calculated_age !== null && (
+              <span>
+                ({this.props.patient_initials}-{this.props.calculated_age})
+              </span>
+            )}
+          </Modal.Title>
+        </Modal.Header>
         <Modal.Body>
           <Assessment
             current_user={this.props.current_user}
