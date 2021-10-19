@@ -54,6 +54,8 @@ max_user_filters: <%= ENV["MAX_USER_FILTERS"] || 150 %>
 # in minutes
 download_destroy_wait_time: <%= ENV['SARA_ALERT_DOWNLOAD_DESTROY_WAIT_TIME']|| 60 %>
 
-# The date when case development starts being tracked (for analytics and exports)
-# This date should be set to the date that the AddReportedAtToAssessments migration is applied, which should be when application version 1.38 is deployed
+# The date when case development starts being tracked (for analytics and exports).
+# This date should be set to the date that the AddReportedAtToAssessments migration is applied, which should be when application version 1.38 is deployed.
+# This date is used on the Analytics page to indicate to users when cumulative numbers start from.
+# If your Sara Alert instance was initially deployed at version 1.38 or later, set this to empty string.
 case_development_analytics_start_date: 11/2/2021

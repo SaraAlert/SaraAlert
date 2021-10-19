@@ -280,13 +280,15 @@ class MonitoreeFlow extends React.Component {
             {this.renderExposureToCaseTable(this.exposureToCaseTableData)}
             {this.renderIsolationToExposureTable(this.isolationToExposureTableData)}
           </Row>
-          <div className="text-center text-secondary info-text mb-1">
-            <i className="fas fa-info-circle mr-1"></i>
-            Cumulative includes counts of the monitorees that met the criteria listed in the tables after {
-              this.props.case_development_analytics_start_date
-            }{' '}
-            (excluding today’s counts). All counts calculated based on UTC time zone.
-          </div>
+          {this.props.case_development_analytics_start_date && (
+            <div className="text-center text-secondary info-text mb-1">
+              <i className="fas fa-info-circle mr-1"></i>
+              Cumulative includes counts of the monitorees that met the criteria listed in the tables after {
+                this.props.case_development_analytics_start_date
+              }{' '}
+              (excluding today’s counts). All counts calculated based on UTC time zone.
+            </div>
+          )}
         </Card.Body>
       </Card>
     );
