@@ -53,7 +53,7 @@ describe('PublicHealthManagement', () => {
     expect(wrapper.find('#assigned_user').prop('value')).toEqual('');
     expect(wrapper.find('#assigned_users').exists()).toBe(true);
     assignedUsers.forEach((option, index) => {
-      expect(wrapper.find('#assigned_users').find('option').at(index).text()).toContain(option);
+      expect(wrapper.find('#assigned_users').find('option').at(index).text()).toEqual(String(option));
     });
     expect(wrapper.find('#update_group_member_assigned_user').exists()).toBe(false);
 
@@ -88,7 +88,7 @@ describe('PublicHealthManagement', () => {
     expect(wrapper.find('#assigned_user').prop('value')).toEqual(mockPatient1.assigned_user);
     expect(wrapper.find('#assigned_users').exists()).toBe(true);
     assignedUsers.forEach((option, index) => {
-      expect(wrapper.find('#assigned_users').find('option').at(index).text()).toContain(option);
+      expect(wrapper.find('#assigned_users').find('option').at(index).text()).toEqual(String(option));
     });
     expect(wrapper.find('#update_group_member_assigned_user').exists()).toBe(false);
 
