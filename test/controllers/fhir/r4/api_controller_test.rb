@@ -544,6 +544,37 @@ class ApiControllerTest < ApiControllerTestCase
     assert_response :not_found
   end
 
+  test 'should be 200 when duplicate detection is enabled and 1 potential duplicate is found' do
+    p = Patient.find_by(id: 1)
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: {
+        Authorization: "Bearer #{@system_patient_token_rw.token}",
+        'Content-Type': 'application/fhir+json',
+        'If-None-Exist': "identifier=http://saraalert.org/SaraAlert/state-local-id|#{p.user_defined_id_statelocal}&birthdate=#{p.date_of_birth}"
+      }
+    )
+    assert_response :ok
+  end
+
+  test 'should be 412 when duplicate detection is enabled and multiple potential duplicates are found' do
+    p = Patient.find_by(id: 1)
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: {
+        Authorization: "Bearer #{@system_patient_token_rw.token}",
+        'Content-Type': 'application/fhir+json',
+        'If-None-Exist': "birthdate=#{p.date_of_birth}"
+      }
+    )
+    assert_response :precondition_failed
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 1
+    assert_match(/There are #{Patient.where(date_of_birth: p.date_of_birth).size} potential duplicate patients/, json_response['issue'][0]['diagnostics'])
+  end
+
   #----- update tests -----
 
   test 'should be unauthorized via update' do

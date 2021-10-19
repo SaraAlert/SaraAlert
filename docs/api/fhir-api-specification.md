@@ -2936,6 +2936,10 @@ On success, the server will return the newly created resource with an id. This i
   </div>
 </details>
 
+#### Duplicate Detection
+
+Duplicate detection can be enabled to prevent duplicate creations, simply include the `If-None-Exist` header containing the search parameters. An example of this could be: `identifier=http://saraalert.org/SaraAlert/state-local-id|EX-286392&birthdate=1966-12-01`
+
 #### Patient Extensions
 
 <a name="create-pat-ext"/>
@@ -5871,6 +5875,7 @@ To perform a transaction, POST a FHIR [Bundle](https://www.hl7.org/fhir/bundle.h
 * `resource` - Must contain the content of the Observation or Patient that is being created.
 * `request.method` - Must be `POST` as this is the only supported operation.
 * `request.url` - Must be `Patient` or `Observation`, depending on which resource is being created.
+* `request.ifNoneExist` - If present, will be the search parameters used for duplicate detection, for example: `identifier=http://saraalert.org/SaraAlert/state-local-id|EX-286392&birthdate=1966-12-01`
 
 See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) documentation for more details. An example request and response is shown below.
 

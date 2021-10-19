@@ -32,6 +32,7 @@ class Fhir::R4::ApiController < ApplicationApiController
   rescue_from ClientError, with: proc {}
 
   MAX_TRANSACTION_ENTRIES = 50
+  VALID_PATIENT_SEARCH_PARAMS = %w[family given telecom email birthdate identifier subject active _count _id patient].freeze
 
   # Return a resource given a type and an id.
   #
@@ -210,6 +211,15 @@ class Fhir::R4::ApiController < ApplicationApiController
     when 'patient'
       return if doorkeeper_authorize!(*PATIENT_WRITE_SCOPES)
 
+      # Duplicate detection check
+      if request.headers['If-None-Exist'].present?
+        matches = search_patients(Rack::Utils.parse_nested_query(request.headers['If-None-Exist']), if_none_exist: true)
+        num_matches = matches.size
+        return head :ok if num_matches == 1
+
+        status_precondition_failed_with_custom_errors(["There are #{num_matches} potential duplicate patients"]) && return if num_matches > 1
+      end
+
       resource = save_patient(*build_patient(contents), request_body)
     when 'relatedperson'
       return if doorkeeper_authorize!(*RELATED_PERSON_WRITE_SCOPES)
@@ -266,6 +276,18 @@ class Fhir::R4::ApiController < ApplicationApiController
     contents.entry&.each_with_index do |entry, index|
       next unless entry.resource&.resourceType&.downcase == 'patient'
 
+      # Duplicate detection check
+      if entry&.request&.ifNoneExist.present?
+        matches = search_patients(Rack::Utils.parse_nested_query(entry&.request&.ifNoneExist), if_none_exist: true)
+        num_matches = matches.size
+        if num_matches == 1
+          patients << { resource: {}, fhir_map: {}, full_url: entry.fullUrl }
+          next
+        elsif num_matches > 1
+          status_precondition_failed_with_custom_errors(["There are #{num_matches} potential duplicate patients"], "Bundle.entry[#{index}].resource") && return
+        end
+      end
+
       resource, fhir_map = build_patient(entry&.resource)
       change_fhir_map_context!(fhir_map, 'Patient', "Bundle.entry[#{index}].resource")
       patients << { resource: resource, fhir_map: fhir_map, full_url: entry.fullUrl }
@@ -290,6 +312,15 @@ class Fhir::R4::ApiController < ApplicationApiController
         ) && return
       end
 
+      # Observation cannot reference a Patient that is considered a duplicate
+      unless referenced_patient.is_a?(Patient)
+        status_unprocessable_entity_with_custom_errors(
+          ['Observation resources must reference the fullUrl of a Patient in the same Bundle, but the Observation referenced the fullUrl of a Patient with ' \
+           'one existing duplicate.'],
+          "Bundle.entry[#{index}].resource.subject.reference"
+        ) && return
+      end
+
       resource, fhir_map = build_model_from_fhir(Laboratory, entry&.resource, :laboratory_from_fhir)
       change_fhir_map_context!(fhir_map, 'Observation', "Bundle.entry[#{index}].resource")
       referenced_patient.laboratories << resource
@@ -304,7 +335,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     saved_patients = []
     ActiveRecord::Base.transaction do
       patients.each do |patient|
-        saved_patients << save_patient(patient[:resource], patient[:fhir_map], request_body)
+        # Saved patient is added if not a duplicate otherwise patient with fullUrl is added instead to indicate duplicate in order
+        saved_patients << (patient[:fhir_map].empty? ? patient : save_patient(patient[:resource], patient[:fhir_map], request_body))
       end
     end
 
@@ -323,8 +355,8 @@ class Fhir::R4::ApiController < ApplicationApiController
     status_not_acceptable && return unless accept_header?
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
-    search_params = params.slice('family', 'given', 'telecom', 'email', 'subject', 'active',
-                                 '_count', '_id', 'patient')
+    search_params = params.slice(*VALID_PATIENT_SEARCH_PARAMS)
+
     case resource_type
     when 'patient'
       return if doorkeeper_authorize!(*PATIENT_READ_SCOPES)
@@ -930,6 +962,17 @@ class Fhir::R4::ApiController < ApplicationApiController
     end
   end
 
+  # 412 precondition failed with custom error messages
+  def status_precondition_failed_with_custom_errors(errors, path = nil)
+    outcome = FHIR::OperationOutcome.new(issue: [])
+    errors.each do |error|
+      outcome.issue << FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'processing', diagnostics: error, expression: path)
+    end
+    respond_to do |format|
+      format.any { render json: outcome.to_json, status: :precondition_failed }
+    end
+  end
+
   # 429 too many requests with custom error messages
   def status_too_many_requests_with_custom_errors(errors = [])
     respond_to do |format|
@@ -1030,8 +1073,12 @@ class Fhir::R4::ApiController < ApplicationApiController
   end
 
   # Search for patients
-  def search_patients(options)
+  def search_patients(options, if_none_exist: false)
     query = accessible_patients.includes(:jurisdiction, :creator, { transfers: %i[from_jurisdiction to_jurisdiction who] })
+
+    # Do not return any patients if filtering for duplicates and no valid search params are provided
+    return [] if if_none_exist && (options.keys & VALID_PATIENT_SEARCH_PARAMS).empty?
+
     options.each do |option, search|
       next unless search.present?
 
@@ -1044,6 +1091,13 @@ class Fhir::R4::ApiController < ApplicationApiController
         query = query.where('primary_telephone like ?', Phonelib.parse(search, 'US').full_e164)
       when 'email'
         query = query.where('email like ?', "%#{search}%")
+      when 'birthdate'
+        query = query.where(date_of_birth: search)
+      when 'identifier'
+        (identifier, value) = search.split('|', 2)
+        next if value.nil?
+
+        query = query.where('lower(user_defined_id_statelocal) like ?', "#{value.downcase}%") if identifier == 'http://saraalert.org/SaraAlert/state-local-id'
       when '_id'
         query = query.where(id: search)
       when 'active'

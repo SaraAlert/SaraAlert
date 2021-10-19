@@ -1240,6 +1240,11 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   def patients_to_fhir_bundle(patients)
     results = []
     patients.each do |patient|
+      if patient[:id].nil?
+        results << FHIR::Bundle::Entry.new(fullUrl: patient[:full_url], response: FHIR::Bundle::Entry::Response.new(status: '200 OK'))
+        next
+      end
+
       patient_as_fhir = patient.as_fhir
       results << FHIR::Bundle::Entry.new(fullUrl: full_url_helper(patient_as_fhir), resource: patient_as_fhir,
                                          response: FHIR::Bundle::Entry::Response.new(status: '201 Created'))
