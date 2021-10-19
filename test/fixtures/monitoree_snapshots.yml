@@ -1,7 +1,7 @@
 analytic_1_last_24_hours:
   id: 10001
   analytic_id: 1
-  time_frame: 'Last 24 Hours'
+  time_frame: 'Yesterday'
   status: 'Isolation'
   new_enrollments: 469
   transferred_in: 28
@@ -70,7 +70,7 @@ analytic_1_total:
 analytic_2_last_24_hours:
   id: 20001
   analytic_id: 2
-  time_frame: 'Last 24 Hours'
+  time_frame: 'Yesterday'
   status: 'Exposure'
   new_enrollments: 469
   transferred_in: 12
@@ -139,7 +139,7 @@ analytic_2_total:
 analytic_3_last_24_hours:
   id: 30001
   analytic_id: 3
-  time_frame: 'Last 24 Hours'
+  time_frame: 'Yesterday'
   status: 'Exposure'
   new_enrollments: 469
   transferred_in: 2

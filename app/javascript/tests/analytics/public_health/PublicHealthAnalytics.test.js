@@ -15,7 +15,7 @@ import mockAnalyticsData from '../../mocks/mockAnalytics';
 import { formatTimestamp } from '../../helpers';
 
 function getWrapper(stats) {
-  return shallow(<PublicHealthAnalytics current_user={mockUser1} stats={stats} />);
+  return shallow(<PublicHealthAnalytics current_user={mockUser1} stats={stats} case_development_analytics_start_date={'11/2/2021'} />);
 }
 
 describe('PublicHealthAnalytics', () => {

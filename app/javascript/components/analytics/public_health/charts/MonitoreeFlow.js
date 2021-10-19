@@ -4,20 +4,19 @@ import { Card, Col, Row } from 'react-bootstrap';
 import { formatPercentage } from '../../../../utils/Analytics';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
-
-// Provide a separate array, as object-iteration order is not guaranteed in JS
-const MONITOREE_FLOW_HEADERS = ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'];
+const MONITOREE_FLOW_HEADERS = ['Yesterday', 'Last 7 Days', 'Last 14 Days', 'Total'];
 
 class MonitoreeFlow extends React.Component {
   constructor(props) {
     super(props);
-    this.tableData = WORKFLOWS.map(workflow => {
+    this.workflowTableData = WORKFLOWS.map(workflow => {
       return MONITOREE_FLOW_HEADERS.map(time_frame => {
         let thisTimeFrameData = props.stats.monitoree_snapshots.find(
           monitoree_snapshot => monitoree_snapshot.status === workflow && monitoree_snapshot.time_frame === time_frame
         );
         let inTotal = thisTimeFrameData?.new_enrollments + thisTimeFrameData?.transferred_in;
         let outTotal = thisTimeFrameData?.closed + thisTimeFrameData?.transferred_out;
+
         return {
           time_frame,
           new_enrollments: {
@@ -39,6 +38,46 @@ class MonitoreeFlow extends React.Component {
         };
       });
     });
+
+    this.exposureToCaseTableData = MONITOREE_FLOW_HEADERS.map(time_frame => {
+      let thisTimeFrameData = props.stats.monitoree_snapshots.find(
+        monitoree_snapshot => monitoree_snapshot.status === 'Isolation' && monitoree_snapshot.time_frame === time_frame
+      );
+      let exposureToIsolationTotal =
+        thisTimeFrameData?.exposure_to_isolation_active + thisTimeFrameData?.exposure_to_isolation_not_active + thisTimeFrameData?.cases_closed_in_exposure;
+      return {
+        time_frame,
+        exposure_to_isolation_active: {
+          value: thisTimeFrameData?.exposure_to_isolation_active || 0,
+          percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation_active, exposureToIsolationTotal),
+        },
+        exposure_to_isolation_not_active: {
+          value: thisTimeFrameData?.exposure_to_isolation_not_active || 0,
+          percentage: formatPercentage(thisTimeFrameData?.exposure_to_isolation_not_active, exposureToIsolationTotal),
+        },
+        cases_closed_in_exposure: {
+          value: thisTimeFrameData?.cases_closed_in_exposure || 0,
+          percentage: formatPercentage(thisTimeFrameData?.cases_closed_in_exposure, exposureToIsolationTotal),
+        },
+        exposure_to_isolation_total: {
+          value: exposureToIsolationTotal || 0,
+          percentage: null,
+        },
+      };
+    });
+
+    this.isolationToExposureTableData = MONITOREE_FLOW_HEADERS.map(time_frame => {
+      let thisTimeFrameData = props.stats.monitoree_snapshots.find(
+        monitoree_snapshot => monitoree_snapshot.status === 'Exposure' && monitoree_snapshot.time_frame === time_frame
+      );
+      return {
+        time_frame,
+        isolation_to_exposure_total: {
+          value: thisTimeFrameData?.isolation_to_exposure || 0,
+          percentage: null,
+        },
+      };
+    });
   }
 
   renderWorkflowTable(data, index) {
@@ -50,7 +89,7 @@ class MonitoreeFlow extends React.Component {
             <thead>
               <tr className="g-border-bottom text-center header">
                 <th></th>
-                <th>Last 24h</th>
+                <th>Yesterday</th>
                 <th>Last 7d</th>
                 <th>Last 14d</th>
                 <th>Cumulative</th>
@@ -118,6 +157,112 @@ class MonitoreeFlow extends React.Component {
     );
   }
 
+  renderExposureToCaseTable(data) {
+    return (
+      <Col xl="12">
+        <div className="analytics-table-header">Exposure to Case Development</div>
+        <div className="table-responsive">
+          <table className="analytics-table">
+            <thead>
+              <tr className="g-border-bottom text-center header">
+                <th></th>
+                <th>Yesterday</th>
+                <th>Last 7d</th>
+                <th>Last 14d</th>
+                <th>Cumulative</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="header" colSpan="5">
+                  Moved from Exposure to Isolation Workflow
+                </td>
+              </tr>
+              <tr>
+                <td className="sub-header indent">Currently Active</td>
+                {data.map((x, i) => (
+                  <td key={i}>
+                    <div className="count-percent-container">
+                      <span className="number">{x.exposure_to_isolation_active.value}</span>
+                      <span className="percentage align-bottom">({x.exposure_to_isolation_active.percentage})</span>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+              <tr className="g-border-bottom">
+                <td className="sub-header indent">Closed or Purged</td>
+                {data.map((x, i) => (
+                  <td key={i}>
+                    <div className="count-percent-container">
+                      <span className="number">{x.exposure_to_isolation_not_active.value}</span>
+                      <span className="percentage">({x.exposure_to_isolation_not_active.percentage})</span>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+              <tr className="b-border-bottom">
+                <td className="header">Cases that were closed in Exposure Workflow</td>
+                {data.map((x, i) => (
+                  <td key={i}>
+                    <div className="count-percent-container">
+                      <span className="number">{x.cases_closed_in_exposure.value}</span>
+                      <span className="percentage">({x.cases_closed_in_exposure.percentage})</span>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+              <tr className="g-border-bottom">
+                <td className="header">Total Contacts that became Cases</td>
+                {data.map((x, i) => (
+                  <td key={i}>
+                    <div className="count-percent-container">
+                      <span className="number">{x.exposure_to_isolation_total.value}</span>
+                      <span className="percentage"></span>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Col>
+    );
+  }
+
+  renderIsolationToExposureTable(data) {
+    return (
+      <Col xl="12">
+        <div className="analytics-table-header">Moved from Isolation to Exposure</div>
+        <div className="table-responsive">
+          <table className="analytics-table">
+            <thead>
+              <tr className="g-border-bottom text-center header">
+                <th></th>
+                <th>Yesterday</th>
+                <th>Last 7d</th>
+                <th>Last 14d</th>
+                <th>Cumulative</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="g-border-bottom">
+                <td className="header">Moved from Isolation to Exposure Workflow</td>
+                {data.map((x, i) => (
+                  <td key={i}>
+                    <div className="count-percent-container">
+                      <span className="number">{x.isolation_to_exposure_total.value}</span>
+                      <span className="percentage align-bottom"></span>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Col>
+    );
+  }
+
   render() {
     return (
       <Card>
@@ -125,11 +270,25 @@ class MonitoreeFlow extends React.Component {
           Monitoree Flow Over Time (All Records)
         </Card.Header>
         <Card.Body>
-          <Row>{this.tableData.map((data, index) => this.renderWorkflowTable(data, index))}</Row>
-          <div className="text-center text-secondary info-text my-1">
+          <Row>{this.workflowTableData.map((data, index) => this.renderWorkflowTable(data, index))}</Row>
+          <div className="text-center text-secondary info-text mb-4">
             <i className="fas fa-info-circle mr-1"></i>
-            Cumulative includes all incoming and outgoing counts ever recorded for this jurisdiction
+            Cumulative includes incoming and outgoing counts recorded for this jurisdiction (excluding today’s counts). All counts calculated based on UTC time
+            zone.
           </div>
+          <Row>
+            {this.renderExposureToCaseTable(this.exposureToCaseTableData)}
+            {this.renderIsolationToExposureTable(this.isolationToExposureTableData)}
+          </Row>
+          {this.props.case_development_analytics_start_date && (
+            <div className="text-center text-secondary info-text mb-1">
+              <i className="fas fa-info-circle mr-1"></i>
+              Cumulative includes counts of the monitorees that met the criteria listed in the tables after {
+                this.props.case_development_analytics_start_date
+              }{' '}
+              (excluding today’s counts). All counts calculated based on UTC time zone.
+            </div>
+          )}
         </Card.Body>
       </Card>
     );
@@ -138,6 +297,7 @@ class MonitoreeFlow extends React.Component {
 
 MonitoreeFlow.propTypes = {
   stats: PropTypes.object,
+  case_development_analytics_start_date: PropTypes.string,
 };
 
 export default MonitoreeFlow;
