@@ -142,7 +142,7 @@ class History extends React.Component {
   renderActionButtons() {
     return (
       <Col>
-        <div className="float-right" style={{ width: '45px' }}>
+        <div className="float-right">
           <span data-for={`edit-history-item-${this.state.latest_version.id}`} data-tip="">
             <Button id="edit-history-btn" variant="link" className="icon-btn p-0 mr-1" onClick={this.toggleEditMode} aria-label="Edit History Comment">
               <i className="fas fa-edit"></i>
