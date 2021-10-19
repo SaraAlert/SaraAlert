@@ -813,8 +813,8 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find('.advanced-filter-multi-select').length).toEqual(1);
     expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
     mockFilterContactType.filterOption.options.forEach((value, index) => {
-      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].value).toEqual(value.value);
-      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].label).toEqual(value.label);
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[parseInt(index)].value).toEqual(value.value);
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[parseInt(index)].label).toEqual(value.label);
     });
     expect(wrapper.find(ReactTooltip).exists()).toBe(true);
     expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterContactType.filterOption.tooltip);
@@ -828,8 +828,8 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find('.advanced-filter-multi-select').length).toEqual(1);
     expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
     mockFilterAssignedUser.filterOption.options.forEach((value, index) => {
-      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].value).toEqual(value.value);
-      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].label).toEqual(value.label);
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[parseInt(index)].value).toEqual(value.value);
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[parseInt(index)].label).toEqual(value.label);
     });
     expect(wrapper.find(ReactTooltip).exists()).toBe(true);
     expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterAssignedUser.filterOption.tooltip);
@@ -843,8 +843,8 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find('.advanced-filter-multi-select').length).toEqual(1);
     expect(wrapper.find('.advanced-filter-multi-select').prop('value')).toEqual([]);
     mockFilterJurisdiction.filterOption.options.forEach((value, index) => {
-      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].value).toEqual(value.value);
-      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[index].label).toEqual(value.label);
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[parseInt(index)].value).toEqual(value.value);
+      expect(wrapper.find('.advanced-filter-multi-select').prop('options')[parseInt(index)].label).toEqual(value.label);
     });
     expect(wrapper.find(ReactTooltip).exists()).toBe(true);
     expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterJurisdiction.filterOption.tooltip);
