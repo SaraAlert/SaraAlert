@@ -258,7 +258,9 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "status", default: "Missing"
-    t.integer "exposure_to_isolation"
+    t.integer "exposure_to_isolation_active"
+    t.integer "exposure_to_isolation_not_active"
+    t.integer "cases_closed_in_exposure"
     t.integer "isolation_to_exposure"
     t.index ["analytic_id"], name: "index_monitoree_snapshots_on_analytic_id"
   end
@@ -449,6 +451,9 @@ ActiveRecord::Schema.define(version: 2021_10_01_151212) do
     t.string "follow_up_reason", limit: 200
     t.text "follow_up_note"
     t.string "international_telephone", limit: 200
+    t.boolean "enrolled_isolation"
+    t.datetime "isolation_to_exposure_at", precision: 6
+    t.datetime "exposure_to_isolation_at", precision: 6
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"

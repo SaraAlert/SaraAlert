@@ -93,9 +93,11 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
 
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
   # of fields between Sara Alert Format and Full History Patients
-  FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SARA_ALERT_FORMAT_FIELDS + %i[first_positive_lab_at extended_isolation]).freeze
+  FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SARA_ALERT_FORMAT_FIELDS + %i[first_positive_lab_at extended_isolation enrolled_workflow
+                                                                        contact_became_case_at]).freeze
 
-  FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SARA_ALERT_FORMAT_HEADERS + ['First Positive Lab', 'Extended Isolation Date']).freeze
+  FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SARA_ALERT_FORMAT_HEADERS + ['First Positive Lab', 'Extended Isolation Date', 'Enrolled Workflow',
+                                                                                 'Exposure Monitorees that became Cases at']).freeze
 
   FULL_HISTORY_ASSESSMENTS_FIELDS = %i[patient_id symptomatic who_reported created_at updated_at symptoms].freeze
 
@@ -131,7 +133,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                 monitoring_plan case_status gender_identity sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason],
     notes: %i[travel_related_notes additional_planned_travel_related_notes exposure_notes follow_up_note],
     dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
-              symptom_onset first_positive_lab_at extended_isolation],
+              symptom_onset first_positive_lab_at extended_isolation contact_became_case_at],
     times: %i[preferred_contact_time],
     timestamps: %i[created_at updated_at closed_at latest_assessment_at latest_transfer_at last_assessment_reminder_sent],
     phones: %i[primary_telephone secondary_telephone],
@@ -262,6 +264,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     updated_at: 'Monitoree Updated Date',
     # Monitoring Info - Linelist Info
     workflow: 'Current Workflow',
+    enrolled_workflow: 'Enrolled Workflow',
     status: 'Status',
     # Monitoring Info - Monitoring Actions
     monitoring_status: 'Monitoring Status',
@@ -283,6 +286,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     closed_at: 'Closure Date',
     monitoring_reason: 'Reason For Closure',
     expected_purge_ts: 'Expected Purge Date',
+    contact_became_case_at: 'Exposure Monitorees that became Cases at',
     # Monitoring Info - Reporting Info
     responder_id: 'ID of Reporter',
     head_of_household: 'Head of Household',
@@ -483,11 +487,12 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
             value: 'patients-monitoring',
             label: 'Monitoring Info',
             children: [
-              rct_node(:patients, 'Linelist Info', %i[workflow status]),
+              rct_node(:patients, 'Linelist Info', %i[workflow enrolled_workflow status]),
               rct_node(:patients, 'Monitoring Actions', %i[monitoring_status exposure_risk_assessment monitoring_plan case_status public_health_action
                                                            jurisdiction_path jurisdiction_name assigned_user]),
               rct_node(:patients, 'Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset symptom_onset_defined_by first_positive_lab_at
-                                                          extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_ts]),
+                                                          extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_ts
+                                                          contact_became_case_at]),
               rct_node(:patients, 'Reporting Info', %i[responder_id head_of_household pause_notifications last_assessment_reminder_sent]),
               rct_node(:patients, 'Follow-up Flag', %i[follow_up_reason follow_up_note])
             ]

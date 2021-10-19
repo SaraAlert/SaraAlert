@@ -533,6 +533,21 @@ namespace :demo do
       patient[:pause_notifications] = rand < 0.1
       patient[:last_assessment_reminder_sent] = beginning_of_day - rand(7).days if rand < 0.3
 
+      # Fields used for tracking workflow changes
+      patient[:enrolled_isolation] = patient[:isolation] if rand < 0.8
+      if rand < 0.5 # switch workflows once
+        patient[:isolation] = !patient[:isolation]
+        patient[patient[:isolation] ? :exposure_to_isolation_at : :isolation_to_exposure_at] = beginning_of_day - rand(21).days
+        if rand < 0.1 # switch workflows again
+          patient[:isolation] = !patient[:isolation]
+          if patient[:isolation]
+            patient[:exposure_to_isolation_at] = rand(beginning_of_day..patient[:isolation_to_exposure_at])
+          else
+            patient[:isolation_to_exposure_at] = rand(beginning_of_day..patient[:exposure_to_isolation_at])
+          end
+        end
+      end
+
       # Follow-up Flag
       if rand < 0.15
         patient[:follow_up_reason] = ValidationHelper::FOLLOW_UP_FLAG_REASONS.sample
