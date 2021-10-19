@@ -68,7 +68,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           patient.update(last_assessment_reminder_sent: nil)
           History.contact_attempt(patient: patient, comment: "Sara Alert called this monitoree's primary telephone \
                                                               number #{patient.primary_telephone} and nobody answered the phone.")
-          unless dependents.blank?
+          if dependents.present?
             create_contact_attempt_history_for_dependents(dependents, "Sara Alert called this monitoree's head \
                                                                               of household and nobody answered the phone.")
           end
@@ -80,7 +80,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           History.contact_attempt(patient: patient, comment: "Sara Alert texted this monitoree's primary telephone \
                                                               number #{patient.primary_telephone} during their preferred \
                                                               contact time, but did not receive a response.")
-          unless dependents.blank?
+          if dependents.present?
             create_contact_attempt_history_for_dependents(dependents, "Sara Alert texted this monitoree's head of \
                                                                               household and did not receive a response.")
           end
@@ -92,7 +92,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           patient.update(last_assessment_reminder_sent: nil)
           History.contact_attempt(patient: patient, comment: "Sara Alert was unable to complete a call to this \
                                                               monitoree's primary telephone number #{patient.primary_telephone}.")
-          unless dependents.blank?
+          if dependents.present?
             create_contact_attempt_history_for_dependents(dependents, "Sara Alert was unable to complete a call \
                                                                               to this monitoree's head of household.")
           end
@@ -102,7 +102,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         when 'error_sms'
           History.contact_attempt(patient: patient, comment: "Sara Alert was unable to send an SMS to this monitoree's \
                                                               primary telephone number #{patient.primary_telephone}.")
-          unless dependents.blank?
+          if dependents.present?
             create_contact_attempt_history_for_dependents(dependents, "Sara Alert was unable to send an SMS to \
                                                                               this monitoree's head of household.")
           end
@@ -113,7 +113,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           # Maximum amount of SMS response retries reached
           History.contact_attempt(patient: patient, comment: "The system could not record a response because the monitoree exceeded the maximum number
              of daily report SMS response retries via primary telephone number #{patient.primary_telephone}.")
-          unless dependents.blank?
+          if dependents.present?
             create_contact_attempt_history_for_dependents(dependents, "The system could not record a response because the monitoree's head of household
               exceeded the maximum number of daily report SMS response retries via primary telephone number #{patient.primary_telephone}.")
           end
@@ -123,7 +123,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           # Maximum amount of voice response retries reached
           History.contact_attempt(patient: patient, comment: "The system could not record a response because the monitoree exceeded the maximum number
             of report voice response retries via primary telephone number #{patient.primary_telephone}.")
-          unless dependents.blank?
+          if dependents.present?
             create_contact_attempt_history_for_dependents(dependents, "The system could not record a response because the monitoree's head of household
               exceeded the maximum number of report voice response retries via primary telephone number #{patient.primary_telephone}.")
           end
@@ -236,7 +236,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         sara_number ||= '<Number Unavailable>'
         History.contact_attempt(patient: patient, comment: "The system will no longer be able to send an SMS to this monitoree #{patient.primary_telephone},
           because the monitoree blocked communications with Sara Alert by sending a STOP keyword to #{sara_number}.")
-        unless dependents.blank?
+        if dependents.present?
           create_contact_attempt_history_for_dependents(dependents, "The system will no longer be able to send an SMS to this monitoree's head of household
             #{patient.primary_telephone}, because the head of household blocked communications with Sara Alert by sending a STOP keyword to #{sara_number}.")
         end
@@ -246,7 +246,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         History.contact_attempt(patient: patient, comment: "The system will now be able to send an SMS to this monitoree #{patient.primary_telephone},
           because the monitoree re-enabled communications with Sara Alert by sending a START keyword to #{sara_number}.")
 
-        unless dependents.blank?
+        if dependents.present?
           create_contact_attempt_history_for_dependents(dependents, "The system will now be able to send an SMS to this monitoree's head of household
             #{patient.primary_telephone}, because the head of household re-enabled communications with Sara Alert by sending a START
             keyword to #{sara_number}.")
