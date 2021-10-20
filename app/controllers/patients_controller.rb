@@ -95,6 +95,9 @@ class PatientsController < ApplicationController
 
     @patient = Patient.new(parent.attributes.slice(*group_member_subset.map(&:to_s)))
 
+    # Set the contact name to the HoH name if the HoH has contact type "Self"
+    @patient.contact_name = "#{parent.first_name} #{parent.last_name}" if parent.contact_type == 'Self'
+
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
