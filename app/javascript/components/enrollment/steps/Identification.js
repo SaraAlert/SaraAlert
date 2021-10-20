@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, Form } from 'react-bootstrap';
 import Select from 'react-select';
+import ReactTooltip from 'react-tooltip';
 import { bootstrapSelectTheme, cursorPointerStyleLg } from '../../../packs/stylesheets/ReactSelectStyling';
 
 import _ from 'lodash';
@@ -304,15 +305,26 @@ class Identification extends React.Component {
                   <Form.Label htmlFor="workflow-select" className="input-label">
                     WORKFLOW *
                   </Form.Label>
-                  <Select
-                    inputId="workflow-select"
-                    styles={cursorPointerStyleLg}
-                    value={this.getWorkflowValue()}
-                    options={WORKFLOW_OPTIONS}
-                    onChange={e => this.handleWorkflowChange(e)}
-                    placeholder=""
-                    theme={theme => bootstrapSelectTheme(theme, 'lg')}
-                  />
+                  <span data-for="disabled-workflow-select" data-tip="">
+                    <Select
+                      inputId="workflow-select"
+                      styles={cursorPointerStyleLg}
+                      value={this.getWorkflowValue()}
+                      options={WORKFLOW_OPTIONS}
+                      onChange={e => this.handleWorkflowChange(e)}
+                      placeholder=""
+                      theme={theme => bootstrapSelectTheme(theme, 'lg')}
+                      isDisabled={this.props.edit_mode}
+                    />
+                  </span>
+                  {this.props.edit_mode && (
+                    <ReactTooltip id="disabled-workflow-select" multiline={true} type="dark" effect="solid" place="top" className="tooltip-container">
+                      <div>
+                        <i>Workflow</i> cannot be directly edited. To change workflow, return to the <i>Monitoree Details</i> page and update the{' '}
+                        <i>Case Status</i> of the monitoree in the <i>Monitoring Actions</i> section.
+                      </div>
+                    </ReactTooltip>
+                  )}
                 </Form.Group>
               </Form.Row>
               <Form.Row>
@@ -644,6 +656,7 @@ Identification.propTypes = {
   next: PropTypes.func,
   setEnrollmentState: PropTypes.func,
   authenticity_token: PropTypes.string,
+  edit_mode: PropTypes.bool,
 };
 
 export default Identification;
