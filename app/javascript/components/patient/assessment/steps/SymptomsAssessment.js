@@ -5,6 +5,7 @@ import _ from 'lodash';
 import confirmDialog from '../../../util/ConfirmDialog';
 import DateInput from '../../../util/DateInput';
 import moment from 'moment';
+import InfoTooltip from '../../../util/InfoTooltip';
 
 class SymptomsAssessment extends React.Component {
   constructor(props) {
@@ -219,7 +220,7 @@ class SymptomsAssessment extends React.Component {
 
   handleDateChange = newDate => {
     let report = this.state.reportState;
-    report.reported_at = newDate;
+    report.reported_at = moment.utc(newDate).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z');
     this.setState({ reportState: report });
   };
 
@@ -274,6 +275,7 @@ class SymptomsAssessment extends React.Component {
                   ariaLabel="Assessment Reported Date Input"
                   showTime={true}
                 />
+                <InfoTooltip tooltipTextKey={'reportedAtTime'} />
               </Form.Row>
             </Form.Group>
           )}

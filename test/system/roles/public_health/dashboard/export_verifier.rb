@@ -173,7 +173,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
             .includes(assessments: [{ reported_condition: :symptoms }])
             .find_each do |patient|
               patient.assessments.find_each do |assessment|
-                assessment_summary_arr = %i[patient_id symptomatic who_reported created_at updated_at].map { |field| assessment[field] }
+                assessment_summary_arr = %i[patient_id symptomatic who_reported reported_at created_at updated_at].map { |field| assessment[field] }
                 symptoms_hash = assessment.reported_condition.symptoms.map { |symptom| [symptom[:label], symptom.value] }.to_h
                 symptoms_arr = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s || '' }
                 assessment_summary_arr.concat(symptoms_arr).each_with_index do |value, col|

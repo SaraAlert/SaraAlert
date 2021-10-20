@@ -218,9 +218,15 @@ class AssessmentsController < ApplicationController
       old_reporter = assessment.who_reported
       # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
       assessment.who_reported = current_user.email
+
       old_reported_at = assessment.reported_at
-      assessment.reported_at = DateTime.strptime(params[:reported_at], '%Y-%m-%d %H:%M') unless params.permit(:reported_at)[:reported_at].nil?
-      reported_at_changed = old_reported_at != assessment.reported_at
+
+      if params.permit(:reported_at)[:reported_at].present?
+        # Parse as a Time object first to capture timezone for history comment formatting
+        rep_time = Time.strptime(params[:reported_at], '%Y-%m-%d %H:%M %z')
+        assessment.reported_at = DateTime.strptime(params[:reported_at], '%Y-%m-%d %H:%M %z')
+      end
+      reported_at_changed = (old_reported_at - assessment.reported_at).abs >= 1
 
       # Attempt to save and continue; else if failed redirect to index
       return unless assessment.save
@@ -228,8 +234,9 @@ class AssessmentsController < ApplicationController
       comment = 'User edited an existing report (ID: ' + assessment.id.to_s + ').'
       if delta.any? || reported_at_changed
         if reported_at_changed
-          comment += " Reported at update: #{old_reported_at.in_time_zone(patient.time_zone).strftime('%m/%d/%Y %H:%M %Z')}"\
-                     " to #{assessment.reported_at.in_time_zone(patient.time_zone).strftime('%m/%d/%Y %H:%M %Z')}."
+          # Use timezone from update request to format time in the User's timezone
+          comment += " Reported at update: #{old_reported_at.to_time.getlocal(rep_time.strftime('%:z')).strftime('%m/%d/%Y %H:%M')} #{rep_time.zone}"\
+                     " to #{rep_time.strftime('%m/%d/%Y %H:%M %Z')}."
         end
         comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
         comment += " Reporter update: (\"#{old_reporter}\" to \"#{current_user.email}\")." unless old_reporter == current_user.email

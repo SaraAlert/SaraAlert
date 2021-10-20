@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
-import TimePicker from 'react-time-picker';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import { formatTimestamp } from '../../utils/DateTime';
@@ -146,7 +145,6 @@ class DateInput extends React.Component {
                   isInvalid={this.props.isInvalid}
                 />
               }
-              customTimeInput={<TimePicker format={'HH:mm'} disableClock clearIcon={null} />}
               disabled={this.props.disabled}
             />
           </div>

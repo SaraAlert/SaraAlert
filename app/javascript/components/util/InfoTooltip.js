@@ -257,6 +257,8 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  reportedAtTime: <div>Please enter time in a 24-hour format (e.g. 13:00).</div>,
+
   /* LAB RESULTS */
   labResults: (
     <div>
