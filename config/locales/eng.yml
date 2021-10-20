@@ -1,5 +1,6 @@
 eng:
   assessments:
+    dir: 'ltr'
     html:
       shared:
         email: 'Email'

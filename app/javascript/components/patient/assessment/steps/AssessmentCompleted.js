@@ -11,14 +11,14 @@ class AssessmentCompleted extends React.Component {
 
   render() {
     return (
-      <Card className="mx-0 card-square align-item-center">
+      <Card className="mx-0 card-square align-item-center" dir={this.props.translations[`${this.props.lang}`]['dir'] || 'ltr'}>
         <Card.Header className="text-center h4">{this.props.translations[`${this.props.lang}`]['html']['weblink']['title']}</Card.Header>
         <Card.Body className="text-center">
           <Form.Label className="text-center pt-1">
             <b>{this.props.translations[`${this.props.lang}`]['html']['weblink']['thank_you']}</b>
           </Form.Label>
           <br />
-          <Form.Label className="text-left pt-1">
+          <Form.Label className={`text-${this.props.translations[`${this.props.lang}`]['dir'] === 'rtl' ? 'right' : 'left'} pt-1`}>
             <br />• {this.props.translations[`${this.props.lang}`]['html']['weblink']['instruction1']}
             <br />
             <br />• {this.props.translations[`${this.props.lang}`]['html']['weblink']['instruction2']}
