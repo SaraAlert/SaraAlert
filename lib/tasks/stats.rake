@@ -659,10 +659,10 @@ namespace :stats do
         exposure: active_exp.where(primary_language: 'rus').count,
         isolation: active_iso.where(primary_language: 'rus').count
       }
-      # results[title]['Preferred Language - Arabic'] = {
-      #   exposure: active_exp.where(primary_language: 'ara').count,
-      #   isolation: active_iso.where(primary_language: 'ara').count
-      # }
+      results[title]['Preferred Language - Arabic'] = {
+        exposure: active_exp.where(primary_language: 'ara').count,
+        isolation: active_iso.where(primary_language: 'ara').count
+      }
       results[title]['Preferred Language - Chinese'] = {
         exposure: active_exp.where(primary_language: 'zho').count,
         isolation: active_iso.where(primary_language: 'zho').count
