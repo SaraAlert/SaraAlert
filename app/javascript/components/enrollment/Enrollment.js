@@ -185,8 +185,12 @@ class Enrollment extends React.Component {
     let delta = this.state.enrollmentState.patient.isolation && 4 === index ? 2 : 1; // number of enrollment steps to skip (1 unless in isolation skipping exposure info on initial enrollment)
     let maxIndex = this.state.enrollmentState.patient.isolation ? 7 : 6; // max number of enrollment steps in the carosel (6 for exposure and 7 for isolation)
 
+    // If we are reviewing, then workflow must have changed
+    const workflowChange = this.state.review_mode && lastIndex !== maxIndex;
+
     if (lastIndex) {
-      this.setState({ index: lastIndex, lastIndex: null });
+      // If workflow has changed, route to the respective workflow specific page before review
+      this.setState({ index: workflowChange ? maxIndex - 1 : lastIndex, lastIndex: null });
     } else {
       this.setState({
         direction: 'next',
@@ -229,6 +233,7 @@ class Enrollment extends React.Component {
             <Identification
               goto={this.goto}
               next={this.next}
+              edit_mode={this.props.edit_mode}
               setEnrollmentState={this.setEnrollmentState}
               currentState={this.state.enrollmentState}
               race_options={this.props.race_options}
