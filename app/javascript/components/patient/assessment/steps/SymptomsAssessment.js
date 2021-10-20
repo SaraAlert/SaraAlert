@@ -169,6 +169,10 @@ class SymptomsAssessment extends React.Component {
     symp.value = symp.value === true;
     let noSymptomsChecked = this.state.noSymptomsCheckbox;
 
+    const translated_name = this.props.translations[this.props.lang]['symptoms'][symp.name]?.name;
+    const translated_notes = this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes;
+    const dir = this.props.translations[this.props.lang]['dir'] || 'ltr';
+
     return (
       <Form.Check
         type="checkbox"
@@ -179,10 +183,7 @@ class SymptomsAssessment extends React.Component {
         aria-label={`${symp.name} Symptom Check`}
         label={
           <div>
-            <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]?.name || symp.name}</b>{' '}
-            {this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes
-              ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes
-              : ''}
+            <b dir={translated_name ? dir : 'ltr'}>{translated_name || symp.name}</b> <span dir={translated_notes ? dir : 'ltr'}>{translated_notes}</span>
           </div>
         }
         className="pb-2"
@@ -217,13 +218,13 @@ class SymptomsAssessment extends React.Component {
   intOrFloatSymptom = symp => {
     const key = `key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
     const id = `${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
+    const translated_name = this.props.translations[this.props.lang]['symptoms'][symp.name]?.name;
+    const translated_notes = this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes;
+    const dir = this.props.translations[this.props.lang]['dir'] || 'ltr';
     return (
       <Form.Row className="pt-3" key={key}>
         <Form.Label className="input-label" key={key + '_label'} htmlFor={id}>
-          <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]?.name || symp.name}</b>{' '}
-          {this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes
-            ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes
-            : ''}
+          <b dir={translated_name ? dir : 'ltr'}>{translated_name || symp.name}</b> <span dir={translated_notes ? dir : 'ltr'}>{translated_notes}</span>
         </Form.Label>
         {symp.type === 'IntegerSymptom' && this.integerSymptom(symp)}
         {symp.type === 'FloatSymptom' && this.floatSymptom(symp)}

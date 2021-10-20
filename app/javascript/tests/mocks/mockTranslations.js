@@ -1,5 +1,6 @@
 const mockTranslations = {
   eng: {
+    dir: 'ltr',
     html: {
       shared: {
         email: 'Email',
@@ -155,6 +156,7 @@ const mockTranslations = {
     },
   },
   spa: {
+    dir: 'ltr',
     html: {
       shared: {
         email: 'Correo electrónico',
@@ -309,6 +311,7 @@ const mockTranslations = {
     },
   },
   'spa-pr': {
+    dir: 'ltr',
     html: {
       shared: {
         email: 'Correo electrónico',
@@ -464,6 +467,7 @@ const mockTranslations = {
     },
   },
   fra: {
+    dir: 'ltr',
     html: {
       shared: {
         email: 'Courriel',
@@ -621,6 +625,7 @@ const mockTranslations = {
     },
   },
   som: {
+    dir: 'ltr',
     html: {
       shared: {
         email: 'Email',
@@ -777,6 +782,7 @@ const mockTranslations = {
     },
   },
   kor: {
+    dir: 'ltr',
     html: {
       shared: {
         email: '전자 메일',
@@ -931,6 +937,7 @@ const mockTranslations = {
     },
   },
   vie: {
+    dir: 'ltr',
     html: {
       shared: {
         email: 'Email',
@@ -1088,6 +1095,7 @@ const mockTranslations = {
     },
   },
   rus: {
+    dir: 'ltr',
     html: {
       shared: {
         email: 'Электронная почта',
@@ -1253,6 +1261,7 @@ const mockTranslations = {
     },
   },
   ara: {
+    dir: 'rtl',
     html: {
       shared: {
         email: 'البريد الإلكتروني',
@@ -1278,7 +1287,7 @@ const mockTranslations = {
             'تم إنشاؤه بواسطة نظام Sara Alert وهو فريد ومخصص لك فقط. إذا كنت ترغب في التوقف عن تلقي هذه الإخطارات أو تعتقد أنه كان خطأ، يرجى الاتصال بقسم الصحة العامة المحلي. للخصوصية ومزيد من المعلومات، قم بزيارة saraalert.org.',
         },
         enrollment: {
-          subject: 'تسجيل Sara Alert',
+          subject: 'سجيل Sara Alert',
           header: 'مرحبًا بك في نظام تنبيه سارة',
           info1:
             'لقد تم تسجيلك في نظام مراقبة Sara Alert. نطلب منك تقديم تقارير يومية عن حالتك. ما عليك سوى النقر فوق الزر أدناه واتباع التعليمات التي تظهر على الشاشة.',
@@ -1352,7 +1361,7 @@ const mockTranslations = {
       },
       fever: {
         name: 'حمى',
-        notes: 'قياس درجة الحرارة يساوي أو يزيد ١100.4°F/38°C.٤ درجة فهرنهايت/٣٨ درجة مئوية',
+        notes: 'حمى قياس درجة الحرارة يساوي أو يزيد ١100.4°F/38°C.٤ درجة فهرنهايت/٣٨ درجة مئوية',
       },
       headache: {
         name: 'صداع',
@@ -1371,7 +1380,7 @@ const mockTranslations = {
       },
       'pulse-ox': {
         name: 'مقياس التأكسج النبضي',
-        notes: 'ما هو أقل مستوى أكسجين لديك في ال 24 ساعة الماضية؟',
+        notes: 'ما هو أقل مستوى أكسجين لديك في ال 24 ساعة الماضية؟',
       },
       'repeated-shaking-with-chills': {
         name: 'قشعريرة',
@@ -1388,7 +1397,7 @@ const mockTranslations = {
       },
       'used-a-fever-reducer': {
         name: 'أستخدمت مخفض الحمى',
-        notes: 'في ال 24 ساعة الماضية، هل استعملت أي دواء يقلل من الحمى؟',
+        notes: 'في ال 24 ساعة الماضية، هل استعملت أي دواء يقلل من الحمى؟',
       },
       other: {
         name: 'أخرى',
@@ -1406,6 +1415,7 @@ const mockTranslations = {
     },
   },
   zho: {
+    dir: 'ltr',
     html: {
       shared: {
         email: '电子邮件',
