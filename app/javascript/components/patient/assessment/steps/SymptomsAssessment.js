@@ -275,7 +275,9 @@ class SymptomsAssessment extends React.Component {
                   ariaLabel="Assessment Reported Date Input"
                   showTime={true}
                 />
-                <InfoTooltip tooltipTextKey={'reportedAtTime'} />
+                <div className="pt-1 pl-1">
+                  <InfoTooltip tooltipTextKey={'reportedAtTime'} />
+                </div>
               </Form.Row>
             </Form.Group>
           )}
