@@ -8,6 +8,8 @@ class AddReportedAtToAssessments < ActiveRecord::Migration[6.1]
       execute 'update assessments set reported_at=created_at'
     end
 
+    add_index :assessments, :reported_at
+
     ActiveRecord::Base.record_timestamps = true
   end
 end

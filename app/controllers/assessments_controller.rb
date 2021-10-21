@@ -145,9 +145,9 @@ class AssessmentsController < ApplicationController
       # Determine if a user created this assessment or a monitoree
       @assessment.who_reported = current_user.nil? ? 'Monitoree' : current_user.email
 
-      @assessment.reported_at = DateTime.strptime(params[:reported_at], '%Y-%m-%d %H:%M') unless params.permit(:reported_at)[:reported_at].nil?
-
       begin
+        @assessment.reported_at = DateTime.strptime(params[:reported_at], '%Y-%m-%d %H:%M') unless params.permit(:reported_at)[:reported_at].nil?
+
         reported_condition.transaction do
           reported_condition.save!
 
@@ -160,6 +160,11 @@ class AssessmentsController < ApplicationController
           "Error: #{e}"
         )
         return render json: { error: 'Assessment was unable to be saved.' }, status: :bad_request
+      rescue Date::Error => e
+        Rails.logger.info(
+          "AssessmentsController: Invalid date received for assessment.reported_at for patient ID: #{patient.id}. Error: #{e}"
+        )
+        return render json: { error: 'Assessment was unable to be saved due to invalid Report Date.' }, status: :bad_request
       end
 
       # Save a new receipt and clear out any older ones
@@ -223,8 +228,15 @@ class AssessmentsController < ApplicationController
 
       if params.permit(:reported_at)[:reported_at].present?
         # Parse as a Time object first to capture timezone for history comment formatting
-        rep_time = Time.strptime(params[:reported_at], '%Y-%m-%d %H:%M %z')
-        assessment.reported_at = DateTime.strptime(params[:reported_at], '%Y-%m-%d %H:%M %z')
+        begin
+          rep_time = Time.strptime(params[:reported_at], '%Y-%m-%d %H:%M %z')
+          assessment.reported_at = rep_time.to_datetime.utc
+        rescue Date::Error => e
+          Rails.logger.info(
+            "AssessmentsController: Invalid date received for assessment.reported_at for patient ID: #{patient.id}. Error: #{e}"
+          )
+          return render json: { error: 'Assessment was unable to be saved due to invalid Report Date.' }, status: :bad_request
+        end
       end
       reported_at_changed = (old_reported_at - assessment.reported_at).abs >= 1
 

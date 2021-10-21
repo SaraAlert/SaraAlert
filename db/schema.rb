@@ -72,6 +72,7 @@ ActiveRecord::Schema.define(version: 2021_10_15_013855) do
     t.datetime "reported_at", precision: 6
     t.index ["created_at"], name: "assessments_index_chain_1"
     t.index ["patient_id", "created_at"], name: "assessments_index_chain_3"
+    t.index ["reported_at"], name: "index_assessments_on_reported_at"
     t.index ["symptomatic", "patient_id", "created_at"], name: "assessments_index_chain_2"
   end
 
