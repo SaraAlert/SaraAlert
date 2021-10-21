@@ -379,7 +379,7 @@ class InfoTooltip extends React.Component {
 
   render() {
     return (
-      <div style={{ display: 'inline' }} className={this.props.className}>
+      <div style={{ display: 'inline' }} className={this.props.customClass}>
         <span data-for={this.customID} data-tip="" className="ml-1">
           <i className="fas fa-question-circle px-0"></i>
         </span>
@@ -400,7 +400,7 @@ InfoTooltip.propTypes = {
   tooltipTextKey: PropTypes.string,
   getCustomText: PropTypes.func,
   location: PropTypes.string, // top, right, bottom, left
-  className: PropTypes.string,
+  customClass: PropTypes.string,
 };
 
 export default InfoTooltip;
