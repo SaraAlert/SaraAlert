@@ -80,25 +80,27 @@ if Rails.env.test? || Rails.env.development?
 
   # Customize the es_PR dictionary
   def customize_es_pr_dictionary(dict)
-    dict.add('Sara')
     dict.add('Alert')
     dict.add('Fahrenheit')
     dict.add('infórmeles')
     dict.add('intentemoslo')
+    dict.add('ltr')
+    dict.add('org')
     dict.add('oxímetro')
     dict.add('recordándole')
+    dict.add('Sara')
     dict.add('saraalert')
-    dict.add('org')
   end
 
 
   # Customize the fr dictionary
   def customize_fr_dictionary(dict)
-    dict.add('Sara')
     dict.add('Alert')
-    dict.add('Other')
-    dict.add('saraalert')
+    dict.add('ltr')
     dict.add('org')
+    dict.add('Other')
+    dict.add('Sara')
+    dict.add('saraalert')
   end
 
 
@@ -112,13 +114,16 @@ if Rails.env.test? || Rails.env.development?
     dict.add('captcha')
     dict.add('code_verifier')
     dict.add('HTTPS')
+    dict.add('ltr')
     dict.add('OAuth')
     dict.add('OAuth2')
+    dict.add('org')
     dict.add('pkce')
     dict.add('pre-authorization')
     dict.add('resource_owner_authenticator')
     dict.add('resource_owner_from_credentials')
     dict.add('S256')
+    dict.add('saraalert')
     dict.add('SMS')
     dict.add('SSL')
     dict.add('UID')
@@ -126,8 +131,6 @@ if Rails.env.test? || Rails.env.development?
     dict.add('uri')
     dict.add('urls')
     dict.add('webpage')
-    dict.add('saraalert')
-    dict.add('org')
   end
 
 
