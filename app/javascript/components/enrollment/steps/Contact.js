@@ -399,7 +399,10 @@ class Contact extends React.Component {
       <Form>
         <Form.Row>
           <Form.Group as={Col} lg="12" controlId={`${prefix}contact_type`}>
-            <Form.Label className="input-label">CONTACT RELATIONSHIP{schema?.fields[`${prefix}contact_type`]?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="input-label">
+              CONTACT RELATIONSHIP{schema?.fields[`${prefix}contact_type`]?._exclusive?.required && ' *'}
+              <InfoTooltip tooltipTextKey="contactRelationship" location="right"></InfoTooltip>
+            </Form.Label>
             <Form.Control
               isInvalid={this.state.errors[`${prefix}contact_type`]}
               as="select"

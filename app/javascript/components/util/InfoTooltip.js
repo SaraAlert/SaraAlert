@@ -68,6 +68,8 @@ const TOOLTIP_TEXT = {
 
   alternateContact: <div>The Alternate Contact will NOT be used by the system for automated symptom reporting</div>,
 
+  contactRelationship: <div>The relationship between the monitoree and the individual who owns this contact information</div>,
+
   /* MONITORING ACTIONS */
   monitoringStatus: (
     <div>
