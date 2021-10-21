@@ -245,11 +245,11 @@ export const advancedFilterOptions = [
   },
   {
     name: 'contact-type',
-    title: 'Contact Type (Multi-select)',
-    description: 'Monitoree primary contact type',
+    title: 'Primary Contact Relationship (Multi-select)',
+    description: 'Monitoree primary contact relationship',
     type: 'multi',
     options: ['Self', 'Parent/Guardian', 'Spouse/Partner', 'Caregiver', 'Healthcare Provide', 'Facility Representative', 'Group Home Manager/Administrator', 'Surrogate/Proxy', 'Other', 'Unknown'],
-    tooltip: 'If multiple Contact Types are selected, records with any of those options as their Primary Contact Type will be returned. Leaving this field blank will not filter out any monitorees.',
+    tooltip: 'If multiple Contact Relationships are selected, records with any of those options as their Primary Contact Relationship will be returned. Leaving this field blank will not filter out any monitorees.',
   },
   {
     name: 'jurisdiction',

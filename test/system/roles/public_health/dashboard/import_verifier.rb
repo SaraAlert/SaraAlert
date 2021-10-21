@@ -77,7 +77,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Monitored Address Line 1', displayed_epi_x_val(row, :monitored_address_line_1), index)
       verify_existence(card, 'Monitored Town/City', displayed_epi_x_val(row, :monitored_address_city), index)
       verify_existence(card, 'Monitored State', normalize_state_field(displayed_epi_x_val(row, :monitored_address_state)), index)
-      verify_existence(card, 'Contact Type', 'Unknown', index)
+      verify_existence(card, 'Contact Relationship', 'Unknown', index)
       verify_existence(card, 'Contact Name', displayed_epi_x_val(row, :contact_name), index)
       verify_existence(card, 'Phone Number 1', displayed_epi_x_val(row, :primary_telephone), index)
       verify_existence(card, 'Phone Number 2', displayed_epi_x_val(row, :secondary_telephone), index)
@@ -108,7 +108,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Monitored Town/City', displayed_saf_val(row, :monitored_address_city), index)
       verify_existence(card, 'Monitored State', normalize_state_field(displayed_saf_val(row, :monitored_address_state)), index)
       verify_existence(card, 'Monitored Zip', displayed_saf_val(row, :monitored_address_zip), index)
-      verify_existence(card, 'Contact Type', displayed_saf_val(row, :contact_type), index)
+      verify_existence(card, 'Contact Relationship', displayed_saf_val(row, :contact_type), index)
       verify_existence(card, 'Contact Name', displayed_saf_val(row, :contact_name), index) unless displayed_saf_val(row, :contact_type) == 'Self'
       verify_existence(card, 'Phone Number 1', displayed_saf_val(row, :primary_telephone), index)
       verify_existence(card, 'Phone Number 2', displayed_saf_val(row, :secondary_telephone), index)

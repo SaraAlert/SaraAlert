@@ -265,14 +265,14 @@ class Patient extends React.Component {
                   </div>
                 )}
                 <div className="item-group">
-                  <div>
-                    <b>Contact Type:</b> <span>{this.props.details.contact_type || '--'}</span>
-                  </div>
                   {this.props.details.contact_type !== 'Self' && (
                     <div>
                       <b>Contact Name:</b> <span>{this.props.details.contact_name || '--'}</span>
                     </div>
                   )}
+                  <div>
+                    <b>Contact Relationship:</b> <span>{this.props.details.contact_type || '--'}</span>
+                  </div>
                   <div>
                     <b>Phone:</b>{' '}
                     <span>{this.props.details.primary_telephone ? `${formatPhoneNumberVisually(this.props.details.primary_telephone)}` : '--'}</span>
@@ -337,14 +337,14 @@ class Patient extends React.Component {
                     </div>
                   )}
                   <div className="item-group">
-                    <div>
-                      <b>Contact Type:</b> <span>{this.props.details.alternate_contact_type || '--'}</span>
-                    </div>
                     {this.props.details.alternate_contact_type !== 'Self' && (
                       <div>
                         <b>Contact Name:</b> <span>{this.props.details.alternate_contact_name || '--'}</span>
                       </div>
                     )}
+                    <div>
+                      <b>Contact Relationship:</b> <span>{this.props.details.alternate_contact_type || '--'}</span>
+                    </div>
                     <div>
                       <b>Phone:</b>{' '}
                       <span>

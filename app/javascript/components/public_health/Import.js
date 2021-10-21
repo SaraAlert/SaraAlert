@@ -280,7 +280,7 @@ class Import extends React.Component {
                         <b>Monitored Zip:</b> {patient.monitored_address_zip}
                       </Col>
                       <Col>
-                        <b>Contact Type:</b> {patient.contact_type || 'Unknown'}
+                        <b>Contact Relationship:</b> {patient.contact_type || 'Unknown'}
                         <br />
                         {patient.contact_type !== 'Self' && (
                           <React.Fragment>

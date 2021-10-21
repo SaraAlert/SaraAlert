@@ -262,7 +262,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     monitored_address_state: { label: 'Monitored Address State', checks: [:state] },
     foreign_monitored_address_state: { label: 'Foreign Monitored Address State', checks: [:state] },
     # contact info
-    contact_type: { label: 'Contact Type', checks: [:enum] },
+    contact_type: { label: 'Contact Relationship', checks: [:enum] },
     contact_name: { label: 'Contact Name', checks: [] },
     preferred_contact_method: { label: 'Preferred Contact Method', checks: [:enum] },
     preferred_contact_time: { label: 'Preferred Contact Time', checks: %i[time] },
@@ -272,7 +272,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     secondary_telephone_type: { label: 'Secondary Telephone Type', checks: [:enum] },
     email: { label: 'Email', checks: [:email] },
     international_telephone: { label: 'International Telephone', checks: [] },
-    alternate_contact_type: { label: 'Alternate Contact Type', checks: [:enum] },
+    alternate_contact_type: { label: 'Alternate Contact Relationship', checks: [:enum] },
     alternate_contact_name: { label: 'Alternate Contact Name', checks: [] },
     alternate_preferred_contact_method: { label: 'Alternate Preferred Contact Method', checks: [:enum] },
     alternate_preferred_contact_time: { label: 'Alternate Preferred Contact Time', checks: [:enum] },

@@ -17,13 +17,13 @@ import { formatName, formatDate, formatRace, convertCommonLanguageCodeToName } f
 const goToMock = jest.fn();
 const identificationLabels = ['DOB', 'Age', 'Language', 'Sara Alert ID', 'State/Local ID', 'CDC ID', 'NNDSS ID', 'Birth Sex', 'Gender Identity', 'Sexual Orientation', 'Race', 'Ethnicity', 'Nationality'];
 const identificationFields = ['date_of_birth', 'age', 'primary_language', 'id', 'user_defined_id_statelocal', 'user_defined_id_cdc', 'user_defined_id_nndss', 'sex', 'gender_identity', 'sexual_orientation', 'race', 'ethnicity', 'nationality'];
-const contactLabels = ['Contact Type', 'Contact Name', 'Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Reporting Method'];
-const contactFields = ['contact_type', 'contact_name', 'primary_telephone', 'preferred_contact_time', 'primary_telephone_type', 'email', 'preferred_contact_method'];
+const contactLabels = ['Contact Name', 'Contact Relationship', 'Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Reporting Method'];
+const contactFields = ['contact_name', 'contact_type', 'primary_telephone', 'preferred_contact_time', 'primary_telephone_type', 'email', 'preferred_contact_method'];
 const selfContactLabels = _.filter(contactLabels, l => l !== 'Contact Name');
 const selfContactFields = _.filter(contactFields, l => l !== 'contact_name');
 const secondaryContactLabels = ['Secondary Phone', 'Secondary Phone Type', 'International Phone'];
 const secondaryContactFields = ['secondary_telephone', 'secondary_telephone_type', 'international_telephone'];
-const alternateContactLabels = ['Contact Type', 'Contact Name', 'Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Contact Method'];
+const alternateContactLabels = ['Contact Name', 'Contact Relationship', 'Phone', 'Preferred Contact Time', 'Primary Telephone Type', 'Email', 'Preferred Contact Method'];
 const alternateContactFields = contactFields.map(field => `alternate_${field}`);
 const alternateSecondaryContactLabels = secondaryContactLabels;
 const alternateSecondaryContactFields = secondaryContactFields.map(field => `alternate_${field}`);

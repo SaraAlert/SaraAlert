@@ -92,9 +92,9 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                'Vaccine 1 Dose Number', 'Vaccine 1 Notes', 'Vaccine 2 Group Name', 'Vaccine 2 Product Name', 'Vaccine 2 Administration Date',
                                'Vaccine 2 Dose Number', 'Vaccine 2 Notes', 'Follow-Up Reason', 'Follow-Up Note', 'Vaccine 3 Group Name',
                                'Vaccine 3 Product Name', 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes',
-                               'International Telephone', 'Primary Contact Type', 'Primary Contact Name', 'Alternate Contact Type', 'Alternate Contact Name',
-                               'Alternate Preferred Contact Method', 'Alternate Preferred Contact Time', 'Alternate Primary Telephone',
-                               'Alternate Primary Telephone Type', 'Alternate Secondary Telephone',
+                               'International Telephone', 'Primary Contact Relationship', 'Primary Contact Name', 'Alternate Contact Relationship',
+                               'Alternate Contact Name', 'Alternate Preferred Contact Method', 'Alternate Preferred Contact Time',
+                               'Alternate Primary Telephone', 'Alternate Primary Telephone Type', 'Alternate Secondary Telephone',
                                'Alternate Secondary Telephone Type', 'Alternate International Telephone', 'Alternate Email'].freeze
 
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
@@ -223,7 +223,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     foreign_monitored_address_zip: 'Foreign Monitored Address Zip',
     foreign_monitored_address_county: 'Foreign Monitored Address County',
     # Enrollment Info - Contact Information
-    contact_type: 'Contact Type',
+    contact_type: 'Contact Relationship',
     contact_name: 'Contact Name',
     preferred_contact_method: 'Preferred Contact Method',
     preferred_contact_time: 'Preferred Contact Time',
@@ -233,7 +233,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     secondary_telephone_type: 'Secondary Telephone Type',
     international_telephone: 'International Telephone',
     email: 'Email',
-    alternate_contact_type: 'Alternate Contact Type',
+    alternate_contact_type: 'Alternate Contact Relationship',
     alternate_contact_name: 'Alternate Contact Name',
     alternate_preferred_contact_method: 'Alternate Preferred Contact Method',
     alternate_preferred_contact_time: 'Alternate Preferred Contact Time',
