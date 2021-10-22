@@ -69,14 +69,14 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     page.assert_text('Please provide an Email or change Preferred Reporting Method')
     page.assert_text('Please confirm Email')
     page.assert_no_text('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
-    fill_in 'email', with: 'email@eample.com'
+    fill_in 'email', with: 'email@example.com'
     click_on 'Next'
     page.assert_no_text('Please provide an Email or change Preferred Reporting Method')
-    page.assert_text('Please confirm Email')
+    page.assert_text('Confirm Email must match')
     page.assert_no_text('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
     @@enrollment_form.populate_enrollment_step(:contact_information, contact_information)
     page.assert_no_text('Please provide an Email or change Preferred Reporting Method')
-    page.assert_no_text('Please confirm Email')
+    page.assert_no_text('Confirm Email must match')
     page.assert_no_text('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
   end
 

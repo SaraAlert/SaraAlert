@@ -177,7 +177,7 @@ export const advancedFilterOptions = [
   {
     name: 'preferred-contact-method',
     title: 'Preferred Reporting Method (Select)',
-    description: 'Monitorees preferred reporting method',
+    description: 'Monitoree preferred reporting method',
     type: 'select',
     options: ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', ''],
   },
@@ -242,6 +242,14 @@ export const advancedFilterOptions = [
     options: [], // Populated asynchronously in the AdvancedFilter component
     tooltip:
       'If multiple Assigned Users are selected, records assigned to any of those users will be returned. Only Assigned User values currently listed in a record are selectable. Leaving this field blank will not filter out any monitorees.',
+  },
+  {
+    name: 'contact-type',
+    title: 'Primary Contact Relationship (Multi-select)',
+    description: 'Monitoree primary contact relationship',
+    type: 'multi',
+    options: ['Self', 'Parent/Guardian', 'Spouse/Partner', 'Caregiver', 'Healthcare Provide', 'Facility Representative', 'Group Home Manager/Administrator', 'Surrogate/Proxy', 'Other', 'Unknown'],
+    tooltip: 'If multiple Contact Relationships are selected, records with any of those options as their Primary Contact Relationship will be returned. Leaving this field blank will not filter out any monitorees.',
   },
   {
     name: 'jurisdiction',

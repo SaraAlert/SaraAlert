@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 /** import existing util methods already used in the application */
-import { formatName, formatNameAlt, formatRace, formatPhoneNumberVisually } from '../utils/PatientFormatters';
+import { formatName, formatNameAlt, formatRace, formatPhoneNumberVisually, isMinor } from '../utils/PatientFormatters';
 import { formatTimestamp, formatDate } from '../utils/DateTime';
 import { convertCommonLanguageCodeToName } from '../utils/Languages';
 
@@ -77,20 +77,21 @@ function sortByDescending(patients, field) {
 }
 
 export {
-  formatName,
-  formatNameAlt,
-  formatRace,
-  formatPhoneNumberVisually,
-  formatDate,
-  formatTimestamp,
-  convertCommonLanguageCodeToName,
+  addressFullFormatter,
   addressLine1Formatter,
   addressLine2Formatter,
-  addressFullFormatter,
-  sortByNameAscending,
-  sortByNameDescending,
-  sortByDateAscending,
-  sortByDateDescending,
+  convertCommonLanguageCodeToName,
+  formatDate,
+  formatName,
+  formatNameAlt,
+  formatPhoneNumberVisually,
+  formatRace,
+  formatTimestamp,
+  isMinor,
   sortByAscending,
   sortByDescending,
+  sortByDateAscending,
+  sortByDateDescending,
+  sortByNameAscending,
+  sortByNameDescending,
 };

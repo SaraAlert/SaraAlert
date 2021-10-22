@@ -202,23 +202,17 @@ class Import extends React.Component {
               You can individually accept or reject each record below.
               You can also choose to import all unique records or all records (including duplicates) by clicking the 'Import All' button.`}
             </h5>
-            {this.state.acceptedAllStarted ? (
-              <Button variant="primary" className="btn-lg mt-2" disabled={true}>
-                <i className="fas fa-upload"></i> Import All
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                className="btn-lg mt-2"
-                onClick={() =>
-                  this.handleConfirm(
-                    `This will import all records listed below that you did not manually accept or reject. If potential duplicates have been detected, check the box if you would like to import them.`
-                  )
-                }>
-                <i className="fas fa-upload"></i> Import All
-              </Button>
-            )}
-
+            <Button
+              variant="primary"
+              className="btn-lg mt-2"
+              disabled={this.state.acceptedAllStarted}
+              onClick={() =>
+                this.handleConfirm(
+                  `This will import all records listed below that you did not manually accept or reject. If potential duplicates have been detected, check the box if you would like to import them.`
+                )
+              }>
+              <i className="fas fa-upload"></i> Import All
+            </Button>
             {this.state.acceptedAllStarted && (
               <Button variant="danger" className="btn-lg mt-2 ml-2" onClick={() => this.stopImport('Stop Import')}>
                 <i className="fas fa-hand-paper"></i> Stop Import
@@ -286,6 +280,14 @@ class Import extends React.Component {
                         <b>Monitored Zip:</b> {patient.monitored_address_zip}
                       </Col>
                       <Col>
+                        <b>Contact Relationship:</b> {patient.contact_type || 'Unknown'}
+                        <br />
+                        {patient.contact_type !== 'Self' && (
+                          <React.Fragment>
+                            <b>Contact Name:</b> {patient.contact_name}
+                            <br />
+                          </React.Fragment>
+                        )}
                         <b>Phone Number 1:</b> {formatPhoneNumberVisually(patient.primary_telephone)}
                         <br />
                         <b>Phone Number 2:</b> {formatPhoneNumberVisually(patient.secondary_telephone)}

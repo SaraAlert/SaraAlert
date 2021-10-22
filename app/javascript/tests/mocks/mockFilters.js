@@ -49,6 +49,15 @@ const mockFilterAssignedUser = {
   value: [],
 };
 
+const mockFilterContactType = {
+  additionalFilterOption: null,
+  dateOption: null,
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'contact-type'),
+  numberOption: null,
+  relativeOption: null,
+  value: [],
+};
+
 const mockFilterJurisdiction = {
   additionalFilterOption: null,
   dateOption: null,
@@ -268,6 +277,7 @@ export {
   mockFilterAddressForeign,
   mockFilterLabResults,
   mockFilterAssignedUser,
+  mockFilterContactType,
   mockFilterJurisdiction,
   mockFilter1,
   mockFilter2,
