@@ -64,12 +64,12 @@ describe('MonitoringStatus', () => {
     // renders modal body
     expect(wrapper.find(Modal.Body).find('p').text()).toContain(`Are you sure you want to change monitoring status to "Not Monitoring"?`);
     expect(wrapper.find(Modal.Body).find('p').find('b').text()).toEqual(' This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.');
-    expect(wrapper.find('#monitoring_reason').exists()).toBe(true);
-    expect(wrapper.find('#monitoring_reason').find('option').length).toEqual(mockMonitoringReasons.length + 1); // the +1 is for the extra blank
+    expect(wrapper.find({ controlId: 'monitoring_reason' }).exists()).toBe(true);
+    expect(wrapper.find({ controlId: 'monitoring_reason' }).find('option').length).toEqual(mockMonitoringReasons.length + 1); // the +1 is for the extra blank
     [''].concat(mockMonitoringReasons).forEach((value, index) => {
-      expect(wrapper.find('#monitoring_reason').find('option').at(index).text()).toEqual(value);
+      expect(wrapper.find({ controlId: 'monitoring_reason' }).find('option').at(index).text()).toEqual(value);
     });
-    expect(wrapper.find('#reasoning').exists()).toBe(true);
+    expect(wrapper.find({ controlId: 'reasoning' }).exists()).toBe(true);
 
     // sets state
     expect(wrapper.state('showMonitoringStatusModal')).toBe(true);
@@ -85,7 +85,7 @@ describe('MonitoringStatus', () => {
     expect(wrapper.find(Modal.Body).find('p').text()).toContain(`Are you sure you want to change monitoring status to "Actively Monitoring"?`);
     expect(wrapper.find(Modal.Body).find('p').find('b').text()).toEqual(' This will move the selected record(s) from the Closed line list to the appropriate Active Monitoring line list.');
     expect(wrapper.find('#monitoring_reason').exists()).toBe(false);
-    expect(wrapper.find('#reasoning').exists()).toBe(true);
+    expect(wrapper.find({ controlId: 'reasoning' }).exists()).toBe(true);
     expect(wrapper.find('.update-dependent-lde').exists()).toBe(false);
 
     // sets state
@@ -170,7 +170,10 @@ describe('MonitoringStatus', () => {
     // test changing to each enabled monitoring option
     mockMonitoringReasons.shift();
     mockMonitoringReasons.forEach(value => {
-      wrapper.find('#monitoring_reason').simulate('change', { target: { id: 'monitoring_reason', value: value } });
+      wrapper
+        .find({ controlId: 'monitoring_reason' })
+        .find(Form.Control)
+        .simulate('change', { target: { id: 'monitoring_reason', value: value } });
       expect(wrapper.state('monitoring_reason')).toEqual(value);
       expect(wrapper.state('monitoring')).toBe(false);
       expect(wrapper.state('monitoring_status')).toEqual('Not Monitoring');
@@ -181,8 +184,11 @@ describe('MonitoringStatus', () => {
     const wrapper = getShallowWrapper(mockPatient3);
     const handleChangeSpy = jest.spyOn(wrapper.instance(), 'handleChange');
     wrapper.find('#monitoring_status').simulate('change', { target: { id: 'monitoring_status', value: 'Actively Monitoring' } });
-    expect(wrapper.find('#reasoning').exists()).toBe(true);
-    wrapper.find('#reasoning').simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
+    expect(wrapper.find({ controlId: 'reasoning' }).exists()).toBe(true);
+    wrapper
+      .find({ controlId: 'reasoning' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
     expect(handleChangeSpy).toHaveBeenCalled();
     expect(wrapper.state('reasoning')).toEqual('insert reasoning text here');
   });
