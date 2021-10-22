@@ -412,8 +412,8 @@ namespace :demo do
       if rand < 0.4 # populate alternate contact info sometimes
         patient[:alternate_contact_type] = ValidationHelper::VALID_PATIENT_ENUMS[:alternate_contact_type].sample
         patient[:alternate_contact_name] = Faker::Name.name unless patient[:alternate_contact_type] == 'Self'
-        patient[:preferred_contact_method] = ValidationHelper::VALID_PATIENT_ENUMS[:alternate_preferred_contact_method].sample
-        patient[:preferred_contact_time] = ValidationHelper::VALID_PATIENT_ENUMS[:alternate_preferred_contact_time].sample
+        patient[:alternate_preferred_contact_method] = ValidationHelper::VALID_PATIENT_ENUMS[:alternate_preferred_contact_method].sample
+        patient[:alternate_preferred_contact_time] = ValidationHelper::VALID_PATIENT_ENUMS[:alternate_preferred_contact_time].sample
         patient[:alternate_primary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:alternate_preferred_contact_method] != 'E-mailed Web Link' || rand < 0.5
         patient[:alternate_primary_telephone_type] = ValidationHelper::VALID_PATIENT_ENUMS[:alternate_primary_telephone_type].sample if patient[:alternate_primary_telephone]
         patient[:alternate_secondary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:alternate_primary_telephone] && rand < 0.5

@@ -99,7 +99,7 @@ class Enrollment extends React.Component {
       : Object.keys(this.state.enrollmentState.patient);
 
     let data = new Object({
-      patient: this.props.parent_id ? this.state.enrollmentState.patient : _.pick(this.state.enrollmentState.patient, diffKeys),
+      patient: this.props.hoh_id ? this.state.enrollmentState.patient : _.pick(this.state.enrollmentState.patient, diffKeys),
       propagated_fields: this.state.enrollmentState.propagatedFields,
     });
 
@@ -117,8 +117,8 @@ class Enrollment extends React.Component {
       : data.patient.alternate_secondary_telephone;
 
     const message = this.props.edit_mode ? 'Monitoree Successfully Updated.' : 'Monitoree Successfully Saved.';
-    if (this.props.parent_id) {
-      data['responder_id'] = this.props.parent_id;
+    if (this.props.hoh_id) {
+      data['responder_id'] = this.props.hoh_id;
     }
     if (this.props.cc_id) {
       data['cc_id'] = this.props.cc_id;
@@ -347,7 +347,7 @@ Enrollment.propTypes = {
   edit_mode: PropTypes.bool,
   enrollment_step: PropTypes.number,
   race_options: PropTypes.object,
-  parent_id: PropTypes.number,
+  hoh_id: PropTypes.number,
   cc_id: PropTypes.number,
   can_add_group: PropTypes.bool,
   has_dependents: PropTypes.bool,

@@ -85,23 +85,23 @@ class PatientsController < ApplicationController
 
     @title = 'Enroll Household Member'
 
-    # Find the parent subject
-    parent = current_user.get_patient(params.permit(:id)[:id])
+    # Find the hoh
+    hoh = current_user.get_patient(params.permit(:id)[:id])
 
-    # If we failed to find the parent given the id, redirect to index
-    redirect_to(root_url) && return if parent.nil?
+    # If we failed to find the hoh given the id, redirect to index
+    redirect_to(root_url) && return if hoh.nil?
 
-    dashboard_crumb(params.permit(:nav)[:nav], parent)
+    dashboard_crumb(params.permit(:nav)[:nav], hoh)
 
-    @patient = Patient.new(parent.attributes.slice(*group_member_subset.map(&:to_s)))
+    @patient = Patient.new(hoh.attributes.slice(*group_member_subset.map(&:to_s)))
 
     # Set the contact name to the HoH name if the HoH has contact type "Self"
-    @patient.contact_name = "#{parent.first_name} #{parent.last_name}" if parent.contact_type == 'Self'
+    @patient.contact_name = "#{hoh.first_name} #{hoh.last_name}" if hoh.contact_type == 'Self'
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
-    @parent_id = parent.id
+    @hoh_id = hoh.id
   end
 
   # Editing a patient
