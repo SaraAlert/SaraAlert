@@ -893,33 +893,22 @@ class AdvancedFilter extends React.Component {
    * @param {Array} value - Current values selected
    */
   renderMultiStatement = (filter, index, value) => {
-    // let options = [];
-    // if (filter.name === 'jurisdiction') {
-    //   options = filter.options;
-    // } else {
-    //   options = filter.options.map(option => {
-    //     return { value: option, label: option };
-    //   });
-    // }
-
     return (
-      <React.Fragment>
-        <div className="d-flex justify-content-between py-0 my-0">
-          <Select
-            closeMenuOnSelect={false}
-            isMulti
-            value={value}
-            options={filter.options}
-            className="advanced-filter-multi-select w-100"
-            placeholder=""
-            aria-label="Advanced Filter Multi-select Options"
-            onChange={event => {
-              this.changeMultiValue(index, event);
-            }}
-          />
-          {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
-        </div>
-      </React.Fragment>
+      <div className="d-flex justify-content-between py-0 my-0">
+        <Select
+          closeMenuOnSelect={false}
+          isMulti
+          value={value}
+          options={filter.options}
+          className="advanced-filter-multi-select w-100"
+          placeholder=""
+          aria-label="Advanced Filter Multi-select Options"
+          onChange={event => {
+            this.changeMultiValue(index, event);
+          }}
+        />
+        {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
+      </div>
     );
   };
 
