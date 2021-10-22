@@ -1603,6 +1603,48 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
+  test 'validates alternate preferred contact method inclusion in api and import context' do
+    patient = valid_patient
+
+    patient.alternate_preferred_contact_method = 'Unknown'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_preferred_contact_method = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_preferred_contact_method = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_preferred_contact_method = 'foo'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
+  test 'validates alternate preferred contact time inclusion in api and import context' do
+    patient = valid_patient
+
+    patient.alternate_preferred_contact_time = 'Morning'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_preferred_contact_time = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_preferred_contact_time = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_preferred_contact_time = 'foo'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
   test 'validates sex inclusion in api and import context' do
     patient = valid_patient
 
@@ -1619,6 +1661,27 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?(:import)
 
     patient.sex = 'foo'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
+  test 'validates contact_type inclusion in api and import context' do
+    patient = valid_patient
+
+    patient.contact_type = 'Self'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.contact_type = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.contact_type = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.contact_type = 'foo'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
     assert patient.valid?
@@ -1661,6 +1724,69 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?(:import)
 
     patient.secondary_telephone_type = 'foo'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
+  test 'validates alternate_contact_type inclusion in api and import context' do
+    patient = valid_patient
+
+    patient.alternate_contact_type = 'Self'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_contact_type = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_contact_type = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_contact_type = 'foo'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
+  test 'validates alternate_primary_telephone_type inclusion in api and import context' do
+    patient = valid_patient
+
+    patient.alternate_primary_telephone_type = 'Smartphone'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_primary_telephone_type = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_primary_telephone_type = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_primary_telephone_type = 'foo'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
+  test 'validates alternate_secondary_telephone_type inclusion in api and import context' do
+    patient = valid_patient
+
+    patient.alternate_secondary_telephone_type = 'Smartphone'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_secondary_telephone_type = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_secondary_telephone_type = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_secondary_telephone_type = 'foo'
     assert_not patient.valid?(:api)
     assert_not patient.valid?(:import)
     assert patient.valid?
@@ -1921,6 +2047,64 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
+  test 'validates alternate primary phone is a possible phone number in api and import context' do
+    patient = valid_patient
+
+    patient.alternate_primary_telephone = '+15555555555'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_primary_telephone = '+1 555 555 5555'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_primary_telephone = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_primary_telephone = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_primary_telephone = '+1 123 456 7890'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+
+    patient.alternate_primary_telephone = '123'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
+  test 'validates alternate secondary phone is a possible phone number in api and import context' do
+    patient = valid_patient
+
+    patient.alternate_secondary_telephone = '+15555555555'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_secondary_telephone = '+1 555 555 5555'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_secondary_telephone = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_secondary_telephone = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_primary_telephone = '+1 123 456 7890'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+
+    patient.alternate_secondary_telephone = '123'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
   test 'validates date_of_birth is a valid date in api and import context' do
     patient = valid_patient
 
@@ -2145,6 +2329,27 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
+  test 'validates alternate_email is a valid email address in api and import context' do
+    patient = valid_patient
+
+    patient.alternate_email = 'foo@bar.com'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_email = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_email = nil
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_email = 'not@an@email.com'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+  end
+
   test 'validates follow_up_reason is a valid reason in api context' do
     patient = valid_patient
 
@@ -2352,6 +2557,28 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?(:import)
 
     patient.international_telephone = ''
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+  end
+
+  test 'validates alternate_international_telephone in api and import context' do
+    patient = valid_patient
+
+    patient.alternate_international_telephone = 'hello'
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+
+    patient.alternate_international_telephone = 'a' * 51
+    assert_not patient.valid?(:api)
+    assert_not patient.valid?(:import)
+    assert patient.valid?
+
+    patient.alternate_international_telephone = '+222 333 4444'
+    assert patient.valid?(:api)
+    assert patient.valid?(:import)
+
+    patient.alternate_international_telephone = ''
     assert patient.valid?(:api)
     assert patient.valid?(:import)
   end

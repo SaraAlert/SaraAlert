@@ -208,7 +208,19 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       vaccine_3_administration_date: vaccines[2]&.administration_date || '',
       vaccine_3_dose_number: vaccines[2]&.dose_number || '',
       vaccine_3_notes: vaccines[2]&.notes,
-      international_telephone: international_telephone || ''
+      international_telephone: international_telephone || '',
+      contact_type: contact_type || '',
+      contact_name: contact_name || '',
+      alternate_contact_type: alternate_contact_type || '',
+      alternate_contact_name: alternate_contact_name || '',
+      alternate_preferred_contact_method: alternate_preferred_contact_method || '',
+      alternate_preferred_contact_time: alternate_preferred_contact_time || '',
+      alternate_primary_telephone: alternate_primary_telephone || '',
+      alternate_primary_telephone_type: alternate_primary_telephone_type || '',
+      alternate_secondary_telephone: alternate_secondary_telephone || '',
+      alternate_secondary_telephone_type: alternate_secondary_telephone_type || '',
+      alternate_international_telephone: alternate_international_telephone || '',
+      alternate_email: alternate_email || ''
     }
   end
 

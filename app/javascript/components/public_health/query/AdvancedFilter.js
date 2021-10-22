@@ -41,19 +41,27 @@ class AdvancedFilter extends React.Component {
       }
     });
 
-    // Get jurisdiction options for jurisdiction multi-select advanced filter
-    let jurisdictionIndex = advancedFilterOptions.findIndex(x => x.name === 'jurisdiction');
-    let paths = _.toPairs(this.props.jurisdiction_paths).map(([id, path]) => {
-      return { label: path, value: id };
-    });
-    advancedFilterOptions[Number(jurisdictionIndex)].options = paths;
-
-    // Get all assigned user options for assigned user multi-select advanced filter
-    let assignedUsersIndex = advancedFilterOptions.findIndex(x => x.name === 'assigned-user');
-    let allAssignedUsers = _.values(this.props.all_assigned_users).map(assigned_user => {
-      return { value: assigned_user, label: assigned_user };
-    });
-    advancedFilterOptions[Number(assignedUsersIndex)].options = allAssignedUsers;
+    // For each multi type filter, format the options in the way react-select requires
+    advancedFilterOptions
+      .filter(option => option.type === 'multi')
+      .forEach(multiFilter => {
+        const filterIndex = advancedFilterOptions.findIndex(option => option.name === multiFilter.name);
+        let formattedOptions = [];
+        if (multiFilter.name === 'jurisdiction') {
+          formattedOptions = _.toPairs(this.props.jurisdiction_paths).map(([id, path]) => {
+            return { label: path, value: id };
+          });
+        } else if (multiFilter.name === 'assigned-user') {
+          formattedOptions = this.props.all_assigned_users.map(user => {
+            return { value: user, label: user };
+          });
+        } else {
+          formattedOptions = multiFilter.options.map(option => {
+            return { value: option, label: option };
+          });
+        }
+        advancedFilterOptions[Number(filterIndex)].options = formattedOptions;
+      });
 
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
@@ -886,23 +894,21 @@ class AdvancedFilter extends React.Component {
    */
   renderMultiStatement = (filter, index, value) => {
     return (
-      <React.Fragment>
-        <div className="d-flex justify-content-between py-0 my-0">
-          <Select
-            closeMenuOnSelect={false}
-            isMulti
-            value={value}
-            options={filter.options}
-            className="advanced-filter-multi-select w-100"
-            placeholder=""
-            aria-label="Advanced Filter Multi-select Options"
-            onChange={event => {
-              this.changeMultiValue(index, event);
-            }}
-          />
-          {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
-        </div>
-      </React.Fragment>
+      <div className="d-flex justify-content-between py-0 my-0">
+        <Select
+          closeMenuOnSelect={false}
+          isMulti
+          value={value}
+          options={filter.options}
+          className="advanced-filter-multi-select w-100"
+          placeholder=""
+          aria-label="Advanced Filter Multi-select Options"
+          onChange={event => {
+            this.changeMultiValue(index, event);
+          }}
+        />
+        {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
+      </div>
     );
   };
 

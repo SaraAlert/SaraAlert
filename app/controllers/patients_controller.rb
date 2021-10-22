@@ -75,6 +75,7 @@ class PatientsController < ApplicationController
                            contact_of_known_case: !@close_contact.nil?,
                            contact_of_known_case_id: @close_contact.nil? ? '' : @close_contact.patient_id,
                            exposure_notes: @close_contact.nil? ? '' : @close_contact.notes,
+                           contact_type: 'Self',
                            preferred_contact_method: 'Unknown')
   end
 
@@ -84,20 +85,23 @@ class PatientsController < ApplicationController
 
     @title = 'Enroll Household Member'
 
-    # Find the parent subject
-    parent = current_user.get_patient(params.permit(:id)[:id])
+    # Find the hoh
+    hoh = current_user.get_patient(params.permit(:id)[:id])
 
-    # If we failed to find the parent given the id, redirect to index
-    redirect_to(root_url) && return if parent.nil?
+    # If we failed to find the hoh given the id, redirect to index
+    redirect_to(root_url) && return if hoh.nil?
 
-    dashboard_crumb(params.permit(:nav)[:nav], parent)
+    dashboard_crumb(params.permit(:nav)[:nav], hoh)
 
-    @patient = Patient.new(parent.attributes.slice(*group_member_subset.map(&:to_s)))
+    @patient = Patient.new(hoh.attributes.slice(*group_member_subset.map(&:to_s)))
+
+    # Set the contact name to the HoH name if the HoH has contact type "Self"
+    @patient.contact_name = "#{hoh.first_name} #{hoh.last_name}" if hoh.contact_type == 'Self'
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
-    @parent_id = parent.id
+    @hoh_id = hoh.id
   end
 
   # Editing a patient
@@ -158,6 +162,9 @@ class PatientsController < ApplicationController
     # Set the subject jurisdiction to the creator's jurisdiction if jurisdiction is not assigned or not assignable by the current user
     valid_jurisdiction = current_user.jurisdiction.subtree_ids.include?(patient.jurisdiction_id) unless patient.jurisdiction_id.nil?
     patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction
+
+    # If contact type is not set, default to "Unknown"
+    patient.contact_type = 'Unknown' if patient.contact_type.nil?
 
     # Generate submission token for assessments
     patient.submission_token = patient.new_submission_token
@@ -875,6 +882,8 @@ class PatientsController < ApplicationController
       :foreign_monitored_address_line_2,
       :foreign_monitored_address_zip,
       :foreign_monitored_address_county,
+      :contact_type,
+      :contact_name,
       :primary_telephone,
       :primary_telephone_type,
       :secondary_telephone,
@@ -883,6 +892,16 @@ class PatientsController < ApplicationController
       :email,
       :preferred_contact_method,
       :preferred_contact_time,
+      :alternate_contact_type,
+      :alternate_contact_name,
+      :alternate_primary_telephone,
+      :alternate_primary_telephone_type,
+      :alternate_secondary_telephone,
+      :alternate_secondary_telephone_type,
+      :alternate_international_telephone,
+      :alternate_email,
+      :alternate_preferred_contact_method,
+      :alternate_preferred_contact_time,
       :port_of_origin,
       :source_of_report,
       :source_of_report_specify,
@@ -974,6 +993,7 @@ class PatientsController < ApplicationController
       foreign_monitored_address_line_2
       foreign_monitored_address_zip
       foreign_monitored_address_county
+      contact_name
       primary_telephone
       primary_telephone_type
       secondary_telephone

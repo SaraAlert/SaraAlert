@@ -54,6 +54,8 @@ monitoree_2:
     monitored_address_zip: '12345'
     monitored_address_county: 'White Plains'
   contact_information:
+    contact_type: 'Parent/Guardian'
+    contact_name: 'Mama Quitzon99'
     preferred_contact_method: 'SMS Texted Weblink'
     preferred_contact_time: 'Morning'
     primary_telephone: '5555550112'
@@ -63,6 +65,13 @@ monitoree_2:
     international_telephone: '+5086210369803'
     email: 'carey@example.com'
     confirm_email: 'carey@example.com'
+    alternate_contact_type: 'Healthcare Provider'
+    alternate_contact_name: 'Dr. Frankenstein'
+    alternate_preferred_contact_method: 'Email'
+    alternate_preferred_contact_time: 'Evening'
+    alternate_primary_telephone: '5555550333'
+    alternate_email: 'dr.frank@example.com'
+    confirm_alternate_email: 'dr.frank@example.com'
   arrival_information:
     port_of_origin: 'Ushashire'
     date_of_departure: '02/15/2020'
@@ -293,6 +302,8 @@ monitoree_11:
     preferred_contact_time: 'Evening'
     primary_telephone: '5555550118'
     primary_telephone_type: 'Landline'
+    email: 'julian@pats.net'
+    confirm_email: 'julian@pats.net'
   potential_exposure_information:
     last_date_of_exposure: 6
     exposure_risk_assessment: 'Low'
@@ -344,6 +355,7 @@ monitoree_12:
     foreign_monitored_address_zip: '68039'
     foreign_monitored_address_county: 'Lake Bryant'
   contact_information:
+    contact_type: 'Self'
     preferred_contact_method: 'SMS Texted Weblink'
     preferred_contact_time: 'Afternoon'
     primary_telephone: '5555550121'

@@ -142,15 +142,12 @@ class Address extends React.Component {
             <Tabs
               defaultActiveKey={this.state.selectedTab}
               id="patient_address"
-              className="g-border-bottom"
+              className="g-border-bottom mb-3"
               onSelect={() => {
                 this.setState({ selectedTab: this.state.selectedTab === 'domestic' ? 'foreign' : 'domestic' });
               }}>
               <Tab eventKey="domestic" title="Home Address Within USA">
                 <Form>
-                  <Form.Row className="h-100">
-                    <Form.Group as={Col} md={12} className="my-auto"></Form.Group>
-                  </Form.Row>
                   <Form.Row className="pt-4">
                     <Form.Group as={Col} controlId="address_line_1">
                       <Form.Label className="input-label">ADDRESS 1{schemaDomestic?.fields?.address_line_1?._exclusive?.required && ' *'}</Form.Label>
@@ -364,9 +361,6 @@ class Address extends React.Component {
               </Tab>
               <Tab eventKey="foreign" title="Home Address Outside USA (Foreign)">
                 <Form>
-                  <Form.Row className="h-100">
-                    <Form.Group as={Col} md={12} className="my-auto"></Form.Group>
-                  </Form.Row>
                   <Form.Row className="pt-4">
                     <Form.Group as={Col} controlId="foreign_address_line_1">
                       <Form.Label className="input-label">ADDRESS 1{schemaForeign?.fields?.foreign_address_line_1?._exclusive?.required && ' *'}</Form.Label>
