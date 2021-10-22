@@ -291,7 +291,7 @@ class MoveToHousehold extends React.Component {
                     <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
                       <InputGroup.Text className="rounded-0">
                         <i className="fas fa-search"></i>
-                        <label htmlFor="search" className="ml-1 mb-0">
+                        <label htmlFor="search-input" className="ml-1 mb-0">
                           Search
                         </label>
                       </InputGroup.Text>

@@ -150,8 +150,8 @@ describe('CaseStatus', () => {
     expect(wrapper.state('disabled')).toBe(true);
 
     // renders modal elements
-    expect(modalBody.find('p').text()).toEqual('Please select what you would like to do:');
-    expect(modalBody.find('#monitoring_option').exists()).toBe(true);
+    expect(modalBody.find({ controlId: 'monitoring_option' }).find(Form.Label).text()).toEqual('Please select what you would like to do:');
+    expect(modalBody.find({ controlId: 'monitoring_option' }).find(Form.Control).exists()).toBe(true);
     expect(modalBody.find('option').length).toEqual(3);
     monitoringOptionValues.forEach((value, index) => {
       expect(modalBody.find('option').at(index).text()).toEqual(value);
@@ -168,34 +168,41 @@ describe('CaseStatus', () => {
     expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
 
     // change monitoring option to End Monitoring
-    wrapper.find('#monitoring_option').simulate('change', { target: { id: 'monitoring_option', value: 'End Monitoring' }, persist: jest.fn() });
+    wrapper
+      .find({ controlId: 'monitoring_option' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'monitoring_option', value: 'End Monitoring' }, persist: jest.fn() });
     wrapper.update();
     expect(wrapper.state('monitoring_option')).toEqual('End Monitoring');
     expect(wrapper.state('isolation')).toEqual(mockPatient1.isolation);
     expect(wrapper.state('monitoring')).toBe(false);
     expect(wrapper.find(Button).at(1).prop('disabled')).toBe(false);
-    expect(wrapper.find('p').at(1).text()).toEqual('The case status for the selected record will be updated to Confirmed and moved to the closed line list in the current workflow.');
-    expect(wrapper.find('ModalBody').find('p').at(0).text()).toContain('Please select what you would like to do:');
+    expect(wrapper.find('p').text()).toEqual('The case status for the selected record will be updated to Confirmed and moved to the closed line list in the current workflow.');
     const monitoringReasonOptions = [''].concat(mockMonitoringReasons);
     wrapper
-      .find('FormGroup')
-      .at(0)
+      .find({ controlId: 'monitoring_reason' })
       .find('option')
       .forEach((option, index) => {
         expect(option.text()).toEqual(monitoringReasonOptions[Number(index)]);
       });
 
     // change monitoring option to Continue Monitoring in Isolation Workflow
-    wrapper.find('#monitoring_option').simulate('change', { target: { id: 'monitoring_option', value: 'Continue Monitoring in Isolation Workflow' }, persist: jest.fn() });
+    wrapper
+      .find({ controlId: 'monitoring_option' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'monitoring_option', value: 'Continue Monitoring in Isolation Workflow' }, persist: jest.fn() });
     wrapper.update();
     expect(wrapper.state('monitoring_option')).toEqual('Continue Monitoring in Isolation Workflow');
     expect(wrapper.state('isolation')).toBe(true);
     expect(wrapper.state('monitoring')).toBe(true);
     expect(wrapper.find(Button).at(1).prop('disabled')).toBe(false);
-    expect(wrapper.find('p').at(1).text()).toEqual('The case status for the selected record will be updated to Confirmed and moved to the appropriate line list in the Isolation Workflow.');
+    expect(wrapper.find('p').text()).toEqual('The case status for the selected record will be updated to Confirmed and moved to the appropriate line list in the Isolation Workflow.');
 
     // back to initial modal state with monitoring option empty
-    wrapper.find('#monitoring_option').simulate('change', { target: { id: 'monitoring_option', value: '' }, persist: jest.fn() });
+    wrapper
+      .find({ controlId: 'monitoring_option' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'monitoring_option', value: '' }, persist: jest.fn() });
     expect(wrapper.state('monitoring_option')).toEqual('');
     expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
   });
@@ -240,7 +247,10 @@ describe('CaseStatus', () => {
 
     // closes modal
     wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
-    wrapper.find('#monitoring_option').simulate('change', { target: { id: 'monitoring_option', value: 'End Monitoring' }, persist: jest.fn() });
+    wrapper
+      .find({ controlId: 'monitoring_option' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'monitoring_option', value: 'End Monitoring' }, persist: jest.fn() });
     expect(wrapper.find(Modal).exists()).toBe(true);
     wrapper.find(Button).at(0).simulate('click');
     expect(wrapper.find(Modal).exists()).toBe(false);

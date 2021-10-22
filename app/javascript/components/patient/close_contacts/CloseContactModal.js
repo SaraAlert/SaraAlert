@@ -113,7 +113,7 @@ class CloseContactModal extends React.Component {
             <Form.Group as={Col} lg="12" controlId="cc_primary_telephone">
               <Form.Label className="input-label">Phone Number {schema?.fields?.primary_telephone?._exclusive?.required && '*'}</Form.Label>
               <PhoneInput
-                id="primary_telephone"
+                id="cc_primary_telephone"
                 className="form-square"
                 value={this.state.primary_telephone}
                 onChange={this.handlePhoneNumberChange}
