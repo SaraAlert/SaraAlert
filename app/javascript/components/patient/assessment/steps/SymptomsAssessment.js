@@ -280,7 +280,7 @@ class SymptomsAssessment extends React.Component {
             </Form.Group>
           )}
           <Form.Row>
-            <Form.Label className="input-label pb-3">{this.props.translations[this.props.lang]['html']['weblink']['bool-title']}</Form.Label>
+            <Form.Label className="input-label">{this.props.translations[this.props.lang]['html']['weblink']['bool-title']}</Form.Label>
           </Form.Row>
           <Form.Row>
             <Form.Group className="pt-1">
