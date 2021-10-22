@@ -146,7 +146,7 @@ class AssessmentsController < ApplicationController
       @assessment.who_reported = current_user.nil? ? 'Monitoree' : current_user.email
 
       begin
-        @assessment.reported_at = DateTime.strptime(params[:reported_at], '%Y-%m-%d %H:%M') unless params.permit(:reported_at)[:reported_at].nil?
+        @assessment.reported_at = Time.strptime(params[:reported_at], '%Y-%m-%d %H:%M %z') if params.permit(:reported_at)[:reported_at].present?
 
         reported_condition.transaction do
           reported_condition.save!
@@ -162,7 +162,7 @@ class AssessmentsController < ApplicationController
         return render json: { error: 'Assessment was unable to be saved.' }, status: :bad_request
       rescue Date::Error => e
         Rails.logger.info(
-          "AssessmentsController: Invalid date received for assessment.reported_at for patient ID: #{patient.id}. Error: #{e}"
+          "AssessmentsController: Invalid date format received for assessment.reported_at for patient ID: #{patient.id}. Error: #{e}"
         )
         return render json: { error: 'Assessment was unable to be saved due to invalid Report Date.' }, status: :bad_request
       end
@@ -229,11 +229,10 @@ class AssessmentsController < ApplicationController
       if params.permit(:reported_at)[:reported_at].present?
         # Parse as a Time object first to capture timezone for history comment formatting
         begin
-          rep_time = Time.strptime(params[:reported_at], '%Y-%m-%d %H:%M %z')
-          assessment.reported_at = rep_time.to_datetime.utc
+          assessment.reported_at = reported_at = Time.strptime(params[:reported_at], '%Y-%m-%d %H:%M %z')
         rescue Date::Error => e
           Rails.logger.info(
-            "AssessmentsController: Invalid date received for assessment.reported_at for patient ID: #{patient.id}. Error: #{e}"
+            "AssessmentsController: Invalid date format received for assessment.reported_at for patient ID: #{patient.id}. Error: #{e}"
           )
           return render json: { error: 'Assessment was unable to be saved due to invalid Report Date.' }, status: :bad_request
         end
@@ -247,8 +246,8 @@ class AssessmentsController < ApplicationController
       if delta.any? || reported_at_changed
         if reported_at_changed
           # Use timezone from update request to format time in the User's timezone
-          comment += " Reported at update: #{old_reported_at.to_time.getlocal(rep_time.strftime('%:z')).strftime('%m/%d/%Y %H:%M')} #{rep_time.zone}"\
-                     " to #{rep_time.strftime('%m/%d/%Y %H:%M %Z')}."
+          comment += " Reported at update: #{old_reported_at.to_time.getlocal(reported_at.strftime('%:z')).strftime('%m/%d/%Y %H:%M')} #{reported_at.zone}"\
+                     " to #{reported_at.strftime('%m/%d/%Y %H:%M %Z')}."
         end
         comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
         comment += " Reporter update: (\"#{old_reporter}\" to \"#{current_user.email}\")." unless old_reporter == current_user.email
