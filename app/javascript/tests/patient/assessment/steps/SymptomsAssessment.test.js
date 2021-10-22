@@ -5,11 +5,12 @@ import SymptomsAssessment from '../../../../components/patient/assessment/steps/
 import { mockAssessment1, mockAssessment2 } from '../../../mocks/mockAssessments';
 import { mockNewSymptoms, mockSymptoms1, mockSymptoms2 } from '../../../mocks/mockSymptoms';
 import { mockTranslations } from '../../../mocks/mockTranslations';
+import { mockUser1 } from '../../../mocks/mockUsers';
 
 const submitMock = jest.fn();
 
-function getWrapper(assessment, symptoms, idPre) {
-  return shallow(<SymptomsAssessment assessment={assessment} symptoms={symptoms} patient_initials={'AA'} patient_age={39} lang={'eng'} translations={mockTranslations} submit={submitMock} idPre={idPre} />);
+function getWrapper(assessment, symptoms, idPre, user = null) {
+  return shallow(<SymptomsAssessment assessment={assessment} symptoms={symptoms} patient_initials={'AA'} patient_age={39} lang={'eng'} translations={mockTranslations} submit={submitMock} idPre={idPre} current_user={user} />);
 }
 
 afterEach(() => {
@@ -74,6 +75,16 @@ describe('SymptomsAssessment', () => {
     const formControls = wrapper.find(Form.Control);
     expect(formControls.at(0).prop('value')).toEqual(5);
     expect(formControls.at(1).prop('value')).toEqual(1);
+  });
+
+  it('Properly renders Reported At date input when user editing assessment', () => {
+    const wrapper = getWrapper(mockAssessment1, mockSymptoms1, '777', mockUser1);
+    expect(wrapper.find('#reported_at').exists()).toBe(true);
+  });
+
+  it('Does not render Reported At date input when monitoree assessment', () => {
+    const wrapper = getWrapper(mockAssessment1, mockSymptoms1, '777');
+    expect(wrapper.find('#reported_at').exists()).toBe(false);
   });
 
   it('Clicking "I am not experiencing any symptoms" disables all bool symptom checkboxes', () => {

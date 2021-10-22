@@ -1,5 +1,6 @@
 patient_1_assessment_1:
   id: 1001
+  reported_at: <%= 38.days.ago %>
   created_at: <%= 38.days.ago %>
   updated_at: <%= 32.days.ago %>
   patient_id: 1
@@ -7,6 +8,7 @@ patient_1_assessment_1:
   who_reported: 'Monitoree'
 patient_1_assessment_2:
   id: 1002
+  reported_at: <%= 36.days.ago %>
   created_at: <%= 36.days.ago %>
   updated_at: <%= 32.days.ago %>
   patient_id: 1
@@ -14,6 +16,7 @@ patient_1_assessment_2:
   who_reported: 'Monitoree'
 patient_2_assessment_1:
   id: 1003
+  reported_at: <%= 38.days.ago %>
   created_at: <%= 38.days.ago %>
   updated_at: <%= 32.days.ago %>
   patient_id: 2
@@ -21,6 +24,7 @@ patient_2_assessment_1:
   who_reported: 'Monitoree'
 patient_2_assessment_2:
   id: 1004
+  reported_at: <%= 36.days.ago %>
   created_at: <%= 36.days.ago %>
   updated_at: <%= 32.days.ago %>
   patient_id: 2
@@ -28,6 +32,7 @@ patient_2_assessment_2:
   who_reported: 'Monitoree'
 patient_3_assessment_1:
   id: 1005
+  reported_at: <%= 23.days.ago %>
   created_at: <%= 23.days.ago %>
   updated_at: <%= 23.days.ago %>
   patient_id: 3
@@ -35,6 +40,7 @@ patient_3_assessment_1:
   who_reported: 'Monitoree'
 patient_3_assessment_2:
   id: 1006
+  reported_at: <%= 23.days.ago %>
   created_at: <%= 23.days.ago %>
   updated_at: <%= 23.days.ago %>
   patient_id: 3
@@ -42,6 +48,7 @@ patient_3_assessment_2:
   who_reported: 'Monitoree'
 patient_4_assessment_1:
   id: 1007
+  reported_at: <%= 6.hours.ago %>
   created_at: <%= 6.hours.ago %>
   updated_at: <%= 6.hours.ago %>
   patient_id: 4
@@ -49,6 +56,7 @@ patient_4_assessment_1:
   who_reported: 'Monitoree'
 patient_5_assessment_1:
   id: 1008
+  reported_at: <%= 24.days.ago %>
   created_at: <%= 24.days.ago %>
   updated_at: <%= 24.days.ago %>
   patient_id: 5
@@ -56,6 +64,7 @@ patient_5_assessment_1:
   who_reported: 'Monitoree'
 patient_8_assessment_1:
   id: 1009
+  reported_at: <%= 24.days.ago %>
   created_at: <%= 24.days.ago %>
   updated_at: <%= 24.days.ago %>
   patient_id: 8
@@ -63,6 +72,7 @@ patient_8_assessment_1:
   who_reported: 'Monitoree'
 patient_8_assessment_2:
   id: 1010
+  reported_at: <%= 5.hours.ago %>
   created_at: <%= 5.hours.ago %>
   updated_at: <%= 5.hours.ago %>
   patient_id: 8
@@ -70,6 +80,7 @@ patient_8_assessment_2:
   who_reported: 'Monitoree'
 patient_9_assessment_1:
   id: 1011
+  reported_at: <%= 24.days.ago %>
   created_at: <%= 24.days.ago %>
   updated_at: <%= 24.days.ago %>
   patient_id: 9
@@ -77,6 +88,7 @@ patient_9_assessment_1:
   who_reported: 'Monitoree'
 patient_9_assessment_2:
   id: 1012
+  reported_at: <%= 24.days.ago %>
   created_at: <%= 24.days.ago %>
   updated_at: <%= 24.days.ago %>
   patient_id: 9
@@ -84,6 +96,7 @@ patient_9_assessment_2:
   who_reported: 'Monitoree'
 patient_9_assessment_3:
   id: 1013
+  reported_at: <%= 22.days.ago %>
   created_at: <%= 22.days.ago %>
   updated_at: <%= 22.days.ago %>
   patient_id: 9
@@ -91,6 +104,7 @@ patient_9_assessment_3:
   who_reported: 'Monitoree'
 patient_9_assessment_4:
   id: 1014
+  reported_at: <%= 10.hours.ago %>
   created_at: <%= 10.hours.ago %>
   updated_at: <%= 10.hours.ago %>
   patient_id: 9
@@ -98,6 +112,7 @@ patient_9_assessment_4:
   who_reported: 'Monitoree'
 patient_10_assessment_1:
   id: 1015
+  reported_at: <%= 26.days.ago %>
   created_at: <%= 26.days.ago %>
   updated_at: <%= 26.days.ago %>
   patient_id: 10
@@ -105,6 +120,7 @@ patient_10_assessment_1:
   who_reported: 'Monitoree'
 patient_10_assessment_2:
   id: 1016
+  reported_at: <%= 24.days.ago %>
   created_at: <%= 24.days.ago %>
   updated_at: <%= 24.days.ago %>
   patient_id: 10
@@ -112,6 +128,7 @@ patient_10_assessment_2:
   who_reported: 'Monitoree'
 patient_10_assessment_3:
   id: 1017
+  reported_at: <%= 18.hours.ago %>
   created_at: <%= 18.hours.ago %>
   updated_at: <%= 18.hours.ago %>
   patient_id: 10
@@ -119,6 +136,7 @@ patient_10_assessment_3:
   who_reported: 'Monitoree'
 patient_50_assessment_1:
   id: 1018
+  reported_at: <%= 1.hour.ago %>
   created_at: <%= 1.hour.ago %>
   updated_at: <%= 1.hour.ago %>
   patient_id: 50

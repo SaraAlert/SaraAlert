@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
-import MaskedInput from 'react-text-mask';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import _ from 'lodash';
+import { formatTimestamp } from '../../utils/DateTime';
+import DateTimeInput from './DateTimeInput';
 
 class DateInput extends React.Component {
   constructor(props) {
@@ -21,9 +22,10 @@ class DateInput extends React.Component {
    * This happens both when a date is clicked in the datepicker AND when the user types a complete valid date
    */
   handleDateChange = date => {
-    const momentDate = date && moment(date).format('YYYY-MM-DD');
+    const momentDate = date && (this.props.showTime ? moment.utc(date).format('YYYY-MM-DD HH:mm') : moment(date).format('YYYY-MM-DD'));
     this.props.onChange(momentDate);
     this.datePickerRef.current.setOpen(false);
+    this.setState({ currentDate: momentDate });
     if (this.dateIsValidAndNotEmpty(momentDate)) {
       this.setState({ lastValidDate: momentDate });
     }
@@ -36,13 +38,6 @@ class DateInput extends React.Component {
   handleRawChange = event => {
     this.datePickerRef.current.setOpen(true);
     this.setState({ currentDate: event.target.value });
-  };
-
-  /**
-   * Called when day is clicked in the datepicker
-   */
-  handleSelect = date => {
-    this.setState({ currentDate: date });
   };
 
   /**
@@ -82,7 +77,7 @@ class DateInput extends React.Component {
   dateIsValidAndNotEmpty = date => {
     const isNotNull = !_.isNil(date);
     const isValid = moment(date, 'YYYY-MM-DD').isValid();
-    const isInRange = moment(this.props.minDate).isSameOrBefore(date) && moment(this.props.maxDate).isSameOrAfter(date);
+    const isInRange = moment(this.props.minDate).isSameOrBefore(moment.utc(date)) && moment(this.props.maxDate).isSameOrAfter(moment.utc(date));
     return isNotNull && isValid && isInRange;
   };
 
@@ -126,7 +121,10 @@ class DateInput extends React.Component {
           <div>
             <DatePicker
               id={this.props.id}
-              selected={this.props.date && moment(this.props.date, 'YYYY-MM-DD').toDate()}
+              selected={
+                this.props.date &&
+                (this.props.showTime ? moment(formatTimestamp(this.state.lastValidDate)).toDate() : moment(this.props.date, 'YYYY-MM-DD').toDate())
+              }
               minDate={this.props.minDate && moment(this.props.minDate, 'YYYY-MM-DD').toDate()}
               maxDate={this.props.maxDate && moment(this.props.maxDate, 'YYYY-MM-DD').toDate()}
               popperPlacement={this.props.placement || 'auto'}
@@ -134,22 +132,17 @@ class DateInput extends React.Component {
               ref={this.datePickerRef}
               onChange={this.handleDateChange}
               onChangeRaw={this.handleRawChange}
-              onSelect={this.handleSelect}
               onBlur={this.handleOnBlur}
               onKeyDown={this.handleKeyDown}
               className={this.props.customClass}
+              dateFormat={this.props.showTime ? 'MM/dd/yyyy HH:mm' : 'MM/dd/yyyy'}
+              showTimeInput={this.props.showTime}
               customInput={
-                <MaskedInput
-                  mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
-                  keepCharPositions
-                  aria-label={this.props.ariaLabel || 'Date Input'}
-                  className={`${
-                    this.props.customClass?.includes('sm')
-                      ? 'date-input__input_sm'
-                      : this.props.customClass?.includes('md')
-                      ? 'date-input__input_md'
-                      : 'date-input__input_lg'
-                  } react-datepicker-ignore-onclickoutside form-control ${this.props.customClass} ${this.props.isInvalid ? ' is-invalid' : ''}`}
+                <DateTimeInput
+                  onChange={this.handleDateChange}
+                  showTime={this.props.showTime}
+                  customClass={this.props.customClass}
+                  isInvalid={this.props.isInvalid}
                 />
               }
               disabled={this.props.disabled}
@@ -190,6 +183,7 @@ DateInput.propTypes = {
   tooltipText: PropTypes.string,
   tooltipKey: PropTypes.string,
   tooltipPlacement: PropTypes.oneOf(['top', 'bottom', 'left', 'right', 'auto']),
+  showTime: PropTypes.bool,
 };
 
 export default DateInput;

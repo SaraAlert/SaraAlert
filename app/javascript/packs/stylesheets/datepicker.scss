@@ -108,3 +108,9 @@
 .react-datepicker-popper {
   z-index: 100 !important
 }
+
+// Hide the timepicker, because we don't need it and it can only do 12 hour time
+.react-datepicker__input-time-container {
+  height: 0px;
+  visibility: collapse;
+}
