@@ -132,11 +132,10 @@ class UserModal extends React.Component {
                 onChange={this.handleAPIAccessChange}
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group controlId="notes">
               <Form.Label>Notes</Form.Label>
               <InputGroup>
                 <Form.Control
-                  id="notes"
                   name="notes"
                   as="textarea"
                   rows="5"

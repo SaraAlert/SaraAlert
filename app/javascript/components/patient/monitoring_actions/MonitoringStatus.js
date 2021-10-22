@@ -122,9 +122,9 @@ class MonitoringStatus extends React.Component {
             />
           )}
           {!this.state.monitoring && (
-            <Form.Group>
+            <Form.Group controlId="monitoring_reason">
               <Form.Label>Please select reason for status change:</Form.Label>
-              <Form.Control as="select" size="lg" className="form-square" id="monitoring_reason" onChange={this.handleChange} defaultValue={-1}>
+              <Form.Control as="select" size="lg" className="form-square" onChange={this.handleChange} defaultValue={-1}>
                 <option></option>
                 {this.props.monitoring_reasons.map((option, index) => (
                   <option key={`option-${index}`} value={option}>
@@ -134,9 +134,9 @@ class MonitoringStatus extends React.Component {
               </Form.Control>
             </Form.Group>
           )}
-          <Form.Group>
+          <Form.Group controlId="reasoning">
             <Form.Label>Please include any additional details:</Form.Label>
-            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} aria-label="Additional Details Text Area" />
+            <Form.Control as="textarea" rows="2" onChange={this.handleChange} />
           </Form.Group>
           {this.props.patient.isolation && !this.state.monitoring && householdMemberWithContinuousExposureInExposureWorkflow && !this.state.apply_to_household && (
             <div className="update-dependent-lde">

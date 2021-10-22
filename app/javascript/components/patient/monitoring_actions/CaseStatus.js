@@ -201,19 +201,14 @@ class CaseStatus extends React.Component {
         </Modal.Header>
         <Modal.Body>
           {this.state.showMonitoringDropdown && (
-            <React.Fragment>
-              <p>Please select what you would like to do:</p>
-              <Form.Control
-                as="select"
-                className="form-control-lg mb-3"
-                id="monitoring_option"
-                onChange={this.handleMonitoringChange}
-                value={this.state.monitoring_option}>
+            <Form.Group controlId="monitoring_option">
+              <Form.Label>Please select what you would like to do:</Form.Label>
+              <Form.Control as="select" className="form-control-lg mb-3" onChange={this.handleMonitoringChange} value={this.state.monitoring_option}>
                 <option></option>
                 <option>End Monitoring</option>
                 <option>Continue Monitoring in Isolation Workflow</option>
               </Form.Control>
-            </React.Fragment>
+            </Form.Group>
           )}
           {this.state.modal_text !== '' && <p>{this.state.modal_text}</p>}
           {this.state.monitoring_option === 'End Monitoring' && (
