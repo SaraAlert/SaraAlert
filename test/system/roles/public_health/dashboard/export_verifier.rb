@@ -164,7 +164,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
                             .distinct
                             .pluck('symptoms.label')
                             .sort
-    assessment_headers = ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
+    assessment_headers = ['Patient ID', 'Symptomatic', 'Who Reported', 'Report Date and Time', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
     assessment_headers.each_with_index do |header, col|
       assert_equal(header, assessments.cell(1, col + 1), "For header: #{header} in Reports")
     end
@@ -173,7 +173,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
             .includes(assessments: [{ reported_condition: :symptoms }])
             .find_each do |patient|
               patient.assessments.find_each do |assessment|
-                assessment_summary_arr = %i[patient_id symptomatic who_reported created_at updated_at].map { |field| assessment[field] }
+                assessment_summary_arr = %i[patient_id symptomatic who_reported reported_at created_at updated_at].map { |field| assessment[field] }
                 symptoms_hash = assessment.reported_condition.symptoms.map { |symptom| [symptom[:label], symptom.value] }.to_h
                 symptoms_arr = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s || '' }
                 assessment_summary_arr.concat(symptoms_arr).each_with_index do |value, col|

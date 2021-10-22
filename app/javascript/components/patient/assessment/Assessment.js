@@ -72,6 +72,7 @@ class Assessment extends React.Component {
               patient_initials={this.props.patient_initials}
               patient_age={this.props.patient_age}
               lang={this.props.lang || 'eng'}
+              current_user={this.props.current_user}
             />
           </Carousel.Item>
           <Carousel.Item>

@@ -15,9 +15,12 @@ class Assessment < ApplicationRecord
       validates column.name.to_sym, length: { maximum: 200 }
     end
   end
+
   has_one :reported_condition, class_name: 'ReportedCondition', dependent: nil
   belongs_to :patient, touch: true
 
+  before_create :ensure_reported_at
+  before_update :ensure_reported_at
   after_create { update_patient_linelist_fields(:created) }
   after_update { update_patient_linelist_fields(:updated) }
   after_destroy { update_patient_linelist_fields(:removed) }
@@ -141,6 +144,10 @@ class Assessment < ApplicationRecord
   end
 
   private
+
+  def ensure_reported_at
+    self.reported_at = created_at if reported_at.nil?
+  end
 
   def update_patient_linelist_fields(action)
     latest_assessment = patient.assessments.order(:created_at).last
