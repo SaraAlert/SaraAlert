@@ -146,6 +146,8 @@ class AssessmentsController < ApplicationController
       @assessment.who_reported = current_user.nil? ? 'Monitoree' : current_user.email
 
       begin
+        @assessment.reported_at = Time.strptime(params[:reported_at], '%Y-%m-%d %H:%M %z') if params.permit(:reported_at)[:reported_at].present?
+
         reported_condition.transaction do
           reported_condition.save!
 
@@ -158,6 +160,11 @@ class AssessmentsController < ApplicationController
           "Error: #{e}"
         )
         return render json: { error: 'Assessment was unable to be saved.' }, status: :bad_request
+      rescue Date::Error => e
+        Rails.logger.info(
+          "AssessmentsController: Invalid date format received for assessment.reported_at for patient ID: #{patient.id}. Error: #{e}"
+        )
+        return render json: { error: 'Assessment was unable to be saved due to invalid Report Date.' }, status: :bad_request
       end
 
       # Save a new receipt and clear out any older ones
@@ -217,12 +224,32 @@ class AssessmentsController < ApplicationController
       # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
       assessment.who_reported = current_user.email
 
+      old_reported_at = assessment.reported_at
+
+      if params.permit(:reported_at)[:reported_at].present?
+        # Parse as a Time object first to capture timezone for history comment formatting
+        begin
+          assessment.reported_at = reported_at = Time.strptime(params[:reported_at], '%Y-%m-%d %H:%M %z')
+        rescue Date::Error => e
+          Rails.logger.info(
+            "AssessmentsController: Invalid date format received for assessment.reported_at for patient ID: #{patient.id}. Error: #{e}"
+          )
+          return render json: { error: 'Assessment was unable to be saved due to invalid Report Date.' }, status: :bad_request
+        end
+      end
+      reported_at_changed = (old_reported_at - assessment.reported_at).abs >= 1
+
       # Attempt to save and continue; else if failed redirect to index
       return unless assessment.save
 
       comment = 'User edited an existing report (ID: ' + assessment.id.to_s + ').'
-      unless delta.empty?
-        comment += ' Symptom updates: ' + delta.join(', ') + '.'
+      if delta.any? || reported_at_changed
+        if reported_at_changed
+          # Use timezone from update request to format time in the User's timezone
+          comment += " Reported at update: #{old_reported_at.to_time.getlocal(reported_at.strftime('%:z')).strftime('%m/%d/%Y %H:%M')} #{reported_at.zone}"\
+                     " to #{reported_at.strftime('%m/%d/%Y %H:%M %Z')}."
+        end
+        comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
         comment += " Reporter update: (\"#{old_reporter}\" to \"#{current_user.email}\")." unless old_reporter == current_user.email
       end
       History.report_updated(patient: patient, created_by: current_user.email, comment: comment)

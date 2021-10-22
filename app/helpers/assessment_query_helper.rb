@@ -17,8 +17,8 @@ module AssessmentQueryHelper
 
   # Sorts assessments based on given column and direction.
   def self.sort(assessments, order, direction)
-    # Order by created_at date by default
-    return assessments.order(created_at: 'desc') if order.blank? || direction.blank?
+    # Order by reported_at date by default
+    return assessments.order(reported_at: 'desc') if order.blank? || direction.blank?
 
     # Satisfy brakeman with additional sanitation logic
     dir = direction == 'asc' ? 'asc' : 'desc'
@@ -32,6 +32,8 @@ module AssessmentQueryHelper
       assessments = assessments.order(who_reported: dir)
     when 'created_at'
       assessments = assessments.order(created_at: dir)
+    when 'reported_at'
+      assessments = assessments.order(reported_at: dir)
     else
       # Verify this is a sort request for a symptom column.
       symptom_columns = assessments.joins({ reported_condition: :symptoms }).distinct.pluck('symptoms.name')
@@ -70,7 +72,7 @@ module AssessmentQueryHelper
   # Formats assessments to be displayed on the frontend.
   def self.format_for_frontend(assessments)
     # Select relevant fields
-    assessments = assessments.select(%i[id symptomatic who_reported created_at])
+    assessments = assessments.select(%i[id symptomatic who_reported created_at reported_at])
 
     # Call map instead of pluck here to prevent an additional query later when iterating over assessments
     assessment_ids = assessments.map(&:id)
@@ -108,6 +110,7 @@ module AssessmentQueryHelper
         symptomatic: assessment[:symptomatic] ? 'Yes' : 'No',
         who_reported: assessment[:who_reported],
         created_at: assessment[:created_at],
+        reported_at: assessment[:reported_at],
         passes_threshold_data: {}
       }
 

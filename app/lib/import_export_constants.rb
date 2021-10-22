@@ -105,9 +105,10 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
   FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SARA_ALERT_FORMAT_HEADERS + ['First Positive Lab', 'Extended Isolation Date', 'Enrolled Workflow',
                                                                                  'Exposure Monitorees that became Cases at']).freeze
 
-  FULL_HISTORY_ASSESSMENTS_FIELDS = %i[patient_id symptomatic who_reported created_at updated_at symptoms].freeze
+  FULL_HISTORY_ASSESSMENTS_FIELDS = %i[patient_id symptomatic who_reported reported_at created_at updated_at symptoms].freeze
 
-  FULL_HISTORY_ASSESSMENTS_HEADERS = ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At', 'Symptoms Reported'].freeze
+  FULL_HISTORY_ASSESSMENTS_HEADERS = ['Patient ID', 'Symptomatic', 'Who Reported', 'Report Date and Time', 'Created At', 'Updated At',
+                                      'Symptoms Reported'].freeze
 
   FULL_HISTORY_LABORATORIES_FIELDS = %i[patient_id lab_type specimen_collection report result created_at updated_at].freeze
 
@@ -332,6 +333,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     id: 'Report ID',
     symptomatic: 'Needs Review',
     who_reported: 'Who Reported',
+    reported_at: 'Report Date and Time',
     created_at: 'Report Created Date',
     updated_at: 'Report Updated Date',
     symptoms: 'Symptoms Reported'
@@ -537,7 +539,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
   ASSESSMENTS_EXPORT_OPTIONS = {
     label: 'Reports',
     nodes: [rct_node(:assessments, 'Reports', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id symptomatic
-                                                 who_reported created_at updated_at symptoms])]
+                                                 who_reported reported_at created_at updated_at symptoms])]
   }.freeze
 
   LABORATORIES_EXPORT_OPTIONS = {

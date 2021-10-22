@@ -16,7 +16,7 @@ function getWrapper(showModal) {
 }
 
 function getMountedWrapper() {
-  return mount(<AssessmentModal show={true} onClose={onCloseMock} current_user={mockUser1} patient={mockPatient1} calculated_age={76} patient_initials={'MM'} report={mockAssessment1} symptoms={mockAssessment1.symptoms} threshold_condition_hash={mockAssessment1.threshold_condition_hash} translations={mockTranslations} updateId={13} idPre={'13'} authenticity_token={mockToken} />);
+  return mount(<AssessmentModal show={true} onClose={onCloseMock} current_user={mockUser1} patient={mockPatient1} calculated_age={76} patient_initials={'MM'} assessment={mockAssessment1} symptoms={mockAssessment1.symptoms} threshold_condition_hash={mockAssessment1.threshold_condition_hash} translations={mockTranslations} updateId={13} idPre={'13'} authenticity_token={mockToken} />);
 }
 
 describe('AssessmentModal', () => {

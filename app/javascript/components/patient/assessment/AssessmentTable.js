@@ -31,7 +31,7 @@ class AssessmentTable extends React.Component {
             tooltip: `${this.props.patient.isolation ? 'isolation' : 'exposure'}NeedsReviewColumn`,
           },
           { label: 'Reporter', field: 'who_reported', isSortable: true },
-          { label: 'Created At', field: 'created_at', isSortable: true, filter: formatTimestamp },
+          { label: 'Reported At', field: 'reported_at', isSortable: true, filter: formatTimestamp },
         ],
         rowData: [],
         totalRows: 0,
