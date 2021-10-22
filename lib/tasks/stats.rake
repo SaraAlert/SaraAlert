@@ -623,6 +623,10 @@ namespace :stats do
         exposure: active_exp.where(preferred_contact_time: 'Evening').count,
         isolation: active_iso.where(preferred_contact_time: 'Evening').count
       }
+      results[title]['Preferred Reporting Time - Custom'] = {
+        exposure: active_exp.where(preferred_contact_time: PatientDetailsHelper::CUSTOM_CONTACT_OPTIONS).count,
+        isolation: active_iso.where(preferred_contact_time: PatientDetailsHelper::CUSTOM_CONTACT_OPTIONS).count
+      }
       results[title]['Preferred Reporting Time - blank'] = {
         exposure: active_exp.where(preferred_contact_time: ['', nil]).count,
         isolation: active_iso.where(preferred_contact_time: ['', nil]).count
