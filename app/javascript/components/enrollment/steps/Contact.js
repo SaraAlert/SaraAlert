@@ -1,6 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Alert, Button, Card, Col, Form, Modal } from 'react-bootstrap';
+import { Alert, Button, Card, Col, Form, Modal, Nav, Tab } from 'react-bootstrap';
+import ReactTooltip from 'react-tooltip';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 import axios from 'axios';
 import libphonenumber from 'google-libphonenumber';
@@ -32,7 +35,9 @@ class Contact extends React.Component {
       current: { ...this.props.currentState },
       errors: {},
       modified: {},
-      isEditMode: window.location.href.includes('edit'),
+      selectedTab: 'primary',
+      showPrimaryValidationIcon: false,
+      showAlternateValidationIcon: false,
       showCustomPreferredContactTimeModal: false,
       custom_preferred_contact_time_confirmed: false,
     };
@@ -42,29 +47,38 @@ class Contact extends React.Component {
     if (this.props.edit_mode) {
       // Update the Schema Validator by simulating the user changing their preferred_contact_method to what their actual preferred_contact_method really is.
       // This is to trigger schema validation when editing.
-      this.updatePrimaryContactMethodValidations({
+      this.updateContactMethodValidations({
         currentTarget: {
           id: 'preferred_contact_method',
           value: this.state.current.patient.preferred_contact_method,
         },
       });
     }
-    // There are two instances when a user might already have an email that we'd want to prefill the confirm email field
+
+    // There are two instances when a user might already have an email or alt email that we'd want to prefill the confirm email field
     // One is editing an existing monitoree. The other is when enrolling a close contact
-    if (this.state.current.patient.email) {
-      this.setState(state => {
-        const current = { ...state.current };
-        current.patient.confirm_email = state.current.patient.email;
-        return { current };
-      });
-    }
+    // Always preset the confirm email field to the defined email OR null (this is to ensure the yup validation works)
+    // email and alternate_email fields MUST be set to null if they are undefined in order for the yup validation to work as well
+    this.setState(state => {
+      const current = { ...state.current };
+      current.patient.email = state.current.patient.email || '';
+      current.patient.alternate_email = state.current.patient.alternate_email || '';
+      current.patient.confirm_email = state.current.patient.email || '';
+      current.patient.confirm_alternate_email = state.current.patient.alternate_email || '';
+      return { current };
+    });
   }
 
   handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    if (event.target.id === 'primary_telephone' || event.target.id === 'secondary_telephone') {
+    if (
+      event.target.id === 'primary_telephone' ||
+      event.target.id === 'secondary_telephone' ||
+      event.target.id === 'alternate_primary_telephone' ||
+      event.target.id === 'alternate_secondary_telephone'
+    ) {
       value = value.replace(/-/g, '');
-    } else if (event.target.id === 'international_telephone') {
+    } else if (event.target.id === 'international_telephone' || event.target.id === 'alternate_international_telephone') {
       value = value.replace(/[^0-9.\-()+ ]/g, '');
     }
 
@@ -110,6 +124,13 @@ class Contact extends React.Component {
     let modified = this.state.modified;
     const updates = { [event.target.id]: value };
 
+    // Clear contact name if contact type is set to self reporter (for primary and alternate)
+    if (event.target.id === 'contact_type' || event.target.id === 'alternate_contact_type') {
+      if (event.target.value === 'Self') {
+        updates[event.target.id.replace('type', 'name')] = '';
+      }
+    }
+
     this.setState(
       {
         current: { ...current, blocked_sms, patient: { ...current.patient, ...updates } },
@@ -119,10 +140,10 @@ class Contact extends React.Component {
         this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
-    this.updatePrimaryContactMethodValidations(event);
+    this.updateContactMethodValidations(event);
   };
 
-  updatePrimaryContactMethodValidations = event => {
+  updateContactMethodValidations = event => {
     if (event?.currentTarget.id == 'preferred_contact_method') {
       if (
         event?.currentTarget.value === 'Telephone call' ||
@@ -130,26 +151,19 @@ class Contact extends React.Component {
         event?.currentTarget.value === 'SMS Texted Weblink'
       ) {
         schema = yup.object().shape({
+          ...staticValidations,
           primary_telephone: yup
             .string()
             .phone()
             .required('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 50 characters.').nullable(),
           email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.'),
           confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
-          preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
       } else if (event?.currentTarget.value === 'E-mailed Web Link') {
         schema = yup.object().shape({
+          ...staticValidations,
           primary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 50 characters.').nullable(),
           email: yup
             .string()
             .email('Please enter a valid Email.')
@@ -159,22 +173,18 @@ class Contact extends React.Component {
             .string()
             .required('Please confirm Email.')
             .oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
-          preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
       } else {
         schema = yup.object().shape({
+          ...staticValidations,
           primary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 50 characters.').nullable(),
           email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.'),
           confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
-          preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
       }
     } else if (event?.currentTarget.id === 'primary_telephone') {
       schema = yup.object().shape({
+        ...staticValidations,
         primary_telephone: yup
           .string()
           .phone()
@@ -185,13 +195,8 @@ class Contact extends React.Component {
               return yup.string().phone().required('Please provide a Primary Telephone Number, or change Preferred Reporting Method.');
             }
           }),
-        secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.'),
-        primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-        secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-        international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 50 characters.').nullable(),
         email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.'),
         confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
-        preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
       });
     }
     this.setState({ errors: {} });
@@ -203,7 +208,7 @@ class Contact extends React.Component {
       .validate(this.state.current.patient, { abortEarly: false })
       .then(() => {
         // No validation issues? Invoke callback (move to next step)
-        self.setState({ errors: {} }, () => {
+        self.setState({ errors: {}, showPrimaryValidationIcon: false, showAlternateValidationIcon: false }, () => {
           callback();
         });
       })
@@ -214,7 +219,16 @@ class Contact extends React.Component {
           for (var issue of err.inner) {
             issues[issue['path']] = issue['errors'];
           }
-          self.setState({ errors: issues });
+          self.setState({ errors: issues }, () => {
+            let showPrimaryValidationIcon = false;
+            let showAlternateValidationIcon = false;
+            if (this.state.selectedTab === 'primary') {
+              showAlternateValidationIcon = Object.keys(issues).filter(key => key.includes('alternate')).length > 0;
+            } else {
+              showPrimaryValidationIcon = Object.keys(issues).filter(key => !key.includes('alternate')).length > 0;
+            }
+            self.setState({ showPrimaryValidationIcon, showAlternateValidationIcon });
+          });
         }
       });
   };
@@ -231,6 +245,19 @@ class Contact extends React.Component {
         };
       },
       () => this.props.setEnrollmentState({ ...this.state.modified })
+    );
+  };
+
+  renderInvalidIcon = () => {
+    return (
+      <div style={{ display: 'inline' }}>
+        <span data-for="invalid-fields" data-tip="">
+          <FontAwesomeIcon className="text-danger ml-1" icon={faExclamationCircle} />
+        </span>
+        <ReactTooltip id="invalid-fields" multiline={true} place="right" effect="solid" className="tooltip-container">
+          All required fields in this tab must be completed and properly formatted before proceeding
+        </ReactTooltip>
+      </div>
     );
   };
 
@@ -303,6 +330,318 @@ class Contact extends React.Component {
     );
   };
 
+  renderContactFields(alternate) {
+    const prefix = alternate ? 'alternate_' : '';
+    return (
+      <Form>
+        <Form.Row>
+          <Form.Group as={Col} lg="12" controlId={`${prefix}contact_type`}>
+            <Form.Label className="input-label">
+              CONTACT RELATIONSHIP{schema?.fields[`${prefix}contact_type`]?._exclusive?.required && ' *'}
+              <InfoTooltip tooltipTextKey="contactRelationship" location="right"></InfoTooltip>
+            </Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors[`${prefix}contact_type`]}
+              as="select"
+              size="lg"
+              className="form-square"
+              value={this.state.current.patient[`${prefix}contact_type`] || ''}
+              onChange={this.handleChange}>
+              {alternate && <option></option>}
+              <option>Self</option>
+              <option>Parent/Guardian</option>
+              <option>Spouse/Partner</option>
+              <option>Caregiver</option>
+              <option>Healthcare Provider</option>
+              <option>Facility Representative</option>
+              <option>Group Home Manager/Administrator</option>
+              <option>Surrogate/Proxy</option>
+              <option>Other</option>
+              <option>Unknown</option>
+            </Form.Control>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors[`${prefix}contact_type`]}
+            </Form.Control.Feedback>
+          </Form.Group>
+          {this.state.current.patient[`${prefix}contact_type`] !== 'Self' && (
+            <Form.Group as={Col} lg="12" controlId={`${prefix}contact_name`}>
+              <Form.Label className="input-label">CONTACT NAME{schema?.fields[`${prefix}contact_name`]?._exclusive?.required && ' *'}</Form.Label>
+              <Form.Control
+                isInvalid={this.state.errors[`${prefix}contact_name`]}
+                size="lg"
+                className="form-square"
+                value={this.state.current.patient[`${prefix}contact_name`] || ''}
+                onChange={this.handleChange}
+              />
+              <Form.Control.Feedback className="d-block" type="invalid">
+                {this.state.errors[`${prefix}contact_name`]}
+              </Form.Control.Feedback>
+            </Form.Group>
+          )}
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} lg="12" controlId={`${prefix}preferred_contact_method`}>
+            <Form.Label className="input-label">
+              PREFERRED {alternate ? 'CONTACT' : 'REPORTING'} METHOD{schema?.fields[`${prefix}preferred_contact_method`]?._exclusive?.required && ' *'}
+            </Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors[`${prefix}preferred_contact_method`]}
+              as="select"
+              size="lg"
+              className="form-square"
+              value={this.state.current.patient[`${prefix}preferred_contact_method`] || ''}
+              onChange={this.handleChange}>
+              <option></option>
+              <option>Unknown</option>
+              {!alternate && <option>E-mailed Web Link</option>}
+              {alternate && <option>Email</option>}
+              {!alternate && <option>SMS Texted Weblink</option>}
+              <option>Telephone call</option>
+              <option>SMS Text-message</option>
+              {!alternate && <option>Opt-out</option>}
+            </Form.Control>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors[`${prefix}preferred_contact_method`]}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} lg="12" id="preferred_contact_time_wrapper">
+            <Form.Label htmlFor={`${prefix}preferred_contact_time`} className="input-label">
+              PREFERRED CONTACT TIME{schema?.fields[`${prefix}preferred_contact_time`]?._exclusive?.required && ' *'}
+              {!alternate && <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>}
+            </Form.Label>
+            {alternate ? (
+              <Form.Control
+                id="alternate_preferred_contact_time"
+                isInvalid={this.state.errors['alternate_preferred_contact_time']}
+                as="select"
+                size="lg"
+                className="form-square"
+                value={this.state.current.patient.alternate_preferred_contact_time || ''}
+                onChange={this.handleChange}>
+                <option></option>
+                <option>Morning</option>
+                <option>Afternoon</option>
+                <option>Evening</option>
+              </Form.Control>
+            ) : (
+              <Select
+                inputId="preferred_contact_time"
+                value={{
+                  label:
+                    customPreferredContactTimeOptions[this.state.current.patient.preferred_contact_time] ||
+                    this.state.current.patient.preferred_contact_time ||
+                    '',
+                  value: this.state.current.patient.preferred_contact_time || '',
+                }}
+                placeholder=""
+                options={basicPreferredContactTimeOptions.concat(
+                  [...new Set([this.state.current.patient.preferred_contact_time, this.props.patient.preferred_contact_time])]
+                    .filter(value => Object.keys(customPreferredContactTimeOptions).includes(value))
+                    .map(value => {
+                      return { label: customPreferredContactTimeOptions[`${value}`], value };
+                    })
+                )}
+                onChange={e =>
+                  this.handleChange({
+                    target: { id: 'preferred_contact_time', value: e.value },
+                    currentTarget: { id: 'preferred_contact_time' },
+                  })
+                }
+                styles={preferredContactTimeSelectStyling}
+                theme={theme => bootstrapSelectTheme(theme, 'lg')}
+              />
+            )}
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors[`${prefix}preferred_contact_time`]}
+            </Form.Control.Feedback>
+            {!alternate && this.state.current.patient.preferred_contact_time && (
+              <React.Fragment>
+                {!this.state.current.patient.preferred_contact_method &&
+                  this.renderWarningBanner(
+                    'The monitoree will not be sent reminders while they do not have a Preferred Reporting Method selected.',
+                    false,
+                    'warning'
+                  )}
+                {['Unknown', 'Opt-out'].includes(this.state.current.patient.preferred_contact_method) &&
+                  this.renderWarningBanner(
+                    'The monitoree will not be sent reminders while they have Opt-out or Unknown selected for their Preferred Reporting Method.',
+                    false,
+                    'warning'
+                  )}
+              </React.Fragment>
+            )}
+            <div className="mt-3">
+              <span className="font-weight-bold">Morning: </span>
+              <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
+              <br />
+              <span className="font-weight-bold">Afternoon: </span>
+              <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
+              <br />
+              <span className="font-weight-bold">Evening: </span>
+              <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
+            </div>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} lg="12" controlId={`${prefix}primary_telephone`}>
+            <Form.Label className="input-label">
+              PRIMARY TELEPHONE NUMBER{schema?.fields[`${prefix}primary_telephone`]?._exclusive?.required && ' *'}
+            </Form.Label>
+            {!alternate && this.state.current.blocked_sms && (
+              <span className="float-right font-weight-bold">
+                SMS Blocked
+                <InfoTooltip tooltipTextKey="blockedSMS" location="right" />
+              </span>
+            )}
+            <PhoneInput
+              id={`${prefix}primary_telephone`}
+              value={this.state.current.patient[`${prefix}primary_telephone`]}
+              onChange={this.handleChange}
+              isInvalid={!!this.state.errors[`${prefix}primary_telephone`]}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors[`${prefix}primary_telephone`]}
+            </Form.Control.Feedback>
+            {!alternate &&
+              this.state.current.patient?.preferred_contact_method?.includes('SMS') &&
+              this.state.current.blocked_sms &&
+              this.renderWarningBanner('SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert', true)}
+          </Form.Group>
+          <Form.Group as={Col} lg="12" controlId={`${prefix}secondary_telephone`}>
+            <Form.Label className="input-label">
+              SECONDARY TELEPHONE NUMBER{schema?.fields[`${prefix}secondary_telephone`]?._exclusive?.required && ' *'}
+            </Form.Label>
+            <PhoneInput
+              id={`${prefix}secondary_telephone`}
+              value={this.state.current.patient[`${prefix}secondary_telephone`]}
+              onChange={this.handleChange}
+              isInvalid={!!this.state.errors[`${prefix}secondary_telephone`]}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors[`${prefix}secondary_telephone`]}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Col lg="12">
+            <Form.Group controlId={`${prefix}primary_telephone_type`}>
+              <Form.Label className="input-label">
+                PRIMARY PHONE TYPE{schema?.fields[`${prefix}primary_telephone_type`]?._exclusive?.required && ' *'}
+              </Form.Label>
+              <Form.Control
+                isInvalid={this.state.errors[`${prefix}primary_telephone_type`]}
+                as="select"
+                size="lg"
+                className="form-square"
+                value={this.state.current.patient[`${prefix}primary_telephone_type`] || ''}
+                onChange={this.handleChange}>
+                <option></option>
+                <option>Smartphone</option>
+                <option>Plain Cell</option>
+                <option>Landline</option>
+              </Form.Control>
+              <Form.Control.Feedback className="d-block" type="invalid">
+                {this.state.errors[`${prefix}primary_telephone_type`]}
+              </Form.Control.Feedback>
+              {this.state.current.patient[`${prefix}preferred_contact_method`] === 'SMS Texted Weblink' &&
+                this.state.current.patient[`${prefix}primary_telephone_type`] == 'Plain Cell' &&
+                this.renderWarningBanner(
+                  'Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
+                )}
+              {this.state.current.patient[`${prefix}preferred_contact_method`] === 'SMS Texted Weblink' &&
+                this.state.current.patient[`${prefix}primary_telephone_type`] == 'Landline' &&
+                this.renderWarningBanner(
+                  'Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
+                )}
+              {this.state.current.patient[`${prefix}preferred_contact_method`] === 'SMS Text-message' &&
+                this.state.current.patient[`${prefix}primary_telephone_type`] === 'Landline' &&
+                this.renderWarningBanner(
+                  'Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this type of message.'
+                )}
+            </Form.Group>
+            <div className="mb-2">
+              <span className="font-weight-bold">Smartphone: </span>
+              <span className="font-weight-light">Phone capable of accessing web-based reporting tool</span>
+              <br />
+              <span className="font-weight-bold">Plain Cell: </span>
+              <span className="font-weight-light">Phone capable of SMS messaging</span>
+              <br />
+              <span className="font-weight-bold">Landline: </span>
+              <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
+            </div>
+          </Col>
+          <Col lg="12">
+            <Form.Group controlId={`${prefix}secondary_telephone_type`}>
+              <Form.Label className="input-label">
+                SECONDARY PHONE TYPE{schema?.fields[`${prefix}secondary_telephone_type`]?._exclusive?.required && ' *'}
+              </Form.Label>
+              <Form.Control
+                isInvalid={this.state.errors[`${prefix}secondary_telephone_type`]}
+                as="select"
+                size="lg"
+                className="form-square"
+                value={this.state.current.patient[`${prefix}secondary_telephone_type`] || ''}
+                onChange={this.handleChange}>
+                <option></option>
+                <option>Smartphone</option>
+                <option>Plain Cell</option>
+                <option>Landline</option>
+              </Form.Control>
+              <Form.Control.Feedback className="d-block" type="invalid">
+                {this.state.errors[`${prefix}secondary_telephone_type`]}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId={`${prefix}international_telephone`}>
+              <Form.Label className="input-label">
+                INTERNATIONAL TELEPHONE NUMBER{schema?.fields[`${prefix}international_telephone`]?._exclusive?.required && ' *'}
+              </Form.Label>
+              <Form.Control
+                value={this.state.current.patient[`${prefix}international_telephone`] || ''}
+                onChange={this.handleChange}
+                size="lg"
+                className="form-square"
+                isInvalid={this.state.errors[`${prefix}international_telephone`]}
+              />
+              <Form.Control.Feedback className="d-block" type="invalid">
+                {this.state.errors[`${prefix}international_telephone`]}
+              </Form.Control.Feedback>
+              {this.state.current.patient[`${prefix}international_telephone`] &&
+                this.renderWarningBanner('International telephone number is not used by the system for automated symptom reporting.', false, 'warning')}
+            </Form.Group>
+          </Col>
+        </Form.Row>
+        <Form.Row className="mt-2">
+          <Form.Group as={Col} lg="12" controlId={`${prefix}email`}>
+            <Form.Label className="input-label">E-MAIL ADDRESS{schema?.fields[`${prefix}email`]?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors[`${prefix}email`]}
+              size="lg"
+              className="form-square"
+              value={this.state.current.patient[`${prefix}email`] || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors[`${prefix}email`]}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} lg="12" controlId={`confirm_${prefix}email`}>
+            <Form.Label className="input-label">CONFIRM E-MAIL ADDRESS{schema?.fields[`confirm_${prefix}email`]?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors[`confirm_${prefix}email`]}
+              size="lg"
+              className="form-square"
+              value={this.state.current.patient[`confirm_${prefix}email`] || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors[`confirm_${prefix}email`]}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+      </Form>
+    );
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -310,244 +649,50 @@ class Contact extends React.Component {
         <Card className="mx-2 card-square">
           <Card.Header className="h5">Monitoree Contact Information</Card.Header>
           <Card.Body>
-            <Form>
-              <Form.Row>
-                <Form.Group as={Col} lg="12" controlId="preferred_contact_method">
-                  <Form.Label className="input-label">
-                    PREFERRED REPORTING METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
-                  </Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['preferred_contact_method']}
-                    as="select"
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.preferred_contact_method || ''}
-                    onChange={this.handleChange}>
-                    <option></option>
-                    <option>Unknown</option>
-                    <option>E-mailed Web Link</option>
-                    <option>SMS Texted Weblink</option>
-                    <option>Telephone call</option>
-                    <option>SMS Text-message</option>
-                    <option>Opt-out</option>
-                  </Form.Control>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['preferred_contact_method']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group as={Col} lg="12" id="preferred_contact_time_wrapper" controlId="preferred_contact_time">
-                  <Form.Label className="input-label">
-                    PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
-                    <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
-                  </Form.Label>
-                  <Select
-                    inputId="preferred_contact_time-select"
-                    name="preferred_contact_time"
-                    value={{
-                      label:
-                        customPreferredContactTimeOptions[this.state.current.patient.preferred_contact_time] ||
-                        this.state.current.patient.preferred_contact_time ||
-                        '',
-                      value: this.state.current.patient.preferred_contact_time || '',
-                    }}
-                    placeholder=""
-                    options={basicPreferredContactTimeOptions.concat(
-                      [...new Set([this.state.current.patient.preferred_contact_time, this.props.patient.preferred_contact_time])]
-                        .filter(value => Object.keys(customPreferredContactTimeOptions).includes(value))
-                        .map(value => {
-                          return { label: customPreferredContactTimeOptions[`${value}`], value };
-                        })
-                    )}
-                    onChange={e =>
-                      this.handleChange({
-                        target: { id: 'preferred_contact_time', value: e.value },
-                        currentTarget: { id: 'preferred_contact_time' },
-                      })
-                    }
-                    styles={preferredContactTimeSelectStyling}
-                    theme={theme => bootstrapSelectTheme(theme, 'lg')}
-                  />
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['preferred_contact_time']}
-                  </Form.Control.Feedback>
-                  {this.state.current.patient.preferred_contact_time && (
-                    <React.Fragment>
-                      {!this.state.current.patient.preferred_contact_method &&
-                        this.renderWarningBanner(
-                          'The monitoree will not be sent reminders while they do not have a Preferred Reporting Method selected.',
-                          false,
-                          'warning'
-                        )}
-                      {['Unknown', 'Opt-out'].includes(this.state.current.patient.preferred_contact_method) &&
-                        this.renderWarningBanner(
-                          'The monitoree will not be sent reminders while they have Opt-out or Unknown selected for their Preferred Reporting Method.',
-                          false,
-                          'warning'
-                        )}
-                    </React.Fragment>
-                  )}
-                  <div className="mt-3">
-                    <span className="font-weight-bold">Morning: </span>
-                    <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
-                    <br />
-                    <span className="font-weight-bold">Afternoon: </span>
-                    <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
-                    <br />
-                    <span className="font-weight-bold">Evening: </span>
-                    <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
-                  </div>
-                </Form.Group>
-              </Form.Row>
-              <Form.Row>
-                <Form.Group as={Col} lg="12" controlId="primary_telephone">
-                  <Form.Label className="input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
-                  {this.state.current.blocked_sms && (
-                    <span className="float-right font-weight-bold">
-                      SMS Blocked
-                      <InfoTooltip tooltipTextKey="blockedSMS" location="right" />
-                    </span>
-                  )}
-                  <PhoneInput
-                    id="primary_telephone"
-                    value={this.state.current.patient.primary_telephone}
-                    onChange={this.handleChange}
-                    isInvalid={!!this.state.errors['primary_telephone']}
-                  />
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['primary_telephone']}
-                  </Form.Control.Feedback>
-                  {this.state.current.patient?.preferred_contact_method?.includes('SMS') &&
-                    this.state.current.blocked_sms &&
-                    this.renderWarningBanner('SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert', true)}
-                </Form.Group>
-                <Form.Group as={Col} lg="12" controlId="secondary_telephone">
-                  <Form.Label className="input-label">SECONDARY TELEPHONE NUMBER{schema?.fields?.secondary_telephone?._exclusive?.required && ' *'}</Form.Label>
-                  <PhoneInput
-                    id="secondary_telephone"
-                    value={this.state.current.patient.secondary_telephone}
-                    onChange={this.handleChange}
-                    isInvalid={!!this.state.errors['secondary_telephone']}
-                  />
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['secondary_telephone']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Form.Row>
-              <Form.Row>
-                <Col lg="12">
-                  <Form.Group controlId="primary_telephone_type">
-                    <Form.Label className="input-label">PRIMARY PHONE TYPE{schema?.fields?.primary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
-                    <Form.Control
-                      isInvalid={this.state.errors['primary_telephone_type']}
-                      as="select"
-                      size="lg"
-                      className="form-square"
-                      value={this.state.current.patient.primary_telephone_type || ''}
-                      onChange={this.handleChange}>
-                      <option></option>
-                      <option>Smartphone</option>
-                      <option>Plain Cell</option>
-                      <option>Landline</option>
-                    </Form.Control>
-                    <Form.Control.Feedback className="d-block" type="invalid">
-                      {this.state.errors['primary_telephone_type']}
-                    </Form.Control.Feedback>
-                    {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
-                      this.state.current.patient.primary_telephone_type == 'Plain Cell' &&
-                      this.renderWarningBanner(
-                        'Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
-                      )}
-                    {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
-                      this.state.current.patient.primary_telephone_type == 'Landline' &&
-                      this.renderWarningBanner(
-                        'Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type of message.'
-                      )}
-                    {this.state.current.patient.preferred_contact_method === 'SMS Text-message' &&
-                      this.state.current.patient.primary_telephone_type === 'Landline' &&
-                      this.renderWarningBanner(
-                        'Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this type of message.'
-                      )}
-                  </Form.Group>
-                  <div className="mb-2">
-                    <span className="font-weight-bold">Smartphone: </span>
-                    <span className="font-weight-light">Phone capable of accessing web-based reporting tool</span>
-                    <br />
-                    <span className="font-weight-bold">Plain Cell: </span>
-                    <span className="font-weight-light">Phone capable of SMS messaging</span>
-                    <br />
-                    <span className="font-weight-bold">Landline: </span>
-                    <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
-                  </div>
-                </Col>
-                <Col lg="12">
-                  <Form.Group controlId="secondary_telephone_type">
-                    <Form.Label className="input-label">
-                      SECONDARY PHONE TYPE{schema?.fields?.secondary_telephone_type?._exclusive?.required && ' *'}
-                    </Form.Label>
-                    <Form.Control
-                      isInvalid={this.state.errors['secondary_telephone_type']}
-                      as="select"
-                      size="lg"
-                      className="form-square"
-                      value={this.state.current.patient.secondary_telephone_type || ''}
-                      onChange={this.handleChange}>
-                      <option></option>
-                      <option>Smartphone</option>
-                      <option>Plain Cell</option>
-                      <option>Landline</option>
-                    </Form.Control>
-                    <Form.Control.Feedback className="d-block" type="invalid">
-                      {this.state.errors['secondary_telephone_type']}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group controlId="international_telephone">
-                    <Form.Label className="input-label">
-                      INTERNATIONAL TELEPHONE NUMBER{schema?.fields?.international_telephone?._exclusive?.required && ' *'}
-                    </Form.Label>
-                    <Form.Control
-                      value={this.state.current.patient.international_telephone || ''}
-                      onChange={this.handleChange}
-                      size="lg"
-                      className="form-square"
-                      isInvalid={this.state.errors['international_telephone']}
-                    />
-                    <Form.Control.Feedback className="d-block" type="invalid">
-                      {this.state.errors['international_telephone']}
-                    </Form.Control.Feedback>
-                    {this.state.current.patient.international_telephone &&
-                      this.renderWarningBanner('International telephone number is not used by the system for automated symptom reporting.', false, 'warning')}
-                  </Form.Group>
-                </Col>
-              </Form.Row>
-              <Form.Row className="mt-2">
-                <Form.Group as={Col} lg="12" controlId="email">
-                  <Form.Label className="input-label">E-MAIL ADDRESS{schema?.fields?.email?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['email']}
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.email || ''}
-                    onChange={this.handleChange}
-                  />
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['email']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group as={Col} lg="12" controlId="confirm_email">
-                  <Form.Label className="input-label">CONFIRM E-MAIL ADDRESS{schema?.fields?.confirm_email?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['confirm_email']}
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.confirm_email || ''}
-                    onChange={this.handleChange}
-                  />
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['confirm_email']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Form.Row>
-            </Form>
+            <Nav
+              variant="tabs"
+              activeKey={this.state.selectedTab}
+              className="g-border-bottom mb-3"
+              onSelect={tab => {
+                this.setState({ selectedTab: tab });
+              }}>
+              <Nav.Item>
+                <Nav.Link eventKey="primary">
+                  Primary
+                  {this.state.showPrimaryValidationIcon && this.renderInvalidIcon()}
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="alternate">
+                  Alternate
+                  {this.state.showAlternateValidationIcon && this.renderInvalidIcon()}
+                </Nav.Link>
+              </Nav.Item>
+            </Nav>
+            <Tab.Content>
+              {this.state.selectedTab === 'primary' && (
+                <React.Fragment>
+                  <Alert variant="primary">
+                    <b>
+                      Sara Alert will use the primary contact for communication with the monitoree. Automated messages will be sent to the primary contact
+                      phone/e-mail entered here.
+                    </b>
+                  </Alert>
+                  {this.renderContactFields()}
+                </React.Fragment>
+              )}
+              {this.state.selectedTab === 'alternate' && (
+                <React.Fragment>
+                  <Alert variant="danger">
+                    <b>
+                      Alternate Contact Information is for reference only. Sara Alert will NOT use the alternate contact phone or e-mail for automated
+                      communications.
+                    </b>
+                  </Alert>
+                  {this.renderContactFields(true)}
+                </React.Fragment>
+              )}
+            </Tab.Content>
             {this.props.previous && this.props.showPreviousButton && (
               <Button id="enrollment-previous-button" variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
                 Previous
@@ -573,19 +718,39 @@ class Contact extends React.Component {
 
 yup.addMethod(yup.string, 'phone', phoneSchemaValidator);
 
-var schema = yup.object().shape({
-  primary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+const staticValidations = {
+  contact_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  contact_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 50 characters.').nullable(),
+  preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  preferred_contact_time: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  alternate_contact_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  alternate_contact_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  alternate_primary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  alternate_secondary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  alternate_primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  alternate_secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  alternate_international_telephone: yup.string().max(50, 'Max length exceeded, please limit to 50 characters.').nullable(),
+  alternate_email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  confirm_alternate_email: yup
+    .string()
+    .oneOf([yup.ref('alternate_email'), null], 'Confirm Email must match.')
+    .nullable(),
+  alternate_preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  alternate_preferred_contact_time: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+};
+
+var schema = yup.object().shape({
+  ...staticValidations,
+  primary_telephone: yup.string().phone().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   email: yup.string().email('Please enter a valid Email.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   confirm_email: yup
     .string()
     .oneOf([yup.ref('email'), null], 'Confirm Email must match.')
     .nullable(),
-  preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  preferred_contact_time: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
 });
 
 Contact.propTypes = {

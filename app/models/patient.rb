@@ -65,11 +65,17 @@ class Patient < ApplicationRecord
      primary_language
      secondary_language
      ethnicity
+     sex
+     contact_type
      preferred_contact_method
      preferred_contact_time
-     sex
      primary_telephone_type
      secondary_telephone_type
+     alternate_contact_type
+     alternate_preferred_contact_method
+     alternate_preferred_contact_time
+     alternate_primary_telephone_type
+     alternate_secondary_telephone_type
      additional_planned_travel_type
      case_status
      public_health_action
@@ -81,7 +87,9 @@ class Patient < ApplicationRecord
   end
 
   %i[primary_telephone
-     secondary_telephone].each do |phone_field|
+     secondary_telephone
+     alternate_primary_telephone
+     alternate_secondary_telephone].each do |phone_field|
     validates phone_field, on: %i[api import], phone_number: true
   end
 
@@ -127,9 +135,15 @@ class Patient < ApplicationRecord
             presence: { message: "is required when 'Follow-Up Note' is present" },
             if: -> { follow_up_note.present? }
 
-  validates :email, on: %i[api import], email: true
+  %i[email
+     alternate_email].each do |email_field|
+    validates email_field, on: %i[api import], email: true
+  end
 
-  validates :international_telephone, on: %i[api import], international_phone_number: true
+  %i[international_telephone
+     alternate_international_telephone].each do |phone_field|
+    validates phone_field, on: %i[api import], international_phone_number: true
+  end
 
   validates :assigned_user, numericality: { only_integer: true,
                                             allow_nil: true,

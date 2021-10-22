@@ -607,7 +607,7 @@ class PatientsTable extends React.Component {
 
   render() {
     return (
-      <div className={`${this.props.workflow}-dashboard mx-2 pb-4`}>
+      <div className={`dashboard ${this.props.workflow}-dashboard mx-2 pb-4`}>
         <Nav variant="tabs" activeKey={this.state.query.tab}>
           {Object.entries(this.props.tabs).map(([tab, tabProps]) => {
             return (

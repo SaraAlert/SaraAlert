@@ -3,10 +3,11 @@ import { shallow, mount } from 'enzyme';
 import HouseholdMemberTable from '../../../components/patient/household/HouseholdMemberTable';
 import CustomTable from '../../../components/layout/CustomTable';
 import BadgeHoH from '../../../components/patient/icons/BadgeHoH';
+import IconMinor from '../../../components/patient/icons/IconMinor';
 import { mockUser1 } from '../../mocks/mockUsers';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../mocks/mockPatients';
-import { formatNameAlt, formatDate, sortByNameAscending, sortByNameDescending, sortByDateAscending, sortByDateDescending, sortByAscending, sortByDescending } from '../../helpers.js';
+import { formatNameAlt, formatDate, isMinor, sortByNameAscending, sortByNameDescending, sortByDateAscending, sortByDateDescending, sortByAscending, sortByDescending } from '../../helpers.js';
 
 const householdMembers = [mockPatient1, mockPatient2, mockPatient3, mockPatient4];
 const handleApplyHouseholdChangeMock = jest.fn();
@@ -80,7 +81,12 @@ describe('HouseholdMemberTable', () => {
       } else {
         expect(row.find('td').at(1).find(BadgeHoH).exists()).toBe(false);
       }
-      expect(row.find('td').at(2).text()).toEqual(formatDate(rowData[wrapper.state('table').colData[1].field]));
+      expect(row.find('td').at(2).text()).toContain(formatDate(rowData[wrapper.state('table').colData[1].field]));
+      if (isMinor(rowData.date_of_birth)) {
+        expect(row.find('td').at(2).find(IconMinor).exists()).toBe(true);
+      } else {
+        expect(row.find('td').at(2).find(IconMinor).exists()).toBe(false);
+      }
       expect(row.find('td').at(3).text()).toEqual(rowData[wrapper.state('table').colData[2].field] ? 'Isolation' : 'Exposure');
       expect(row.find('td').at(4).text()).toEqual(rowData[wrapper.state('table').colData[3].field] ? 'Actively Monitoring' : 'Not Monitoring');
       expect(row.find('td').at(5).text()).toEqual(rowData[wrapper.state('table').colData[4].field] ? 'Yes' : 'No');

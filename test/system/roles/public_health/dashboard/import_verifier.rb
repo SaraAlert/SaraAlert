@@ -10,7 +10,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   include PatientHelper
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  TELEPHONE_FIELDS = %i[primary_telephone secondary_telephone].freeze
+  TELEPHONE_FIELDS = %i[primary_telephone secondary_telephone alternate_primary_telephone alternate_secondary_telephone].freeze
   BOOL_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander race_other race_unknown
                    race_refused_to_answer interpretation_required contact_of_known_case travel_to_affected_country_or_area
                    was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight
@@ -19,8 +19,9 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   MONITORED_ADDRESS_FIELDS = %i[monitored_address_line_1 monitored_address_city monitored_address_state monitored_address_line_2 monitored_address_zip].freeze
   # TODO: when workflow specific case status validation re-enabled: take out 'case_status'
   ISOLATION_FIELDS = %i[symptom_onset extended_isolation case_status].freeze
-  ENUM_FIELDS = %i[ethnicity preferred_contact_method primary_telephone_type secondary_telephone_type additional_planned_travel_type exposure_risk_assessment
-                   monitoring_plan case_status].freeze
+  ENUM_FIELDS = %i[ethnicity contact_type preferred_contact_method primary_telephone_type secondary_telephone_type alternate_contact_type
+                   alternate_preferred_contact_method alternate_preferred_contact_time alternate_primary_telephone_type alternate_secondary_telephone_type
+                   additional_planned_travel_type exposure_risk_assessment monitoring_plan case_status].freeze
   TIME_FIELDS = %i[preferred_contact_time].freeze
   RISK_FACTOR_FIELDS = %i[contact_of_known_case was_in_health_care_facility_with_known_cases].freeze
   # TODO: when workflow specific case status validation re-enabled: uncomment
@@ -76,6 +77,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Monitored Address Line 1', displayed_epi_x_val(row, :monitored_address_line_1), index)
       verify_existence(card, 'Monitored Town/City', displayed_epi_x_val(row, :monitored_address_city), index)
       verify_existence(card, 'Monitored State', normalize_state_field(displayed_epi_x_val(row, :monitored_address_state)), index)
+      verify_existence(card, 'Contact Relationship', 'Unknown', index)
+      verify_existence(card, 'Contact Name', displayed_epi_x_val(row, :contact_name), index)
       verify_existence(card, 'Phone Number 1', displayed_epi_x_val(row, :primary_telephone), index)
       verify_existence(card, 'Phone Number 2', displayed_epi_x_val(row, :secondary_telephone), index)
       verify_existence(card, 'Email', displayed_epi_x_val(row, :email), index)
@@ -105,6 +108,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Monitored Town/City', displayed_saf_val(row, :monitored_address_city), index)
       verify_existence(card, 'Monitored State', normalize_state_field(displayed_saf_val(row, :monitored_address_state)), index)
       verify_existence(card, 'Monitored Zip', displayed_saf_val(row, :monitored_address_zip), index)
+      verify_existence(card, 'Contact Relationship', displayed_saf_val(row, :contact_type), index)
+      verify_existence(card, 'Contact Name', displayed_saf_val(row, :contact_name), index) unless displayed_saf_val(row, :contact_type) == 'Self'
       verify_existence(card, 'Phone Number 1', displayed_saf_val(row, :primary_telephone), index)
       verify_existence(card, 'Phone Number 2', displayed_saf_val(row, :secondary_telephone), index)
       verify_existence(card, 'Email', displayed_saf_val(row, :email), index)
@@ -225,6 +230,9 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, err_msg)
           elsif field == :jurisdiction_path
             assert_equal(row[index] ? row[index].to_s : jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, err_msg)
+          elsif field == :contact_type
+            assert_equal(NORMALIZED_ENUMS[field][normalize_enum_field_value(row[index])].to_s.blank? ? 'Unknown' : row[index].to_s, patient[field].to_s,
+                         err_msg)
           elsif ENUM_FIELDS.include?(field)
             assert_equal(NORMALIZED_ENUMS[field][normalize_enum_field_value(row[index])].to_s, patient[field].to_s, err_msg)
           elsif TIME_FIELDS.include?(field)

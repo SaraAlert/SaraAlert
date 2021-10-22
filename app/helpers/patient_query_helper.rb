@@ -253,145 +253,6 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     filters.each do |filter|
       case filter[:filterOption]['name']
-      when 'lab-result'
-        patients = advanced_filter_lab_result(patients, filter)
-      when 'vaccination'
-        patients = advanced_filter_vaccines(patients, filter)
-      when 'sent-today'
-        patients = if filter[:value].present?
-                     patients.where('last_assessment_reminder_sent >= ?', 24.hours.ago)
-                   else
-                     patients.where('last_assessment_reminder_sent < ?', 24.hours.ago).or(patients.where(last_assessment_reminder_sent: nil))
-                   end
-      when 'responded-today'
-        patients = if filter[:value].present?
-                     patients.where('latest_assessment_at >= ?', 24.hours.ago)
-                   else
-                     patients.where('latest_assessment_at < ?', 24.hours.ago).or(patients.where(latest_assessment_at: nil))
-                   end
-      when 'paused'
-        patients = patients.where(pause_notifications: filter[:value].present? ? true : [nil, false])
-      when 'monitoring-status'
-        patients = patients.where(monitoring: filter[:value].present? ? true : [nil, false])
-      when 'preferred-contact-method'
-        patients = patients.where(preferred_contact_method: filter[:value].blank? ? [nil, ''] : filter[:value])
-      when 'sms-blocked'
-        patients = if filter[:value]
-                     patients.where(primary_telephone: BlockedNumber.pluck(:phone_number))
-                   else
-                     patients.where.not(primary_telephone: BlockedNumber.pluck(:phone_number)).or(patients.where(primary_telephone: nil))
-                   end
-      when 'hoh'
-        patients = if filter[:value]
-                     patients.where('patients.id = patients.responder_id')
-                   else
-                     patients.where.not('patients.id = patients.responder_id')
-                   end
-      when 'household-member'
-        patients = if filter[:value]
-                     patients.where.not('patients.id = patients.responder_id')
-                   else
-                     patients.where('patients.id = patients.responder_id')
-                   end
-      when 'enrolled'
-        patients = advanced_filter_date(patients, :created_at, filter, tz_diff, :time)
-      when 'enrolled-relative'
-        patients = advanced_filter_relative_date(patients, :created_at, filter, tz_diff, :time)
-      when 'latest-report'
-        patients = advanced_filter_date(patients, :latest_assessment_at, filter, tz_diff, :time)
-      when 'latest-report-relative'
-        patients = advanced_filter_relative_date(patients, :latest_assessment_at, filter, tz_diff, :time)
-      when 'last-date-exposure'
-        patients = advanced_filter_date(patients, :last_date_of_exposure, filter, tz_diff, :date)
-      when 'last-date-exposure-relative'
-        patients = advanced_filter_relative_date(patients, :last_date_of_exposure, filter, tz_diff, :date)
-      when 'symptom-onset'
-        patients = advanced_filter_date(patients, :symptom_onset, filter, tz_diff, :date)
-      when 'symptom-onset-relative'
-        patients = advanced_filter_relative_date(patients, :symptom_onset, filter, tz_diff, :date)
-      when 'continous-exposure'
-        patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
-      when 'close-contact-with-known-case-id'
-        if filter[:value].blank?
-          patients = patients.where(contact_of_known_case_id: [nil, ''])
-        else
-          value_string = filter[:value].split(/\s*,\s*/).join('|')
-          case filter[:additionalFilterOption]
-          when 'Exact Match'
-            # regexp expression takes a list of strings separated by | and returns the monitorees where the
-            # contact of known case value has an exact match any of the values in the list
-            # the possible cases are: exact match of the entire value or contained in the value but preceeded and/or followed by a comma
-            # whitespace directly after the first comma and before the second is accounted for when checking possible matches
-            patients = patients.where('contact_of_known_case_id REGEXP ?', "(^|,\s*)(#{value_string})(\s*,|$)")
-          when 'Contains'
-            # regexp expression takes a list of strings separated by | and returns the monitorees where the
-            # contact of known case value contains any of the values in the list
-            patients = patients.where('contact_of_known_case_id REGEXP ?', value_string.to_s)
-          end
-        end
-      when 'telephone-number'
-        patients = if filter[:value].blank?
-                     patients.where(primary_telephone: [nil, ''])
-                   else
-                     patients.where('patients.primary_telephone like ?', Phonelib.parse(filter[:value], 'US').full_e164)
-                   end
-      when 'telephone-number-partial'
-        patients = if filter[:value].blank?
-                     patients.where(primary_telephone: [nil, ''])
-                   else
-                     patients.where('patients.primary_telephone like ?', "%#{filter[:value]}%")
-                   end
-      when 'email'
-        patients = if filter[:value].blank?
-                     patients.where(email: [nil, ''])
-                   else
-                     patients.where('lower(patients.email) like ?', "%#{filter[:value]&.downcase}%")
-                   end
-      when 'primary-language'
-        patients = if filter[:value].blank?
-                     patients.where(primary_language: [nil, ''])
-                   else
-                     language = DISPLAY_LANGUAGES[filter[:value]&.downcase&.strip] || Languages.normalize_and_get_langauge_name(filter[:value]&.downcase&.strip)
-                     patients.where(primary_language: language)
-                   end
-      when 'sara-id'
-        patients = patients.where(id: filter[:value])
-      when 'first-name'
-        patients = if filter[:value].blank?
-                     patients.where(first_name: [nil, ''])
-                   else
-                     patients.where('lower(patients.first_name) like ?', "%#{filter[:value]&.downcase}%")
-                   end
-      when 'middle-name'
-        patients = if filter[:value].blank?
-                     patients.where(middle_name: [nil, ''])
-                   else
-                     patients.where('lower(patients.middle_name) like ?', "%#{filter[:value]&.downcase}%")
-                   end
-      when 'last-name'
-        patients = if filter[:value].blank?
-                     patients.where(last_name: [nil, ''])
-                   else
-                     patients.where('lower(patients.last_name) like ?', "%#{filter[:value]&.downcase}%")
-                   end
-      when 'cohort'
-        patients = if filter[:value].blank?
-                     patients.where(member_of_a_common_exposure_cohort_type: [nil, ''])
-                   else
-                     patients.where('lower(patients.member_of_a_common_exposure_cohort_type) like ?', "%#{filter[:value]&.downcase}%")
-                   end
-      when 'address-usa'
-        patients = patients.where('lower(patients.address_line_1) like ?', "%#{filter[:value]&.downcase}%").or(
-          patients.where('lower(patients.address_line_2) like ?', "%#{filter[:value]&.downcase}%").or(
-            patients.where('lower(patients.address_city) like ?', "%#{filter[:value]&.downcase}%").or(
-              patients.where('lower(patients.address_state) like ?', "%#{filter[:value]&.downcase}%").or(
-                patients.where('lower(patients.address_zip) like ?', "%#{filter[:value]&.downcase}%").or(
-                  patients.where('lower(patients.address_county) like ?', "%#{filter[:value]&.downcase}%")
-                )
-              )
-            )
-          )
-        )
       when 'address-foreign'
         patients = patients.where('lower(patients.foreign_address_line_1) like ?', "%#{filter[:value]&.downcase}%").or(
           patients.where('lower(patients.foreign_address_line_2) like ?', "%#{filter[:value]&.downcase}%").or(
@@ -406,35 +267,18 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
             )
           )
         )
-      when 'monitoring-plan'
-        patients = patients.where(monitoring_plan: filter[:value].blank? ? [nil, ''] : filter[:value])
-      when 'never-responded'
-        patients = if filter[:value]
-                     patients.where(latest_assessment_at: nil)
-                   else
-                     patients.where.not(latest_assessment_at: nil)
-                   end
-      when 'risk-exposure'
-        patients = patients.where(exposure_risk_assessment: filter[:value].blank? ? [nil, ''] : filter[:value])
-      when 'require-interpretation'
-        patients = patients.where(interpretation_required: filter[:value].present? ? true : [nil, false])
-      when 'preferred-contact-time'
-        patients = advanced_filter_preferred_contact_time(patients, filter)
-      when 'manual-contact-attempts'
-        # less/greater-than operators are flipped for where_assoc_count
-        operator = :==
-        operator = :> if filter[:numberOption] == 'less-than'
-        operator = :>= if filter[:numberOption] == 'less-than-equal'
-        operator = :<= if filter[:numberOption] == 'greater-than-equal'
-        operator = :< if filter[:numberOption] == 'greater-than'
-        case filter[:additionalFilterOption]
-        when 'Successful'
-          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts, successful: true)
-        when 'Unsuccessful'
-          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts, successful: false)
-        when 'All'
-          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts)
-        end
+      when 'address-usa'
+        patients = patients.where('lower(patients.address_line_1) like ?', "%#{filter[:value]&.downcase}%").or(
+          patients.where('lower(patients.address_line_2) like ?', "%#{filter[:value]&.downcase}%").or(
+            patients.where('lower(patients.address_city) like ?', "%#{filter[:value]&.downcase}%").or(
+              patients.where('lower(patients.address_state) like ?', "%#{filter[:value]&.downcase}%").or(
+                patients.where('lower(patients.address_zip) like ?', "%#{filter[:value]&.downcase}%").or(
+                  patients.where('lower(patients.address_county) like ?', "%#{filter[:value]&.downcase}%")
+                )
+              )
+            )
+          )
+        )
       when 'age'
         # specific case where value is a range not a single value
         if filter[:numberOption] == 'between'
@@ -467,15 +311,81 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
             patients = patients.where('date_of_birth <= ?', DateTime.now - age_plus_1.year)
           end
         end
-      when 'ten-day-quarantine'
-        patients = advanced_filter_quarantine_option(patients, filter, :ten_day)
-      when 'seven-day-quarantine'
-        patients = advanced_filter_quarantine_option(patients, filter, :seven_day)
+      when 'assigned-user'
+        if filter[:value].present?
+          # Map multi-select type filter from { label, value } to values
+          filter_assigned_users = filter[:value].map { |p| p[:value] }
+
+          # Get patients where assigned_user is any of the assigned users specified in the filter
+          patients = patients.where(assigned_user: filter_assigned_users)
+        end
+      when 'close-contact-with-known-case-id'
+        if filter[:value].blank?
+          patients = patients.where(contact_of_known_case_id: [nil, ''])
+        else
+          value_string = filter[:value].split(/\s*,\s*/).join('|')
+          case filter[:additionalFilterOption]
+          when 'Exact Match'
+            # regexp expression takes a list of strings separated by | and returns the monitorees where the
+            # contact of known case value has an exact match any of the values in the list
+            # the possible cases are: exact match of the entire value or contained in the value but preceeded and/or followed by a comma
+            # whitespace directly after the first comma and before the second is accounted for when checking possible matches
+            patients = patients.where('contact_of_known_case_id REGEXP ?', "(^|,\s*)(#{value_string})(\s*,|$)")
+          when 'Contains'
+            # regexp expression takes a list of strings separated by | and returns the monitorees where the
+            # contact of known case value contains any of the values in the list
+            patients = patients.where('contact_of_known_case_id REGEXP ?', value_string.to_s)
+          end
+        end
+      when 'cohort'
+        patients = if filter[:value].blank?
+                     patients.where(member_of_a_common_exposure_cohort_type: [nil, ''])
+                   else
+                     patients.where('lower(patients.member_of_a_common_exposure_cohort_type) like ?', "%#{filter[:value]&.downcase}%")
+                   end
+      when 'contact-type'
+        if filter[:value].present?
+          # Map multi-select type filter from { label, value } to values
+          filter_contact_types = filter[:value].map { |p| p[:value] }
+
+          # Get patients where assigned_user is any of the assigned users specified in the filter
+          patients = patients.where(contact_type: filter_contact_types)
+        end
+      when 'continous-exposure'
+        patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
+      when 'email'
+        patients = if filter[:value].blank?
+                     patients.where(email: [nil, ''])
+                   else
+                     patients.where('lower(patients.email) like ?', "%#{filter[:value]&.downcase}%")
+                   end
+      when 'enrolled'
+        patients = advanced_filter_date(patients, :created_at, filter, tz_diff, :time)
+      when 'enrolled-relative'
+        patients = advanced_filter_relative_date(patients, :created_at, filter, tz_diff, :time)
+      when 'first-name'
+        patients = if filter[:value].blank?
+                     patients.where(first_name: [nil, ''])
+                   else
+                     patients.where('lower(patients.first_name) like ?', "%#{filter[:value]&.downcase}%")
+                   end
       when 'flagged-for-follow-up'
         patients = if filter[:value] == 'Any Reason'
                      patients.where.not(follow_up_reason: [nil, ''])
                    else
                      patients.where(follow_up_reason: filter[:value])
+                   end
+      when 'hoh'
+        patients = if filter[:value]
+                     patients.where('patients.id = patients.responder_id')
+                   else
+                     patients.where.not('patients.id = patients.responder_id')
+                   end
+      when 'household-member'
+        patients = if filter[:value]
+                     patients.where.not('patients.id = patients.responder_id')
+                   else
+                     patients.where('patients.id = patients.responder_id')
                    end
       when 'ineligible-for-recovery-definition'
         patients = patients.where(isolation: true)
@@ -485,17 +395,10 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                    else
                      patients.where.not(symptom_onset: nil)
                              .or(
-                               patients.where_assoc_exists(:laboratories, "laboratories.result = 'positive' AND laboratories.specimen_collection IS NOT NULL")
+                               patients.where_assoc_exists(:laboratories,
+                                                           "laboratories.result = 'positive' AND laboratories.specimen_collection IS NOT NULL")
                              )
                    end
-      when 'assigned-user'
-        if filter[:value].present?
-          # Map multi-select type filter from { label, value } to values
-          filter_assigned_users = filter[:value].map { |p| p[:value] }
-
-          # Get patients where assigned_user is any of the assigned users specified in the filter
-          patients = patients.where(assigned_user: filter_assigned_users)
-        end
       when 'jurisdiction'
         if filter[:value].present?
           # Map multi-select type filter from { label, value } to jurisdictions
@@ -511,12 +414,118 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           # Get patients where jurisdiction is any of the jurisdictions or subjurisdictions of the filter
           patients = patients.where(jurisdiction_id: subjurisdictions)
         end
+      when 'lab-result'
+        patients = advanced_filter_lab_result(patients, filter)
+      when 'last-date-exposure'
+        patients = advanced_filter_date(patients, :last_date_of_exposure, filter, tz_diff, :date)
+      when 'last-date-exposure-relative'
+        patients = advanced_filter_relative_date(patients, :last_date_of_exposure, filter, tz_diff, :date)
+      when 'last-name'
+        patients = if filter[:value].blank?
+                     patients.where(last_name: [nil, ''])
+                   else
+                     patients.where('lower(patients.last_name) like ?', "%#{filter[:value]&.downcase}%")
+                   end
+      when 'latest-report'
+        patients = advanced_filter_date(patients, :latest_assessment_at, filter, tz_diff, :time)
+      when 'latest-report-relative'
+        patients = advanced_filter_relative_date(patients, :latest_assessment_at, filter, tz_diff, :time)
+      when 'manual-contact-attempts'
+        # less/greater-than operators are flipped for where_assoc_count
+        operator = :==
+        operator = :> if filter[:numberOption] == 'less-than'
+        operator = :>= if filter[:numberOption] == 'less-than-equal'
+        operator = :<= if filter[:numberOption] == 'greater-than-equal'
+        operator = :< if filter[:numberOption] == 'greater-than'
+        case filter[:additionalFilterOption]
+        when 'Successful'
+          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts, successful: true)
+        when 'Unsuccessful'
+          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts, successful: false)
+        when 'All'
+          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts)
+        end
+      when 'middle-name'
+        patients = if filter[:value].blank?
+                     patients.where(middle_name: [nil, ''])
+                   else
+                     patients.where('lower(patients.middle_name) like ?', "%#{filter[:value]&.downcase}%")
+                   end
+      when 'monitoring-plan'
+        patients = patients.where(monitoring_plan: filter[:value].blank? ? [nil, ''] : filter[:value])
+      when 'monitoring-status'
+        patients = patients.where(monitoring: filter[:value].present? ? true : [nil, false])
+      when 'never-responded'
+        patients = if filter[:value]
+                     patients.where(latest_assessment_at: nil)
+                   else
+                     patients.where.not(latest_assessment_at: nil)
+                   end
+      when 'paused'
+        patients = patients.where(pause_notifications: filter[:value].present? ? true : [nil, false])
+      when 'preferred-contact-method'
+        patients = patients.where(preferred_contact_method: filter[:value].blank? ? [nil, ''] : filter[:value])
+      when 'preferred-contact-time'
+        patients = advanced_filter_preferred_contact_time(patients, filter)
+      when 'primary-language'
+        patients = if filter[:value].blank?
+                     patients.where(primary_language: [nil, ''])
+                   else
+                     language = DISPLAY_LANGUAGES[filter[:value]&.downcase&.strip] || Languages.normalize_and_get_langauge_name(filter[:value]&.downcase&.strip)
+                     patients.where(primary_language: language)
+                   end
+      when 'require-interpretation'
+        patients = patients.where(interpretation_required: filter[:value].present? ? true : [nil, false])
+      when 'responded-today'
+        patients = if filter[:value].present?
+                     patients.where('latest_assessment_at >= ?', 24.hours.ago)
+                   else
+                     patients.where('latest_assessment_at < ?', 24.hours.ago).or(patients.where(latest_assessment_at: nil))
+                   end
+      when 'risk-exposure'
+        patients = patients.where(exposure_risk_assessment: filter[:value].blank? ? [nil, ''] : filter[:value])
+      when 'sara-id'
+        patients = patients.where(id: filter[:value])
+      when 'sent-today'
+        patients = if filter[:value].present?
+                     patients.where('last_assessment_reminder_sent >= ?', 24.hours.ago)
+                   else
+                     patients.where('last_assessment_reminder_sent < ?', 24.hours.ago).or(patients.where(last_assessment_reminder_sent: nil))
+                   end
+      when 'seven-day-quarantine'
+        patients = advanced_filter_quarantine_option(patients, filter, :seven_day)
+      when 'sms-blocked'
+        patients = if filter[:value]
+                     patients.where(primary_telephone: BlockedNumber.pluck(:phone_number))
+                   else
+                     patients.where.not(primary_telephone: BlockedNumber.pluck(:phone_number)).or(patients.where(primary_telephone: nil))
+                   end
+      when 'symptom-onset'
+        patients = advanced_filter_date(patients, :symptom_onset, filter, tz_diff, :date)
+      when 'symptom-onset-relative'
+        patients = advanced_filter_relative_date(patients, :symptom_onset, filter, tz_diff, :date)
+      when 'telephone-number'
+        patients = if filter[:value].blank?
+                     patients.where(primary_telephone: [nil, ''])
+                   else
+                     patients.where('patients.primary_telephone like ?', Phonelib.parse(filter[:value], 'US').full_e164)
+                   end
+      when 'telephone-number-partial'
+        patients = if filter[:value].blank?
+                     patients.where(primary_telephone: [nil, ''])
+                   else
+                     patients.where('patients.primary_telephone like ?', "%#{filter[:value]}%")
+                   end
+      when 'ten-day-quarantine'
+        patients = advanced_filter_quarantine_option(patients, filter, :ten_day)
       when 'unenrolled-close-contact'
         patients = if filter[:value]
                      patients.where_assoc_exists(:close_contacts, enrolled_id: nil)
                    else
                      patients.where_assoc_not_exists(:close_contacts, enrolled_id: nil)
                    end
+      when 'vaccination'
+        patients = advanced_filter_vaccines(patients, filter)
       end
     end
     patients
