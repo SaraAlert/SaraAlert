@@ -71,9 +71,14 @@ class Contact extends React.Component {
 
   handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    if (event.target.id === 'primary_telephone' || event.target.id === 'secondary_telephone') {
+    if (
+      event.target.id === 'primary_telephone' ||
+      event.target.id === 'secondary_telephone' ||
+      event.target.id === 'alternate_primary_telephone' ||
+      event.target.id === 'alternate_secondary_telephone'
+    ) {
       value = value.replace(/-/g, '');
-    } else if (event.target.id === 'international_telephone') {
+    } else if (event.target.id === 'international_telephone' || event.target.id === 'alternate_international_telephone') {
       value = value.replace(/[^0-9.\-()+ ]/g, '');
     }
 

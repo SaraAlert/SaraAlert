@@ -109,6 +109,13 @@ class Enrollment extends React.Component {
     data.patient.secondary_telephone = data.patient.secondary_telephone
       ? phoneUtil.format(phoneUtil.parse(data.patient.secondary_telephone, 'US'), PNF.E164)
       : data.patient.secondary_telephone;
+    data.patient.alternate_primary_telephone = data.patient.alternate_primary_telephone
+      ? phoneUtil.format(phoneUtil.parse(data.patient.alternate_primary_telephone, 'US'), PNF.E164)
+      : data.patient.alternate_primary_telephone;
+    data.patient.alternate_secondary_telephone = data.patient.alternate_secondary_telephone
+      ? phoneUtil.format(phoneUtil.parse(data.patient.alternate_secondary_telephone, 'US'), PNF.E164)
+      : data.patient.alternate_secondary_telephone;
+
     const message = this.props.edit_mode ? 'Monitoree Successfully Updated.' : 'Monitoree Successfully Saved.';
     if (this.props.parent_id) {
       data['responder_id'] = this.props.parent_id;
