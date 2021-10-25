@@ -4,6 +4,7 @@
 class PurgeJob < ApplicationJob
   queue_as :default
 
+  # When modifying purge, ensure user documentation is updated accordingly
   def perform(*_args)
     job_info = {
       start_time: DateTime.now
@@ -60,6 +61,7 @@ class PurgeJob < ApplicationJob
   end
 
   # Everything except these will be set to nil
+  # When modifying, ensure user documentation is updated accordingly
   def self.attributes_to_keep
     %w[id created_at updated_at responder_id creator_id jurisdiction_id
        monitoring monitoring_reason exposure_risk_assessment
