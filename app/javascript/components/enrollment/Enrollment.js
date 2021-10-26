@@ -89,13 +89,26 @@ class Enrollment extends React.Component {
     }
   };
 
+  fieldUpdated = field => {
+    const oldValue = _.get(this.props.patient, field);
+    const newValue = _.get(this.state.enrollmentState.patient, field);
+    let diff = false;
+    if (newValue !== oldValue) {
+      diff = true;
+      if (_.isNil(newValue) && _.isNil(oldValue)) {
+        diff = false;
+      }
+    }
+    return diff;
+  };
+
   submit = (_event, groupMember, reenableButtons) => {
     window.onbeforeunload = null;
 
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     // If enrolling, include ALL fields in diff keys. If editing, only include the ones that have changed
     let diffKeys = this.props.edit_mode
-      ? Object.keys(this.state.enrollmentState.patient).filter(k => _.get(this.state.enrollmentState.patient, k) !== _.get(this.props.patient, k) || k === 'id')
+      ? Object.keys(this.state.enrollmentState.patient).filter(k => this.fieldUpdated(k) || k === 'id')
       : Object.keys(this.state.enrollmentState.patient);
 
     let data = new Object({
