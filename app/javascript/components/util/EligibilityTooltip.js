@@ -24,6 +24,12 @@ class EligibilityTooltip extends React.Component {
     };
   }
 
+  static getDerivedStateFromProps(nextProps) {
+    let activeOption = eligibility_options.find(eo => nextProps.report_eligibility[`${eo.conditional}`]) || _.last(eligibility_options);
+    activeOption.messages = activeOption.messageCount === 1 ? [nextProps.report_eligibility.messages[0]] : nextProps.report_eligibility.messages;
+    return { activeOption };
+  }
+
   render() {
     return (
       <React.Fragment>
