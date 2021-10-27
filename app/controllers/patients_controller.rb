@@ -935,8 +935,6 @@ class PatientsController < ApplicationController
       :crew_on_passenger_or_cargo_flight,
       :monitoring_plan,
       :exposure_risk_assessment,
-      :member_of_a_common_exposure_cohort,
-      :member_of_a_common_exposure_cohort_type,
       :isolation,
       :jurisdiction_id,
       :assigned_user,
@@ -1033,8 +1031,6 @@ class PatientsController < ApplicationController
       healthcare_personnel_facility_name
       exposure_notes
       crew_on_passenger_or_cargo_flight
-      member_of_a_common_exposure_cohort
-      member_of_a_common_exposure_cohort_type
       isolation
       jurisdiction_id
       assigned_user

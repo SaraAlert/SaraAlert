@@ -338,11 +338,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           end
         end
       when 'cohort'
-        patients = if filter[:value].blank?
-                     patients.where(member_of_a_common_exposure_cohort_type: [nil, ''])
-                   else
-                     patients.where('lower(patients.member_of_a_common_exposure_cohort_type) like ?', "%#{filter[:value]&.downcase}%")
-                   end
+        # implement
+        next
       when 'contact-type'
         if filter[:value].present?
           # Map multi-select type filter from { label, value } to values

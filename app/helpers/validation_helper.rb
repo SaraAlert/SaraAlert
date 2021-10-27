@@ -303,7 +303,6 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     laboratory_personnel: { label: 'Laboratory Personnel?', checks: [:bool] },
     healthcare_personnel: { label: 'Healthcare Personnel?', checks: [:bool] },
     crew_on_passenger_or_cargo_flight: { label: 'Crew on Passenger or Cargo Flight?', checks: [:bool] },
-    member_of_a_common_exposure_cohort: { label: 'Member of a Common Exposure Cohort?', checks: [:bool] },
     jurisdiction_id: { label: 'Jurisdiction ID', checks: [] },
     assigned_user: { label: 'Assigned User', checks: [] },
     exposure_risk_assessment: { label: 'Exposure Risk Assessment', checks: [:enum] },

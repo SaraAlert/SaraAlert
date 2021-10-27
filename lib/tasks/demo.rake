@@ -518,19 +518,23 @@ namespace :demo do
         patient[:additional_planned_travel_related_notes] = Faker::ChuckNorris.fact if rand < 0.4
       end
 
-      # Potential Exposure Info
+      # Potential Exposure/Case information
       patient[:isolation] = rand < (days_ago > 10 ? 0.9 : 0.4)
       if patient[:isolation]
         if rand < 0.7
           patient[:symptom_onset] = beginning_of_day - rand(10).days
           patient[:user_defined_symptom_onset] = true
         end
+        patient[:extended_isolation] = beginning_of_day + rand(10).days if rand < 0.3
+        patient[:case_status] = %w[Confirmed Probable].sample
       else
         patient[:continuous_exposure] = rand < 0.3
-        patient[:last_date_of_exposure] = beginning_of_day - rand(5).days unless patient[:continuous_exposure]
+        patient[:last_date_of_exposure] = beginning_of_day - rand(5).days if patient[:continuous_exposure].blank?
+        patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
+        patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
+        patient[:case_status] = ['Suspect', 'Unknown', 'Not a Case'].sample if rand < 0.2
       end
-      patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
-      patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
+
       patient[:exposure_notes] = Faker::Games::LeagueOfLegends.quote if rand < 0.5
       patient[:jurisdiction_id] = jurisdictions.sample[:id]
       patient[:assigned_user] = assigned_users[patient[:jurisdiction_id]].sample if rand < 0.8
@@ -539,7 +543,6 @@ namespace :demo do
       if rand < 0.85
         patient[:contact_of_known_case] = rand < 0.5
         patient[:contact_of_known_case_id] = known_case_ids[patient[:jurisdiction_id]].sample(rand(1..3)).join(', ') if patient[:contact_of_known_case] && rand < 0.9
-        # patient[:member_of_a_common_exposure_cohort] = rand < 0.35
         patient[:travel_to_affected_country_or_area] = rand < 0.1
         patient[:laboratory_personnel] = rand < 0.25
         patient[:laboratory_personnel_facility_name] = Faker::Company.name if patient[:laboratory_personnel] && rand < 0.5
@@ -550,30 +553,26 @@ namespace :demo do
         patient[:was_in_health_care_facility_with_known_cases_facility_name] = Faker::GreekPhilosophers.name if patient[:was_in_health_care_facility_with_known_cases] && rand < 0.15
       end
 
-      # Other fields populated upon enrollment
-      patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
-      patient[:time_zone] = time_zone_for_state(patient[:monitored_address_state] || patient[:address_state] || 'massachusetts')
-      patient[:creator_id] = rand_enroller[0]
-      patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
-      patient_ts = create_fake_timestamp(beginning_of_day)
-      patient[:created_at] = patient_ts
-      patient[:updated_at] = patient_ts
-
-      # Update monitoring status
-      patient[:extended_isolation] = beginning_of_day + rand(10).days if patient[:isolation] && rand < 0.3
-      patient[:case_status] = patient[:isolation] ? %w[Confirmed Probable].sample : ['Suspect', 'Unknown', 'Not a Case', nil].sample
-      patient[:monitoring] = rand < 0.95
-      patient[:closed_at] = patient[:updated_at] unless patient[:monitoring]
-      patient[:monitoring_reason] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_reason].sample if patient[:monitoring].nil?
-      patient[:public_health_action] = patient[:isolation] || rand < 0.8 ? 'None' : ValidationHelper::VALID_PATIENT_ENUMS[:public_health_action].sample
-      patient[:pause_notifications] = rand < 0.1
-      patient[:last_assessment_reminder_sent] = beginning_of_day - rand(7).days if rand < 0.3
-
-      # Fields used for tracking workflow changes
+      # Workflow changes
       patient[:enrolled_isolation] = patient[:isolation] if rand < 0.8
       if rand < 0.5 # switch workflows once
         patient[:isolation] = !patient[:isolation]
-        patient[patient[:isolation] ? :exposure_to_isolation_at : :isolation_to_exposure_at] = beginning_of_day - rand(21).days
+        if patient[:isolation]
+          patient[:exposure_to_isolation_at] = beginning_of_day - rand(21).days
+          if rand < 0.7
+            patient[:symptom_onset] = beginning_of_day - rand(10).days
+            patient[:user_defined_symptom_onset] = true
+          end
+          patient[:extended_isolation] = beginning_of_day + rand(10).days if rand < 0.3
+          patient[:case_status] = %w[Confirmed Probable].sample
+        else
+          patient[:isolation_to_exposure_at] = beginning_of_day - rand(21).days
+          patient[:continuous_exposure] = rand < 0.3
+          patient[:last_date_of_exposure] = beginning_of_day - rand(5).days if patient[:continuous_exposure].blank?
+          patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
+          patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
+          patient[:case_status] = ['Suspect', 'Unknown', 'Not a Case'].sample if rand < 0.2
+        end
         if rand < 0.1 # switch workflows again
           patient[:isolation] = !patient[:isolation]
           if patient[:isolation]
@@ -584,11 +583,29 @@ namespace :demo do
         end
       end
 
-      # Follow-up Flag
+      # Update monitoring status
+      patient[:monitoring] = rand < 0.95
+      unless patient[:monitoring]
+        patient[:closed_at] = patient[:updated_at]
+        patient[:monitoring_reason] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_reason].sample
+      end
+
+      patient[:public_health_action] = patient[:isolation] || rand < 0.8 ? 'None' : ValidationHelper::VALID_PATIENT_ENUMS[:public_health_action].sample
+      patient[:pause_notifications] = rand < 0.1
+      patient[:last_assessment_reminder_sent] = beginning_of_day - rand(7).days if rand < 0.4
       if rand < 0.15
         patient[:follow_up_reason] = ValidationHelper::FOLLOW_UP_FLAG_REASONS.sample
         patient[:follow_up_note] = Faker::GreekPhilosophers.quote if rand < 0.75
       end
+
+      # Other metadata fields populated upon enrollment
+      patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
+      patient[:time_zone] = time_zone_for_state(patient[:monitored_address_state] || patient[:address_state] || 'massachusetts')
+      patient[:creator_id] = rand_enroller[0]
+      patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
+      patient_ts = create_fake_timestamp(beginning_of_day)
+      patient[:created_at] = patient_ts
+      patient[:updated_at] = patient_ts
 
       patients << patient
     end
@@ -1142,7 +1159,7 @@ namespace :demo do
   end
 
   def demo_cache_analytics(beginning_of_day)
-    printf('Caching analytics...')
+    printf('  Caching analytics...')
     Rake::Task['analytics:cache_current_analytics'].reenable
     Rake::Task['analytics:cache_current_analytics'].invoke
     # Add time onto update time for more realistic reports

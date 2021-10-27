@@ -427,7 +427,6 @@ ActiveRecord::Schema.define(version: 2021_11_10_160736) do
     t.string "potential_exposure_country", limit: 200
     t.boolean "contact_of_known_case"
     t.string "contact_of_known_case_id", limit: 200
-    t.boolean "member_of_a_common_exposure_cohort"
     t.boolean "travel_to_affected_country_or_area"
     t.boolean "laboratory_personnel"
     t.string "laboratory_personnel_facility_name", limit: 200

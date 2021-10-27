@@ -959,8 +959,6 @@ class ApiControllerTest < ApiControllerTestCase
                                    was_in_health_care_facility_with_known_cases_facility_name: 'hospital',
                                    laboratory_personnel: true, laboratory_personnel_facility_name: 'lab',
                                    healthcare_personnel: false, healthcare_personnel_facility_name: 'facility',
-                                   member_of_a_common_exposure_cohort: true,
-                                   member_of_a_common_exposure_cohort_type: 'laboratory member',
                                    travel_to_affected_country_or_area: false,
                                    crew_on_passenger_or_cargo_flight: true)
     @patient_1.extension.delete_if { |extension| extension.url.eql?('http://saraalert.org/StructureDefinition/exposure-risk-factors') }

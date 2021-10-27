@@ -139,7 +139,6 @@ class Patient extends React.Component {
       this.props.details.additional_planned_travel_end_date;
     const showRiskFactors =
       this.props.details.contact_of_known_case ||
-      this.props.details.member_of_a_common_exposure_cohort ||
       this.props.details.travel_to_affected_country_or_area ||
       this.props.details.was_in_health_care_facility_with_known_cases ||
       this.props.details.laboratory_personnel ||
@@ -676,14 +675,6 @@ class Patient extends React.Component {
                       <li>
                         <span className="risk-factor">Close Contact with a Known Case</span>
                         {this.props.details.contact_of_known_case_id && <span className="risk-val">{this.props.details.contact_of_known_case_id}</span>}
-                      </li>
-                    )}
-                    {this.props.details.member_of_a_common_exposure_cohort && (
-                      <li>
-                        <span className="risk-factor">Member of a Common Exposure Cohort</span>
-                        {this.props.details.member_of_a_common_exposure_cohort_type && (
-                          <span className="risk-val">{this.props.details.member_of_a_common_exposure_cohort_type}</span>
-                        )}
                       </li>
                     )}
                     {this.props.details.travel_to_affected_country_or_area && (

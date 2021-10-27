@@ -988,8 +988,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
                                   patient.laboratory_personnel_facility_name),
       to_risk_factor_subextension('healthcare-personnel', 'healthcare-personnel-facility-name', patient.healthcare_personnel,
                                   patient.healthcare_personnel_facility_name),
-      to_risk_factor_subextension('member-of-a-common-exposure-cohort', 'member-of-a-common-exposure-cohort-type',
-                                  patient.member_of_a_common_exposure_cohort, patient.member_of_a_common_exposure_cohort_type),
       to_bool_extension(patient.travel_to_affected_country_or_area || false, 'travel-from-affected-country-or-area'),
       to_bool_extension(patient.crew_on_passenger_or_cargo_flight || false, 'crew-on-passenger-or-cargo-flight')
     ]
@@ -1063,14 +1061,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
             healthcare_personnel: from_bool_extension_false_default(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]", 'healthcare-personnel'),
             healthcare_personnel_facility_name: from_string_extension(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
                                                                       'healthcare-personnel-facility-name')
-          }
-      when "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort"
-        sub_ext_risk_factors =
-          {
-            member_of_a_common_exposure_cohort: from_bool_extension_false_default(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
-                                                                                  'member-of-a-common-exposure-cohort'),
-            member_of_a_common_exposure_cohort_type: from_string_extension(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
-                                                                           'member-of-a-common-exposure-cohort-type')
           }
       else
         next

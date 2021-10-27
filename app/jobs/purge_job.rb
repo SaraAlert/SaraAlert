@@ -64,17 +64,11 @@ class PurgeJob < ApplicationJob
   # Everything except these will be set to nil
   # When modifying, ensure user documentation is updated accordingly
   def self.attributes_to_keep
-    %w[id created_at updated_at responder_id creator_id jurisdiction_id
-       monitoring monitoring_reason exposure_risk_assessment
-       monitoring_plan isolation symptom_onset public_health_action age sex
-       address_county symptom_onset contact_of_known_case
-       member_of_a_common_exposure_cohort travel_to_affected_country_or_area
-       laboratory_personnel was_in_health_care_facility_with_known_cases
-       healthcare_personnel crew_on_passenger_or_cargo_flight white
-       black_or_african_american american_indian_or_alaska_native asian
-       native_hawaiian_or_other_pacific_islander race_other race_unknown
-       race_refused_to_answer ethnicity purged continuous_exposure time_zone
-       case_status enrolled_isolation exposure_to_isolation_at isolation_to_exposure_at]
+    %w[id created_at updated_at responder_id creator_id jurisdiction_id monitoring monitoring_reason exposure_risk_assessment monitoring_plan isolation
+       symptom_onset public_health_action age sex address_county symptom_onset contact_of_known_case travel_to_affected_country_or_area laboratory_personnel
+       was_in_health_care_facility_with_known_cases healthcare_personnel crew_on_passenger_or_cargo_flight white black_or_african_american
+       american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander race_other race_unknown race_refused_to_answer ethnicity purged
+       continuous_exposure time_zone case_status enrolled_isolation exposure_to_isolation_at isolation_to_exposure_at]
   end
 
   private

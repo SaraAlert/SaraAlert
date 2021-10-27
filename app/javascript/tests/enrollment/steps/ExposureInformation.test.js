@@ -113,11 +113,6 @@ describe('ExposureInformation', () => {
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').exists()).toBe(true);
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').hostNodes().prop('checked')).toBe(false);
 
-    expect(wrapper.find('#member_of_a_common_exposure_cohort').exists()).toBe(true);
-    expect(wrapper.find('#member_of_a_common_exposure_cohort').hostNodes().prop('checked')).toBe(false);
-    expect(wrapper.find('#member_of_a_common_exposure_cohort_type').exists()).toBe(true);
-    expect(wrapper.find('#member_of_a_common_exposure_cohort_type').hostNodes().prop('value')).toEqual('');
-
     expect(wrapper.find('#exposure_notes').exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').hostNodes().prop('value')).toEqual('');
     expect(wrapper.find('.character-limit-text').exists()).toBe(true);
@@ -168,11 +163,6 @@ describe('ExposureInformation', () => {
 
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').exists()).toBe(true);
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').hostNodes().prop('checked')).toBe(mockPatient2.crew_on_passenger_or_cargo_flight);
-
-    expect(wrapper.find('#member_of_a_common_exposure_cohort').exists()).toBe(true);
-    expect(wrapper.find('#member_of_a_common_exposure_cohort').hostNodes().prop('checked')).toBe(mockPatient2.member_of_a_common_exposure_cohort);
-    expect(wrapper.find('#member_of_a_common_exposure_cohort_type').exists()).toBe(true);
-    expect(wrapper.find('#member_of_a_common_exposure_cohort_type').hostNodes().prop('value')).toEqual(mockPatient2.member_of_a_common_exposure_cohort_type);
 
     expect(wrapper.find('#exposure_notes').exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').hostNodes().prop('value')).toEqual(mockPatient2.exposure_notes);
@@ -506,52 +496,6 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('current').patient.crew_on_passenger_or_cargo_flight).toBe(false);
     expect(wrapper.state('modified').patient.crew_on_passenger_or_cargo_flight).toBe(false);
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').prop('checked')).toBe(false);
-  });
-
-  it('Changing Risk Factor: "Member of Common Exposure Cohort" properly updates state and calls props.setEnrollmentState', () => {
-    const wrapper = getShallowWrapper(blankExposureMockPatient);
-    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(0);
-    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(false);
-    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort_type).toBeNull();
-    expect(wrapper.state('modified')).toEqual({});
-    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(false);
-    expect(wrapper.find('#member_of_a_common_exposure_cohort_type').prop('value')).toEqual('');
-
-    wrapper.find('#member_of_a_common_exposure_cohort').simulate('change', { target: { id: 'member_of_a_common_exposure_cohort', value: true } });
-    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(1);
-    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(true);
-    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort_type).toBeNull();
-    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort).toBe(true);
-    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort_type).toBeUndefined();
-    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(true);
-    expect(wrapper.find('#member_of_a_common_exposure_cohort_type').prop('value')).toEqual('');
-
-    wrapper.find('#member_of_a_common_exposure_cohort_type').simulate('change', { target: { id: 'member_of_a_common_exposure_cohort_type', value: 'some type' } });
-    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(2);
-    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(true);
-    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort_type).toEqual('some type');
-    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort).toBe(true);
-    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort_type).toEqual('some type');
-    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(true);
-    expect(wrapper.find('#member_of_a_common_exposure_cohort_type').prop('value')).toEqual('some type');
-
-    wrapper.find('#member_of_a_common_exposure_cohort').simulate('change', { target: { id: 'member_of_a_common_exposure_cohort', value: false } });
-    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(3);
-    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(false);
-    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort_type).toEqual('some type');
-    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort).toBe(false);
-    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort_type).toEqual('some type');
-    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(false);
-    expect(wrapper.find('#member_of_a_common_exposure_cohort_type').prop('value')).toEqual('some type');
-
-    wrapper.find('#member_of_a_common_exposure_cohort_type').simulate('change', { target: { id: 'member_of_a_common_exposure_cohort_type', value: '' } });
-    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(4);
-    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(false);
-    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort_type).toEqual('');
-    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort).toBe(false);
-    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort_type).toEqual('');
-    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(false);
-    expect(wrapper.find('#member_of_a_common_exposure_cohort_type').prop('value')).toEqual('');
   });
 
   it('Changing Notes properly updates state and calls props.setEnrollmentState', () => {
