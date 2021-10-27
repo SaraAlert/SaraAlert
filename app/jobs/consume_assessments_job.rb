@@ -97,6 +97,26 @@ class ConsumeAssessmentsJob
       end
 
       return
+    when 'max_retries_sms'
+      # Maximum amount of SMS response retries reached
+      History.contact_attempt(patient: patient, comment: 'The system could not record a response because the monitoree exceeded the maximum number' \
+                              " of daily report SMS response retries via primary telephone number #{patient.primary_telephone}.")
+      if dependents.present?
+        create_contact_attempt_history_for_dependents(dependents, "The system could not record a response because the monitoree's head of household" \
+          " exceeded the maximum number of daily report SMS response retries via primary telephone number #{patient.primary_telephone}.")
+      end
+
+      return
+    when 'max_retries_voice'
+      # Maximum amount of voice response retries reached
+      History.contact_attempt(patient: patient, comment: 'The system could not record a response because the monitoree exceeded the maximum number' \
+        " of report voice response retries via primary telephone number #{patient.primary_telephone}.")
+      if dependents.present?
+        create_contact_attempt_history_for_dependents(dependents, "The system could not record a response because the monitoree's head of household" \
+          " exceeded the maximum number of report voice response retries via primary telephone number #{patient.primary_telephone}.")
+      end
+
+      return
     end
 
     threshold_condition = ThresholdCondition.find_by(threshold_condition_hash: message['threshold_condition_hash'])
