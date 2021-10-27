@@ -189,124 +189,124 @@ Style/QuotedSymbols: # (new in 1.16)
 Style/StringChars: # (new in 1.12)
   Enabled: true
 Rails/FilePath:
-  Enabled: false
+  Enabled: true
   EnforcedStyle: arguments
 Style/SafeNavigation:
   Enabled: false
 Rails/WhereNot:
-  Enabled: false
+  Enabled: true
 Rails/WhereEquals:
-  Enabled: false
+  Enabled: true
 Rails/ShortI18n:
-  Enabled: false
+  Enabled: true
 Rails/Pluck:
-  Enabled: false
+  Enabled: true
 Rails/FindById:
-  Enabled: false
+  Enabled: true
 Rails/I18nLocaleAssignment:
-  Enabled: false
+  Enabled: true
 Rails/UnusedIgnoredColumns:
-  Enabled: false
+  Enabled: true
 Rails/TimeZoneAssignment:
-  Enabled: false
+  Enabled: true
 Rails/Inquiry:
-  Enabled: false
+  Enabled: true
 Rails/NegateInclude:
-  Enabled: false
+  Enabled: true
 Rails/RenderInline:
-  Enabled: false
+  Enabled: true
 Rails/SquishedSQLHeredocs:
-  Enabled: false
+  Enabled: true
 Rails/ActiveRecordCallbacksOrder:
-  Enabled: false
+  Enabled: true
 Rails/AfterCommitOverride:
-  Enabled: false
+  Enabled: true
 Rails/AddColumnIndex:
-  Enabled: false
+  Enabled: true
 Rails/RenderPlainText:
-  Enabled: false
+  Enabled: true
 Rails/MailerName:
-  Enabled: false
+  Enabled: true
 Rails/ExpandedDateRange:
-  Enabled: false
+  Enabled: true
 Rails/EagerEvaluationLogMessage:
-  Enabled: false
+  Enabled: true
 Rails/MatchRoute:
-  Enabled: false
+  Enabled: true
 Rails/PluckInWhere:
-  Enabled: false
+  Enabled: true
 Rails/WhereExists:
   Enabled: false
 Rails/AttributeDefaultBlockValue:
-  Enabled: false
+  Enabled: true
 Performance/Sum:
-  Enabled: false
+  Enabled: true
 Performance/StringInclude:
-  Enabled: false
+  Enabled: true
 Performance/Squeeze:
-  Enabled: false
+  Enabled: true
 Performance/SortReverse:
-  Enabled: false
+  Enabled: true
 Performance/ReverseFirst:
-  Enabled: false
+  Enabled: true
 Performance/RedundantStringChars:
-  Enabled: false
+  Enabled: true
 Performance/RedundantSplitRegexpArgument:
-  Enabled: false
+  Enabled: true
 Performance/MethodObjectAsBlock:
-  Enabled: false
+  Enabled: true
 Performance/RedundantSortBlock:
-  Enabled: false
+  Enabled: true
 Performance/MapCompact:
-  Enabled: false
+  Enabled: true
 Performance/BigDecimalWithNumericArgument:
-  Enabled: false
+  Enabled: true
 Performance/BlockGivenWithExplicitBlock:
-  Enabled: false
+  Enabled: true
 Performance/RedundantEqualityComparisonBlock:
-  Enabled: false
+  Enabled: true
 Performance/CollectionLiteralInLoop:
-  Enabled: false
+  Enabled: true
   MinSize: 4
 Performance/ConstantRegexp:
-  Enabled: false
+  Enabled: true
 Performance/AncestorsInclude:
-  Enabled: false
+  Enabled: true
 Performance/InefficientHashSearch:
-  Enabled: false
+  Enabled: true
 Rails/Present:
-  Enabled: false
+  Enabled: true
 Rails/DynamicFindBy:
-  Enabled: false
+  Enabled: true
 Rails/Presence:
-  Enabled: false
+  Enabled: true
 Performance/Casecmp:
-  Enabled: false
+  Enabled: true
 Rails/Blank:
-  Enabled: false
+  Enabled: true
 Rails/HttpStatus:
-  Enabled: false
+  Enabled: true
 Rails/TimeZone:
-  Enabled: false
+  Enabled: true
 Rails/Date:
-  Enabled: false
+  Enabled: true
 Rails/HasManyOrHasOneDependent:
-  Enabled: false
+  Enabled: true
 Lint/RedundantCopDisableDirective:
-  Enabled: false
+  Enabled: true
 Rails/InverseOf:
-  Enabled: false
+  Enabled: true
 Performance/Count:
-  Enabled: false
+  Enabled: true
 Performance/RangeInclude:
-  Enabled: false
+  Enabled: true
 Rails/SkipsModelValidations:
-  Enabled: false
+  Enabled: true
 Rails/IndexBy:
-  Enabled: false
+  Enabled: true
 Rails/IndexWith:
-  Enabled: false
+  Enabled: true
 Performance/StringReplacement:
-  Enabled: false
+  Enabled: true
 Performance/ReverseEach:
-  Enabled: false
+  Enabled: true
