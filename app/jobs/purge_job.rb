@@ -26,6 +26,7 @@ class PurgeJob < ApplicationJob
       monitoree.histories.destroy_all
       monitoree.contact_attempts.destroy_all
       monitoree.vaccines.destroy_all
+      monitoree.common_exposure_cohorts.destroy_all
       monitoree.update!(mask)
       monitoree.responder.refresh_head_of_household if monitoree.responder_id != monitoree.id
       purged << { id: monitoree.id }

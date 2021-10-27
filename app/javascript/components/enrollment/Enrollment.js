@@ -38,6 +38,7 @@ class Enrollment extends React.Component {
         isolation: !!props.patient.isolation,
         blocked_sms: props.blocked_sms,
         first_positive_lab: props.first_positive_lab,
+        common_exposure_cohorts: props.common_exposure_cohorts,
       },
     };
   }
@@ -57,6 +58,7 @@ class Enrollment extends React.Component {
         isolation: Object.prototype.hasOwnProperty.call(enrollmentState, 'isolation') ? !!enrollmentState.isolation : currentEnrollmentState.isolation,
         blocked_sms: enrollmentState.blocked_sms,
         first_positive_lab: enrollmentState.first_positive_lab,
+        common_exposure_cohorts: enrollmentState.common_exposure_cohorts,
       },
     });
   }, 1000);
@@ -134,6 +136,13 @@ class Enrollment extends React.Component {
         data['laboratory'] = { id: this.props.first_positive_lab.id, ..._.pick(this.state.enrollmentState.first_positive_lab, diffKeysLab) };
       } else {
         data['patient']['laboratories_attributes'] = [this.state.enrollmentState.first_positive_lab];
+      }
+    }
+    if (this.state.enrollmentState.common_exposure_cohorts) {
+      if (this.props.common_exposure_cohorts && this.props.common_exposure_cohorts.length > 0) {
+        // handle update single/multiple cohorts or add/delete cohorts
+      } else {
+        data['patient']['common_exposure_cohort_attributes'] = this.state.enrollmentState.common_exposure_cohorts;
       }
     }
     data['bypass_duplicate'] = false;
@@ -296,7 +305,6 @@ class Enrollment extends React.Component {
               has_dependents={this.props.has_dependents}
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
-              first_positive_lab={this.props.first_positive_lab}
               showPreviousButton={!this.props.edit_mode && !this.state.review_mode}
               authenticity_token={this.props.authenticity_token}
             />
@@ -353,6 +361,7 @@ Enrollment.propTypes = {
   has_dependents: PropTypes.bool,
   blocked_sms: PropTypes.bool,
   first_positive_lab: PropTypes.object,
+  common_exposure_cohorts: PropTypes.array,
   workflow: PropTypes.string,
 };
 

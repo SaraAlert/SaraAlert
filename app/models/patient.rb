@@ -157,18 +157,22 @@ class Patient < ApplicationRecord
   validates_with TimeZoneValidator
   validates_with IsolationSymptomOnsetValidator, on: %i[api_create]
   validates_with PatientDateValidator
+  validates_with AssociatedRecordLimitValidator
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
-  has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'
-  has_many :assessments
   belongs_to :jurisdiction
-  has_many :histories
-  has_many :transfers
+
+  has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'
+
+  has_many :assessments
   has_many :laboratories
   has_many :vaccines
   has_many :close_contacts
+  has_many :histories
+  has_many :transfers
   has_many :contact_attempts
+  has_many :common_exposure_cohorts
 
   before_update :set_time_zone, if: proc { |patient|
     patient.monitored_address_state_changed? || patient.address_state_changed?
@@ -182,7 +186,7 @@ class Patient < ApplicationRecord
   around_destroy :inform_responder
   before_update :handle_update
 
-  accepts_nested_attributes_for :laboratories, :vaccines
+  accepts_nested_attributes_for :laboratories, :vaccines, :common_exposure_cohorts
 
   # Most recent assessment
   def latest_assessment

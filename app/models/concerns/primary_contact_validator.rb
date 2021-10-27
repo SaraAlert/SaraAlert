@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Validates that a primary contact
+# Validates that a primary contact is valid
 class PrimaryContactValidator < ActiveModel::Validator
   include ValidationHelper
   def validate(record)

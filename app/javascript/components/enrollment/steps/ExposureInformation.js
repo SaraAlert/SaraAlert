@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Card, Col, Form } from 'react-bootstrap';
+import { Button, Card, Col, Form, Modal, Table } from 'react-bootstrap';
 import * as yup from 'yup';
 import moment from 'moment';
 import _ from 'lodash';
@@ -22,6 +22,8 @@ class ExposureInformation extends React.Component {
       sorted_jurisdiction_paths: _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalAssignedUser: this.props.currentState.patient.assigned_user,
+      showCohortModal: false,
+      common_exposure_cohort: {},
     };
   }
 
@@ -202,6 +204,158 @@ class ExposureInformation extends React.Component {
           self.setState({ errors: issues });
         }
       });
+  };
+
+  saveOrUpdateCohort = () => {
+    this.setState(state => {
+      if (state.common_exposure_cohort.id) {
+        // update (need to use something other than id because it might not be saved yet)
+      } else {
+        return {
+          current: {
+            ...state.current,
+            common_exposure_cohorts: state.current.common_exposure_cohorts
+              ? state.current.common_exposure_cohorts.concat([state.common_exposure_cohort])
+              : state.common_exposure_cohort,
+          },
+          modified: {
+            ...state.modified,
+            common_exposure_cohorts: state.modified.common_exposure_cohorts
+              ? state.modified.common_exposure_cohorts.concat([state.common_exposure_cohort])
+              : state.common_exposure_cohort,
+          },
+          common_exposure_cohort: {},
+          showCohortModal: false,
+        };
+      }
+    });
+  };
+
+  toggleCohortModal = show => {
+    this.setState({ showCohortModal: show, common_exposure_cohort: {} });
+  };
+
+  renderCohortModal = () => {
+    return (
+      <Modal size="lg" show={this.state.showCohortModal} onHide={() => this.toggleCohortModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Common Exposure Cohort</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>Cohort Type</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['cohort_type']}
+              as="select"
+              size="lg"
+              className="form-square"
+              aria-label="Common Exposure Cohort Type"
+              value={this.state.common_exposure_cohort.cohort_type || ''}
+              onChange={event => {
+                event.persist();
+                this.setState(state => {
+                  return { common_exposure_cohort: { ...state.common_exposure_cohort, cohort_type: event.target.value } };
+                });
+              }}>
+              <option></option>
+              <option>Adult Congregate Living Facility</option>
+              <option>Child Care Facility</option>
+              <option>Community Event or Mass Gathering</option>
+              <option>Correctional Facility</option>
+              <option>Group Home</option>
+              <option>Healthcare Facility</option>
+              <option>Place of Worship</option>
+              <option>School or University</option>
+              <option>Shelter</option>
+              <option>Substance Abuse Treatment Center</option>
+              <option>Workplace</option>
+              <option>Other</option>
+            </Form.Control>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['cohort_type']}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Cohort Name/Description</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['cohort_name']}
+              as="input"
+              list="cohort_names"
+              autoComplete="off"
+              size="lg"
+              className="form-square"
+              value={this.state.common_exposure_cohort.cohort_name || ''}
+              onChange={event => {
+                event.persist();
+                this.setState(state => {
+                  return { common_exposure_cohort: { ...state.common_exposure_cohort, cohort_name: event.target.value } };
+                });
+              }}>
+              {/* <datalist id="cohort_names">
+                {[].map((cohort_name, index) => {
+                  return (
+                    <option value={cohort_name} key={index}>
+                      {cohort_name}
+                    </option>
+                  );
+                })}
+              </datalist> */}
+            </Form.Control>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['cohort_name']}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Cohort Location</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['cohort_location']}
+              as="input"
+              list="cohort_locations"
+              autoComplete="off"
+              size="lg"
+              className="form-square"
+              value={this.state.common_exposure_cohort.cohort_location || ''}
+              onChange={event => {
+                event.persist();
+                this.setState(state => {
+                  return { common_exposure_cohort: { ...state.common_exposure_cohort, cohort_location: event.target.value } };
+                });
+              }}>
+              {/* <datalist id="cohort_locations">
+                {[].map((cohort_location, index) => {
+                  return (
+                    <option value={cohort_location} key={index}>
+                      {cohort_location}
+                    </option>
+                  );
+                })}
+              </datalist> */}
+            </Form.Control>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['cohort_location']}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button id="cohort-modal-cancel-button" variant="secondary btn-square" onClick={() => this.toggleCohortModal(false)}>
+            Cancel
+          </Button>
+          <Button
+            id="cohort-modal-save-button"
+            variant="primary btn-square"
+            disabled={
+              !(
+                this.state.common_exposure_cohort.cohort_type ||
+                this.state.common_exposure_cohort.cohort_name ||
+                this.state.common_exposure_cohort.cohort_location
+              )
+            }
+            onClick={this.saveOrUpdateCohort}>
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
   };
 
   renderExposureFields = () => {
@@ -420,7 +574,7 @@ class ExposureInformation extends React.Component {
             />
           </Form.Group>
         </Form.Row>
-        <Form.Row>
+        {/* <Form.Row>
           <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
             <Form.Check
               className="pt-2 my-auto"
@@ -431,21 +585,60 @@ class ExposureInformation extends React.Component {
               onChange={this.handleChange}
             />
           </Form.Group>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
-            <Form.Control
-              size="sm"
-              className="form-square"
-              id="member_of_a_common_exposure_cohort_type"
-              placeholder="enter description"
-              value={this.state.current.patient.member_of_a_common_exposure_cohort_type || ''}
-              onChange={this.handleChange}
-              aria-label="Enter Cohort Description"
-            />
-            <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['member_of_a_common_exposure_cohort_type']}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
+        </Form.Row> */}
+        {this.state.current.common_exposure_cohorts.length > 0 && (
+          <div className="common-exposure-cohort-table-wrapper">
+            <Table hover>
+              <thead>
+                <tr>
+                  <th>Cohort Type</th>
+                  <th>Cohort Name/Description</th>
+                  <th>Cohort Location</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+                {this.state.current.common_exposure_cohorts.map((cohort, index) => {
+                  return (
+                    <tr key={index} id={`common-exposure-cohort-${index}`}>
+                      <td>{cohort.cohort_type}</td>
+                      <td>{cohort.cohort_name}</td>
+                      <td>{cohort.cohort_location}</td>
+                      <td>
+                        <Button
+                          id={`common-exposure-cohort-edit-button-${index}`}
+                          variant="link"
+                          className="icon-btn-primary float-left p-0"
+                          onClick={() => {}}
+                          aria-label={`Edit Common Exposure Cohort ${index + 1} Button`}>
+                          <i className="fas fa-edit"></i>
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          id={`common-exposure-cohort-delete-button-${index}`}
+                          variant="link"
+                          className="icon-btn-primary float-left p-0"
+                          onClick={() => {}}
+                          aria-label={`Delete Common Exposure Cohort ${index + 1} Button`}>
+                          <i className="fas fa-trash"></i>
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </thead>
+            </Table>
+          </div>
+        )}
+        <Button
+          id="add-new-cohort-button"
+          variant="outline-primary"
+          size="md"
+          className="btn-square add-new-cohort-button"
+          disabled={this.state.current.common_exposure_cohorts.length >= 10}
+          onClick={() => this.toggleCohortModal(true)}>
+          Add New Cohort
+        </Button>
         {!this.props.currentState.isolation && (
           <Form.Row>
             <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-3 mb-2">
@@ -468,6 +661,7 @@ class ExposureInformation extends React.Component {
             </Form.Group>
           </Form.Row>
         )}
+        {this.renderCohortModal()}
       </React.Fragment>
     );
   };

@@ -231,10 +231,23 @@ namespace :demo do
     cache_analytics = (ENV['SKIP_ANALYTICS'] != 'true')
 
     jurisdictions = Jurisdiction.all
+    jurisdiction_ids = jurisdictions.pluck(:id)
 
     # Create different set of assigned users for each jurisdiction with relatively low variance to mimic data distribution in the context of SaraAlert
-    assigned_users = (jurisdictions.pluck(:id).map { |id| [id, 10.times.map { rand(1..100_000) }] }).to_h
-    case_ids = (jurisdictions.pluck(:id).map { |id| [id, 15.times.map { Faker::Number.leading_zero_number(digits: 8) }] }).to_h
+    assigned_users = (jurisdiction_ids.map { |id| [id, 10.times.map { rand(1..100_000) }] }).to_h
+
+    # Create different set of common exposure cohorts for each jurisdiction with relatively low variance to mimic data distribution in the context of SaraAlert
+    common_exposure_cohorts = (jurisdiction_ids.map { |id| [id, 30.times.map {
+      common_exposure_cohort = {}
+      common_exposure_cohort[:cohort_type] = CommonExposureCohort::VALID_COHORT_TYPES.sample if rand < 0.7
+      common_exposure_cohort[:cohort_name] = Faker::Company.name if rand < (common_exposure_cohort[:cohort_type].present? ? 0.6 : 0.8)
+      if (common_exposure_cohort[:cohort_type].blank? && common_exposure_cohort[:cohort_name].blank?) || rand < 0.5
+        common_exposure_cohort[:cohort_location] = "#{Faker::Address.city}, #{Faker::Address.state_abbr}"
+      end
+      common_exposure_cohort
+    }] }).to_h
+
+    known_case_ids = (jurisdiction_ids.map { |id| [id, 15.times.map { Faker::Number.leading_zero_number(digits: 8) }] }).to_h
 
     counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
     available_lang_codes = Languages.all_languages.keys.to_a.map(&:to_s)
@@ -264,8 +277,8 @@ namespace :demo do
       printf("Simulating day #{day + 1} (#{beginning_of_day.to_date}):\n")
 
       # Populate patients, assessments, laboratories, transfers, histories, analytics
-      demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties,
-                        available_lang_codes, supported_lang_codes, threshold_conditions, enroller_users, public_health_users)
+      demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, common_exposure_cohorts, known_case_ids, cache_analytics,
+                        counties, available_lang_codes, supported_lang_codes, threshold_conditions, enroller_users, public_health_users)
       created_patients += num_patients_today
 
       # Cases increase 10-20% every day
@@ -286,7 +299,16 @@ namespace :demo do
 
     jurisdictions = Jurisdiction.all
     assigned_users = (jurisdictions.map { |jur| [jur[:id], jur.assigned_users] }).to_h
-    case_ids = (jurisdictions.map { |jur| [jur[:id], jur.immediate_patients.where.not(contact_of_known_case_id: nil).distinct.pluck(:contact_of_known_case_id).sort] }).to_h
+    common_exposure_cohorts = (jurisdictions.map { |jur|
+      [
+        jur[:id],
+        CommonExposureCohort.where(patient_id: jur.immediate_patients.where_assoc_exists(:common_exposure_cohorts).pluck(:id))
+                            .select(:cohort_type, :cohort_name, :cohort_location).distinct
+      ]
+    }).to_h
+    known_case_ids = (jurisdictions.map { |jur|
+      [jur[:id], jur.immediate_patients.where.not(contact_of_known_case_id: nil).distinct.pluck(:contact_of_known_case_id).sort]
+    }).to_h
 
     counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
     available_lang_codes = Languages.all_languages.keys.to_a.map(&:to_s)
@@ -301,8 +323,8 @@ namespace :demo do
     enroller_users = User.where(role: 'enroller').pluck(:id, :email)
     public_health_users = User.where(role: 'public_health').pluck(:id, :email)
 
-    demo_populate_day(DateTime.now.beginning_of_day, num_patients_today, 0, jurisdictions, assigned_users, case_ids, cache_analytics, counties,
-                      available_lang_codes, supported_lang_codes, threshold_conditions, enroller_users, public_health_users)
+    demo_populate_day(DateTime.now.beginning_of_day, num_patients_today, 0, jurisdictions, assigned_users, common_exposure_cohorts, known_case_ids,
+                      cache_analytics, counties, available_lang_codes, supported_lang_codes, threshold_conditions, enroller_users, public_health_users)
   end
 
   def fetch_all_threshold_conditions
@@ -319,16 +341,16 @@ namespace :demo do
     threshold_conditions
   end
 
-  def demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, cache_analytics, counties,
-                        available_lang_codes, supported_lang_codes, threshold_conditions, enroller_users, public_health_users)
+  def demo_populate_day(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, common_exposure_cohorts, known_case_ids, cache_analytics,
+                        counties, available_lang_codes, supported_lang_codes, threshold_conditions, enroller_users, public_health_users)
     # Transactions speeds things up a bit
     ActiveRecord::Base.transaction do
       # Patients created before today
       existing_patients = Patient.monitoring_open.where('created_at < ?', beginning_of_day)
 
       # Create patients
-      demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes,
-                             supported_lang_codes, enroller_users, public_health_users)
+      demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, common_exposure_cohorts, known_case_ids, counties,
+                             available_lang_codes, supported_lang_codes, enroller_users, public_health_users)
 
       # Create assessments
       demo_populate_assessments(beginning_of_day, days_ago, existing_patients, threshold_conditions, public_health_users)
@@ -356,18 +378,18 @@ namespace :demo do
     demo_cache_analytics(beginning_of_day) if cache_analytics
   end
 
-  def demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, case_ids, counties, available_lang_codes,
-                             supported_lang_codes, enroller_users, public_health_users)
+  def demo_populate_patients(beginning_of_day, num_patients_today, days_ago, jurisdictions, assigned_users, common_exposure_cohorts, known_case_ids, counties,
+                             available_lang_codes, supported_lang_codes, enroller_users, public_health_users)
     include PatientHelper
     territory_names = ['American Samoa', 'District of Columbia', 'Federated States of Micronesia', 'Guam', 'Marshall Islands', 'Northern Mariana Islands',
                        'Palau', 'Puerto Rico', 'Virgin Islands'].freeze
 
     rand_enroller = enroller_users.sample
-    printf('Generating monitorees...')
+    printf('  Generating monitorees...')
     patients = []
     histories = []
     num_patients_today.times do |i|
-      printf("\rGenerating monitoree #{i + 1} of #{num_patients_today}...") unless ENV['APP_IN_CI']
+      printf("\r  Generating monitoree #{i + 1} of #{num_patients_today}...") unless ENV['APP_IN_CI']
       patient = Patient.new
 
       # Identification
@@ -516,9 +538,8 @@ namespace :demo do
       patient[:monitoring_plan] = ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_plan].sample
       if rand < 0.85
         patient[:contact_of_known_case] = rand < 0.5
-        patient[:contact_of_known_case_id] = case_ids[patient[:jurisdiction_id]].sample(rand(1..3)).join(', ') if patient[:contact_of_known_case] && rand < 0.9
-        patient[:member_of_a_common_exposure_cohort] = rand < 0.35
-        patient[:member_of_a_common_exposure_cohort_type] = Faker::Superhero.name if patient[:member_of_a_common_exposure_cohort] && rand < 0.5
+        patient[:contact_of_known_case_id] = known_case_ids[patient[:jurisdiction_id]].sample(rand(1..3)).join(', ') if patient[:contact_of_known_case] && rand < 0.9
+        # patient[:member_of_a_common_exposure_cohort] = rand < 0.35
         patient[:travel_to_affected_country_or_area] = rand < 0.1
         patient[:laboratory_personnel] = rand < 0.25
         patient[:laboratory_personnel_facility_name] = Faker::Company.name if patient[:laboratory_personnel] && rand < 0.5
@@ -571,13 +592,16 @@ namespace :demo do
 
       patients << patient
     end
-    print ' importing monitorees...'
+
+    puts "\n"
+
+    puts '  - Importing monitorees...'
     Patient.import! patients
     new_patients = Patient.where('created_at >= ?', beginning_of_day)
     new_patients.update_all('responder_id = id')
 
     # Create household members (10-20% of patients are managed by a HoH)
-    print ' setting dependents...'
+    puts '  - Setting dependents...'
     new_dependents = new_patients.limit(new_patients.count * rand(10..20) / 100).order('RAND()')
     new_hohs = new_patients - new_dependents
     new_dependents_updates =  new_dependents.map do
@@ -587,6 +611,7 @@ namespace :demo do
     Patient.update(new_dependents.map { |p| p[:id] }, new_dependents_updates)
 
     # Create first positive lab for patients who are asymptomatic
+    puts '  - Creating first positive labs...'
     laboratories = []
     asymptomatic_cases = new_patients.where(isolation: true, symptom_onset: nil)
     user_emails = User.where(id: asymptomatic_cases.distinct.pluck(:creator_id)).pluck(:id, :email).to_h
@@ -611,9 +636,27 @@ namespace :demo do
     end
     Laboratory.import! laboratories
 
-    puts "\n" unless ENV['APP_IN_CI']
+    # Create common exposure cohorts
+    puts '  - Creating common exposure cohorts...'
+    cohorts = []
+    cohort_patients = new_patients.where(isolation: false).limit(new_patients.count * rand(30..40) / 100).order('RAND()')
+    cohort_patients.each do |patient|
+      n = AssociatedRecordLimitValidator::COMMON_EXPOSURE_COHORTS_MAX - Math.sqrt(rand(1..AssociatedRecordLimitValidator::COMMON_EXPOSURE_COHORTS_MAX**2)).floor
+      common_exposure_cohorts[patient[:jurisdiction_id]].sample(n).each do |cohort|
+        cohorts << CommonExposureCohort.new(
+          patient_id: patient[:id],
+          cohort_type: cohort[:cohort_type],
+          cohort_name: cohort[:cohort_name],
+          cohort_location: cohort[:cohort_location],
+          created_at: patient[:created_at],
+          updated_at: patient[:updated_at]
+        )
+      end
+    end
+    CommonExposureCohort.import! cohorts
+
     new_patients.each_with_index do |patient, i|
-      printf("\rGenerating histories for monitoree #{i + 1} of #{new_patients.size}...") unless ENV['APP_IN_CI']
+      printf("\r  Generating histories for monitoree #{i + 1} of #{new_patients.size}...") unless ENV['APP_IN_CI']
       # enrollment
       histories << History.new(
         patient_id: patient[:id],
@@ -685,13 +728,13 @@ namespace :demo do
   end
 
   def demo_populate_assessments(beginning_of_day, days_ago, existing_patients, threshold_conditions, public_health_users)
-    printf('Generating assessments...')
+    printf('  Generating assessments...')
     assessments = []
     assessment_receipts = []
     histories = []
     patient_ids_and_sub_tokens = existing_patients.limit(existing_patients.count * rand(55..60) / 100).order('RAND()').pluck(:id, :submission_token)
     patient_ids_and_sub_tokens.each_with_index do |(patient_id, sub_token), index|
-      printf("\rGenerating assessment #{index + 1} of #{patient_ids_and_sub_tokens.length}...") unless ENV['APP_IN_CI']
+      printf("\r  Generating assessment #{index + 1} of #{patient_ids_and_sub_tokens.length}...") unless ENV['APP_IN_CI']
       assessment_ts = create_fake_timestamp(beginning_of_day)
       assessments << Assessment.new(
         patient_id: patient_id,
@@ -729,11 +772,11 @@ namespace :demo do
     Assessment.import! assessments
     puts 'done!'
 
-    printf('Generating condition for assessments...')
+    printf('  - Generating condition for assessments...')
     reported_conditions = []
     new_assessments = Assessment.where('assessments.created_at >= ?', beginning_of_day).joins(:patient)
     new_assessments.each_with_index do |assessment, index|
-      printf("\rGenerating condition for assessment #{index + 1} of #{new_assessments.length}...") unless ENV['APP_IN_CI']
+      printf("\r  - Generating condition for assessment #{index + 1} of #{new_assessments.length}...") unless ENV['APP_IN_CI']
       reported_conditions << ReportedCondition.new(
         assessment_id: assessment[:id],
         threshold_condition_hash: threshold_conditions[assessment.patient.jurisdiction_id][:hash],
@@ -753,11 +796,11 @@ namespace :demo do
                                              .limit(new_assessments.count * (days_ago > 10 ? rand(75..80) : rand(20..25)) / 100)
                                              .order('RAND()')
 
-    printf('Generating symptoms for assessments...')
+    printf('  - Generating symptoms for assessments...')
     symptoms = []
     new_reported_conditions = ReportedCondition.where('conditions.created_at >= ?', beginning_of_day).joins(assessment: :reported_condition)
     new_reported_conditions.each_with_index do |reported_condition, index|
-      printf("\rGenerating symptoms for assessment #{index + 1} of #{new_reported_conditions.length}...") unless ENV['APP_IN_CI']
+      printf("\r  - Generating symptoms for assessment #{index + 1} of #{new_reported_conditions.length}...") unless ENV['APP_IN_CI']
       threshold_symptoms = threshold_conditions[reported_condition.assessment.patient.jurisdiction_id][:symptoms]
       symptomatic_assessment = symptomatic_assessments.include?(reported_condition.assessment)
       num_symptomatic_symptoms = ((rand**2) * threshold_symptoms.length).floor # creates a distribution favored towards fewer symptoms
@@ -779,14 +822,16 @@ namespace :demo do
         )
       end
     end
-    Symptom.import! symptoms
-    puts 'done!'
 
-    printf('Updating symptomatic statuses...')
+    puts 'done!'
+    puts '  - Importing symptoms...'
+    Symptom.import! symptoms
+
+    printf('  - Updating symptomatic statuses...')
     assessment_symptomatic_statuses = {}
     patient_symptom_onset_date_updates = {}
     symptomatic_assessments.each_with_index do |assessment, index|
-      printf("\rUpdating symptomatic status #{index + 1} of #{symptomatic_assessments.length}...") unless ENV['APP_IN_CI']
+      printf("\r  - Updating symptomatic status #{index + 1} of #{symptomatic_assessments.length}...") unless ENV['APP_IN_CI']
       if assessment.symptomatic?
         assessment_symptomatic_statuses[assessment[:id]] = { symptomatic: true }
         patient_symptom_onset_date_updates[assessment[:patient_id]] = { symptom_onset: assessment[:created_at] }
@@ -800,7 +845,7 @@ namespace :demo do
   end
 
   def demo_populate_laboratories(beginning_of_day, days_ago, existing_patients, public_health_users)
-    printf('Generating laboratories...')
+    printf('  Generating laboratories...')
     laboratories = []
     histories = []
     isolation_patients = existing_patients.where(isolation: true)
@@ -810,7 +855,7 @@ namespace :demo do
                         isolation_patients.limit(isolation_patients.count * rand(20..30) / 100).order('RAND()').pluck(:id)
                       end
     patient_ids_lab.each_with_index do |patient_id, index|
-      printf("\rGenerating laboratory #{index + 1} of #{patient_ids_lab.length}...") unless ENV['APP_IN_CI']
+      printf("\r  Generating laboratory #{index + 1} of #{patient_ids_lab.length}...") unless ENV['APP_IN_CI']
       lab_ts = create_fake_timestamp(beginning_of_day)
       result = if days_ago > 10
                  (Array.new(12, 'positive') + %w[negative indeterminate other]).sample
@@ -845,12 +890,12 @@ namespace :demo do
   end
 
   def demo_populate_vaccines(beginning_of_day, existing_patients, public_health_users)
-    printf('Generating vaccinations...')
+    printf('  Generating vaccinations...')
     vaccines = []
     histories = []
     patient_ids = existing_patients.limit(existing_patients.count * rand(15..25) / 100).order('RAND()').pluck(:id)
     patient_ids.each_with_index do |patient_id, index|
-      printf("\rGenerating vaccine #{index + 1} of #{patient_ids.length}...")
+      printf("\r  Generating vaccine #{index + 1} of #{patient_ids.length}...")
       vaccine_ts = create_fake_timestamp(beginning_of_day)
       group_name = Vaccine.group_name_options.sample
       notes = rand < 0.5 ? Faker::Games::LeagueOfLegends.quote : nil
@@ -881,14 +926,14 @@ namespace :demo do
   end
 
   def demo_populate_transfers(beginning_of_day, existing_patients, jurisdictions, assigned_users, public_health_users)
-    printf('Generating transfers...')
+    printf('  Generating transfers...')
     transfers = []
     histories = []
     patient_updates = {}
     jurisdiction_paths = jurisdictions.pluck(:id, :path).to_h
     patients_transfer = existing_patients.limit(existing_patients.count * rand(5..10) / 100).order('RAND()').pluck(:id, :jurisdiction_id, :assigned_user)
     patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
-      printf("\rGenerating transfer #{index + 1} of #{patients_transfer.length}...") unless ENV['APP_IN_CI']
+      printf("\r  Generating transfer #{index + 1} of #{patients_transfer.length}...") unless ENV['APP_IN_CI']
       transfer_ts = create_fake_timestamp(beginning_of_day)
       to_jurisdiction = (jurisdictions.ids - [jur_id]).sample
       patient_updates[patient_id] = {
@@ -920,14 +965,14 @@ namespace :demo do
   end
 
   def demo_populate_close_contacts(beginning_of_day, existing_patients, public_health_users)
-    printf('Generating close contacts...')
+    printf('  Generating close contacts...')
     close_contacts = []
     histories = []
     patient_ids = existing_patients.limit(existing_patients.count * rand(15..25) / 100).order('RAND()').pluck(:id)
     enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).limit(existing_patients.count * rand(5..15) / 100).order('RAND()').pluck(:id)
     enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
     patient_ids.each_with_index do |patient_id, index|
-      printf("\rGenerating close contact #{index + 1} of #{patient_ids.length}...") unless ENV['APP_IN_CI']
+      printf("\r  Generating close contact #{index + 1} of #{patient_ids.length}...") unless ENV['APP_IN_CI']
       close_contact_ts = create_fake_timestamp(beginning_of_day)
       close_contact = {
         patient_id: patient_id,
@@ -966,12 +1011,12 @@ namespace :demo do
   end
 
   def demo_populate_contact_attempts(beginning_of_day, existing_patients, public_health_users)
-    printf('Generating contact attempts...')
+    printf('  Generating contact attempts...')
     contact_attempts = []
     histories = []
     patients_contact_attempts = existing_patients.limit(existing_patients.count * rand(10..20) / 100).order('RAND()').pluck(:id)
     patients_contact_attempts.each_with_index do |patient_id, index|
-      printf("\rGenerating contact attempt #{index + 1} of #{patients_contact_attempts.length}...") unless ENV['APP_IN_CI']
+      printf("\r  Generating contact attempt #{index + 1} of #{patients_contact_attempts.length}...") unless ENV['APP_IN_CI']
       successful = rand < 0.45
       note = rand < 0.65 ? " #{Faker::TvShows::GameOfThrones.quote}" : ''
       contact_attempt_ts = create_fake_timestamp(beginning_of_day)

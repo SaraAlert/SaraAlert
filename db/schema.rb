@@ -119,6 +119,19 @@ ActiveRecord::Schema.define(version: 2021_11_10_160736) do
     t.index ["patient_id"], name: "index_close_contacts_on_patient_id"
   end
 
+  create_table "common_exposure_cohorts", charset: "utf8", force: :cascade do |t|
+    t.bigint "patient_id"
+    t.string "cohort_type"
+    t.string "cohort_name"
+    t.string "cohort_location"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["cohort_location"], name: "index_common_exposure_cohorts_on_cohort_location"
+    t.index ["cohort_name"], name: "index_common_exposure_cohorts_on_cohort_name"
+    t.index ["cohort_type"], name: "index_common_exposure_cohorts_on_cohort_type"
+    t.index ["patient_id"], name: "index_common_exposure_cohorts_on_patient_id"
+  end
+
   create_table "conditions", charset: "utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -415,7 +428,6 @@ ActiveRecord::Schema.define(version: 2021_11_10_160736) do
     t.boolean "contact_of_known_case"
     t.string "contact_of_known_case_id", limit: 200
     t.boolean "member_of_a_common_exposure_cohort"
-    t.string "member_of_a_common_exposure_cohort_type", limit: 200
     t.boolean "travel_to_affected_country_or_area"
     t.boolean "laboratory_personnel"
     t.string "laboratory_personnel_facility_name", limit: 200
