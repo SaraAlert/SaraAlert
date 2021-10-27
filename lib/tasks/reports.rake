@@ -18,7 +18,6 @@ namespace :reports do
         Rails.logger.info("reports:queue_reports process #{worker_number} starting.")
         queue = Redis::Queue.new('q_bridge', 'bp_q_bridge', redis: Rails.application.config.redis)
         Rails.logger.info("reports:queue_reports process #{worker_number} listening on queue: #{queue.instance_values}")
-        @sleep_seconds = 0
         ReportsHelper.process(queue, worker_number)
       end
     end

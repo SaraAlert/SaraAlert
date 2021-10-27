@@ -3,6 +3,8 @@
 # Processing and error handling for reports:queue_reports
 # Enables easier unit testing of these methods.
 module ReportsHelper
+  @sleep_seconds = 0
+
   def process(queue, worker_number)
     loop do
       @msg = queue.pop if @msg.nil?
@@ -15,7 +17,7 @@ module ReportsHelper
       @msg = nil
     end
   rescue RuntimeError, Redis::ConnectionError, Redis::CannotConnectError => e
-    # If this point is reached with another 30 second sleep: drop the message, log, and process the next (if the error was with ).
+    # If this point is reached with another 30 second sleep: drop the message, log, and process the next.
     if @sleep_seconds == 30
       handle_complete_failure(e, worker_number)
     else
