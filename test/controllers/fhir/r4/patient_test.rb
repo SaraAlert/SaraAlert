@@ -977,9 +977,9 @@ class ApiControllerTest < ApiControllerTestCase
                                          e['url'].eql?('http://saraalert.org/StructureDefinition/exposure-risk-factors')
                                        end ['extension']
     boolean_fields = %w[contact-of-known-case was-in-healthcare-facility-with-known-case laboratory-ersonnel healthcare-personnel
-                        member-of-a-common-exposure-cohort travel-to-affected-country-or-area crew-on-passenger-or-cargo-flight]
+                        travel-to-affected-country-or-area crew-on-passenger-or-cargo-flight]
     string_fields = %w[contact-of-known-case-id was-in-health-care-facility-with-known-cases-facility-name laboratory-personnel-facility-name
-                       healthcare-personnel-facility-name member-of-a-common-exposure-cohort-type]
+                       healthcare-personnel-facility-name]
     exposure_risk_factors_extensions.select { |e| boolean_fields.include?(e['url']) }.each do |extension|
       assert_equal(mock_patient.send(extension['url'].underscore.to_sym), extension['valueBoolean'])
     end

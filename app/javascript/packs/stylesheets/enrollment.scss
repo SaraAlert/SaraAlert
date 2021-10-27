@@ -20,9 +20,20 @@
 }
 
 .common-exposure-cohort-table-wrapper {
-  margin: 1rem 2.25rem;
+  margin: 0.25rem 2.25rem;
+  table {
+    margin-bottom: 0.5rem;
+    th {
+      border-bottom: 1.5px solid #dee2e6 !important;
+      padding: 0.625rem;
+    }
+    td {
+      border-bottom: 1px solid #dee2e6;
+      padding: 0.625rem;
+    }
+  }
 }
 
 .add-new-cohort-button {
-  margin: 0.25rem 2.25rem 1.25rem;
+  margin: 0.75rem 2.25rem;
 }

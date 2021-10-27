@@ -1,11 +1,12 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Card, Col, Form, Modal, Table } from 'react-bootstrap';
+import { Button, Card, Col, Form, Modal } from 'react-bootstrap';
 import * as yup from 'yup';
 import moment from 'moment';
 import _ from 'lodash';
 
 import PublicHealthManagement from './PublicHealthManagement';
+import CommonExposureCohortsTable from '../../patient/common_exposure_cohorts/CommonExposureCohortsTable';
 import confirmDialog from '../../util/ConfirmDialog';
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
@@ -574,48 +575,26 @@ class ExposureInformation extends React.Component {
             />
           </Form.Group>
         </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
+            <Form.Check
+              className="pt-2 my-auto"
+              type="switch"
+              id="member_of_a_common_exposure_cohort"
+              label="MEMBER OF A COMMON EXPOSURE COHORT"
+              checked={this.state.current.common_exposure_cohorts?.length > 0}
+              disabled={true}
+            />
+          </Form.Group>
+        </Form.Row>
         {this.state.current.common_exposure_cohorts.length > 0 && (
           <div className="common-exposure-cohort-table-wrapper">
-            <Table hover>
-              <thead>
-                <tr>
-                  <th>Cohort Type</th>
-                  <th>Cohort Name/Description</th>
-                  <th>Cohort Location</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-                {this.state.current.common_exposure_cohorts.map((cohort, index) => {
-                  return (
-                    <tr key={index} id={`common-exposure-cohort-${index}`}>
-                      <td>{cohort.cohort_type}</td>
-                      <td>{cohort.cohort_name}</td>
-                      <td>{cohort.cohort_location}</td>
-                      <td>
-                        <Button
-                          id={`common-exposure-cohort-edit-button-${index}`}
-                          variant="link"
-                          className="icon-btn-primary float-left p-0"
-                          onClick={() => {}}
-                          aria-label={`Edit Common Exposure Cohort ${index + 1} Button`}>
-                          <i className="fas fa-edit"></i>
-                        </Button>
-                      </td>
-                      <td>
-                        <Button
-                          id={`common-exposure-cohort-delete-button-${index}`}
-                          variant="link"
-                          className="icon-btn-primary float-left p-0"
-                          onClick={() => {}}
-                          aria-label={`Delete Common Exposure Cohort ${index + 1} Button`}>
-                          <i className="fas fa-trash"></i>
-                        </Button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </thead>
-            </Table>
+            <CommonExposureCohortsTable
+              common_exposure_cohorts={this.state.current.common_exposure_cohorts}
+              isEditable={true}
+              onEditCohort={() => {}}
+              onDeleteCohort={() => {}}
+            />
           </div>
         )}
         <Button

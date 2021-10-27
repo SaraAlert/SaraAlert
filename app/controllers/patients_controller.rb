@@ -35,6 +35,7 @@ class PatientsController < ApplicationController
     @laboratories = @patient.laboratories.order(:created_at)
     @close_contacts = @patient.close_contacts.order(:created_at)
     @histories = @patient.histories.order(:created_at).where(deleted_by: nil).group_by { |h| h.original_comment_id || h.id }.values.reverse
+    @common_exposure_cohorts = @patient.common_exposure_cohorts.order(:created_at)
 
     @num_pos_labs = @laboratories.count { |lab| lab[:result] == 'positive' && lab[:specimen_collection].present? }
     @calculated_symptom_onset = calculated_symptom_onset(@patient)

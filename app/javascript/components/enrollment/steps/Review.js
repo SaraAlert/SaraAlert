@@ -69,7 +69,13 @@ class Review extends React.Component {
               goto={this.props.goto}
               edit_mode={true}
               jurisdiction_paths={this.props.jurisdiction_paths}
-              details={{ ...this.props.currentState.patient, blocked_sms: this.props.currentState.blocked_sms } || {}}
+              details={
+                {
+                  ...this.props.currentState.patient,
+                  blocked_sms: this.props.currentState.blocked_sms,
+                  common_exposure_cohorts: this.props.currentState.common_exposure_cohorts,
+                } || {}
+              }
               authenticity_token={this.props.authenticity_token}
               workflow={this.props.workflow}
               headingLevel={2}
