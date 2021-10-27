@@ -35,9 +35,9 @@ function convertLanguageCodesToNames(languageCodes, authToken, callback) {
   let unmatchabledLangs = [];
   languageCodes.forEach((code, i) => {
     if (_.isNil(code)) {
-      names[i] = null;
+      names[`${i}`] = null;
     } else if (Object.prototype.hasOwnProperty.call(COMMON_LANGUAGES, code)) {
-      names[i] = COMMON_LANGUAGES[`${code}`];
+      names[`${i}`] = COMMON_LANGUAGES[`${code}`];
     } else {
       unmatchabledLangs.push(i);
     }
@@ -45,11 +45,11 @@ function convertLanguageCodesToNames(languageCodes, authToken, callback) {
   if (unmatchabledLangs.length > 0) {
     axios.defaults.headers.common['X-CSRF-Token'] = authToken;
     axios
-      .post(`${window.BASE_PATH}/languages/translate_languages`, { language_codes: unmatchabledLangs.map(i => languageCodes[i]) })
+      .post(`${window.BASE_PATH}/languages/translate_languages`, { language_codes: unmatchabledLangs.map(i => languageCodes[`${i}`]) })
       .then(val => {
         const res = val.data.display_names;
         unmatchabledLangs.forEach((indexVal, responseIndex) => {
-          names[indexVal] = res[responseIndex];
+          names[`${indexVal}`] = res[`${responseIndex}`];
         });
         callback(names);
       })
@@ -69,7 +69,7 @@ function convertLanguageCodesToNames(languageCodes, authToken, callback) {
  * @return {String} - language name
  */
 function convertCommonLanguageCodeToName(code) {
-  return COMMON_LANGUAGES[code];
+  return COMMON_LANGUAGES[`${code}`];
 }
 
 /**
