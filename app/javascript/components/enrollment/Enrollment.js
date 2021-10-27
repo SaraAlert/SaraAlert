@@ -38,7 +38,7 @@ class Enrollment extends React.Component {
         isolation: !!props.patient.isolation,
         blocked_sms: props.blocked_sms,
         first_positive_lab: props.first_positive_lab,
-        common_exposure_cohorts: props.common_exposure_cohorts,
+        common_exposure_cohorts: _.cloneDeep(props.common_exposure_cohorts),
       },
     };
   }
@@ -137,12 +137,13 @@ class Enrollment extends React.Component {
       } else {
         data['patient']['laboratories_attributes'] = [this.state.enrollmentState.first_positive_lab];
       }
+      // TODO: handle delete lab
     }
     if (this.state.enrollmentState.common_exposure_cohorts) {
-      if (this.props.common_exposure_cohorts && this.props.common_exposure_cohorts.length > 0) {
-        // handle update single/multiple cohorts or add/delete cohorts
-      } else {
-        data['patient']['common_exposure_cohort_attributes'] = this.state.enrollmentState.common_exposure_cohorts;
+      if (!this.props.edit_mode) {
+        data['patient']['common_exposure_cohorts_attributes'] = this.state.enrollmentState.common_exposure_cohorts;
+      } else if (!_.isEqual(this.props.common_exposure_cohorts, this.state.enrollmentState.common_exposure_cohorts)) {
+        data['common_exposure_cohorts'] = this.state.enrollmentState.common_exposure_cohorts;
       }
     }
     data['bypass_duplicate'] = false;

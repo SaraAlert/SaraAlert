@@ -208,6 +208,7 @@ class PatientsController < ApplicationController
     content = params.require(:patient).permit(:id).merge!(allowed_params)
     patient = current_user.get_patient(content[:id])
     laboratory = params.permit(laboratory: %i[id lab_type specimen_collection report result])[:laboratory]
+    common_exposure_cohorts = params.permit(common_exposure_cohorts: [%i[id cohort_type cohort_name cohort_location]])[:common_exposure_cohorts]
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if patient.nil?
 
@@ -222,6 +223,24 @@ class PatientsController < ApplicationController
 
       first_positive_lab.update(laboratory)
       History.lab_result(patient: patient, created_by: current_user.email, comment: "User edited a lab result (ID: #{laboratory[:id]}).")
+    end
+
+    # Update common exposure cohorts if present
+    if common_exposure_cohorts.present?
+      # Delete cohorts
+      original_cohort_ids = patient.common_exposure_cohorts.pluck(:id)
+      updated_cohort_ids = common_exposure_cohorts.map { |cohort| cohort[:id] }
+      deleted_cohort_ids = original_cohort_ids - updated_cohort_ids
+      patient.common_exposure_cohorts.where(id: deleted_cohort_ids).destroy_all
+
+      common_exposure_cohorts.each do |cohort|
+        allowed_cohort_fields = cohort.slice(*%i[cohort_type cohort_name cohort_location])
+        if cohort[:id]
+          patient.common_exposure_cohorts.find_by(id: cohort[:id]).update(allowed_cohort_fields)
+        else
+          patient.common_exposure_cohorts.create(allowed_cohort_fields)
+        end
+      end
     end
 
     # Propagate desired fields to household except jurisdiction_id
@@ -831,212 +850,6 @@ class PatientsController < ApplicationController
     end
 
     render json: patients
-  end
-
-  # Parameters allowed for saving to database
-  def allowed_params
-    params.require(:patient).permit(
-      :user_defined_id_statelocal,
-      :user_defined_id_cdc,
-      :user_defined_id_nndss,
-      :first_name,
-      :middle_name,
-      :last_name,
-      :date_of_birth,
-      :age,
-      :sex,
-      :white,
-      :black_or_african_american,
-      :american_indian_or_alaska_native,
-      :asian,
-      :native_hawaiian_or_other_pacific_islander,
-      :race_other,
-      :race_unknown,
-      :race_refused_to_answer,
-      :ethnicity,
-      :primary_language,
-      :secondary_language,
-      :interpretation_required,
-      :nationality,
-      :address_line_1,
-      :foreign_address_line_1,
-      :address_city,
-      :address_state,
-      :address_line_2,
-      :address_zip,
-      :address_county,
-      :monitored_address_line_1,
-      :monitored_address_city,
-      :monitored_address_state,
-      :monitored_address_line_2,
-      :monitored_address_zip,
-      :monitored_address_county,
-      :foreign_address_city,
-      :foreign_address_country,
-      :foreign_address_line_2,
-      :foreign_address_zip,
-      :foreign_address_line_3,
-      :foreign_address_state,
-      :foreign_monitored_address_line_1,
-      :foreign_monitored_address_city,
-      :foreign_monitored_address_state,
-      :foreign_monitored_address_line_2,
-      :foreign_monitored_address_zip,
-      :foreign_monitored_address_county,
-      :contact_type,
-      :contact_name,
-      :primary_telephone,
-      :primary_telephone_type,
-      :secondary_telephone,
-      :secondary_telephone_type,
-      :international_telephone,
-      :email,
-      :preferred_contact_method,
-      :preferred_contact_time,
-      :alternate_contact_type,
-      :alternate_contact_name,
-      :alternate_primary_telephone,
-      :alternate_primary_telephone_type,
-      :alternate_secondary_telephone,
-      :alternate_secondary_telephone_type,
-      :alternate_international_telephone,
-      :alternate_email,
-      :alternate_preferred_contact_method,
-      :alternate_preferred_contact_time,
-      :port_of_origin,
-      :source_of_report,
-      :source_of_report_specify,
-      :flight_or_vessel_number,
-      :flight_or_vessel_carrier,
-      :port_of_entry_into_usa,
-      :travel_related_notes,
-      :additional_planned_travel_type,
-      :additional_planned_travel_destination,
-      :additional_planned_travel_destination_state,
-      :additional_planned_travel_destination_country,
-      :additional_planned_travel_port_of_departure,
-      :date_of_departure,
-      :date_of_arrival,
-      :additional_planned_travel_start_date,
-      :additional_planned_travel_end_date,
-      :additional_planned_travel_related_notes,
-      :last_date_of_exposure,
-      :potential_exposure_location,
-      :potential_exposure_country,
-      :contact_of_known_case,
-      :contact_of_known_case_id,
-      :travel_to_affected_country_or_area,
-      :was_in_health_care_facility_with_known_cases,
-      :was_in_health_care_facility_with_known_cases_facility_name,
-      :laboratory_personnel,
-      :laboratory_personnel_facility_name,
-      :healthcare_personnel,
-      :healthcare_personnel_facility_name,
-      :exposure_notes,
-      :crew_on_passenger_or_cargo_flight,
-      :monitoring_plan,
-      :exposure_risk_assessment,
-      :isolation,
-      :jurisdiction_id,
-      :assigned_user,
-      :symptom_onset,
-      :extended_isolation,
-      :case_status,
-      :continuous_exposure,
-      :gender_identity,
-      :sexual_orientation,
-      :user_defined_symptom_onset,
-      :follow_up_reason,
-      :follow_up_note,
-      laboratories_attributes: %i[
-        lab_type
-        specimen_collection
-        report
-        result
-      ],
-      vaccines_attributes: %i[
-        group_name
-        product_name
-        administration_date
-        dose_number
-        notes
-      ]
-    )
-  end
-
-  # Fields that should be copied over from parent to group member for easier form completion
-  def group_member_subset
-    %i[
-      address_line_1
-      address_city
-      address_state
-      address_line_2
-      address_zip
-      address_county
-      monitored_address_line_1
-      monitored_address_city
-      monitored_address_state
-      monitored_address_line_2
-      monitored_address_zip
-      monitored_address_county
-      foreign_address_line_1
-      foreign_address_city
-      foreign_address_country
-      foreign_address_line_2
-      foreign_address_zip
-      foreign_address_line_3
-      foreign_address_state
-      foreign_monitored_address_line_1
-      foreign_monitored_address_city
-      foreign_monitored_address_state
-      foreign_monitored_address_line_2
-      foreign_monitored_address_zip
-      foreign_monitored_address_county
-      contact_name
-      primary_telephone
-      primary_telephone_type
-      secondary_telephone
-      secondary_telephone_type
-      international_telephone
-      email
-      preferred_contact_method
-      preferred_contact_time
-      port_of_origin
-      source_of_report
-      source_of_report_specify
-      flight_or_vessel_number
-      flight_or_vessel_carrier
-      port_of_entry_into_usa
-      travel_related_notes
-      additional_planned_travel_type
-      additional_planned_travel_destination
-      additional_planned_travel_destination_state
-      additional_planned_travel_destination_country
-      additional_planned_travel_port_of_departure
-      date_of_departure
-      date_of_arrival
-      additional_planned_travel_start_date
-      additional_planned_travel_end_date
-      additional_planned_travel_related_notes
-      last_date_of_exposure
-      potential_exposure_location
-      potential_exposure_country
-      contact_of_known_case
-      contact_of_known_case_id
-      travel_to_affected_country_or_area
-      was_in_health_care_facility_with_known_cases
-      was_in_health_care_facility_with_known_cases_facility_name
-      laboratory_personnel
-      laboratory_personnel_facility_name
-      healthcare_personnel
-      healthcare_personnel_facility_name
-      exposure_notes
-      crew_on_passenger_or_cargo_flight
-      isolation
-      jurisdiction_id
-      assigned_user
-      continuous_exposure
-    ]
   end
 
   private

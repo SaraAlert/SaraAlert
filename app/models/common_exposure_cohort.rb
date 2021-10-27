@@ -5,8 +5,8 @@ class CommonExposureCohort < ApplicationRecord
   belongs_to :patient, touch: true
 
   VALID_COHORT_TYPES = [nil, '', 'Adult Congregate Living Facility​', 'Child Care Facility​', 'Community Event or Mass Gathering', 'Correctional Facility',
-                        'Group Home​', 'Healthcare Facility​', 'Place of Worship​', 'School or University​', 'Shelter​', 'Substance Abuse Treatment Center​',
-                        'Workplace​', 'Other'].freeze
+                        'Group Home', 'Healthcare Facility', 'Place of Worship', 'School or University', 'Shelter', 'Substance Abuse Treatment Center',
+                        'Workplace', 'Other'].freeze
 
   validates :cohort_type, inclusion: {
     in: VALID_COHORT_TYPES,

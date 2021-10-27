@@ -30,11 +30,15 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
     remove_column :patients, :member_of_a_common_exposure_cohort
     remove_column :patients, :member_of_a_common_exposure_cohort_type
 
+    # TODO: update advanced filters and export presets
+
     ActiveRecord::Base.record_timestamps = true
   end
 
   def down
     ActiveRecord::Base.record_timestamps = false
+
+    # TODO: update advanced filters and export presets
 
     add_column :patients, :member_of_a_common_exposure_cohort, :boolean
     add_column :patients, :member_of_a_common_exposure_cohort_type, :string, limit: 200

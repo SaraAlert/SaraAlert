@@ -34,6 +34,39 @@ class JurisdictionsController < ApplicationController
     render json: { assigned_users: patients_by_query(current_user, query).where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort }
   end
 
+  # Get list of common exposure cohort names and locations based on frequency
+  def common_exposure_cohorts
+    # Require jurisdiction and scope params
+    params.require(:query).require(:jurisdiction)
+    params.require(:query).require(:scope)
+
+    # Validate filter and sorting params
+    begin
+      query = validate_patients_query(params.require(:query))
+    rescue StandardError => e
+      return render json: e, status: :bad_request
+    end
+
+    # Get distinct cohortt names and locations from filtered patients
+    patient_ids = patients_by_query(current_user, query).where_assoc_exists(:common_exposure_cohorts)
+
+    cohort_names = CommonExposureCohort.where(patient_id: patient_ids)
+                                       .where.not(cohort_name: [nil, ''])
+                                       .group(:cohort_name)
+                                       .order('COUNT(cohort_name) DESC')
+                                       .distinct
+                                       .pluck(:cohort_name)
+
+    cohort_locations = CommonExposureCohort.where(patient_id: patient_ids)
+                                           .where.not(cohort_location: [nil, ''])
+                                           .group(:cohort_location)
+                                           .order('COUNT(cohort_location) DESC')
+                                           .distinct
+                                           .pluck(:cohort_location)
+
+    render json: { cohort_names: cohort_names, cohort_locations: cohort_locations }
+  end
+
   private
 
   def authenticate_user_role
