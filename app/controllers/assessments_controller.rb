@@ -98,7 +98,7 @@ class AssessmentsController < ApplicationController
         assessment_placeholder['patient_submission_token'] = submission_token_from_params
         # The generic 'experiencing_symptoms' boolean is used in cases where a user does not specify _which_ symptoms they are experiencing,
         # a value of true will result in an assessment being marked as symptomatic regardless of if symptoms are specified
-        unless params.permit(:experiencing_symptoms)['experiencing_symptoms'].blank?
+        if params.permit(:experiencing_symptoms)['experiencing_symptoms'].present?
           experiencing_symptoms = (%w[yes yeah].include? params.permit(:experiencing_symptoms)['experiencing_symptoms'].downcase.gsub(/\W/, ''))
           assessment_placeholder['experiencing_symptoms'] = experiencing_symptoms
         end
@@ -193,9 +193,9 @@ class AssessmentsController < ApplicationController
     redirect_to(root_url) && return if reported_symptoms_array.any? { |symptom| symptom[:name].nil? }
 
     valid_symptom_names = assessment.reported_condition&.threshold_condition&.symptoms&.pluck(:name)
-    redirect_to(root_url) && return if valid_symptom_names.nil? || (reported_symptoms_array.map { |symptom| symptom[:name] } - valid_symptom_names).any?
+    redirect_to(root_url) && return if valid_symptom_names.nil? || (reported_symptoms_array.pluck(:name) - valid_symptom_names).any?
 
-    reported_symptoms = reported_symptoms_array.map { |symptom| [symptom[:name], symptom] }.to_h
+    reported_symptoms = reported_symptoms_array.index_by { |symptom| symptom[:name] }
 
     delta = []
     Assessment.transaction do
