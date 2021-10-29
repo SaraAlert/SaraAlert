@@ -227,7 +227,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
 
   def self.normalize_enums(enums)
     enums.transform_values do |values|
-      values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }.to_h
+      values.index_by { |value| value.to_s.downcase.gsub(/[ -.]/, '') }
     end
   end
 
