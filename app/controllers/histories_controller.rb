@@ -32,12 +32,14 @@ class HistoriesController < ApplicationController
 
   # "Deletes" a history comment - does not actually remove the comment from the database
   # but adds a deleted_by and deleted_reason that show the comment was deleted
+  # rubocop:disable Rails/SkipsModelValidations
   def delete
     # mark each version of the history as deleted, not just the most recent one
     @patient.histories
             .where(original_comment_id: @history.original_comment_id)
             .update_all({ deleted_by: current_user.email, delete_reason: params.permit(:delete_reason)[:delete_reason], updated_at: DateTime.now })
   end
+  # rubocop:enable Rails/SkipsModelValidations
 
   private
 
@@ -54,12 +56,12 @@ class HistoriesController < ApplicationController
     end
 
     # Check if user has access to patient
-    @patient = current_user.viewable_patients.find_by_id(patient_id)
+    @patient = current_user.viewable_patients.find_by(id: patient_id)
     render(json: { error: "User does not have access to Patient with ID: #{patient_id}" }, status: :forbidden) && return unless @patient
   end
 
   def check_history
-    @history = @patient.histories.find_by_id(params.require(:id))
+    @history = @patient.histories.find_by(id: params.require(:id))
     return head :bad_request if @history.nil? || @history.history_type != History::HISTORY_TYPES[:comment]
   end
 end
