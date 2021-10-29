@@ -23,7 +23,7 @@ class UsersController < ApplicationController
     return head :bad_request unless order_by.nil? || order_by.blank? || %w[user timestamp].include?(order_by)
 
     sort_direction = permitted_params[:direction]
-    return head :bad_request if sort_direction.blank? || %w[asc desc].exclude?(sort_direction)
+    return head :bad_request if sort_direction.present? && %w[asc desc].exclude?(sort_direction)
     return head :bad_request unless (order_by.present? && sort_direction.present?) || (order_by.blank? && sort_direction.blank?)
 
     # Find user
