@@ -100,8 +100,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     # Validate sorting direction
     direction = query[:direction]
-    raise InvalidQueryError.new(:direction, direction) unless direction.nil? || direction.blank? || %w[asc desc].include?(direction)
-    raise InvalidQueryError.new(:direction, direction) unless (!order.blank? && !direction.blank?) || (order.blank? && direction.blank?)
+    raise InvalidQueryError.new(:direction, direction) unless direction.blank? || %w[asc desc].include?(direction)
+    raise InvalidQueryError.new(:direction, direction) unless (order.present? && direction.present?) || (order.blank? && direction.blank?)
 
     query
   end
@@ -184,7 +184,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def sort(patients, order, direction)
-    return patients if order.nil? || order.empty? || direction.nil? || direction.blank?
+    return patients if order.blank? || direction.blank?
 
     # Satisfy brakeman with additional sanitation logic
     dir = direction == 'asc' ? 'asc' : 'desc'
@@ -244,7 +244,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
   # rubocop:disable Metrics/MethodLength
   def advanced_filter(patients, filters, tz_offset)
-    return patients unless filters.present?
+    return patients if filters.blank?
 
     # Adjust for difference between client and server timezones.
     # NOTE: Adding server timezone offset in cases where the server may not be running in UTC time.
@@ -314,7 +314,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'assigned-user'
         if filter[:value].present?
           # Map multi-select type filter from { label, value } to values
-          filter_assigned_users = filter[:value].map { |p| p[:value] }
+          filter_assigned_users = filter[:value].pluck(:value)
 
           # Get patients where assigned_user is any of the assigned users specified in the filter
           patients = patients.where(assigned_user: filter_assigned_users)
@@ -346,7 +346,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'contact-type'
         if filter[:value].present?
           # Map multi-select type filter from { label, value } to values
-          filter_contact_types = filter[:value].map { |p| p[:value] }
+          filter_contact_types = filter[:value].pluck(:value)
 
           # Get patients where assigned_user is any of the assigned users specified in the filter
           patients = patients.where(contact_type: filter_contact_types)
@@ -452,7 +452,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                      patients.where('lower(patients.middle_name) like ?', "%#{filter[:value]&.downcase}%")
                    end
       when 'monitoring-plan'
-        patients = patients.where(monitoring_plan: filter[:value].blank? ? [nil, ''] : filter[:value])
+        patients = patients.where(monitoring_plan: filter[:value].presence || [nil, ''])
       when 'monitoring-status'
         patients = patients.where(monitoring: filter[:value].present? ? true : [nil, false])
       when 'never-responded'
@@ -464,7 +464,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'paused'
         patients = patients.where(pause_notifications: filter[:value].present? ? true : [nil, false])
       when 'preferred-contact-method'
-        patients = patients.where(preferred_contact_method: filter[:value].blank? ? [nil, ''] : filter[:value])
+        patients = patients.where(preferred_contact_method: filter[:value].presence || [nil, ''])
       when 'preferred-contact-time'
         patients = advanced_filter_preferred_contact_time(patients, filter)
       when 'primary-language'
@@ -483,7 +483,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                      patients.where('latest_assessment_at < ?', 24.hours.ago).or(patients.where(latest_assessment_at: nil))
                    end
       when 'risk-exposure'
-        patients = patients.where(exposure_risk_assessment: filter[:value].blank? ? [nil, ''] : filter[:value])
+        patients = patients.where(exposure_risk_assessment: filter[:value].presence || [nil, ''])
       when 'sara-id'
         patients = patients.where(id: filter[:value])
       when 'sent-today'
@@ -495,11 +495,13 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'seven-day-quarantine'
         patients = advanced_filter_quarantine_option(patients, filter, :seven_day)
       when 'sms-blocked'
+        # rubocop:disable Rails/PluckInWhere
         patients = if filter[:value]
                      patients.where(primary_telephone: BlockedNumber.pluck(:phone_number))
                    else
                      patients.where.not(primary_telephone: BlockedNumber.pluck(:phone_number)).or(patients.where(primary_telephone: nil))
                    end
+        # rubocop:enable Rails/PluckInWhere
       when 'symptom-onset'
         patients = advanced_filter_date(patients, :symptom_onset, filter, tz_diff, :date)
       when 'symptom-onset-relative'
@@ -762,7 +764,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       if fields.include?(:latest_report)
         details[:latest_report] = { timestamp: patient[:latest_assessment_at]&.rfc2822, symptomatic: patient[:latest_assessment_symptomatic] }
       end
-      details[:status] = patient.status.to_s.gsub('_', ' ').sub('exposure ', '')&.sub('isolation ', '') if fields.include?(:status)
+      details[:status] = patient.status.to_s.tr('_', ' ').sub('exposure ', '')&.sub('isolation ', '') if fields.include?(:status)
       details[:report_eligibility] = patient.report_eligibility if fields.include?(:report_eligibility)
       details[:is_hoh] = patient.head_of_household?
       details[:workflow] = patient[:isolation] ? 'Isolation' : 'Exposure' if fields.include?(:workflow)
