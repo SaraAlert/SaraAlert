@@ -445,13 +445,13 @@ export const advancedFilterOptions = [
         name: 'cohort-name',
         title: 'cohort name/description',
         type: 'select',
-        options: [], // Populated asynchronously in the AdvancedFilter component
+        options: [''], // Populated asynchronously in the AdvancedFilter component
       },
       {
         name: 'cohort-location',
         title: 'cohort location',
         type: 'select',
-        options: [], // Populated asynchronously in the AdvancedFilter component
+        options: [''], // Populated asynchronously in the AdvancedFilter component
       },
     ],
   },

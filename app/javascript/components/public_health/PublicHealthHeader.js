@@ -176,6 +176,8 @@ class PublicHealthHeader extends React.Component {
                   authenticity_token={this.props.authenticity_token}
                   jurisdiction_paths={this.props.jurisdiction_paths}
                   all_assigned_users={this.props.all_assigned_users}
+                  all_cohort_names={this.props.all_cohort_names}
+                  all_cohort_locations={this.props.all_cohort_locations}
                   jurisdiction={this.props.jurisdiction}
                   tabs={this.props.tabs}
                   workflow={this.props.workflow}
@@ -229,6 +231,8 @@ PublicHealthHeader.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
+  all_cohort_names: PropTypes.array,
+  all_cohort_locations: PropTypes.array,
   workflow: PropTypes.oneOf(['global', 'exposure', 'isolation']),
   jurisdiction: PropTypes.object,
   tabs: PropTypes.object,

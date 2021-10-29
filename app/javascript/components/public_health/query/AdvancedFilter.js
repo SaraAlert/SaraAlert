@@ -63,6 +63,26 @@ class AdvancedFilter extends React.Component {
         advancedFilterOptions[Number(filterIndex)].options = formattedOptions;
       });
 
+    // Dynamically populate common exposure cohort name/description and location options
+    axios
+      .post(window.BASE_PATH + '/jurisdictions/common_exposure_cohorts', {
+        query: {
+          jurisdiction: this.props.jurisdiction_id,
+          scope: 'all',
+        },
+      })
+      .then(response => {
+        advancedFilterOptions
+          .find(option => option.name === 'common-exposure-cohort')
+          ?.fields?.forEach(filter => {
+            if (filter.name === 'cohort-name' && response?.data?.cohort_names) {
+              filter.options = filter.options.concat(response.data.cohort_names);
+            } else if (filter.name === 'cohort-location' && response?.data?.cohort_locations) {
+              filter.options = filter.options.concat(response.data.cohort_locations);
+            }
+          });
+      });
+
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
       this.addStatement();
@@ -1517,6 +1537,7 @@ AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
   advancedFilterUpdate: PropTypes.func,
   updateStickySettings: PropTypes.bool,
+  jurisdiction_id: PropTypes.number,
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
 };

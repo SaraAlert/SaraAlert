@@ -345,6 +345,8 @@ class CustomExport extends React.Component {
                       authenticity_token={this.props.authenticity_token}
                       jurisdiction_paths={this.props.jurisdiction_paths}
                       all_assigned_users={this.props.all_assigned_users}
+                      all_cohort_names={this.props.all_cohort_names}
+                      all_cohort_locations={this.props.all_cohort_locations}
                       jurisdiction={this.props.jurisdiction}
                       query={this.state.custom_patient_query}
                       onQueryChange={(field, value, cb) =>
@@ -590,6 +592,8 @@ CustomExport.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
+  all_cohort_names: PropTypes.array,
+  all_cohort_locations: PropTypes.array,
   jurisdiction: PropTypes.object,
   tabs: PropTypes.object,
   preset: PropTypes.object,
