@@ -71,10 +71,10 @@ class LaboratoriesController < ApplicationController
       if @lab.destroy
         reason = params.permit(:delete_reason)[:delete_reason]
         comment = "User deleted a lab result (ID: #{@lab.id}"
-        comment += ", Type: #{@lab.lab_type}" unless @lab.lab_type.blank?
-        comment += ", Specimen Collected: #{@lab.specimen_collection}" unless @lab.specimen_collection.blank?
-        comment += ", Report: #{@lab.report}" unless @lab.report.blank?
-        comment += ", Result: #{@lab.result}" unless @lab.result.blank?
+        comment += ", Type: #{@lab.lab_type}" if @lab.lab_type.present?
+        comment += ", Specimen Collected: #{@lab.specimen_collection}" if @lab.specimen_collection.present?
+        comment += ", Report: #{@lab.report}" if @lab.report.present?
+        comment += ", Result: #{@lab.result}" if @lab.result.present?
         comment += ')'
         comment += " and updated symptom onset to #{@patient.symptom_onset.strftime('%m/%d/%Y')}" if symptom_onset.present?
         comment += ". Reason: #{reason}."
@@ -107,12 +107,12 @@ class LaboratoriesController < ApplicationController
     end
 
     # Check if user has access to patient
-    @patient = current_user.viewable_patients.find_by_id(patient_id)
+    @patient = current_user.viewable_patients.find_by(id: patient_id)
     render(json: { error: "User does not have access to Patient with ID: #{patient_id}" }, status: :forbidden) && return unless @patient
   end
 
   def check_lab
-    @lab = @patient.laboratories.find_by_id(params.require(:id))
+    @lab = @patient.laboratories.find_by(id: params.require(:id))
     return head :bad_request if @lab.nil?
   end
 end
