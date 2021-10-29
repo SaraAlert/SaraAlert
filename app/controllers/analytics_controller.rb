@@ -28,7 +28,7 @@ class AnalyticsController < ApplicationController
 
     return unless all_map_files.include? map_file_name
 
-    send_file("#{Rails.root}/public/CountyLevelMaps/#{map_file_name}.json", filename: "#{map_file_name}.json", type: 'application/json')
+    send_file(Rails.root.join('public', 'CountyLevelMaps', "#{map_file_name}.json"), filename: "#{map_file_name}.json", type: 'application/json')
   end
 
   def monitoree_maps
@@ -50,16 +50,18 @@ class AnalyticsController < ApplicationController
 
   protected
 
+  # Time.zone is set by Rails.application.config.time_zone which defaults to UTC.
+  # Therefore, Time.zone.today makes UTC explicit and is consistient with previous behavior.
   def enroller_stats
     {
       system_subjects: Patient.count,
-      system_subjects_last_24: Patient.where('created_at >= ?', Time.now - 1.day).count,
+      system_subjects_last_24: Patient.where('created_at >= ?', Time.zone.now - 1.day).count,
       system_assessments: Assessment.count,
-      system_assessments_last_24: Assessment.where('created_at >= ?', Time.now - 1.day).count,
+      system_assessments_last_24: Assessment.where('created_at >= ?', Time.zone.now - 1.day).count,
       user_subjects: Patient.where(creator_id: current_user.id).count,
-      user_subjects_last_24: Patient.where(creator_id: current_user.id).where('created_at >= ?', Time.now - 1.day).count,
+      user_subjects_last_24: Patient.where(creator_id: current_user.id).where('created_at >= ?', Time.zone.now - 1.day).count,
       user_assessments: Patient.where(creator_id: current_user.id).joins(:assessments).count,
-      user_assessments_last_24: Patient.where(creator_id: current_user.id).joins(:assessments).where('assessments.created_at >= ?', Time.now - 1.day).count
+      user_assessments_last_24: Patient.where(creator_id: current_user.id).joins(:assessments).where('assessments.created_at >= ?', Time.zone.now - 1.day).count
     }
   end
 
