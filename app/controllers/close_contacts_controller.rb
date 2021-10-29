@@ -85,15 +85,15 @@ class CloseContactsController < ApplicationController
       if @close_contact.destroy
         reason = params.require(:delete_reason)
         comment = "User deleted a close contact (ID: #{@close_contact.id}"
-        comment += ", Name: #{@close_contact.first_name} #{@close_contact.last_name}" unless (@close_contact.first_name + @close_contact.last_name).blank?
-        comment += ", Primary Telephone: #{@close_contact.primary_telephone}" unless @close_contact.primary_telephone.blank?
-        comment += ", Email: #{@close_contact.email}" unless @close_contact.email.blank?
-        unless @close_contact.last_date_of_exposure.blank?
+        comment += ", Name: #{@close_contact.first_name} #{@close_contact.last_name}" if (@close_contact.first_name + @close_contact.last_name).present?
+        comment += ", Primary Telephone: #{@close_contact.primary_telephone}" if @close_contact.primary_telephone.present?
+        comment += ", Email: #{@close_contact.email}" if @close_contact.email.present?
+        if @close_contact.last_date_of_exposure.present?
           comment += ", Last Date of Exposure: #{@close_contact.last_date_of_exposure.to_date.strftime('%m/%d/%Y')}"
         end
-        comment += ", Assigned User: #{@close_contact.assigned_user}" unless @close_contact.assigned_user.blank?
-        comment += ", Notes: #{@close_contact.notes}" unless @close_contact.notes.blank?
-        comment += ", Contact Attempts: #{@close_contact.contact_attempts}" unless @close_contact.contact_attempts.blank?
+        comment += ", Assigned User: #{@close_contact.assigned_user}" if @close_contact.assigned_user.present?
+        comment += ", Notes: #{@close_contact.notes}" if @close_contact.notes.present?
+        comment += ", Contact Attempts: #{@close_contact.contact_attempts}" if @close_contact.contact_attempts.present?
         comment += ", Enrolled: #{@close_contact.enrolled_id.blank? ? 'No' : 'Yes, Sara Alert ID ' + @close_contact.enrolled_id.to_s}"
         comment += "). Reason: #{reason}."
         History.close_contact_edit(patient: @patient.id,
@@ -126,12 +126,12 @@ class CloseContactsController < ApplicationController
     end
 
     # Check if user has access to patient
-    @patient = current_user.viewable_patients.find_by_id(patient_id)
+    @patient = current_user.viewable_patients.find_by(id: patient_id)
     render(json: { error: "User does not have access to Patient with ID: #{patient_id}" }, status: :forbidden) && return unless @patient
   end
 
   def check_close_contact
-    @close_contact = @patient.close_contacts.find_by_id(params.require(:id))
+    @close_contact = @patient.close_contacts.find_by(id: params.require(:id))
     return head :bad_request if @close_contact.nil?
   end
 end
