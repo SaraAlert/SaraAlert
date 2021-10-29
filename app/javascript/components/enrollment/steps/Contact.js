@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 import axios from 'axios';
+import _ from 'lodash';
 import libphonenumber from 'google-libphonenumber';
 import * as yup from 'yup';
 import Select from 'react-select';
@@ -128,11 +129,11 @@ class Contact extends React.Component {
     }
 
     // When email is modified, ensure confirm_email has been intialized so yup validation will fire
-    if (event.target.id === 'email' && current.patient.confirm_email === undefined) {
+    if (event.target.id === 'email' && _.isUndefined(current.patient.confirm_email)) {
       updates['confirm_email'] = '';
     }
 
-    if (event.target.id === 'alternate_email' && current.patient.confirm_alternate_email === undefined) {
+    if (event.target.id === 'alternate_email' && _.isUndefined(current.patient.confirm_alternate_email)) {
       updates['confirm_alternate_email'] = '';
     }
 
@@ -622,7 +623,7 @@ class Contact extends React.Component {
               isInvalid={this.state.errors[`${prefix}email`]}
               size="lg"
               className="form-square"
-              value={this.state.current.patient[`${prefix}email`]}
+              value={this.state.current.patient[`${prefix}email`] || ''}
               onChange={this.handleChange}
             />
             <Form.Control.Feedback className="d-block" type="invalid">
@@ -635,7 +636,7 @@ class Contact extends React.Component {
               isInvalid={this.state.errors[`confirm_${prefix}email`]}
               size="lg"
               className="form-square"
-              value={this.state.current.patient[`confirm_${prefix}email`]}
+              value={this.state.current.patient[`confirm_${prefix}email`] || ''}
               onChange={this.handleChange}
             />
             <Form.Control.Feedback className="d-block" type="invalid">
