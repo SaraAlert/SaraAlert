@@ -12,6 +12,7 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
       t.timestamps
     end
 
+    # Create common exposure cohorts based on old field
     Patient.where.not(member_of_a_common_exposure_cohort_type: [nil, '']).in_batches(of: PATIENT_BATCH_SIZE).each do |batch_group|
       common_exposure_cohorts = []
       batch_group.pluck(:id, :member_of_a_common_exposure_cohort_type, :created_at).each do |(patient_id, cohort_name, created_at)|
@@ -30,7 +31,19 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
     remove_column :patients, :member_of_a_common_exposure_cohort
     remove_column :patients, :member_of_a_common_exposure_cohort_type
 
-    # TODO: update advanced filters and export presets
+    # Update saved advanced filters
+    UserFilter.where('contents LIKE "%cohort%"').in_batches do |batch|
+      batch.each do |uf|
+        contents = JSON.parse(uf[:contents])
+      end
+    end
+
+    # Update saved export presets
+    UserExportPreset.where('config LIKE "%cohort%"').in_batches do |batch|
+      batch.each do |uep|
+        config = JSON.parse(uep[:config])
+      end
+    end
 
     ActiveRecord::Base.record_timestamps = true
   end
@@ -38,11 +51,24 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
   def down
     ActiveRecord::Base.record_timestamps = false
 
-    # TODO: update advanced filters and export presets
+    # Update saved advanced filters
+    UserFilter.where('contents LIKE "%common-exposure-cohort%"').in_batches do |batch|
+      batch.each do |uf|
+        contents = JSON.parse(uf[:contents])
+      end
+    end
+
+    # Update saved export presets
+    UserExportPreset.where('config LIKE "%common-exposure-cohort%"').in_batches do |batch|
+      batch.each do |uep|
+        config = JSON.parse(uep[:config])
+      end
+    end
 
     add_column :patients, :member_of_a_common_exposure_cohort, :boolean
     add_column :patients, :member_of_a_common_exposure_cohort_type, :string, limit: 200
 
+    # Update old field with common exposure cohorts
     Patient.where_assoc_exists(:common_exposure_cohorts).in_batches(of: PATIENT_BATCH_SIZE).each do |batch_group|
       updates = {}
       CommonExposureCohort.where(patient_id: batch_group.pluck(:id)).order(:updated_at).each do |common_exposure_cohort|

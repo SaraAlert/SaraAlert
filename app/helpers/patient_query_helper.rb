@@ -337,9 +337,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
             patients = patients.where('contact_of_known_case_id REGEXP ?', value_string.to_s)
           end
         end
-      when 'cohort'
-        # implement
-        next
+      when 'common-exposure-cohort'
+        patients = advanced_filter_common_exposure_cohorts(patients, filter)
       when 'contact-type'
         if filter[:value].present?
           # Map multi-select type filter from { label, value } to values
@@ -622,6 +621,22 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     end
 
     patients.where(id: vaccines)
+  end
+
+  def advanced_filter_common_exposure_cohorts(patients, filter)
+    common_exposure_cohorts = patients.joins(:common_exposure_cohorts)
+    filter[:value].each do |field|
+      case field[:name]
+      when 'cohort-type'
+        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_type: field[:value] })
+      when 'cohort-name'
+        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_name: field[:value] })
+      when 'cohort-location'
+        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_location: field[:value] })
+      end
+    end
+
+    patients.where(id: common_exposure_cohorts)
   end
 
   # Filter patients by a set time range for the given field
