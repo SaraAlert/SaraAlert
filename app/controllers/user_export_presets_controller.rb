@@ -14,7 +14,7 @@ class UserExportPresetsController < ApplicationController
   def create
     unless current_user.user_export_presets.count < EXPORT_PRESET_LIMIT # Enforce upper limit per user
       message = "You have already reached the limit of #{EXPORT_PRESET_LIMIT} custom export presets. Please delete at least one before creating another preset."
-      return render json: { message: message }.to_json, status: 400
+      return render json: { message: message }.to_json, status: :bad_request
     end
 
     config = params.require(:config).permit(:format, data: {})
