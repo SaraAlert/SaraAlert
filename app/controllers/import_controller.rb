@@ -244,7 +244,7 @@ class ImportController < ApplicationController
     # value = validate_required_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:required)
     value = import_enum_field(field, value) if VALIDATION[field][:checks].include?(:enum)
     value = import_and_validate_bool_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:bool)
-    value = import_date_field(value) if VALIDATION[field][:checks].include?(:date)
+    value = value.presence if VALIDATION[field][:checks].include?(:date)
     value = import_and_validate_time_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:time)
     value = import_phone_field(value) if VALIDATION[field][:checks].include?(:phone)
     value = import_and_validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
@@ -275,10 +275,6 @@ class ImportController < ApplicationController
     # because by that point they will have been typecast from a string to a bool
     err_msg = "Value '#{value}' for '#{VALIDATION[field][:label]}' is not an acceptable value, acceptable values are: 'True' and 'False'"
     raise ValidationError.new(err_msg, row_ind)
-  end
-
-  def import_date_field(value)
-    value.presence
   end
 
   def import_and_validate_time_field(field, value, row_ind)
@@ -350,7 +346,7 @@ class ImportController < ApplicationController
 
     normalized_value = normalize_enum_field_value(value)
     if workflow == :exposure
-      return NORMALIZED_EXPOSURE_ENUMS[field][normalized_value] if NORMALIZED_EXPOSURE_ENUMS[field].keys?(normalized_value)
+      return NORMALIZED_EXPOSURE_ENUMS[field][normalized_value] if NORMALIZED_EXPOSURE_ENUMS[field].key?(normalized_value)
 
       err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}' for monitorees imported into the Exposure workflow, "
       err_msg += "acceptable values are: #{VALID_EXPOSURE_ENUMS[field].reject(&:blank?).to_sentence}"
