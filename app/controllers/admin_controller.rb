@@ -35,7 +35,7 @@ class AdminController < ApplicationController
 
     sort_direction = permitted_params[:sortDirection]
     return head :bad_request unless sort_direction.nil? || sort_direction.blank? || %w[asc desc].include?(sort_direction)
-    return head :bad_request unless (!order_by.blank? && !sort_direction.blank?) || (order_by.blank? && sort_direction.blank?)
+    return head :bad_request unless (order_by.present? && sort_direction.present?) || (order_by.blank? && sort_direction.blank?)
 
     # Get all users within the current user's jurisdiction
     # NOTE: Does not include API proxy users as those are not managed by anyone other than USA admins and cannot be accessed by real users
@@ -81,7 +81,7 @@ class AdminController < ApplicationController
 
   # Sort users by a given field either in ascending or descending order.
   def sort(users, order_by, sort_direction)
-    return users if order_by.nil? || order_by.empty? || sort_direction.nil? || sort_direction.blank?
+    return users if order_by.blank? || sort_direction.blank?
 
     # Satisfy brakeman with additional sanitation logic
     dir = sort_direction == 'asc' ? 'asc' : 'desc'
@@ -149,7 +149,7 @@ class AdminController < ApplicationController
     user = User.create!(
       email: email,
       password: password,
-      jurisdiction: Jurisdiction.find_by_id(jurisdiction),
+      jurisdiction: Jurisdiction.find_by(id: jurisdiction),
       force_password_change: true,
       api_enabled: is_api_enabled,
       role: role,
@@ -210,7 +210,7 @@ class AdminController < ApplicationController
     user.notes = permitted_params[:notes].strip
 
     # Update jurisdiction
-    user.jurisdiction = Jurisdiction.find_by_id(jurisdiction)
+    user.jurisdiction = Jurisdiction.find_by(id: jurisdiction)
 
     # Update API access
     user.update!(api_enabled: is_api_enabled, role: role)
@@ -306,6 +306,8 @@ class AdminController < ApplicationController
         ]
       end
     end
-    send_data counts, filename: "counts-#{Date.today}.csv"
+    # Time.zone is set by Rails.application.config.time_zone which defaults to UTC.
+    # Therefore, Time.zone.today makes UTC explicit and is consistient with previous behavior.
+    send_data counts, filename: "counts-#{Time.zone.today}.csv"
   end
 end
