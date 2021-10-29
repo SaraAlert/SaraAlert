@@ -54,7 +54,7 @@ module AssessmentQueryHelper
       ordered_values = ordered_values.reverse if dir == 'desc'
 
       # Collect just the assessment IDs
-      ordered_assessment_ids = ordered_values.collect { |res| res[:id] }
+      ordered_assessment_ids = ordered_values.pluck(:id)
 
       # Find the assessment records based on the order of the IDs that were sorted above
       assessments = assessments.order_as_specified(id: ordered_assessment_ids)
