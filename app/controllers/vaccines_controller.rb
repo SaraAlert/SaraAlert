@@ -91,11 +91,11 @@ class VaccinesController < ApplicationController
       if @vaccine.destroy
         reason = params.permit(:delete_reason)[:delete_reason]
         comment = "User deleted a vaccine (ID: #{@vaccine.id}"
-        comment += ", Vaccine Group: #{@vaccine.group_name}" unless @vaccine.group_name.blank?
-        comment += ", Product Name: #{@vaccine.product_name}" unless @vaccine.product_name.blank?
-        comment += ", Administration Date: #{@vaccine.administration_date.strftime('%m/%d/%Y')}" unless @vaccine.administration_date.blank?
-        comment += ", Dose Number: #{@vaccine.dose_number}" unless @vaccine.dose_number.blank?
-        comment += ", Notes: #{@vaccine.notes}" unless @vaccine.notes.blank?
+        comment += ", Vaccine Group: #{@vaccine.group_name}" if @vaccine.group_name.present?
+        comment += ", Product Name: #{@vaccine.product_name}" if @vaccine.product_name.present?
+        comment += ", Administration Date: #{@vaccine.administration_date.strftime('%m/%d/%Y')}" if @vaccine.administration_date.present?
+        comment += ", Dose Number: #{@vaccine.dose_number}" if @vaccine.dose_number.present?
+        comment += ", Notes: #{@vaccine.notes}" if @vaccine.notes.present?
         comment += "). Reason: #{reason}."
         History.vaccination_edit(patient: @patient.id,
                                  created_by: current_user.email,
@@ -124,13 +124,13 @@ class VaccinesController < ApplicationController
     render(json: { error: "Unknown patient with ID #{patient_id}" }, status: :bad_request) && return unless Patient.exists?(patient_id)
 
     # Check if user has access to patient
-    @patient = current_user.viewable_patients.find_by_id(patient_id)
+    @patient = current_user.viewable_patients.find_by(id: patient_id)
     render(json: { error: "User does not have access to Patient with ID: #{patient_id}" }, status: :forbidden) && return unless @patient
   end
 
   def check_vaccine
     vaccine_id = params.require(:id)&.to_i
-    @vaccine = @patient.vaccines.find_by_id(vaccine_id)
+    @vaccine = @patient.vaccines.find_by(id: vaccine_id)
     render(json: { error: "Vaccination with ID #{vaccine_id} cannot be found." }, status: :bad_request) && return unless @vaccine
   end
 end
