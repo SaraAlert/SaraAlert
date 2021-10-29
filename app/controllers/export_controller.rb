@@ -251,7 +251,7 @@ class ExportController < ApplicationController
     exp_recently = current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 15.minutes.ago).exists?
     if exp_recently
       render json: { message: 'You have already initiated an export of this type in the last 15 minutes. Please try again later.' }.to_json,
-             status: 401
+             status: :unauthorized
     end
     exp_recently
   end
@@ -262,7 +262,7 @@ class ExportController < ApplicationController
 
     checked = unsanitized_checked.map(&:to_sym)
     checked.each do |field|
-      raise StandardError("Unknown field '#{field}' for '#{data_type}'") unless ALL_FIELDS_NAMES[data_type].keys.include?(field)
+      raise StandardError("Unknown field '#{field}' for '#{data_type}'") unless ALL_FIELDS_NAMES[data_type].key?(field)
     end
 
     checked
