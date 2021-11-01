@@ -113,6 +113,7 @@ if Rails.env.test? || Rails.env.development?
     dict.add('cancelled')
     dict.add('captcha')
     dict.add('code_verifier')
+    dict.add('COVID-19')
     dict.add('HTTPS')
     dict.add('ltr')
     dict.add('OAuth')
