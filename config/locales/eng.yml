@@ -108,6 +108,9 @@ eng:
       temperature:
         name: 'Temperature'
         notes: 'Please enter your current temperature in degrees Fahrenheit'
+      test:
+        name: 'Test'
+        notes: 'In the past 24 hours, have you tested positive for COVID-19?'
       used-a-fever-reducer:
         name: 'Used A Fever Reducer'
         notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
