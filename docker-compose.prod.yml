@@ -17,3 +17,5 @@ services:
     image: ${SARA_ALERT_IMAGE}:latest
   sidekiq-bridge-assessment:
     image: ${SARA_ALERT_IMAGE}:latest
+  rake-bridge-queue-reports:
+    image: ${SARA_ALERT_IMAGE}:latest
