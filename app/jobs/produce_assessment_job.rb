@@ -9,14 +9,15 @@ class ProduceAssessmentJob < ApplicationJob
 
   def perform(assessment)
     queue = Redis::Queue.new('q_bridge', 'bp_q_bridge', redis: Rails.application.config.redis)
+    assessment.symbolize_keys!
     report = {
-      response_status: assessment['response_status'],
-      error_code: assessment['error_code'],
-      threshold_condition_hash: assessment['threshold_hash'],
-      reported_symptoms_array: assessment['symptoms'],
-      experiencing_symptoms: assessment['experiencing_symptoms'],
-      patient_submission_token: assessment['patient_submission_token']
+      response_status: assessment[:response_status],
+      error_code: assessment[:error_code],
+      threshold_condition_hash: assessment[:threshold_hash],
+      reported_symptoms_array: assessment[:symptoms],
+      experiencing_symptoms: assessment[:experiencing_symptoms],
+      patient_submission_token: assessment[:patient_submission_token]
     }
-    queue.push report.to_json
+    queue.push(report.to_json)
   end
 end
