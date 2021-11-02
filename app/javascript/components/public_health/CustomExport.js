@@ -182,6 +182,7 @@ class CustomExport extends React.Component {
       this.state.preset?.config?.data?.laboratories?.checked?.length > 0 ||
       this.state.preset?.config?.data?.vaccines?.checked?.length > 0 ||
       this.state.preset?.config?.data?.close_contacts?.checked?.length > 0 ||
+      this.state.preset?.config?.data?.common_exposure_cohorts?.checked?.length > 0 ||
       this.state.preset?.config?.data?.transfers?.checked?.length > 0 ||
       this.state.preset?.config?.data?.histories?.checked?.length > 0;
     const non_zero_records_selected =
@@ -438,6 +439,20 @@ class CustomExport extends React.Component {
                     expanded={this.state.preset?.config?.data?.close_contacts?.expanded}
                     onCheck={checked => this.handlePresetChange('config.data.close_contacts.checked', checked)}
                     onExpand={expanded => this.handlePresetChange('config.data.close_contacts.expanded', expanded)}
+                    showNodeIcon={false}
+                    icons={rctIcons}
+                  />
+                </Col>
+              </Row>
+              <Row className="mx-3 py-1 g-border-top">
+                <Col md={24} className="p-1">
+                  <CheckboxTree
+                    id="rct-common-exposure-cohorts-elements"
+                    nodes={this.props.options?.common_exposure_cohorts?.nodes}
+                    checked={this.state.preset?.config?.data?.common_exposure_cohorts?.checked}
+                    expanded={this.state.preset?.config?.data?.common_exposure_cohorts?.expanded}
+                    onCheck={checked => this.handlePresetChange('config.data.common_exposure_cohorts.checked', checked)}
+                    onExpand={expanded => this.handlePresetChange('config.data.common_exposure_cohorts.expanded', expanded)}
                     showNodeIcon={false}
                     icons={rctIcons}
                   />

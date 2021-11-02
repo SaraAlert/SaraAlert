@@ -123,9 +123,6 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
     # NOTE: this must be done after updating the general headers above
     update_assessment_symptom_data(data, patients)
 
-    # Update checked data to include common exposure cohorts if requested
-    update_common_exposure_cohort_data(data)
-
     data
   end
 
@@ -170,19 +167,6 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
     data[:assessments][:headers].concat(symptom_names_and_labels.second)
   end
 
-  # Update checked data to include common exposure common export cohorts if requested
-  def update_common_exposure_cohort_data(data)
-    return unless data.dig(:patients, :checked)&.include?(:common_exposure_cohorts)
-
-    data[:patients][:checked].delete(:common_exposure_cohorts)
-    data[:patients][:headers].delete(PATIENT_FIELD_NAMES[:common_exposure_cohorts])
-
-    data[:common_exposure_cohorts] = {
-      checked: COMMON_EXPOSURE_COHORT_FIELD_NAMES.keys,
-      headers: COMMON_EXPOSURE_COHORT_FIELD_NAMES.values
-    }
-  end
-
   # Gets all associated relevant data for patients group based on queries and fields
   def get_export_data(patients, data, field_data)
     exported_data = {}
@@ -217,9 +201,9 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
       exported_data[:close_contacts] = extract_close_contacts_details(close_contacts, data[:close_contacts][:checked])
     end
 
-    if field_data.dig(:common_exposure_cohorts, :checked).present?
+    if data.dig(:common_exposure_cohorts, :checked).present?
       common_exposure_cohorts = common_exposure_cohorts_by_patient_ids(patient_ids)
-      exported_data[:common_exposure_cohorts] = extract_common_exposure_cohort_details(common_exposure_cohorts, field_data[:common_exposure_cohorts][:checked])
+      exported_data[:common_exposure_cohorts] = extract_common_exposure_cohort_details(common_exposure_cohorts, data[:common_exposure_cohorts][:checked])
     end
 
     if data.dig(:transfers, :checked).present?

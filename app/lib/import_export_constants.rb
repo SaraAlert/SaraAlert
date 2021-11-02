@@ -283,7 +283,6 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     healthcare_personnel_facility_name: 'Health Care Personnel Facility Name',
     crew_on_passenger_or_cargo_flight: 'Crew on Passenger or Cargo Flight',
     member_of_a_common_exposure_cohort: 'Member of a Common Exposure Cohort?',
-    common_exposure_cohorts: 'Common Exposure Cohorts',
     exposure_notes: 'Exposure Notes',
     # Enrollment Info - Record Creation and Updates
     creator: 'Enroller',
@@ -529,8 +528,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                                                   was_in_health_care_facility_with_known_cases
                                                                   was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel
                                                                   laboratory_personnel_facility_name healthcare_personnel healthcare_personnel_facility_name
-                                                                  crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort common_exposure_cohorts
-                                                                  exposure_notes])
+                                                                  crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort exposure_notes])
                 ]
               },
               rct_node(:patients, 'Record Creation and Updates', %i[creator created_at updated_at])
