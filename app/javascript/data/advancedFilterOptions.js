@@ -118,8 +118,8 @@ export const advancedFilterOptions = [
   },
   {
     name: 'email',
-    title: 'Email (Text)',
-    description: 'Monitoree email address',
+    title: 'Primary Contact Email (Text)',
+    description: 'Monitoree primary contact email address',
     type: 'search',
   },
   {
@@ -148,14 +148,14 @@ export const advancedFilterOptions = [
   },
   {
     name: 'telephone-number',
-    title: 'Telephone Number (Exact Match) (Text)',
-    description: 'Monitorees with specified 10 digit telephone number',
+    title: 'Primary Contact Telephone Number (Exact Match) (Text)',
+    description: 'Monitorees with a specified 10 digit primary contact telephone number',
     type: 'search',
   },
   {
     name: 'telephone-number-partial',
-    title: 'Telephone Number (Contains) (Text)',
-    description: 'Monitorees with a telephone number that contains specified digits',
+    title: 'Primary Contact Telephone Number (Contains) (Text)',
+    description: 'Monitorees with a primary contact telephone number that contains specified digits',
     type: 'search',
   },
 
@@ -176,15 +176,15 @@ export const advancedFilterOptions = [
   },
   {
     name: 'preferred-contact-method',
-    title: 'Preferred Reporting Method (Select)',
-    description: 'Monitoree preferred reporting method',
+    title: 'Primary Contact Preferred Reporting Method (Select)',
+    description: 'Monitoree primary contact preferred reporting method',
     type: 'select',
     options: ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', ''],
   },
   {
     name: 'preferred-contact-time',
-    title: 'Preferred Contact Time (Select)',
-    description: 'Monitoree preferred contact time',
+    title: 'Primary Contact Preferred Contact Time (Select)',
+    description: 'Monitoree primary contact preferred contact time',
     type: 'select',
     options: ['Early Morning', 'Morning', 'Afternoon', 'Evening', 'Late Night', ''],
     tooltip: (
