@@ -9,6 +9,7 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
   include LaboratoryQueryHelper
   include VaccineQueryHelper
   include CloseContactQueryHelper
+  include CommonExposureCohortQueryHelper
   include TransferQueryHelper
   include HistoryQueryHelper
   include Utils
@@ -27,11 +28,11 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
 
   # Creates a list of csv files from exported data
   def csv_export(config, patients, inner_batch_size)
-    # Determine selected data types for export
-    data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
-
     # Get all of the field data based on the config
     field_data = get_field_data(config, patients)
+
+    # Determine selected data types for export
+    data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| field_data.dig(data_type, :checked).present? }
 
     files = []
     csvs = {}
@@ -66,11 +67,11 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
   def xlsx_export(config, patients, inner_batch_size)
     files = []
 
-    # Determine selected data types for export
-    data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| config.dig(:data, data_type, :checked).present? }
-
     # Get all of the field data based on the config
     field_data = get_field_data(config, patients)
+
+    # Determine selected data types for export
+    data_types = CUSTOM_EXPORT_OPTIONS.keys.select { |data_type| field_data.dig(data_type, :checked).present? }
 
     # Declare variables in scope outside of batch loop
     sheets = nil
@@ -122,6 +123,9 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
     # NOTE: this must be done after updating the general headers above
     update_assessment_symptom_data(data, patients)
 
+    # Update checked data to include common exposure cohorts if requested
+    update_common_exposure_cohort_data(data)
+
     data
   end
 
@@ -149,10 +153,10 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
   # Finds the symptoms needed for the reports columns
   def update_assessment_symptom_data(data, patients)
     # Don't update if assessment symptom data isn't needed
-    return [] unless data.dig(:assessments, :checked)&.include?(:symptoms)
+    return unless data.dig(:assessments, :checked)&.include?(:symptoms)
 
     data[:assessments][:checked].delete(:symptoms)
-    data[:assessments][:headers].delete('Symptoms Reported')
+    data[:assessments][:headers].delete(ASSESSMENT_FIELD_NAMES[:symptoms])
 
     # Query symptom names and labels
     threshold_condition_hashes = ReportedCondition.where(assessment_id: Assessment.where(patient_id: patients)).distinct.select(:threshold_condition_hash)
@@ -160,10 +164,23 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
                                       .where.not(label: nil).where.not(name: nil).order(:label).distinct.pluck(:name, :label).transpose
 
     # Empty symptoms check
-    return [] if symptom_names_and_labels.blank?
+    return if symptom_names_and_labels.blank?
 
     data[:assessments][:checked].concat(symptom_names_and_labels.first.map(&:to_sym))
     data[:assessments][:headers].concat(symptom_names_and_labels.second)
+  end
+
+  # Update checked data to include common exposure common export cohorts if requested
+  def update_common_exposure_cohort_data(data)
+    return unless data.dig(:patients, :checked)&.include?(:common_exposure_cohorts)
+
+    data[:patients][:checked].delete(:common_exposure_cohorts)
+    data[:patients][:headers].delete(PATIENT_FIELD_NAMES[:common_exposure_cohorts])
+
+    data[:common_exposure_cohorts] = {
+      checked: COMMON_EXPOSURE_COHORT_FIELD_NAMES.keys,
+      headers: COMMON_EXPOSURE_COHORT_FIELD_NAMES.values
+    }
   end
 
   # Gets all associated relevant data for patients group based on queries and fields
@@ -198,6 +215,11 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
     if data.dig(:close_contacts, :checked).present?
       close_contacts = close_contacts_by_patient_ids(patient_ids)
       exported_data[:close_contacts] = extract_close_contacts_details(close_contacts, data[:close_contacts][:checked])
+    end
+
+    if field_data.dig(:common_exposure_cohorts, :checked).present?
+      common_exposure_cohorts = common_exposure_cohorts_by_patient_ids(patient_ids)
+      exported_data[:common_exposure_cohorts] = extract_common_exposure_cohort_details(common_exposure_cohorts, field_data[:common_exposure_cohorts][:checked])
     end
 
     if data.dig(:transfers, :checked).present?
@@ -244,8 +266,19 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
       patients_vaccines = Vaccine.where(patient_id: patient_ids)
                                  .order(administration_date: :desc)
                                  .group_by(&:patient_id)
-                                 .transform_values { |v| v.take(2) }
+                                 .transform_values { |v| v.take(3) }
     end
+
+    # query patients common export cohorts in bulk if requested
+    if (fields & PATIENT_FIELD_TYPES[:cohort_fields]).any?
+      patients_cohorts = CommonExposureCohort.where(patient_id: patient_ids)
+                                             .order(created_at: :desc)
+                                             .group_by(&:patient_id)
+                                             .transform_values { |v| v.take(2) }
+    end
+
+    # query patient_ids of patients with common exposure cohorts if requested
+    cohort_patient_ids = CommonExposureCohort.where(patient_id: patient_ids).distinct.pluck(:patient_id) if fields.include?(:member_of_a_common_exposure_cohort)
 
     # construct patient details
     ActiveRecord::Base.uncached do
@@ -266,6 +299,7 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
         patient_details[:name] = patient.displayed_name if fields.include?(:name)
         patient_details[:age] = patient.calc_current_age if fields.include?(:age)
         patient_details[:workflow] = patient[:isolation] ? 'Isolation' : 'Exposure'
+        patient_details[:member_of_a_common_exposure_cohort] = cohort_patient_ids.include?(patient.id) if fields.include?(:member_of_a_common_exposure_cohort)
         patient_details[:symptom_onset_defined_by] = patient[:user_defined_symptom_onset] ? 'User' : 'System'
         patient_details[:monitoring_status] = patient[:monitoring] ? 'Actively Monitoring' : 'Not Monitoring'
         patient_details[:end_of_monitoring] = patient.end_of_monitoring if fields.include?(:end_of_monitoring)
@@ -300,7 +334,7 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
           patient_details[:transferred_to] = jurisdiction_paths[patient.jurisdiction_id] if fields.include?(:transferred_to)
         end
 
-        # populate labs if requested
+        # populate labs if requested (export for all monitorees)
         if patients_laboratories&.key?(patient.id)
           if patients_laboratories[patient.id]&.first&.present?
             patient_details[:lab_1_type] = patients_laboratories[patient.id].first[:lab_type] if fields.include?(:lab_1_type)
@@ -320,7 +354,7 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
           end
         end
 
-        # populate vaccines if requested
+        # populate vaccines if requested (export for all monitorees)
         if patients_vaccines&.key?(patient.id)
           if patients_vaccines[patient.id]&.first&.present?
             patient_details[:vaccine_1_group_name] = patients_vaccines[patient.id].first[:group_name] if fields.include?(:vaccine_1_group_name)
@@ -340,6 +374,30 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
             end
             patient_details[:vaccine_2_dose_number] = patients_vaccines[patient.id].second[:dose_number] if fields.include?(:vaccine_2_dose_number)
             patient_details[:vaccine_2_notes] = patients_vaccines[patient.id].second[:notes] if fields.include?(:vaccine_2_notes)
+          end
+
+          if patients_vaccines[patient.id]&.third&.present?
+            patient_details[:vaccine_3_group_name] = patients_vaccines[patient.id].third[:group_name] if fields.include?(:vaccine_3_group_name)
+            patient_details[:vaccine_3_product_name] = patients_vaccines[patient.id].third[:product_name] if fields.include?(:vaccine_3_product_name)
+            if fields.include?(:vaccine_3_administration_date)
+              patient_details[:vaccine_3_administration_date] = patients_vaccines[patient.id].third[:administration_date]&.strftime('%F')
+            end
+            patient_details[:vaccine_3_dose_number] = patients_vaccines[patient.id].third[:dose_number] if fields.include?(:vaccine_3_dose_number)
+            patient_details[:vaccine_3_notes] = patients_vaccines[patient.id].third[:notes] if fields.include?(:vaccine_3_notes)
+          end
+        end
+
+        # populate common export cohorts if requested (export for all monitorees)
+        if patients_cohorts&.key?(patient.id)
+          if patients_cohorts[patient.id]&.first&.present?
+            patient_details[:cohort_1_type] = patients_cohorts[patient.id].first[:cohort_type] if fields.include?(:cohort_1_type)
+            patient_details[:cohort_1_name] = patients_cohorts[patient.id].first[:cohort_name] if fields.include?(:cohort_1_name)
+            patient_details[:cohort_1_location] = patients_cohorts[patient.id].first[:cohort_location] if fields.include?(:cohort_1_location)
+          end
+          if patients_cohorts[patient.id]&.second&.present?
+            patient_details[:cohort_2_type] = patients_cohorts[patient.id].first[:cohort_type] if fields.include?(:cohort_2_type)
+            patient_details[:cohort_2_name] = patients_cohorts[patient.id].first[:cohort_name] if fields.include?(:cohort_2_name)
+            patient_details[:cohort_2_location] = patients_cohorts[patient.id].first[:cohort_location] if fields.include?(:cohort_2_location)
           end
         end
 
@@ -444,6 +502,21 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
     # format phone numbers for 'primary_telephone' field
     (fields & %i[primary_telephone]).map { |field| fields.index(field) }
                                     .each { |index| records.each { |values| values[index] = format_phone_number(values[index]) } }
+
+    records
+  end
+
+  # Extract common exposure cohort data values given relevant fields
+  def extract_common_exposure_cohort_details(common_exposure_cohorts, fields)
+    # join patients if any alternative identifiers are selected
+    common_exposure_cohorts = common_exposure_cohorts.joins(:patient) if (fields & PATIENT_FIELD_TYPES[:alternative_identifiers]).any?
+
+    # validate and pluck selected fields
+    plucked_fields = fields & COMMON_EXPOSURE_COHORT_FIELD_NAMES.keys
+    records = ActiveRecord::Base.uncached { common_exposure_cohorts.pluck(*plucked_fields) }
+
+    # ensure that records is always a 2d array
+    records = records.map { |record| [record] } if plucked_fields.size == 1
 
     records
   end
