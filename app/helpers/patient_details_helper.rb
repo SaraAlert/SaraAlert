@@ -172,6 +172,8 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       healthcare_personnel: healthcare_personnel || false,
       healthcare_personnel_facility_name: healthcare_personnel_facility_name || '',
       crew_on_passenger_or_cargo_flight: crew_on_passenger_or_cargo_flight || false,
+      member_of_a_common_exposure_cohort: CommonExposureCohort.where(patient_id: id).exists? || false,
+      member_of_a_common_exposure_cohort_type: nil,
       exposure_risk_assessment: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
       exposure_notes: exposure_notes || '',

@@ -2,6 +2,11 @@ const mockExportPresets = [
   {
     config: {
       data: {
+        patients: {
+          checked: [],
+          expanded: [],
+          query: {},
+        },
         assessments: {
           checked: [
             'patient_id',
@@ -18,27 +23,32 @@ const mockExportPresets = [
           expanded: [],
           query: {},
         },
-        close_contacts: {
-          checked: [],
-          expanded: [],
-          query: {},
-        },
-        histories: {
-          checked: [],
-          expanded: [],
-          query: {},
-        },
         laboratories: {
           checked: [],
           expanded: [],
           query: {},
         },
-        patients: {
+        vaccines: {
+          checked: [],
+          expanded: [],
+          query: {},
+        },
+        close_contacts: {
+          checked: [],
+          expanded: [],
+          query: {},
+        },
+        common_exposure_cohorts: {
           checked: [],
           expanded: [],
           query: {},
         },
         transfers: {
+          checked: [],
+          expanded: [],
+          query: {},
+        },
+        histories: {
           checked: [],
           expanded: [],
           query: {},
@@ -52,18 +62,13 @@ const mockExportPresets = [
   {
     config: {
       data: {
+        patients: {
+          checked: [],
+          expanded: [],
+          query: {},
+        },
         assessments: {
           checked: ['patient_id', 'user_defined_id_statelocal', 'symptoms'],
-          expanded: [],
-          query: {},
-        },
-        close_contacts: {
-          checked: [],
-          expanded: [],
-          query: {},
-        },
-        histories: {
-          checked: [],
           expanded: [],
           query: {},
         },
@@ -72,12 +77,27 @@ const mockExportPresets = [
           expanded: [],
           query: {},
         },
-        patients: {
+        vaccines: {
+          checked: [],
+          expanded: [],
+          query: {},
+        },
+        close_contacts: {
+          checked: [],
+          expanded: [],
+          query: {},
+        },
+        common_exposure_cohorts: {
           checked: [],
           expanded: [],
           query: {},
         },
         transfers: {
+          checked: [],
+          expanded: [],
+          query: {},
+        },
+        histories: {
           checked: [],
           expanded: [],
           query: {},

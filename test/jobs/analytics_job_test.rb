@@ -26,7 +26,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
 
     assert_equal(40, MonitoreeCount.where(category_type: 'Age Group').size)
     assert_equal(27, MonitoreeCount.where(category_type: 'Sex').size)
-    assert_equal(8, MonitoreeCount.where(category_type: 'Risk Factor').size)
+    assert_equal(7, MonitoreeCount.where(category_type: 'Risk Factor').size)
     assert_equal(8, MonitoreeCount.where(category_type: 'Exposure Country').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Date').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Week').size)

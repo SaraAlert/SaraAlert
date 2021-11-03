@@ -88,6 +88,9 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         close_contacts: {
           selected: ['Close Contacts']
         },
+        common_exposure_cohorts: {
+          selected: ['Common Exposure Cohorts']
+        },
         transfers: {
           selected: ['Transfers']
         },
@@ -136,6 +139,9 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         close_contacts: {
           selected: ['Close Contacts']
         },
+        common_exposure_cohorts: {
+          selected: ['Common Exposure Cohorts']
+        },
         transfers: {
           selected: ['Transfers']
         },
@@ -181,6 +187,9 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         close_contacts: {
           selected: ['Close Contacts']
+        },
+        common_exposure_cohorts: {
+          selected: ['Common Exposure Cohorts']
         },
         transfers: {
           selected: ['Transfers']
@@ -235,6 +244,9 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         close_contacts: {
           selected: ['Close Contacts']
         },
+        common_exposure_cohorts: {
+          selected: ['Common Exposure Cohorts']
+        },
         transfers: {
           selected: ['Transfers']
         },
@@ -286,6 +298,9 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         close_contacts: {
           selected: ['Close Contacts']
         },
+        common_exposure_cohorts: {
+          selected: ['Common Exposure Cohorts']
+        },
         transfers: {
           selected: ['Transfers']
         },
@@ -334,6 +349,9 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         close_contacts: {
           selected: ['Close Contacts']
+        },
+        common_exposure_cohorts: {
+          selected: ['Common Exposure Cohorts']
         },
         transfers: {
           selected: ['Transfers']
@@ -384,6 +402,9 @@ class PublicHealthCustomExportTest < ApplicationSystemTestCase
         },
         close_contacts: {
           selected: ['Close Contacts']
+        },
+        common_exposure_cohorts: {
+          selected: ['Common Exposure Cohorts']
         },
         transfers: {
           selected: ['Transfers']

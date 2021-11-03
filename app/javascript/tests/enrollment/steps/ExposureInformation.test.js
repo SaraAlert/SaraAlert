@@ -11,7 +11,7 @@ import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 const previousMock = jest.fn();
 const nextMock = jest.fn();
 const setEnrollmentStateMock = jest.fn();
-const exposureInputLabels = ['LAST DATE OF EXPOSURE', 'EXPOSURE LOCATION', 'EXPOSURE COUNTRY', 'CONTINUOUS EXPOSURE', 'EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)', 'CLOSE CONTACT WITH A KNOWN CASE', 'TRAVEL FROM AFFECTED COUNTRY OR AREA', 'WAS IN HEALTHCARE FACILITY WITH KNOWN CASES', 'LABORATORY PERSONNEL', 'HEALTHCARE PERSONNEL', 'CREW ON PASSENGER OR CARGO FLIGHT', 'NOTES'];
+const exposureInputLabels = ['LAST DATE OF EXPOSURE', 'EXPOSURE LOCATION', 'EXPOSURE COUNTRY', 'CONTINUOUS EXPOSURE', 'EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)', 'CLOSE CONTACT WITH A KNOWN CASE', 'TRAVEL FROM AFFECTED COUNTRY OR AREA', 'WAS IN HEALTHCARE FACILITY WITH KNOWN CASES', 'LABORATORY PERSONNEL', 'HEALTHCARE PERSONNEL', 'CREW ON PASSENGER OR CARGO FLIGHT', 'MEMBER OF A COMMON EXPOSURE COHORT', 'NOTES'];
 
 function getShallowWrapper(patient, showBtn) {
   const current = {
@@ -47,9 +47,9 @@ describe('ExposureInformation', () => {
     expect(wrapper.find(Form).exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').exists()).toBe(true);
     expect(wrapper.find(PublicHealthManagement).exists()).toBe(true);
-    expect(wrapper.find(Button).length).toEqual(2);
-    expect(wrapper.find(Button).at(0).text()).toEqual('Previous');
-    expect(wrapper.find(Button).at(1).text()).toEqual('Next');
+    expect(wrapper.find(Button).length).toEqual(3);
+    expect(wrapper.find(Button).at(1).text()).toEqual('Previous');
+    expect(wrapper.find(Button).at(2).text()).toEqual('Next');
   });
 
   it('Properly renders all main components when monitoree is in isolation', () => {
@@ -63,9 +63,9 @@ describe('ExposureInformation', () => {
     expect(wrapper.find(Form).exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').exists()).toBe(false);
     expect(wrapper.find(PublicHealthManagement).exists()).toBe(false);
-    expect(wrapper.find(Button).length).toEqual(2);
-    expect(wrapper.find(Button).at(0).text()).toEqual('Previous');
-    expect(wrapper.find(Button).at(1).text()).toEqual('Next');
+    expect(wrapper.find(Button).length).toEqual(3);
+    expect(wrapper.find(Button).at(1).text()).toEqual('Previous');
+    expect(wrapper.find(Button).at(2).text()).toEqual('Next');
   });
 
   it('Properly renders exposure information inputs when creating a new monitoree', () => {
@@ -533,19 +533,19 @@ describe('ExposureInformation', () => {
 
   it('Hides "Previous" and "Next" buttons if requisite functions are not passed in via props', () => {
     const wrapper = shallow(<ExposureInformation currentState={{ isolation: false, patient: blankExposureMockPatient, propagatedFields: {} }} patient={blankIsolationMockPatient} showPreviousButton={false} jurisdiction_paths={mockJurisdictionPaths} />);
-    expect(wrapper.find(Button).length).toEqual(0);
+    expect(wrapper.find(Button).length).toEqual(1);
   });
 
   it('Hides the "Previous" button when props.showPreviousButton is false', () => {
     const wrapper = getShallowWrapper(blankIsolationMockPatient);
-    expect(wrapper.find(Button).length).toEqual(1);
-    expect(wrapper.find(Button).at(0).text()).toEqual('Next');
+    expect(wrapper.find(Button).length).toEqual(2);
+    expect(wrapper.find(Button).at(1).text()).toEqual('Next');
   });
 
   it('Clicking the "Previous" button calls props.previous', () => {
     const wrapper = getShallowWrapper(blankIsolationMockPatient, true);
     expect(previousMock).not.toHaveBeenCalled();
-    wrapper.find(Button).at(0).simulate('click');
+    wrapper.find(Button).at(1).simulate('click');
     expect(previousMock).toHaveBeenCalled();
   });
 
@@ -553,7 +553,7 @@ describe('ExposureInformation', () => {
     const wrapper = getShallowWrapper(blankIsolationMockPatient);
     const validateSpy = jest.spyOn(wrapper.instance(), 'validate');
     expect(validateSpy).not.toHaveBeenCalled();
-    wrapper.find(Button).simulate('click');
+    wrapper.find(Button).at(1).simulate('click');
     expect(validateSpy).toHaveBeenCalled();
   });
 });

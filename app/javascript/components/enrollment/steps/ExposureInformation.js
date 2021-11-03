@@ -500,7 +500,7 @@ class ExposureInformation extends React.Component {
             />
           </Form.Group>
         </Form.Row>
-        {this.state.current.common_exposure_cohorts.length > 0 && (
+        {this.state.current.common_exposure_cohorts?.length > 0 && (
           <div className="common-exposure-cohort-table-wrapper">
             <CommonExposureCohortsTable
               common_exposure_cohorts={this.state.current.common_exposure_cohorts}
@@ -510,7 +510,7 @@ class ExposureInformation extends React.Component {
             />
           </div>
         )}
-        {this.state.current.common_exposure_cohorts.length >= 10 ? (
+        {this.state.current.common_exposure_cohorts?.length >= 10 ? (
           <OverlayTrigger overlay={<Tooltip>You may only add up to 10 cohorts</Tooltip>}>
             <Button id="add-new-cohort-button" variant="outline-primary" size="md" className="btn-square add-new-cohort-button" disabled>
               Add New Cohort
