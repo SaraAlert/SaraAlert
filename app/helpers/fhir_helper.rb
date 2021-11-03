@@ -992,6 +992,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       to_bool_extension(patient.crew_on_passenger_or_cargo_flight || false, 'crew-on-passenger-or-cargo-flight')
     ]
 
+    subextensions.concat(to_common_exposure_cohort_subextension(patient.common_exposure_cohorts))
+
     FHIR::Extension.new(
       url: "#{SA_EXT_BASE_URL}exposure-risk-factors",
       extension: subextensions
@@ -1015,6 +1017,29 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
+  # Return sub-extensions which represent common exposure cohorts
+  def to_common_exposure_cohort_subextension(common_exposure_cohorts)
+    common_exposure_cohorts.map do |common_exposure_cohort|
+      FHIR::Extension.new(
+        url: "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort",
+        extension: [
+          common_exposure_cohort[:cohort_type].blank? ? nil : FHIR::Extension.new(
+            url: "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort-type",
+            valueString: common_exposure_cohort[:cohort_type]
+          ),
+          common_exposure_cohort[:cohort_name].blank? ? nil : FHIR::Extension.new(
+            url: "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort-name",
+            valueString: common_exposure_cohort[:cohort_name]
+          ),
+          common_exposure_cohort[:cohort_location].blank? ? nil : FHIR::Extension.new(
+            url: "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort-location",
+            valueString: common_exposure_cohort[:cohort_location]
+          )
+        ]
+      )
+    end
+  end
+
   # Map an exposure-risk-factors extension to a hash of fields on a Patient.
   # Hash is of the form:
   # {
@@ -1030,43 +1055,49 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         travel_to_affected_country_or_area: from_bool_extension_false_default(ext, "Patient.extension[#{ext_idx}]", 'travel-from-affected-country-or-area'),
         crew_on_passenger_or_cargo_flight: from_bool_extension_false_default(ext, "Patient.extension[#{ext_idx}]", 'crew-on-passenger-or-cargo-flight')
       }
+    common_exposure_cohorts = []
     ext.extension&.each_with_index do |sub_ext, sub_ext_idx|
+      base_path = "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]"
       case sub_ext.url
       when "#{SA_EXT_BASE_URL}contact-of-known-case"
         sub_ext_risk_factors =
           {
-            contact_of_known_case: from_bool_extension_false_default(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
-                                                                     'contact-of-known-case'),
-            contact_of_known_case_id: from_string_extension(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]", 'contact-of-known-case-id')
+            contact_of_known_case: from_bool_extension_false_default(sub_ext, base_path, 'contact-of-known-case'),
+            contact_of_known_case_id: from_string_extension(sub_ext, base_path, 'contact-of-known-case-id')
           }
       when "#{SA_EXT_BASE_URL}was-in-health-care-facility-with-known-cases"
         sub_ext_risk_factors =
           {
-            was_in_health_care_facility_with_known_cases: from_bool_extension_false_default(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
-                                                                                            'was-in-health-care-facility-with-known-cases'),
-            was_in_health_care_facility_with_known_cases_facility_name: from_string_extension(sub_ext,
-                                                                                              "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
+            was_in_health_care_facility_with_known_cases: from_bool_extension_false_default(sub_ext, base_path, 'was-in-health-care-facility-with-known-cases'),
+            was_in_health_care_facility_with_known_cases_facility_name: from_string_extension(sub_ext, base_path,
                                                                                               'was-in-health-care-facility-with-known-cases-facility-name')
           }
       when "#{SA_EXT_BASE_URL}laboratory-personnel"
         sub_ext_risk_factors =
           {
-            laboratory_personnel: from_bool_extension_false_default(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]", 'laboratory-personnel'),
-            laboratory_personnel_facility_name: from_string_extension(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
-                                                                      'laboratory-personnel-facility-name')
+            laboratory_personnel: from_bool_extension_false_default(sub_ext, base_path, 'laboratory-personnel'),
+            laboratory_personnel_facility_name: from_string_extension(sub_ext, base_path, 'laboratory-personnel-facility-name')
           }
       when "#{SA_EXT_BASE_URL}healthcare-personnel"
         sub_ext_risk_factors =
           {
-            healthcare_personnel: from_bool_extension_false_default(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]", 'healthcare-personnel'),
-            healthcare_personnel_facility_name: from_string_extension(sub_ext, "Patient.extension[#{ext_idx}].extension[#{sub_ext_idx}]",
-                                                                      'healthcare-personnel-facility-name')
+            healthcare_personnel: from_bool_extension_false_default(sub_ext, base_path, 'healthcare-personnel'),
+            healthcare_personnel_facility_name: from_string_extension(sub_ext, base_path, 'healthcare-personnel-facility-name')
           }
-      else
-        next
+      when "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort"
+        common_exposure_cohort = {}
+        %i[cohort_type cohort_name cohort_location].each do |cohort_field|
+          cohort_field_value = from_string_extension(sub_ext, base_path, "member-of-a-common-exposure-#{cohort_field.to_s.dasherize}")
+          common_exposure_cohort[cohort_field] = cohort_field_value[:value] if cohort_field_value[:value].present?
+        end
+        common_exposure_cohorts << common_exposure_cohort
       end
+
+      next if sub_ext_risk_factors.nil?
+
       risk_factors.merge!(sub_ext_risk_factors.transform_values { |v| { value: v[:value], path: v[:path].sub(SA_EXT_BASE_URL, '') } })
     end
+    risk_factors[:common_exposure_cohorts_attributes] = { value: common_exposure_cohorts } if common_exposure_cohorts.present?
     risk_factors
   end
 

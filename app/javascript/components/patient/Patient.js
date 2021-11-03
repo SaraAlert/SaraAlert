@@ -672,58 +672,56 @@ class Patient extends React.Component {
                 <p className="subsection-title">Risk Factors</p>
                 {!showRiskFactors && <div className="none-text">None specified</div>}
                 {showRiskFactors && (
-                  <React.Fragment>
-                    <ul className="risk-factors">
-                      {this.props.details.contact_of_known_case && (
-                        <li>
-                          <span className="risk-factor">Close Contact with a Known Case</span>
-                          {this.props.details.contact_of_known_case_id && <span className="risk-val">{this.props.details.contact_of_known_case_id}</span>}
-                        </li>
-                      )}
-                      {this.props.details.travel_to_affected_country_or_area && (
-                        <li>
-                          <span className="risk-factor">Travel from Affected Country or Area</span>
-                        </li>
-                      )}
-                      {this.props.details.was_in_health_care_facility_with_known_cases && (
-                        <li>
-                          <span className="risk-factor">Was in Healthcare Facility with Known Cases</span>
-                          {this.props.details.was_in_health_care_facility_with_known_cases_facility_name && (
-                            <span className="risk-val">{this.props.details.was_in_health_care_facility_with_known_cases_facility_name}</span>
-                          )}
-                        </li>
-                      )}
-                      {this.props.details.laboratory_personnel && (
-                        <li>
-                          <span className="risk-factor">Laboratory Personnel</span>
-                          {this.props.details.laboratory_personnel_facility_name && (
-                            <span className="risk-val">{this.props.details.laboratory_personnel_facility_name}</span>
-                          )}
-                        </li>
-                      )}
-                      {this.props.details.healthcare_personnel && (
-                        <li>
-                          <span className="risk-factor">Healthcare Personnel</span>
-                          {this.props.details.healthcare_personnel_facility_name && (
-                            <span className="risk-val">{this.props.details.healthcare_personnel_facility_name}</span>
-                          )}
-                        </li>
-                      )}
-                      {this.props.details.crew_on_passenger_or_cargo_flight && (
-                        <li>
-                          <span className="risk-factor">Crew on Passenger or Cargo Flight</span>
-                        </li>
-                      )}
-                      {this.props.details.common_exposure_cohorts?.length > 0 && (
-                        <li>
-                          <span className="risk-factor">Member of a Common Exposure Cohort</span>
-                          <div className="common-exposure-cohorts-table-wrapper">
-                            <CommonExposureCohortsTable common_exposure_cohorts={this.props.details.common_exposure_cohorts} size="sm" isEditable={false} />
-                          </div>
-                        </li>
-                      )}
-                    </ul>
-                  </React.Fragment>
+                  <ul className="risk-factors">
+                    {this.props.details.contact_of_known_case && (
+                      <li>
+                        <span className="risk-factor">Close Contact with a Known Case</span>
+                        {this.props.details.contact_of_known_case_id && <span className="risk-val">{this.props.details.contact_of_known_case_id}</span>}
+                      </li>
+                    )}
+                    {this.props.details.travel_to_affected_country_or_area && (
+                      <li>
+                        <span className="risk-factor">Travel from Affected Country or Area</span>
+                      </li>
+                    )}
+                    {this.props.details.was_in_health_care_facility_with_known_cases && (
+                      <li>
+                        <span className="risk-factor">Was in Healthcare Facility with Known Cases</span>
+                        {this.props.details.was_in_health_care_facility_with_known_cases_facility_name && (
+                          <span className="risk-val">{this.props.details.was_in_health_care_facility_with_known_cases_facility_name}</span>
+                        )}
+                      </li>
+                    )}
+                    {this.props.details.laboratory_personnel && (
+                      <li>
+                        <span className="risk-factor">Laboratory Personnel</span>
+                        {this.props.details.laboratory_personnel_facility_name && (
+                          <span className="risk-val">{this.props.details.laboratory_personnel_facility_name}</span>
+                        )}
+                      </li>
+                    )}
+                    {this.props.details.healthcare_personnel && (
+                      <li>
+                        <span className="risk-factor">Healthcare Personnel</span>
+                        {this.props.details.healthcare_personnel_facility_name && (
+                          <span className="risk-val">{this.props.details.healthcare_personnel_facility_name}</span>
+                        )}
+                      </li>
+                    )}
+                    {this.props.details.crew_on_passenger_or_cargo_flight && (
+                      <li>
+                        <span className="risk-factor">Crew on Passenger or Cargo Flight</span>
+                      </li>
+                    )}
+                    {this.props.details.common_exposure_cohorts?.length > 0 && (
+                      <li>
+                        <span className="risk-factor">Member of a Common Exposure Cohort</span>
+                        <div className="common-exposure-cohorts-table-wrapper">
+                          <CommonExposureCohortsTable common_exposure_cohorts={this.props.details.common_exposure_cohorts} size="sm" isEditable={false} />
+                        </div>
+                      </li>
+                    )}
+                  </ul>
                 )}
               </Col>
               {this.props.details.isolation && (
