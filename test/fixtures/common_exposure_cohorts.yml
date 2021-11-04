@@ -1,0 +1,13 @@
+patient_15_common_exposure_cohort_1:
+  id: 1501
+  patient_id: 15
+  cohort_type: 'Adult Congregate Living Facility'
+patient_20_common_exposure_cohort_1:
+  id: 2001
+  patient_id: 20
+  cohort_type: 'Healthcare Facility'
+  cohort_name: 'Beth Israel Deaconess Medical Center'
+patient_20_common_exposure_cohort_2:
+  id: 2002
+  patient_id: 20
+  cohort_location: 'Boston, MA'

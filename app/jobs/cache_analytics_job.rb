@@ -44,7 +44,8 @@ class CacheAnalyticsJob < ApplicationJob
     was_in_health_care_facility_with_known_cases: 'Was in Healthcare Facility with Known Cases',
     healthcare_personnel: 'Healthcare Personnel',
     crew_on_passenger_or_cargo_flight: 'Crew on Passenger or Cargo Flight',
-    laboratory_personnel: 'Laboratory Personnel'
+    laboratory_personnel: 'Laboratory Personnel',
+    member_of_a_common_exposure_cohort: 'Common Exposure Cohort'
   }.freeze
   MONITOREE_SNAPSHOT_TIME_FRAMES = ['Yesterday', 'Last 7 Days', 'Last 14 Days', 'Total'].freeze
   MAX_EXPOSURE_COUNTRIES = 200
@@ -242,13 +243,23 @@ class CacheAnalyticsJob < ApplicationJob
   def self.monitoree_counts_by_risk_factor(analytic_id, monitorees)
     counts = []
     RISK_FACTORS.each do |risk_factor, label|
-      monitorees.monitoring_open
-                .where(risk_factor => true)
-                .group(risk_factor, :isolation)
-                .size
-                .map do |(_, isolation), total|
-                  counts.append(monitoree_count(analytic_id, true, 'Risk Factor', label, total, isolation ? 'Isolation' : 'Exposure'))
-                end
+      if risk_factor == :member_of_a_common_exposure_cohort
+        monitorees.monitoring_open
+                  .where_assoc_exists(:common_exposure_cohorts)
+                  .group(:isolation)
+                  .size
+                  .map do |isolation, total|
+                    counts.append(monitoree_count(analytic_id, true, 'Risk Factor', label, total, isolation ? 'Isolation' : 'Exposure'))
+                  end
+      else
+        monitorees.monitoring_open
+                  .where(risk_factor => true)
+                  .group(risk_factor, :isolation)
+                  .size
+                  .map do |(_, isolation), total|
+                    counts.append(monitoree_count(analytic_id, true, 'Risk Factor', label, total, isolation ? 'Isolation' : 'Exposure'))
+                  end
+      end
     end
     counts
   end
