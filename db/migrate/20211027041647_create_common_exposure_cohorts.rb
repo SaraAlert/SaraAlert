@@ -88,8 +88,14 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
           end
         end
       end
-    rescue StandardError
+    rescue StandardError => e
+      puts 'An error has occured during the migration, reverting changes...'
+      puts e
+
       drop_table :common_exposure_cohorts
+
+      # Raise another error to fail the migration
+      raise StandardError
     else
       remove_column :patients, :member_of_a_common_exposure_cohort
       remove_column :patients, :member_of_a_common_exposure_cohort_type
@@ -140,9 +146,15 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
           end
         end
       end
-    rescue StandardError
+    rescue StandardError => e
+      puts 'An error has occured during the rollback, reverting changes...'
+      puts e
+
       remove_column :patients, :member_of_a_common_exposure_cohort
       remove_column :patients, :member_of_a_common_exposure_cohort_type
+
+      # Raise another error to fail the migration
+      raise StandardError
     else
       drop_table :common_exposure_cohorts
     ensure
@@ -151,7 +163,7 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
   end
 
   def migrate_advanced_filter_contents(contents)
-    contents.each do |fo|
+    contents&.each do |fo|
       next unless fo.dig('filterOption', 'name') == 'cohort'
 
       fo['filterOption'] = NEW_COHORT_FILTER_OPTION
@@ -160,7 +172,7 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
   end
 
   def rollback_advanced_filter_contents(contents)
-    contents.map do |fo|
+    contents&.each do |fo|
       next unless fo.dig('filterOption', 'name') == 'common-exposure-cohort'
 
       fo['filterOption'] = OLD_COHORT_FILTER_OPTION
