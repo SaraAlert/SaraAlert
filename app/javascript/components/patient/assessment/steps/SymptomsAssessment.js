@@ -14,8 +14,9 @@ class SymptomsAssessment extends React.Component {
       ...this.props,
       reportState: {
         symptoms: _.cloneDeep(this.props.symptoms),
-        reported_at:
-          moment(props.assessment.reported_at).format('YYYY-MM-DD HH:mm Z') ?? moment.utc(moment()).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z'),
+        reported_at: props.assessment?.reported_at
+          ? moment(props.assessment.reported_at).format('YYYY-MM-DD HH:mm Z')
+          : moment.utc(moment()).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z'),
       },
       loading: false,
       noSymptomsCheckbox: false,
@@ -269,7 +270,7 @@ class SymptomsAssessment extends React.Component {
                 <Form.Label className="input-label mr-2 pt-1">Symptom Report for Date:</Form.Label>
                 <DateInput
                   id="reported_at"
-                  date={this.state.reportState?.reported_at}
+                  date={this.props.assessment.reported_at ?? moment().toDate()}
                   minDate={'2020-01-01'}
                   maxDate={moment()}
                   onChange={this.handleDateChange}
