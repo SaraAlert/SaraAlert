@@ -20,6 +20,7 @@ class UpdatePatientsLatestAssessmentAtByAssessmentReportedAt < ActiveRecord::Mig
       INNER JOIN (
         SELECT patient_id, MAX(#{field}) AS latest_assessment_at
         FROM assessments
+        WHERE created_at <> reported_at
         GROUP BY patient_id
       ) t ON patients.id = t.patient_id
       SET patients.latest_assessment_at = t.latest_assessment_at
@@ -35,6 +36,7 @@ class UpdatePatientsLatestAssessmentAtByAssessmentReportedAt < ActiveRecord::Mig
         JOIN (
           SELECT patient_id, MAX(#{field}) AS latest_assessment_at
           FROM assessments
+          WHERE created_at <> reported_at
           GROUP BY patient_id
         ) latest_assessments
         ON assessments.patient_id = latest_assessments.patient_id
