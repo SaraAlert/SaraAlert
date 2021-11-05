@@ -27,18 +27,18 @@ class Assessment < ApplicationRecord
 
   # Assessments created in the last hour that are symptomatic
   scope :symptomatic_last_hour, lambda {
-    where('reported_at >= ?', 60.minutes.ago)
+    where('created_at >= ?', 60.minutes.ago)
       .where(symptomatic: true)
   }
 
   # Assessments created since the given time
-  scope :reported_since, lambda { |since|
-    where('reported_at >= ?', since)
+  scope :created_since, lambda { |since|
+    where('created_at >= ?', since)
   }
 
   # Assessments created by monitorees since the given time
-  scope :monitoree_reported_since, lambda { |since|
-    where('reported_at >= ?', since)
+  scope :monitoree_created_since, lambda { |since|
+    where('created_at >= ?', since)
       .where(who_reported: %w[Monitoree Proxy])
   }
 
@@ -150,12 +150,12 @@ class Assessment < ApplicationRecord
   end
 
   def update_patient_linelist_fields(action)
-    latest_assessment = patient.assessments.order(:reported_at).last
-    updates = { latest_assessment_at: latest_assessment&.reported_at, latest_assessment_symptomatic: latest_assessment&.symptomatic }
+    latest_assessment = patient.assessments.order(:created_at).last
+    updates = { latest_assessment_at: latest_assessment&.created_at, latest_assessment_symptomatic: latest_assessment&.symptomatic }
 
     # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
     if action == :removed
-      updates[:latest_fever_or_fever_reducer_at] = patient.assessments.where_assoc_exists(:reported_condition, &:fever_or_fever_reducer).maximum(:reported_at)
+      updates[:latest_fever_or_fever_reducer_at] = patient.assessments.where_assoc_exists(:reported_condition, &:fever_or_fever_reducer).maximum(:created_at)
     end
 
     # wrap patient and history updates in transaction for consistency

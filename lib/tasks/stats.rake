@@ -123,20 +123,20 @@ namespace :stats do
         isolation: activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(start) }.count
       }
       results[title]['Total with activity today (monitoree)'] = {
-        exposure: activity_exp.where(isolation: false).where_assoc_exists(:assessments) { reported_since(24.hours.ago) }.count,
-        isolation: activity_iso.where(isolation: true).where_assoc_exists(:assessments) { reported_since(24.hours.ago) }.count
+        exposure: activity_exp.where(isolation: false).where_assoc_exists(:assessments) { created_since(24.hours.ago) }.count,
+        isolation: activity_iso.where(isolation: true).where_assoc_exists(:assessments) { created_since(24.hours.ago) }.count
       }
       results[title]['Total with activity since start of evaluation (monitoree)'] = {
-        exposure: activity_exp.where(isolation: false).where_assoc_exists(:assessments) { monitoree_reported_since(start) }.count,
-        isolation: activity_iso.where(isolation: true).where_assoc_exists(:assessments) { monitoree_reported_since(start) }.count
+        exposure: activity_exp.where(isolation: false).where_assoc_exists(:assessments) { monitoree_created_since(start) }.count,
+        isolation: activity_iso.where(isolation: true).where_assoc_exists(:assessments) { monitoree_created_since(start) }.count
       }
       results[title]['Total with activity today (user & monitoree)'] = {
-        exposure: (activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.pluck(:id) + activity_exp.where(isolation: false).where_assoc_exists(:assessments) { reported_since(24.hours.ago) }.pluck(:id) ).uniq.count,
-        isolation: (activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.pluck(:id) + activity_iso.where(isolation: true).where_assoc_exists(:assessments) { reported_since(24.hours.ago) }.pluck(:id)).uniq.count
+        exposure: (activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.pluck(:id) + activity_exp.where(isolation: false).where_assoc_exists(:assessments) { created_since(24.hours.ago) }.pluck(:id) ).uniq.count,
+        isolation: (activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(24.hours.ago) }.pluck(:id) + activity_iso.where(isolation: true).where_assoc_exists(:assessments) { created_since(24.hours.ago) }.pluck(:id)).uniq.count
       }
       results[title]['Total with activity since start of evaluation (user & monitoree)'] = {
-        exposure: (activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(start) }.pluck(:id) + activity_exp.where(isolation: false).where_assoc_exists(:assessments) { reported_since(start) }.pluck(:id) ).uniq.count,
-        isolation: (activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(start) }.pluck(:id) + activity_iso.where(isolation: true).where_assoc_exists(:assessments) { reported_since(start) }.pluck(:id) ).uniq.count
+        exposure: (activity_exp.where(isolation: false).where_assoc_exists(:histories) { user_generated_since(start) }.pluck(:id) + activity_exp.where(isolation: false).where_assoc_exists(:assessments) { created_since(start) }.pluck(:id) ).uniq.count,
+        isolation: (activity_iso.where(isolation: true).where_assoc_exists(:histories) { user_generated_since(start) }.pluck(:id) + activity_iso.where(isolation: true).where_assoc_exists(:assessments) { created_since(start) }.pluck(:id) ).uniq.count
       }
       results[title]['Closed today - Enrolled more than 14 days after last date of exposure (system)'] = {
         exposure: activity_exp.where(monitoring: false, monitoring_reason: 'Enrolled more than 14 days after last date of exposure (system)').where_assoc_exists(:histories, &:system_closed_last_24h).count,
@@ -177,12 +177,12 @@ namespace :stats do
         isolation: active_iso.where_assoc_exists(:histories) { reminder_sent_since(24.hours.ago) }.count
       }
       results[title]['Monitorees who reported today (monitoree or proxy response only)'] = {
-        exposure: active_exp.where_assoc_exists(:assessments, &:created_by_monitoree).where_assoc_exists(:assessments) {reported_since(24.hours.ago)}.count,
-        isolation: active_iso.where_assoc_exists(:assessments, &:created_by_monitoree).where_assoc_exists(:assessments) {reported_since(24.hours.ago)}.count
+        exposure: active_exp.where_assoc_exists(:assessments, &:created_by_monitoree).where_assoc_exists(:assessments) {created_since(24.hours.ago)}.count,
+        isolation: active_iso.where_assoc_exists(:assessments, &:created_by_monitoree).where_assoc_exists(:assessments) {created_since(24.hours.ago)}.count
       }
       results[title]['Monitorees who reported today (any response documented, including by public health user)'] = {
-        exposure: active_exp.where_assoc_exists(:assessments) {reported_since(24.hours.ago)}.count,
-        isolation: active_iso.where_assoc_exists(:assessments) {reported_since(24.hours.ago)}.count
+        exposure: active_exp.where_assoc_exists(:assessments) {created_since(24.hours.ago)}.count,
+        isolation: active_iso.where_assoc_exists(:assessments) {created_since(24.hours.ago)}.count
       }
       results[title]['Total number of monitorees in the system < 21 days'] = {
         exposure: active_exp.where('created_at >= ?', 21.days.ago).count,
@@ -217,9 +217,9 @@ namespace :stats do
       active_exp.find_each do |patient|
         times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         reporting_days_exp << times_sent.count
-        times_recv_self = patient.assessments.reported_since(start).created_by_monitoree.pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
-        times_recv_self_and_user = patient.assessments.reported_since(start).pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
-        times_recv_user = patient.assessments.reported_since(start).created_by_user.pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self = patient.assessments.created_since(start).created_by_monitoree.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self_and_user = patient.assessments.created_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_user = patient.assessments.created_since(start).created_by_user.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         responded_to_all_reminders_self_exp += 1 if times_sent.count <= times_recv_self.count
         responded_to_50_reminders_self_exp += 1 if (times_sent.count * 0.50) <= times_recv_self.count
         responded_to_75_reminders_self_exp += 1 if (times_sent.count * 0.75) <= times_recv_self.count
@@ -290,9 +290,9 @@ namespace :stats do
       active_iso.find_each do |patient|
         times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         reporting_days_iso << times_sent.count
-        times_recv_self = patient.assessments.reported_since(start).created_by_monitoree.pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
-        times_recv_self_and_user = patient.assessments.reported_since(start).pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
-        times_recv_user = patient.assessments.reported_since(start).created_by_user.pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self = patient.assessments.created_since(start).created_by_monitoree.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self_and_user = patient.assessments.created_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_user = patient.assessments.created_since(start).created_by_user.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         responded_to_all_reminders_self_iso += 1 if times_sent.count <= times_recv_self.count
         responded_to_50_reminders_self_iso += 1 if (times_sent.count * 0.50) <= times_recv_self.count
         responded_to_75_reminders_self_iso += 1 if (times_sent.count * 0.75) <= times_recv_self.count

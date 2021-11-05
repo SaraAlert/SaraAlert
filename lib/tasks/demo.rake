@@ -731,7 +731,7 @@ namespace :demo do
 
     printf('Generating condition for assessments...')
     reported_conditions = []
-    new_assessments = Assessment.where('assessments.reported_at >= ?', beginning_of_day).joins(:patient)
+    new_assessments = Assessment.where('assessments.created_at >= ?', beginning_of_day).joins(:patient)
     new_assessments.each_with_index do |assessment, index|
       printf("\rGenerating condition for assessment #{index + 1} of #{new_assessments.length}...") unless ENV['APP_IN_CI']
       reported_conditions << ReportedCondition.new(
@@ -1028,12 +1028,12 @@ namespace :demo do
           SELECT assessments.patient_id
           FROM assessments
           JOIN (
-            SELECT patient_id, MAX(reported_at) AS latest_assessment_at
+            SELECT patient_id, MAX(created_at) AS latest_assessment_at
             FROM assessments
             GROUP BY patient_id
           ) latest_assessments
           ON assessments.patient_id = latest_assessments.patient_id
-          AND assessments.reported_at = latest_assessments.latest_assessment_at
+          AND assessments.created_at = latest_assessments.latest_assessment_at
           WHERE assessments.symptomatic = TRUE
         ) latest_symptomatic_assessments
         ON patients.id = latest_symptomatic_assessments.patient_id
@@ -1044,7 +1044,7 @@ namespace :demo do
       ActiveRecord::Base.connection.execute <<-SQL.squish
         UPDATE patients
         INNER JOIN (
-          SELECT assessments.patient_id, MAX(assessments.reported_at) AS latest_fever_or_fever_reducer_at
+          SELECT assessments.patient_id, MAX(assessments.created_at) AS latest_fever_or_fever_reducer_at
           FROM assessments
           INNER JOIN conditions ON assessments.id = conditions.assessment_id
           INNER JOIN symptoms ON conditions.id = symptoms.condition_id

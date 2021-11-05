@@ -35,7 +35,7 @@ class AssessmentTest < ActiveSupport::TestCase
 
     # Create assessment 1 as asymptomatic
     timestamp_1 = DateTime.now.utc - 5.days
-    assessment_1 = create(:assessment, patient: patient, symptomatic: false, reported_at: timestamp_1)
+    assessment_1 = create(:assessment, patient: patient, symptomatic: false, created_at: timestamp_1)
     assert_nil patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal false, patient.latest_assessment_symptomatic
@@ -43,7 +43,7 @@ class AssessmentTest < ActiveSupport::TestCase
 
     # Update assessment 1 to be symptomatic
     timestamp_1 = DateTime.now.utc - 10.days
-    assessment_1.update(symptomatic: true, reported_at: timestamp_1)
+    assessment_1.update(symptomatic: true, created_at: timestamp_1)
     assert_equal timestamp_1.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
@@ -51,7 +51,7 @@ class AssessmentTest < ActiveSupport::TestCase
 
     # Create assessment 2 as symptomatic
     timestamp_2 = DateTime.now.utc - 12.days
-    assessment_2 = create(:assessment, patient: patient, symptomatic: true, reported_at: timestamp_2)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_2)
     reported_condition_2 = create(:reported_condition, assessment_id: assessment_2.id)
     symptom_2 = create(:symptom, condition_id: reported_condition_2.id, type: 'BoolSymptom', name: 'fever', bool_value: false)
     assert_equal timestamp_2.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
@@ -71,7 +71,7 @@ class AssessmentTest < ActiveSupport::TestCase
 
     # Create assessment 3 as symptomatic
     timestamp_3 = DateTime.now.utc - 14.days
-    assessment_3 = create(:assessment, patient: patient, symptomatic: true, reported_at: timestamp_3)
+    assessment_3 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_3)
     assert_equal timestamp_3.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
@@ -90,7 +90,7 @@ class AssessmentTest < ActiveSupport::TestCase
 
     # Update assessment 3 as symptomatic
     timestamp_3 = DateTime.now.utc - 18.days
-    assessment_3.update(symptomatic: true, reported_at: timestamp_3)
+    assessment_3.update(symptomatic: true, created_at: timestamp_3)
     assert_equal symptom_onset_timestamp.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
@@ -108,7 +108,7 @@ class AssessmentTest < ActiveSupport::TestCase
 
     # Update assessment 3 as symptomatic
     timestamp_3 = DateTime.now.utc - 18.days
-    assessment_3.update(symptomatic: true, reported_at: timestamp_3)
+    assessment_3.update(symptomatic: true, created_at: timestamp_3)
     assert_equal timestamp_3.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
@@ -129,7 +129,7 @@ class AssessmentTest < ActiveSupport::TestCase
 
     # Update assessment 2 date
     timestamp_2 = 1.day.ago
-    assessment_2.update(reported_at: timestamp_2)
+    assessment_2.update(created_at: timestamp_2)
     assert_equal timestamp_1.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset
     assert_in_delta timestamp_2, patient.latest_assessment_at, 1
     assert_equal true, patient.latest_assessment_symptomatic
@@ -162,7 +162,7 @@ class AssessmentTest < ActiveSupport::TestCase
 
     # Create assessment 4 with fever
     timestamp_4 = DateTime.now.utc - 1.day
-    assessment_4 = create(:assessment, patient: patient, symptomatic: true, reported_at: timestamp_4)
+    assessment_4 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_4)
     reported_condition_4 = create(:reported_condition, assessment_id: assessment_4.id)
     symptom_4 = create(:symptom, condition_id: reported_condition_4.id, type: 'BoolSymptom', name: 'fever', bool_value: true)
     assert_equal timestamp_1.getlocal(patient.address_timezone_offset).to_date, patient.symptom_onset

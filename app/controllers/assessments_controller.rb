@@ -237,7 +237,7 @@ class AssessmentsController < ApplicationController
           return render json: { error: 'Assessment was unable to be saved due to invalid Report Date.' }, status: :bad_request
         end
       end
-      reported_at_changed = (old_reported_at - assessment.reported_at).abs >= 1 if old_reported_at.present? && assessment.reported_at.present?
+      reported_at_changed = (old_reported_at - assessment.reported_at).abs >= 1
 
       # Attempt to save and continue; else if failed redirect to index
       return unless assessment.save
