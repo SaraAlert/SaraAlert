@@ -146,7 +146,7 @@ class Assessment < ApplicationRecord
   private
 
   def ensure_reported_at
-    self.reported_at = reported_at if reported_at.nil?
+    self.reported_at = created_at if reported_at.nil?
   end
 
   def update_patient_linelist_fields(action)
