@@ -14,6 +14,12 @@ $table-row-success: #d7e6b8;
 $table-row-caution: #ffebbf;
 $table-row-warning: #f5b4ab;
 $table-row-secondary: #e2e2e2;
+$datepicker-gray: #495057;
+
+// used in ReactSelectStyling.js
+:export {
+  datepickerGray: $datepicker-gray;
+}
 
 /* GRID SYSTEM */
 $grid-columns: 24;

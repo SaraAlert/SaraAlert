@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MaskedInput from 'react-text-mask';
-import moment from 'moment-timezone';
 
 const DATE_MASK = [/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/];
 const DATETIME_MASK = [/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, ':', /\d/, /\d/, ' '];
@@ -12,7 +11,7 @@ class DateTimeInput extends React.Component {
     // In that case, the input value will be empty string, which causes an error in the parent DatePicker component.
     if (!e.target.value && this.props.showTime) {
       // This string is what we _should_ get with a blank value and the DATETIME_MASK
-      e.target.value = `__/__/____ __:__ ${moment.tz(moment.tz.guess()).format('z')}`;
+      e.target.value = `__/__/____ __:__`;
       // Reset the cursor to the beginning of the input
       e.target.selectionStart = 0;
       e.target.selectionEnd = 0;
@@ -24,7 +23,7 @@ class DateTimeInput extends React.Component {
     return (
       <div>
         <MaskedInput
-          mask={this.props.showTime ? DATETIME_MASK.concat(moment.tz(moment.tz.guess()).format('z').split('')) : DATE_MASK}
+          mask={this.props.showTime ? DATETIME_MASK : DATE_MASK}
           keepCharPositions
           aria-label={this.props.ariaLabel || 'Date Input'}
           onChange={this.handleChange}
@@ -32,7 +31,7 @@ class DateTimeInput extends React.Component {
           value={this.props.value}
           id={this.props.id}
           onClick={this.props.onClick}
-          style={this.props.showTime && { width: '200px' }}
+          style={this.props.showTime && { width: '160px' }}
           className={`${
             this.props.customClass?.includes('sm')
               ? 'date-input__input_sm'

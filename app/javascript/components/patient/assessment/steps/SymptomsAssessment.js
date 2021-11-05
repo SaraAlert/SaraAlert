@@ -12,7 +12,12 @@ class SymptomsAssessment extends React.Component {
     super(props);
     this.state = {
       ...this.props,
-      reportState: { symptoms: _.cloneDeep(this.props.symptoms) },
+      reportState: {
+        symptoms: _.cloneDeep(this.props.symptoms),
+        reported_at: props.assessment?.reported_at
+          ? moment(props.assessment.reported_at).format('YYYY-MM-DD HH:mm Z')
+          : moment.utc(moment()).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z'),
+      },
       loading: false,
       noSymptomsCheckbox: false,
       // ensure this is updated when editing a report
@@ -270,12 +275,14 @@ class SymptomsAssessment extends React.Component {
                   maxDate={moment()}
                   onChange={this.handleDateChange}
                   placement="bottom"
+                  required={true}
                   isInvalid={false}
                   customClass="form-control-sm"
                   ariaLabel="Assessment Reported Date Input"
                   showTime={true}
                 />
-                <InfoTooltip tooltipTextKey={'reportedAtTime'} customClass="pt-1 pl-1" />
+                <span className="time-zone ml-1 mt-1">{moment.tz(moment.tz.guess()).format('z')}</span>
+                <InfoTooltip tooltipTextKey={'reportedAtTime'} customClass="mt-1" />
               </Form.Row>
             </Form.Group>
           )}
