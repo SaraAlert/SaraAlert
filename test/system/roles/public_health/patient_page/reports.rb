@@ -16,8 +16,9 @@ class PublicHealthPatientPageReports < ApplicationSystemTestCase
   def add_report(user_label, assessment)
     click_on 'Add New Report'
     @@assessment_form.submit_assessment(assessment['symptoms'])
-    @@public_health_patient_page_reports_verifier.verify_add_report(user_label, assessment)
+    sleep(4)
     search_for_report(user_label)
+    @@public_health_patient_page_reports_verifier.verify_add_report(user_label, assessment)
     @@public_health_patient_page_history_verifier.verify_add_report(user_label)
   end
 
@@ -28,6 +29,7 @@ class PublicHealthPatientPageReports < ApplicationSystemTestCase
     @@assessment_form.submit_assessment(assessment['symptoms'])
     if submit
       click_on 'OK'
+      sleep(4)
       search_for_report(assessment_id)
       @@public_health_patient_page_reports_verifier.verify_edit_report(user_label, assessment)
       @@public_health_patient_page_history_verifier.verify_edit_report(user_label)
