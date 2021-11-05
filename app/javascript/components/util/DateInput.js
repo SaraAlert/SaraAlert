@@ -22,12 +22,12 @@ class DateInput extends React.Component {
    * This happens both when a date is clicked in the datepicker AND when the user types a complete valid date
    */
   handleDateChange = date => {
-    const momentDate = date && (this.props.showTime ? moment.utc(date).format('YYYY-MM-DD HH:mm') : moment(date).format('YYYY-MM-DD'));
-    this.props.onChange(momentDate);
+    const momentDate = date && (this.props.showTime ? formatTimestamp(moment(date)) : moment(date).format('YYYY-MM-DD'));
+    this.props.onChange(date);
     this.datePickerRef.current.setOpen(false);
     this.setState({ currentDate: momentDate });
-    if (this.dateIsValidAndNotEmpty(momentDate)) {
-      this.setState({ lastValidDate: momentDate });
+    if (this.dateIsValidAndNotEmpty(date)) {
+      this.setState({ lastValidDate: date });
     }
   };
 
@@ -77,7 +77,7 @@ class DateInput extends React.Component {
   dateIsValidAndNotEmpty = date => {
     const isNotNull = !_.isNil(date);
     const isValid = moment(date, 'YYYY-MM-DD').isValid();
-    const isInRange = moment(this.props.minDate).isSameOrBefore(moment.utc(date)) && moment(this.props.maxDate).isSameOrAfter(moment.utc(date));
+    const isInRange = moment(this.props.minDate).isSameOrBefore(moment(date)) && moment(this.props.maxDate).isSameOrAfter(moment(date));
     return isNotNull && isValid && isInRange;
   };
 
@@ -121,10 +121,7 @@ class DateInput extends React.Component {
           <div>
             <DatePicker
               id={this.props.id}
-              selected={
-                this.props.date &&
-                (this.props.showTime ? moment(formatTimestamp(this.state.lastValidDate)).toDate() : moment(this.props.date, 'YYYY-MM-DD').toDate())
-              }
+              selected={this.props.date && (this.props.showTime ? moment(this.state.lastValidDate).toDate() : moment(this.props.date, 'YYYY-MM-DD').toDate())}
               minDate={this.props.minDate && moment(this.props.minDate, 'YYYY-MM-DD').toDate()}
               maxDate={this.props.maxDate && moment(this.props.maxDate, 'YYYY-MM-DD').toDate()}
               popperPlacement={this.props.placement || 'auto'}
