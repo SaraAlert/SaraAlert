@@ -7,13 +7,6 @@ class UpdatePatientsLatestAssessmentAtByAssessmentReportedAt < ActiveRecord::Mig
   end
 
   def populate_latest_assessment_fields(field)
-    # reset :latest_assessment_at and :latest_assessment_symptomatic to NULL
-    execute <<-SQL.squish
-      UPDATE patients
-      SET patients.latest_assessment_at = NULL, patients.latest_assessment_symptomatic = NULL
-      WHERE patients.purged = FALSE
-    SQL
-
     # populate :latest_assessment_at
     execute <<-SQL.squish
       UPDATE patients
