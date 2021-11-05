@@ -1,3 +1,5 @@
+import colors from './constants.scss';
+
 // The styling of the React-Select component cannot be done
 // with raw CSS. Custom objects can be defined here and included
 // in each component as necessary
@@ -7,7 +9,7 @@ const cursorPointerStyle = {
 
 const cursorPointerStyleLg = {
   option: base => ({ ...base, cursor: 'pointer' }),
-  control: base => ({ ...base, fontSize: '1.25rem', fontWeight: 400, fontFamily: 'Arial', color: '#495057', paddingLeft: '0.25rem' }),
+  control: base => ({ ...base, fontSize: '1.25rem', fontWeight: 400, fontFamily: 'Arial', color: colors.datepickerGray, paddingLeft: '0.25rem' }),
 };
 
 const vaccineModalSelectStyling = {
@@ -17,7 +19,7 @@ const vaccineModalSelectStyling = {
 
 const preferredContactTimeSelectStyling = {
   option: base => ({ ...base, cursor: 'pointer', minHeight: '2.25rem', ':nth-of-type(4)': { borderBottom: '1px solid #ced4da' } }),
-  control: base => ({ ...base, fontSize: '1.25rem', fontWeight: 400, fontFamily: 'Arial', color: '#495057', paddingLeft: '0.25rem' }),
+  control: base => ({ ...base, fontSize: '1.25rem', fontWeight: 400, fontFamily: 'Arial', color: colors.datepickerGray, paddingLeft: '0.25rem' }),
 };
 
 const customPreferredContactTimeSelectStyling = {

@@ -1,3 +1,5 @@
+@import './constants';
+
 .date-input {
   position: relative;
 }
@@ -7,7 +9,7 @@
   position: absolute;
   left: 0.75rem;
   top: 0.40rem;
-  color: #495057;
+  color: $datepicker-gray;
   font-size: 14pt;
 }
 
@@ -16,7 +18,7 @@
   position: absolute;
   left: 1.125rem;
   top: 0.575rem;
-  color: #495057;
+  color: $datepicker-gray;
   font-size: 16pt;
 }
 
@@ -25,7 +27,7 @@
   position: absolute;
   left: 1.25rem;
   top: 0.75rem;
-  color: #495057;
+  color: $datepicker-gray;
   font-size: 18pt;
 }
 
@@ -116,6 +118,5 @@
 }
 
 .time-zone {
-  color: #495057;
-  font-size: 14px;
+  color: $datepicker-gray;
 }

@@ -31,7 +31,7 @@ class DateTimeInput extends React.Component {
           value={this.props.value}
           id={this.props.id}
           onClick={this.props.onClick}
-          style={this.props.showTime && { width: '163px' }}
+          style={this.props.showTime && { width: '160px' }}
           className={`${
             this.props.customClass?.includes('sm')
               ? 'date-input__input_sm'
