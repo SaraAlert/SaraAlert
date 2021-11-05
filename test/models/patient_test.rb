@@ -1007,7 +1007,7 @@ class PatientTest < ActiveSupport::TestCase
     verify_patient_status(patient, :exposure_symptomatic)
 
     patient = create(:patient, monitoring: true, purged: false, public_health_action: 'None', created_at: 25.hours.ago)
-    create(:assessment, patient: patient, symptomatic: true, created_at: 25.hours.ago)
+    create(:assessment, patient: patient, symptomatic: true, reported_at: 25.hours.ago)
     verify_patient_status(patient, :exposure_symptomatic)
   end
 
@@ -1016,7 +1016,7 @@ class PatientTest < ActiveSupport::TestCase
     verify_patient_status(patient, :exposure_non_reporting)
 
     patient = create(:patient, monitoring: true, purged: false, public_health_action: 'None', created_at: 25.hours.ago)
-    create(:assessment, patient: patient, symptomatic: false, created_at: 25.hours.ago)
+    create(:assessment, patient: patient, symptomatic: false, reported_at: 25.hours.ago)
     verify_patient_status(patient, :exposure_non_reporting)
   end
 
@@ -1040,7 +1040,7 @@ class PatientTest < ActiveSupport::TestCase
 
     # meets definition: asymptomatic after positive test result
     laboratory = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 15.days.ago)
-    assessment = create(:assessment, patient: patient, symptomatic: false, created_at: 8.days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: false, reported_at: 8.days.ago)
     verify_patient_status(patient, :isolation_asymp_non_test_based)
     laboratory.destroy
     assessment.destroy
@@ -1048,14 +1048,14 @@ class PatientTest < ActiveSupport::TestCase
     # meets defiition: has positive test result more than 10 days ago and another positive test result less than 10 days ago
     laboratory_1 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 11.days.ago)
     laboratory_2 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 9.days.ago)
-    assessment = create(:assessment, patient: patient, symptomatic: false, created_at: 8.days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: false, reported_at: 8.days.ago)
     verify_patient_status(patient, :isolation_asymp_non_test_based)
     assessment.destroy
     laboratory_1.destroy
     laboratory_2.destroy
 
     # does not meet definition: symptomatic before positive test result but not afterwards
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 12.days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, reported_at: 12.days.ago)
     laboratory = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 11.days.ago)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
@@ -1082,22 +1082,22 @@ class PatientTest < ActiveSupport::TestCase
 
     # does not meet definition: symptomatic after positive test result
     laboratory = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 15.days.ago)
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 8.days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, reported_at: 8.days.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     assessment.destroy
     laboratory.destroy
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
     laboratory = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 13.days.ago)
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 12.days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, reported_at: 12.days.ago)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
     laboratory.destroy
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
     laboratory_1 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 12.days.ago)
-    assessment_1 = create(:assessment, patient: patient, symptomatic: true, created_at: 6.days.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: false, created_at: 5.days.ago)
+    assessment_1 = create(:assessment, patient: patient, symptomatic: true, reported_at: 6.days.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: false, reported_at: 5.days.ago)
     laboratory_2 = create(:laboratory, patient: patient, result: 'negative', specimen_collection: 3.days.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     assessment_1.destroy
@@ -1107,8 +1107,8 @@ class PatientTest < ActiveSupport::TestCase
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
     laboratory_1 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: 15.days.ago)
-    assessment_1 = create(:assessment, patient: patient, symptomatic: true, created_at: 14.days.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: false, created_at: 13.days.ago)
+    assessment_1 = create(:assessment, patient: patient, symptomatic: true, reported_at: 14.days.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: false, reported_at: 13.days.ago)
     laboratory_2 = create(:laboratory, patient: patient, result: 'negative', specimen_collection: 12.days.ago)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment_1.destroy
@@ -1122,32 +1122,32 @@ class PatientTest < ActiveSupport::TestCase
     patient = create(:patient, monitoring: true, purged: false, isolation: true, created_at: 14.days.ago, symptom_onset: 12.days.ago)
 
     # meets definition: symptomatic assessment older than 24 hours
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 11.days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, reported_at: 11.days.ago)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
 
     # meets definition: had an assessment with no fever
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 12.days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, reported_at: 12.days.ago)
     reported_condition = create(:reported_condition, assessment: assessment)
     create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: false)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
 
     # meets definition: had a fever but more than 24 hours ago
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 13.days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, reported_at: 13.days.ago)
     reported_condition = create(:reported_condition, assessment: assessment)
     create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
 
     # does not meet definition: symptom onset not more than 10 days ago
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 9.days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, reported_at: 9.days.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     assessment.destroy
 
     # does not meet definition: had a fever within the past 24 hours
-    assessment_1 = create(:assessment, patient: patient, symptomatic: true, created_at: 11.days.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: 22.hours.ago)
+    assessment_1 = create(:assessment, patient: patient, symptomatic: true, reported_at: 11.days.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: true, reported_at: 22.hours.ago)
     reported_condition = create(:reported_condition, assessment: assessment_2, created_at: 22.hours.ago)
     create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true, created_at: 22.hours.ago)
     patient.reload.latest_fever_or_fever_reducer_at
@@ -1156,8 +1156,8 @@ class PatientTest < ActiveSupport::TestCase
     assessment_2.destroy
 
     # does not meet definition: used a fever reducer within the past 24 hours
-    assessment_1 = create(:assessment, patient: patient, symptomatic: true, created_at: 80.hours.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: 21.hours.ago)
+    assessment_1 = create(:assessment, patient: patient, symptomatic: true, reported_at: 80.hours.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: true, reported_at: 21.hours.ago)
     reported_condition = create(:reported_condition, assessment: assessment_2)
     create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'used-a-fever-reducer', bool_value: true)
     patient.reload.latest_fever_or_fever_reducer_at
@@ -1171,7 +1171,7 @@ class PatientTest < ActiveSupport::TestCase
     patient = create(:patient, monitoring: true, purged: false, isolation: true)
 
     # meets definition: has at least 1 assessment and 2 negative test results
-    assessment = create(:assessment, patient: patient, created_at: 50.days.ago)
+    assessment = create(:assessment, patient: patient, reported_at: 50.days.ago)
     laboratory_1 = create(:laboratory, patient: patient, result: 'negative', specimen_collection: 50.days.ago)
     laboratory_2 = create(:laboratory, patient: patient, result: 'negative', specimen_collection: 50.days.ago)
     verify_patient_status(patient, :isolation_test_based)
@@ -1201,12 +1201,12 @@ class PatientTest < ActiveSupport::TestCase
     verify_patient_status(patient, :isolation_reporting)
 
     # patient has asymptomatic assessment less than 24 hours ago
-    assessment = create(:assessment, patient: patient, symptomatic: false, created_at: 10.hours.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: false, reported_at: 10.hours.ago)
     verify_patient_status(patient, :isolation_reporting)
     assessment.destroy
 
     # patient has symptomatic assessment less than 24 hours ago
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 18.hours.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, reported_at: 18.hours.ago)
     verify_patient_status(patient, :isolation_reporting)
     assessment.destroy
   end
@@ -1218,12 +1218,12 @@ class PatientTest < ActiveSupport::TestCase
     verify_patient_status(patient, :isolation_non_reporting)
 
     # patient has asymptomatic assessment more than 24 hours ago
-    assessment = create(:assessment, patient: patient, symptomatic: false, created_at: 25.hours.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: false, reported_at: 25.hours.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     assessment.destroy
 
     # patient has symptomatic assessment more than 24 hours ago
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 28.hours.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, reported_at: 28.hours.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     assessment.destroy
   end
@@ -1242,7 +1242,7 @@ class PatientTest < ActiveSupport::TestCase
     )
 
     # patient has asymptomatic assessment more than 24 hours ago but less than 7 days ago
-    create(:assessment, patient: patient, symptomatic: false, created_at: 25.hours.ago)
+    create(:assessment, patient: patient, symptomatic: false, reported_at: 25.hours.ago)
 
     assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
@@ -1278,7 +1278,7 @@ class PatientTest < ActiveSupport::TestCase
     )
 
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
-    create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, reported_at: 2.days.ago)
 
     assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
@@ -1315,7 +1315,7 @@ class PatientTest < ActiveSupport::TestCase
     )
 
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
-    create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, reported_at: 2.days.ago)
 
     assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
@@ -1335,7 +1335,7 @@ class PatientTest < ActiveSupport::TestCase
     )
 
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
-    create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, reported_at: 2.days.ago)
 
     assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
@@ -2662,13 +2662,13 @@ class PatientTest < ActiveSupport::TestCase
 
     # LDE + 14 days: in range as long as assessments are in range
     patient = create(:patient, last_date_of_exposure: 14.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 1.day.ago)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: 1.day.ago)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # LDE + 15 days: in range as long as assessments are in range
     patient = create(:patient, last_date_of_exposure: 15.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 2.days.ago)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: 2.days.ago)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
   end
@@ -2690,37 +2690,37 @@ class PatientTest < ActiveSupport::TestCase
   test 'ten_day_quarantine_candidates scope asserts assessments submitted in time range based on LDE' do
     # LDE + 9 days: too early
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 1.day.ago.utc)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: 1.day.ago.utc)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert_not scoped_patients.where(id: patient.id).present?
 
     # LDE + 10 days: in range
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # LDE + 11 days: in range
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 1.day)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc + 1.day)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # LDE + 12 days: in range
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 2.days)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc + 2.days)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # LDE + 13 days: in range
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 3.days)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc + 3.days)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # LDE + 1 days: too late
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 4.days)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc + 4.days)
     scoped_patients = Patient.ten_day_quarantine_candidates
     assert_not scoped_patients.where(id: patient.id).present?
   end
@@ -2810,14 +2810,14 @@ class PatientTest < ActiveSupport::TestCase
 
     # LDE + 11 days: in range as long as assessments and specimen collection are in range
     patient = create(:patient, last_date_of_exposure: 11.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 3.days.ago)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: 3.days.ago)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 3.days.ago.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # LDE + 12 days: in range as long as assessments and specimen collection are in range
     patient = create(:patient, last_date_of_exposure: 12.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 3.days.ago)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: 3.days.ago)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 3.days.ago.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
@@ -2842,35 +2842,35 @@ class PatientTest < ActiveSupport::TestCase
   test 'seven_day_quarantine_candidates scope asserts assessments submitted in time range based on LDE' do
     # LDE + 6 days: too early
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 1.day.ago.utc)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: 1.day.ago.utc)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert_not scoped_patients.where(id: patient.id).present?
 
     # LDE + 7 days: in range
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # # LDE + 8 days: in range
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 1.day)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc + 1.day)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # # LDE + 9 days: in range
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 2.days)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc + 2.days)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # # LDE + 10 days: too late
     patient = create(:patient, last_date_of_exposure: 7.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc + 3.days)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc + 3.days)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert_not scoped_patients.where(id: patient.id).present?
@@ -2922,49 +2922,49 @@ class PatientTest < ActiveSupport::TestCase
   test 'seven_day_quarantine_candidates scope asserts lab results specimen_collection within correct range around LDE' do
     # LDE + 4 days: too early
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 4.days.ago.utc)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: 4.days.ago.utc)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 6.days.ago.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert_not scoped_patients.where(id: patient.id).present?
 
     # LDE + 5 days: in range
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 3.days.ago.utc)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: 3.days.ago.utc)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 5.days.ago.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # # LDE + 6 days: in range
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 2.days.ago.utc.to_date)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: 2.days.ago.utc.to_date)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 4.days.ago.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # # LDE + 7 days: in range
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: 1.day.ago.utc.to_date)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: 1.day.ago.utc.to_date)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 3.days.ago.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert scoped_patients.where(id: patient.id).present?
 
     # # LDE + 8 days: in range
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 1.day.ago.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert_not scoped_patients.where(id: patient.id).present?
 
     # LDE + 9 days: in range
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: 2.days.ago.utc.to_date)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert_not scoped_patients.where(id: patient.id).present?
 
     # LDE + 10 days: too late
     patient = create(:patient, last_date_of_exposure: 10.days.ago.utc.to_date)
-    create(:assessment, patient_id: patient.id, symptomatic: false, created_at: DateTime.now.utc)
+    create(:assessment, patient_id: patient.id, symptomatic: false, reported_at: DateTime.now.utc)
     create(:laboratory, patient_id: patient.id, result: 'negative', lab_type: 'PCR', specimen_collection: DateTime.now.utc)
     scoped_patients = Patient.seven_day_quarantine_candidates
     assert_not scoped_patients.where(id: patient.id).present?
@@ -2996,7 +2996,7 @@ class PatientTest < ActiveSupport::TestCase
                      user_defined_symptom_onset: true,
                      symptom_onset: DateTime.now - 1.day)
     earliest_symptomatic_assessment_timestamp = DateTime.now - 2.days
-    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: earliest_symptomatic_assessment_timestamp)
+    create(:assessment, patient_id: patient.id, symptomatic: true, reported_at: earliest_symptomatic_assessment_timestamp)
     patient.update({ isolation: false })
     assert_not patient.isolation
     assert_nil patient.extended_isolation
@@ -3014,7 +3014,7 @@ class PatientTest < ActiveSupport::TestCase
   test 'update handles symptom_onset change' do
     patient = create(:patient, symptom_onset: DateTime.now - 1.day, user_defined_symptom_onset: false)
     earliest_symptomatic_assessment_timestamp = DateTime.now - 2.days
-    create(:assessment, patient_id: patient.id, symptomatic: true, created_at: earliest_symptomatic_assessment_timestamp)
+    create(:assessment, patient_id: patient.id, symptomatic: true, reported_at: earliest_symptomatic_assessment_timestamp)
     patient.update({ symptom_onset: nil })
     assert_equal earliest_symptomatic_assessment_timestamp.to_date, patient.symptom_onset
     assert_not patient.user_defined_symptom_onset
@@ -3395,7 +3395,7 @@ class PatientTest < ActiveSupport::TestCase
         assert_not_nil Patient.has_not_reported_recently.find_by(id: patient.id)
 
         # Report outside of window
-        create(:assessment, patient: patient, created_at: 30.days.ago)
+        create(:assessment, patient: patient, reported_at: 30.days.ago)
         patient.reload
         assert_not_nil Patient.has_not_reported_recently.find_by(id: patient.id)
 
@@ -3403,7 +3403,7 @@ class PatientTest < ActiveSupport::TestCase
         assessment_2 = create(
           :assessment,
           patient: patient,
-          created_at: correct_dst_edge(
+          reported_at: correct_dst_edge(
             patient,
             Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes
           )
@@ -3413,7 +3413,7 @@ class PatientTest < ActiveSupport::TestCase
 
         # Report on front edge of window (00:00:00)
         assessment_2.update(
-          created_at: correct_dst_edge(
+          reported_at: correct_dst_edge(
             patient,
             Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes + 1.second
           )
@@ -3423,7 +3423,7 @@ class PatientTest < ActiveSupport::TestCase
         assert_nil Patient.has_not_reported_recently.find_by(id: patient.id)
 
         # Report inside of window
-        assessment_2.update(created_at: Time.now.getlocal(patient.address_timezone_offset))
+        assessment_2.update(reported_at: Time.now.getlocal(patient.address_timezone_offset))
         assessment_2.reload
         patient.reload
         assert_nil Patient.has_not_reported_recently.find_by(id: patient.id)
@@ -3500,46 +3500,46 @@ class PatientTest < ActiveSupport::TestCase
 
       # assessment is 3 days before
       assessment = create(:assessment, patient: patient)
-      assessment.update(created_at: 3.days.ago)
+      assessment.update(reported_at: 3.days.ago)
       assessment.reload
       patient.reload
       assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 11:59 PM day before
       yesterday_local = Time.now.getlocal(patient.address_timezone_offset) - 1.day
-      assessment.update(created_at: correct_dst_edge(patient, yesterday_local.change(hour: 23, min: 59)))
+      assessment.update(reported_at: correct_dst_edge(patient, yesterday_local.change(hour: 23, min: 59)))
       assessment.reload
       patient.reload
       assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 12:00 AM current day
       assessment.update(
-        created_at: correct_dst_edge(patient, Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, min: 0))
+        reported_at: correct_dst_edge(patient, Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, min: 0))
       )
       assessment.reload
       patient.reload
       assert_not_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 12:00 PM current day
-      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 12))
+      assessment.update(reported_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 12))
       assessment.reload
       patient.reload
       assert_not_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 11:59 PM current day
-      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 23, min: 59))
+      assessment.update(reported_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 23, min: 59))
       assessment.reload
       patient.reload
       assert_not_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 12:00 AM next day
-      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, min: 0) + 1.day)
+      assessment.update(reported_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 0, min: 0) + 1.day)
       assessment.reload
       patient.reload
       assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)
 
       # assessment is 9:00 AM next day
-      assessment.update(created_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 9, min: 0) + 1.day)
+      assessment.update(reported_at: Time.now.getlocal(patient.address_timezone_offset).change(hour: 9, min: 0) + 1.day)
       assessment.reload
       patient.reload
       assert_nil Patient.submitted_assessment_today.find_by(id: patient.id)

@@ -55,11 +55,11 @@ class AnalyticsController < ApplicationController
       system_subjects: Patient.count,
       system_subjects_last_24: Patient.where('created_at >= ?', Time.now - 1.day).count,
       system_assessments: Assessment.count,
-      system_assessments_last_24: Assessment.where('created_at >= ?', Time.now - 1.day).count,
+      system_assessments_last_24: Assessment.where('reported_at >= ?', Time.now - 1.day).count,
       user_subjects: Patient.where(creator_id: current_user.id).count,
       user_subjects_last_24: Patient.where(creator_id: current_user.id).where('created_at >= ?', Time.now - 1.day).count,
       user_assessments: Patient.where(creator_id: current_user.id).joins(:assessments).count,
-      user_assessments_last_24: Patient.where(creator_id: current_user.id).joins(:assessments).where('assessments.created_at >= ?', Time.now - 1.day).count
+      user_assessments_last_24: Patient.where(creator_id: current_user.id).joins(:assessments).where('assessments.reported_at >= ?', Time.now - 1.day).count
     }
   end
 

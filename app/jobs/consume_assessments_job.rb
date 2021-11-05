@@ -53,7 +53,7 @@ class ConsumeAssessmentsJob < ApplicationJob
 
         # Prevent duplicate patient assessment spam
         # Only check for latest assessment if there is one
-        if !patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)
+        if !patient.latest_assessment.nil? && (patient.latest_assessment.reported_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)
           Rails.logger.info "ConsumeAssessmentsJob: skipping duplicate assessment (patient: #{patient.id})..."
           queue.commit
           next

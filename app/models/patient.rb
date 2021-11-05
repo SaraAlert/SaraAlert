@@ -186,7 +186,7 @@ class Patient < ApplicationRecord
 
   # Most recent assessment
   def latest_assessment
-    assessments.order(created_at: :desc).first
+    assessments.order(reported_at: :desc).first
   end
 
   # Most recent transfer
@@ -735,7 +735,7 @@ class Patient < ApplicationRecord
       .where_assoc_not_exists(:assessments, symptomatic: true)
       .where_assoc_exists(:assessments) do
         # CAST is necessary to guarantee correct comparison between datetime and date.
-        where('CAST(CONVERT_TZ(assessments.created_at, "UTC", patients.time_zone) AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 10 DAY) '\
+        where('CAST(CONVERT_TZ(assessments.reported_at, "UTC", patients.time_zone) AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 10 DAY) '\
               'AND DATE_ADD(last_date_of_exposure, INTERVAL 13 DAY)')
       end
       .where('CAST(CONVERT_TZ(?, "UTC", patients.time_zone) AS DATE) >= DATE_ADD(patients.last_date_of_exposure, INTERVAL 10 DAY)', Time.now.utc)
@@ -756,7 +756,7 @@ class Patient < ApplicationRecord
       .where_assoc_not_exists(:assessments, symptomatic: true)
       .where_assoc_exists(:assessments) do
         # CAST is necessary to guarantee correct comparison between datetime and date.
-        where('CAST(CONVERT_TZ(assessments.created_at, "UTC", patients.time_zone) AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY) '\
+        where('CAST(CONVERT_TZ(assessments.reported_at, "UTC", patients.time_zone) AS DATE) BETWEEN DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY) '\
               'AND DATE_ADD(last_date_of_exposure, INTERVAL 9 DAY)')
       end
       .where('CAST(CONVERT_TZ(?, "UTC", patients.time_zone) AS DATE) >= DATE_ADD(last_date_of_exposure, INTERVAL 7 DAY)', Time.now.utc)

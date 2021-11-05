@@ -217,9 +217,9 @@ namespace :stats do
       active_exp.find_each do |patient|
         times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         reporting_days_exp << times_sent.count
-        times_recv_self = patient.assessments.reported_since(start).created_by_monitoree.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
-        times_recv_self_and_user = patient.assessments.reported_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
-        times_recv_user = patient.assessments.reported_since(start).created_by_user.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self = patient.assessments.reported_since(start).created_by_monitoree.pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self_and_user = patient.assessments.reported_since(start).pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_user = patient.assessments.reported_since(start).created_by_user.pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
         responded_to_all_reminders_self_exp += 1 if times_sent.count <= times_recv_self.count
         responded_to_50_reminders_self_exp += 1 if (times_sent.count * 0.50) <= times_recv_self.count
         responded_to_75_reminders_self_exp += 1 if (times_sent.count * 0.75) <= times_recv_self.count
@@ -290,9 +290,9 @@ namespace :stats do
       active_iso.find_each do |patient|
         times_sent = patient.histories.reminder_sent_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
         reporting_days_iso << times_sent.count
-        times_recv_self = patient.assessments.reported_since(start).created_by_monitoree.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
-        times_recv_self_and_user = patient.assessments.reported_since(start).pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
-        times_recv_user = patient.assessments.reported_since(start).created_by_user.pluck(:created_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self = patient.assessments.reported_since(start).created_by_monitoree.pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_self_and_user = patient.assessments.reported_since(start).pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
+        times_recv_user = patient.assessments.reported_since(start).created_by_user.pluck(:reported_at).collect { |ca| ca.to_date }.sort.uniq
         responded_to_all_reminders_self_iso += 1 if times_sent.count <= times_recv_self.count
         responded_to_50_reminders_self_iso += 1 if (times_sent.count * 0.50) <= times_recv_self.count
         responded_to_75_reminders_self_iso += 1 if (times_sent.count * 0.75) <= times_recv_self.count
