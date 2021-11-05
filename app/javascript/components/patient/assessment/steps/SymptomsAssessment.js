@@ -14,7 +14,8 @@ class SymptomsAssessment extends React.Component {
       ...this.props,
       reportState: {
         symptoms: _.cloneDeep(this.props.symptoms),
-        reported_at: props.assessment.reported_at ?? moment.utc(moment()).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z'),
+        reported_at:
+          moment(props.assessment.reported_at).format('YYYY-MM-DD HH:mm Z') ?? moment.utc(moment()).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z'),
       },
       loading: false,
       noSymptomsCheckbox: false,
