@@ -23,11 +23,15 @@ class DateInput extends React.Component {
    */
   handleDateChange = date => {
     const momentDate = date && (this.props.showTime ? formatTimestamp(moment(date)) : moment(date).format('YYYY-MM-DD'));
-    this.props.onChange(date);
     this.datePickerRef.current.setOpen(false);
     this.setState({ currentDate: momentDate });
     if (this.dateIsValidAndNotEmpty(date)) {
       this.setState({ lastValidDate: date });
+      // only call onChange if date is valid and present when date is required
+      this.props.onChange(date);
+    } else if (!this.props.required) {
+      // always call onChange when date is not required
+      this.props.onChange(date);
     }
   };
 
@@ -170,6 +174,7 @@ DateInput.propTypes = {
   },
   onChange: PropTypes.func.isRequired,
   placement: PropTypes.oneOf(['top', 'bottom', 'left', 'right', 'auto']),
+  required: PropTypes.bool,
   isInvalid: PropTypes.bool,
   isClearable: PropTypes.bool,
   replaceBlank: PropTypes.bool,

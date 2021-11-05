@@ -274,6 +274,7 @@ class SymptomsAssessment extends React.Component {
                   maxDate={moment()}
                   onChange={this.handleDateChange}
                   placement="bottom"
+                  required={true}
                   isInvalid={false}
                   customClass="form-control-sm"
                   ariaLabel="Assessment Reported Date Input"
