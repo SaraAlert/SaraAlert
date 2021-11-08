@@ -29,6 +29,7 @@ class DateInput extends React.Component {
       this.setState({ lastValidDate: this.props.showTime ? date : momentDate });
       this.props.onChange(this.props.showTime ? date : momentDate);
     } else if (!this.props.required) {
+      // Call onChange even if date invalid, because props.required indicates if parent component expects valid values
       this.props.onChange(this.props.showTime ? date : momentDate);
     }
   };
