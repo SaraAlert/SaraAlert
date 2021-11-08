@@ -23,11 +23,13 @@ class DateInput extends React.Component {
    */
   handleDateChange = date => {
     const momentDate = date && (this.props.showTime ? formatTimestamp(moment(date)) : moment(date).format('YYYY-MM-DD'));
-    this.props.onChange(this.props.showTime ? date : momentDate);
     this.datePickerRef.current.setOpen(false);
     this.setState({ currentDate: momentDate });
     if (this.dateIsValidAndNotEmpty(date)) {
       this.setState({ lastValidDate: this.props.showTime ? date : momentDate });
+      this.props.onChange(this.props.showTime ? date : momentDate);
+    } else if (!this.props.required) {
+      this.props.onChange(this.props.showTime ? date : momentDate);
     }
   };
 
