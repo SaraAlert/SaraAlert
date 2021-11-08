@@ -26,12 +26,11 @@ class DateInput extends React.Component {
     this.datePickerRef.current.setOpen(false);
     this.setState({ currentDate: momentDate });
     if (this.dateIsValidAndNotEmpty(date)) {
-      this.setState({ lastValidDate: date });
-      // only call onChange if date is valid and present when date is required
-      this.props.onChange(date);
+      this.setState({ lastValidDate: this.props.showTime ? date : momentDate });
+      this.props.onChange(this.props.showTime ? date : momentDate);
     } else if (!this.props.required) {
-      // always call onChange when date is not required
-      this.props.onChange(date);
+      // Call onChange even if date is blank, because props.required indicates if parent component accepts blank values
+      this.props.onChange(this.props.showTime ? date : momentDate);
     }
   };
 
