@@ -77,7 +77,7 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
           end
         end
 
-        # Migrate saved export presets
+        # Migrate advanced filters in saved export presets
         UserExportPreset.where('config LIKE "%cohort%"').in_batches(of: FILTER_BATCH_SIZE) do |batch|
           batch.each do |uep|
             config = JSON.parse(uep[:config])
@@ -85,6 +85,24 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
             migrate_advanced_filter_contents(contents)
             config['data']['patients']['query']['filter'] = contents
             uep.update!(config: config.to_json)
+          end
+        end
+
+        # Migrate selected common exposure cohorts in saved export presets
+        UserExportPreset.where('config LIKE "%member_of_a_common_exposure_cohort_type%"').in_batches(of: FILTER_BATCH_SIZE) do |batch|
+          batch.each do |uep|
+            config = JSON.parse(uep[:config])
+            checked = config.dig('data', 'patients', 'checked')
+            if checked.include?('member_of_a_common_exposure_cohort_type')
+              config['data']['common_exposure_cohorts'] = {
+                checked: ImportExportConstants::COMMON_EXPOSURE_COHORT_FIELD_NAMES.keys,
+                expanded: [],
+                query: {}
+              }
+              checked.delete('member_of_a_common_exposure_cohort_type')
+              config['data']['patients']['checked'] = checked
+              uep.update!(config: config.to_json)
+            end
           end
         end
       end
@@ -126,7 +144,7 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
           Patient.update(updates.keys, updates.values)
         end
 
-        # Update saved advanced filters
+        # Rollback saved advanced filters
         UserFilter.where('contents LIKE "%common-exposure-cohort%"').in_batches(of: FILTER_BATCH_SIZE) do |batch|
           batch.each do |uf|
             contents = JSON.parse(uf[:contents])
@@ -135,7 +153,7 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
           end
         end
 
-        # Update saved export presets
+        # Rollback advanced filters in saved export presets
         UserExportPreset.where('config LIKE "%common-exposure-cohort%"').in_batches(of: FILTER_BATCH_SIZE) do |batch|
           batch.each do |uep|
             config = JSON.parse(uep[:config])
@@ -143,6 +161,20 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
             rollback_advanced_filter_contents(contents)
             config['data']['patients']['query']['filter'] = contents
             uep.update!(config: config.to_json)
+          end
+        end
+
+        # Rollback selected common exposure cohorts in saved export presets
+        UserExportPreset.where('config LIKE "%common_exposure_cohorts%"').in_batches(of: FILTER_BATCH_SIZE) do |batch|
+          batch.each do |uep|
+            config = JSON.parse(uep[:config])
+            if (config['data'].include?('common_exposure_cohorts'))
+              checked = config.dig('data', 'patients', 'checked')
+              checked.push('member_of_a_common_exposure_cohort_type')
+              config['data']['patients']['checked'] = checked
+              config['data'].delete('common_exposure_cohorts')
+              uep.update!(config: config.to_json)
+            end
           end
         end
       end
