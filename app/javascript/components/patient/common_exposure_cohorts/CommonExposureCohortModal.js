@@ -1,10 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Form, Modal } from 'react-bootstrap';
-import CreatableSelect from 'react-select/creatable';
-import Select from 'react-select';
-
-import { cursorPointerStyleLg, bootstrapSelectTheme } from '../../../packs/stylesheets/ReactSelectStyling';
 
 const COHORT_TYPES = [
   '',
@@ -31,20 +27,11 @@ class CommonExposureCohortModal extends React.Component {
     };
   }
 
-  handleChange = (field, data) => {
+  handleChange = event => {
+    event.persist();
     this.setState(state => {
-      return { common_exposure_cohort: { ...state.common_exposure_cohort, [field]: data?.value } };
+      return { common_exposure_cohort: { ...state.common_exposure_cohort, [event?.target?.id]: event?.target?.value } };
     });
-  };
-
-  mapSelectOptions = options => {
-    return options.map(option => {
-      return { label: option, value: option };
-    });
-  };
-
-  mapSelectValue = value => {
-    return { label: value || '', value: value || '' };
   };
 
   render() {
@@ -55,48 +42,65 @@ class CommonExposureCohortModal extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <Form.Group>
-            <Form.Label htmlFor="cohort-type-select">Cohort Type</Form.Label>
-            <Select
-              inputId="cohort-type-select"
-              name="cohort-type"
-              value={this.mapSelectValue(this.state.common_exposure_cohort.cohort_type)}
-              options={this.mapSelectOptions(COHORT_TYPES)}
-              onChange={data => this.handleChange('cohort_type', data)}
-              isClearable
-              placeholder=""
-              styles={cursorPointerStyleLg}
-              theme={theme => bootstrapSelectTheme(theme, 'lg')}
-            />
+            <Form.Label className="input-label">Cohort Type</Form.Label>
+            <Form.Control
+              id="cohort_type"
+              as="select"
+              size="lg"
+              className="form-square"
+              aria-label="Cohort Type Select"
+              value={this.state.common_exposure_cohort.cohort_type || ''}
+              onChange={this.handleChange}>
+              {COHORT_TYPES.map((cohort_type, index) => (
+                <option key={`cohort-type-${index}`}>{cohort_type}</option>
+              ))}
+            </Form.Control>
           </Form.Group>
           <Form.Group>
-            <Form.Label htmlFor="cohort-name-select">Cohort Name/Description</Form.Label>
-            <CreatableSelect
-              inputId="cohort-name-select"
-              name="cohort-name"
-              value={this.mapSelectValue(this.state.common_exposure_cohort.cohort_name)}
-              options={this.mapSelectOptions(this.props.cohort_names || [])}
-              onChange={data => this.handleChange('cohort_name', data)}
-              isClearable
-              placeholder=""
-              formatCreateLabel={value => value}
-              styles={cursorPointerStyleLg}
-              theme={theme => bootstrapSelectTheme(theme, 'lg')}
+            <Form.Label className="input-label">Cohort Name/Description</Form.Label>
+            <Form.Control
+              id="cohort_name"
+              as="input"
+              list="cohort_names"
+              autoComplete="off"
+              size="lg"
+              className="form-square"
+              aria-label="Cohort Name"
+              onChange={this.handleChange}
+              value={this.state.common_exposure_cohort.cohort_name || ''}
             />
+            <datalist id="cohort_names">
+              {this.props.cohort_names?.map(cohort_name => {
+                return (
+                  <option value={cohort_name} key={cohort_name}>
+                    {cohort_name}
+                  </option>
+                );
+              })}
+            </datalist>
           </Form.Group>
           <Form.Group>
-            <Form.Label htmlFor="cohort-location-select">Cohort Location</Form.Label>
-            <CreatableSelect
-              inputId="cohort-location-select"
-              name="cohort-location"
-              value={this.mapSelectValue(this.state.common_exposure_cohort.cohort_location)}
-              options={this.mapSelectOptions(this.props.cohort_locations || [])}
-              onChange={data => this.handleChange('cohort_location', data)}
-              isClearable
-              placeholder=""
-              formatCreateLabel={value => value}
-              styles={cursorPointerStyleLg}
-              theme={theme => bootstrapSelectTheme(theme, 'lg')}
+            <Form.Label className="input-label">Cohort Location</Form.Label>
+            <Form.Control
+              id="cohort_location"
+              as="input"
+              list="cohort_locations"
+              autoComplete="off"
+              size="lg"
+              className="form-square"
+              aria-label="Cohort Location"
+              onChange={this.handleChange}
+              value={this.state.common_exposure_cohort.cohort_location || ''}
             />
+            <datalist id="cohort_locations">
+              {this.props.cohort_locations?.map(cohort_location => {
+                return (
+                  <option value={cohort_location} key={cohort_location}>
+                    {cohort_location}
+                  </option>
+                );
+              })}
+            </datalist>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>

@@ -35,7 +35,7 @@
 }
 
 .icon-btn-primary:hover {
-  color: #1B5272;
+  color: #1b5272;
 }
 
 .icon-btn-dark {
@@ -143,7 +143,7 @@ select.form-control {
 }
 
 .breadcrumb .li {
-  font-size: 1.10rem !important;
+  font-size: 1.1rem !important;
 }
 
 .display-5 {
@@ -166,14 +166,16 @@ select.form-control {
   // This is styling for the confirm-dialog box
   // The aggressive z-index ensures that this modal
   // will be drawn in front of any other modals
-  background-color: rgba(20, 20, 20, 0.60);
+  background-color: rgba(20, 20, 20, 0.6);
   z-index: 2000;
 }
 
-.advanced-filter-modal-container, .confirm-export-modal-container, .laboratory-modal-container  {
+.advanced-filter-modal-container,
+.confirm-export-modal-container,
+.laboratory-modal-container {
   // The aggressive z-index ensures that this modal
   // will be drawn in front of any other modals except the confirm-dialog box
-  background-color: rgba(20, 20, 20, 0.60);
+  background-color: rgba(20, 20, 20, 0.6);
   z-index: 1999;
 }
 
@@ -208,11 +210,16 @@ select.form-control {
   border-radius: 0 !important;
 }
 
-.modal-audit, .modal-move-household {
+.modal-audit,
+.modal-move-household {
   width: 60% !important;
   max-width: 60% !important;
 }
 
 .justify-unset {
   justify-content: unset;
+}
+
+input::-webkit-calendar-picker-indicator {
+  margin: -0.5rem -0.5rem 0 0;
 }

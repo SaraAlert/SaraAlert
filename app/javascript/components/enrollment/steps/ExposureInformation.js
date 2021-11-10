@@ -268,7 +268,6 @@ class ExposureInformation extends React.Component {
   };
 
   toggleCommonExposureCohortModal = (showCommonExposureCohortModal, common_exposure_cohort, common_exposure_cohort_index) => {
-    console.log(common_exposure_cohort, common_exposure_cohort_index);
     this.setState({ showCommonExposureCohortModal, common_exposure_cohort, common_exposure_cohort_index });
   };
 
