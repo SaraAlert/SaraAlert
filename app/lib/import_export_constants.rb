@@ -124,6 +124,20 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
   FULL_HISTORY_VACCINES_HEADERS = ['Patient ID', 'Vaccine Group', 'Product Name', 'Administration Date', 'Dose Number', 'Notes', 'Created At',
                                    'Updated At'].freeze
 
+  FULL_HISTORY_CLOSE_CONTACT_FIELDS = %i[patient_id first_name last_name primary_telephone email contact_attempts last_date_of_exposure assigned_user notes
+                                         enrolled_id created_at updated_at].freeze
+
+  FULL_HISTORY_CLOSE_CONTACT_HEADERS = ['Patient ID', 'First Name', 'Last Name', 'Primary Telephone', 'Email', 'Contact Attempts', 'Last Date of Exposure',
+                                        'Assigned User', 'Notes', 'Enrolled ID', 'Created At', 'Updated At'].freeze
+
+  FULL_HISTORY_COMMON_EXPOSURE_COHORT_FIELDS = %i[patient_id cohort_type cohort_name cohort_location created_at updated_at].freeze
+
+  FULL_HISTORY_COMMON_EXPOSURE_COHORT_HEADERS = ['Patient ID', 'Cohort Type', 'Cohort Name/Description', 'Cohort Location', 'Created At', 'Updated At'].freeze
+
+  FULL_HISTORY_TRANSFER_FIELDS = %i[patient_id who from_jurisdiction to_jurisdiction created_at updated_at].freeze
+
+  FULL_HISTORY_TRANSFER_HEADERS = ['Patient ID', 'Who Initiated Transfer', 'From Jurisdiction', 'To Jurisdiction', 'Created At', 'Updated At'].freeze
+
   FULL_HISTORY_HISTORIES_FIELDS = %i[patient_id id original_comment_id comment created_by history_type created_at updated_at deleted_by delete_reason].freeze
 
   FULL_HISTORY_HISTORIES_HEADERS = ['Patient ID', 'Comment ID', 'Original Comment ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At',
@@ -629,6 +643,21 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
         checked: FULL_HISTORY_VACCINES_FIELDS,
         headers: FULL_HISTORY_VACCINES_HEADERS,
         tab: 'Vaccinations'
+      },
+      close_contacts: {
+        checked: FULL_HISTORY_CLOSE_CONTACT_FIELDS,
+        headers: FULL_HISTORY_CLOSE_CONTACT_HEADERS,
+        tab: 'Close Contacts'
+      },
+      common_exposure_cohorts: {
+        checked: FULL_HISTORY_COMMON_EXPOSURE_COHORT_FIELDS,
+        headers: FULL_HISTORY_COMMON_EXPOSURE_COHORT_HEADERS,
+        tab: 'Common Exposure Cohorts'
+      },
+      transfers: {
+        checked: FULL_HISTORY_TRANSFER_FIELDS,
+        headers: FULL_HISTORY_TRANSFER_HEADERS,
+        tab: 'Transfers'
       },
       histories: {
         checked: FULL_HISTORY_HISTORIES_FIELDS,

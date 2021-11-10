@@ -119,6 +119,24 @@ class ExportController < ApplicationController
           name: 'Vaccinations',
           tab: 'Vaccinations'
         },
+        close_contacts: {
+          checked: FULL_HISTORY_CLOSE_CONTACT_FIELDS,
+          headers: FULL_HISTORY_CLOSE_CONTACT_HEADERS,
+          name: 'Close-Contacts',
+          tab: 'Close Contacts'
+        },
+        common_exposure_cohorts: {
+          checked: FULL_HISTORY_COMMON_EXPOSURE_COHORT_FIELDS,
+          headers: FULL_HISTORY_COMMON_EXPOSURE_COHORT_HEADERS,
+          name: 'Common-Exposure-Cohorts',
+          tab: 'Common Exposure Cohorts'
+        },
+        transfers: {
+          checked: FULL_HISTORY_TRANSFER_FIELDS,
+          headers: FULL_HISTORY_TRANSFER_HEADERS,
+          name: 'Transfers',
+          tab: 'Transfers'
+        },
         histories: {
           checked: FULL_HISTORY_HISTORIES_FIELDS,
           headers: FULL_HISTORY_HISTORIES_HEADERS,
