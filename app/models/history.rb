@@ -189,6 +189,13 @@ class History < ApplicationRecord
   end
 
   def self.enrollment(patient: nil, created_by: 'Sara Alert System', comment: 'User enrolled monitoree.', create: true)
+    patient.common_exposure_cohorts.each do |cohort|
+      comment += " User created a common exposure cohort (ID: #{cohort[:id]}"
+      comment += ", Cohort Type: #{cohort[:cohort_type]}" if cohort[:cohort_type].present?
+      comment += ", Cohort Name/Description: #{cohort[:cohort_name]}" if cohort[:cohort_name].present?
+      comment += ", Cohort Location: #{cohort[:cohort_location]}" if cohort[:cohort_location].present?
+      comment += ').'
+    end
     create_history(patient, created_by, HISTORY_TYPES[:enrollment], comment, create: create)
   end
 

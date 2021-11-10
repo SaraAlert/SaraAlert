@@ -250,7 +250,7 @@ class ExposureInformation extends React.Component {
 
   handleCohortDelete = async index => {
     const self = this;
-    if (await confirmDialog('Are you sure you want to delete this cohort?', { title: 'Delete Common Exposure Cohort' })) {
+    if (await confirmDialog('Are you sure you want to delete this common exposure cohort for this monitoree?', { title: 'Delete Common Exposure Cohort' })) {
       self.setState(
         state => {
           const common_exposure_cohorts = state.current.common_exposure_cohorts;

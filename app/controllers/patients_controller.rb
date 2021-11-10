@@ -209,6 +209,7 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(content[:id])
     laboratory = params.permit(laboratory: %i[id lab_type specimen_collection report result])[:laboratory]
     common_exposure_cohorts = params.permit(common_exposure_cohorts: [%i[id cohort_type cohort_name cohort_location]])[:common_exposure_cohorts]
+    other_updates = {}
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if patient.nil?
 
@@ -227,20 +228,27 @@ class PatientsController < ApplicationController
 
     # Update common exposure cohorts if present
     if common_exposure_cohorts.present?
-      # Delete cohorts
       original_cohort_ids = patient.common_exposure_cohorts.pluck(:id)
       updated_cohort_ids = common_exposure_cohorts.map { |cohort| cohort[:id] }
       deleted_cohort_ids = original_cohort_ids - updated_cohort_ids
-      patient.common_exposure_cohorts.where(id: deleted_cohort_ids).destroy_all
 
+      # Save old cohort data for history
+      deleted_cohorts = patient.common_exposure_cohorts.where(id: deleted_cohort_ids)
+      other_updates[:common_exposure_cohorts] = { created: [], updated: [], deleted: deleted_cohorts.map(&:attributes).map(&:symbolize_keys) }
+
+      # Update cohorts
       common_exposure_cohorts.each do |cohort|
-        allowed_cohort_fields = cohort.slice(*%i[cohort_type cohort_name cohort_location])
+        sanitized_cohort = cohort.slice(*%i[cohort_type cohort_name cohort_location])
         if cohort[:id]
-          patient.common_exposure_cohorts.find_by(id: cohort[:id]).update(allowed_cohort_fields)
+          other_updates[:common_exposure_cohorts][:updated] << [patient.common_exposure_cohorts.find_by(id: cohort[:id]), sanitized_cohort]
+          patient.common_exposure_cohorts.find_by(id: cohort[:id]).update(sanitized_cohort)
         else
-          patient.common_exposure_cohorts.create(allowed_cohort_fields)
+          other_updates[:common_exposure_cohorts][:created] << patient.common_exposure_cohorts.create(sanitized_cohort)
         end
       end
+
+      # Delete cohorts
+      deleted_cohorts.destroy_all
     end
 
     # Propagate desired fields to household except jurisdiction_id
@@ -302,7 +310,7 @@ class PatientsController < ApplicationController
     render(json: patient.errors, status: :unprocessable_entity) and return unless patient.update(content)
 
     allowed_fields = allowed_params&.keys&.reject { |apk| %w[jurisdiction_id assigned_user].include? apk }
-    Patient.detailed_history_edit(patient_before, patient, allowed_fields, current_user.email)
+    Patient.detailed_history_edit(patient_before, patient, allowed_fields, other_updates, current_user.email)
     # Add a history update for any changes from moving from isolation to exposure
     patient.update_patient_history_for_isolation(patient_before, content[:isolation]) unless content[:isolation].nil?
 

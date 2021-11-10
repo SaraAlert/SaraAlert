@@ -1318,7 +1318,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     # NOTE: "isolation" is a special case, because it is not a monitoring field, but it has side effects that are handled
     # alongside monitoring fields
     info_updates = updates.filter { |attr, _value| PatientHelper.monitoring_fields.exclude?(attr) || attr == :isolation }
-    Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, @current_actor_label)
+    Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, nil, @current_actor_label, is_api_edit: true)
 
     # Handle History for monitoree monitoring information updates
     history_data = {
