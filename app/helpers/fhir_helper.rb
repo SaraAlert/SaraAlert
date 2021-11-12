@@ -268,6 +268,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       case_status: from_string_extension(patient, 'Patient', 'case-status'),
       gender_identity: from_gender_identity_extension(patient, 'Patient'),
       sexual_orientation: from_sexual_orientation_extension(patient, 'Patient'),
+      contact_type: from_string_extension(patient, 'Patient', 'contact-type'),
+      contact_name: from_string_extension(patient, 'Patient', 'contact-name'),
+      alternate_contact_type: from_string_extension(patient, 'Patient', 'alternate-contact-type'),
+      alternate_contact_name: from_string_extension(patient, 'Patient', 'alternate-contact-name'),
       **from_exposure_risk_factors_extension(patient),
       **from_report_source_extension(patient)
     }
