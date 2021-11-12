@@ -74,7 +74,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_contact_point(patient.alternate_primary_telephone, 'phone', 1, patient.alternate_primary_telephone_type, false, true),
         to_contact_point(patient.alternate_secondary_telephone, 'phone', 2, patient.alternate_secondary_telephone_type, false, true),
         to_contact_point(patient.alternate_email, 'email', 1, nil, false, true),
-        to_contact_point(patient.alternate_international_telephone, 'phone', 1, nil, true, true),
+        to_contact_point(patient.alternate_international_telephone, 'phone', 1, nil, true, true)
       ].reject(&:nil?),
       birthDate: patient.date_of_birth&.strftime('%F'),
       address: [
@@ -180,22 +180,12 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     monitored_address_index = patient&.address&.index(monitored_address) || 0
     address = from_address_by_type_extension(patient, 'USA')
     address_index = patient&.address&.index(address) || foreign_address_index || 0
-    int_phone_extension = to_bool_extension(true, 'international-telephone')
-    primary_phone = patient&.telecom&.find { |t| t&.system == 'phone' && !t&.extension&.include?(int_phone_extension) }
-    secondary_phone = patient&.telecom&.select { |t| t&.system == 'phone' && !t&.extension&.include?(int_phone_extension) }&.second
-    international_phone = patient&.telecom&.find { |t| t&.extension&.include?(int_phone_extension) }
-    email = patient&.telecom&.find { |t| t&.system == 'email' }
     {
       monitoring: { value: patient&.active.nil? ? false : patient.active, path: 'Patient.active' },
       first_name: { value: patient&.name&.first&.given&.first, path: 'Patient.name[0].given[0]' },
       middle_name: { value: patient&.name&.first&.given&.second, path: 'Patient.name[0].given[1]' },
       last_name: { value: patient&.name&.first&.family, path: 'Patient.name[0].family' },
-      primary_telephone: { value: from_fhir_phone_number(primary_phone&.value), path: "Patient.telecom[#{patient&.telecom&.index(primary_phone)}].value" },
-      secondary_telephone: { value: from_fhir_phone_number(secondary_phone&.value),
-                             path: "Patient.telecom[#{patient&.telecom&.index(secondary_phone)}].value" },
-      international_telephone: { value: international_phone&.value,
-                                 path: "Patient.telecom[#{patient&.telecom&.index(international_phone)}].value" },
-      email: { value: email&.value, path: "Patient.telecom[#{patient&.telecom&.index(email)}].value" },
+      **from_telecom(patient&.telecom),
       date_of_birth: { value: patient&.birthDate, path: 'Patient.birthDate' },
       age: { value: Patient.calc_current_age_fhir(patient&.birthDate), path: 'Patient.birthDate' },
       # foreign_address has to be mapped before address, because address_state has a validation rule that depends on foreign_address_country
@@ -264,8 +254,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       exposure_notes: from_string_extension(patient, 'Patient', 'exposure-notes'),
       travel_related_notes: from_string_extension(patient, 'Patient', 'travel-related-notes'),
       additional_planned_travel_related_notes: from_string_extension(patient, 'Patient', 'additional-planned-travel-notes'),
-      primary_telephone_type: from_primary_phone_type_extension(patient, 'Patient'),
-      secondary_telephone_type: from_secondary_phone_type_extension(patient, 'Patient'),
       continuous_exposure: from_bool_extension_false_default(patient, 'Patient', 'continuous-exposure'),
       exposure_risk_assessment: from_string_extension(patient, 'Patient', 'exposure-risk-assessment'),
       public_health_action: from_string_extension(patient, 'Patient', 'public-health-action', 'None'),
@@ -836,21 +824,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     jurisdiction_path_hash
   end
 
-  # element must be a FHIR element with a telecom array
-  def from_primary_phone_type_extension(element, base_path)
-    phone_telecom = element&.telecom&.find { |t| t&.system == 'phone' }
+  def from_phone_type_extension(telecom, index)
     {
-      value: phone_telecom&.extension&.find { |e| e.url == SA_EXT_BASE_URL + 'phone-type' }&.valueString,
-      path: str_ext_path("#{base_path}.telecom[#{element&.telecom&.index(phone_telecom)}]", 'phone-type')
-    }
-  end
-
-  # element must be a FHIR element with a telecom array
-  def from_secondary_phone_type_extension(element, base_path)
-    phone_telecom = element&.telecom&.select { |t| t&.system == 'phone' }&.second
-    {
-      value: phone_telecom&.extension&.find { |e| e.url == SA_EXT_BASE_URL + 'phone-type' }&.valueString,
-      path: str_ext_path("#{base_path}.telecom[#{element&.telecom&.index(phone_telecom)}]", 'phone-type')
+      value: telecom&.extension&.find { |e| e.url == SA_EXT_BASE_URL + 'phone-type' }&.valueString,
+      path: str_ext_path("Patient.telecom[#{index}]", 'phone-type')
     }
   end
 
@@ -897,6 +874,59 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     contact_point.extension << to_bool_extension(true, 'alternate-contact') if alternate
 
     contact_point
+  end
+
+  def from_telecom(telecom)
+    contact = {
+      email: { value: nil, path: '' },
+      primary_telephone: { value: nil, path: '' },
+      secondary_telephone: { value: nil, path: '' },
+      primary_telephone_type: { value: nil, path: '' },
+      secondary_telephone_type: { value: nil, path: '' },
+      international_telephone: { value: nil, path: '' },
+      alternate_email: { value: nil, path: '' },
+      alternate_primary_telephone: { value: nil, path: '' },
+      alternate_secondary_telephone: { value: nil, path: '' },
+      alternate_primary_telephone_type: { value: nil, path: '' },
+      alternate_secondary_telephone_type: { value: nil, path: '' },
+      alternate_international_telephone: { value: nil, path: '' }
+    }
+    int_phone_extension = to_bool_extension(true, 'international-telephone')
+    alt_extension = to_bool_extension(true, 'alternate-contact')
+
+    telecom&.each_with_index do |t, i|
+      international = t.extension.include?(int_phone_extension)
+      alternate = t.extension.include?(alt_extension)
+      case t.system
+      when 'email'
+        if alternate && contact[:alternate_email][:value].nil?
+          contact[:alternate_email] = { value: t.value, path: "Patient.telecom[#{i}].value" }
+        elsif !alternate && contact[:email][:value].nil?
+          contact[:email] = { value: t.value, path: "Patient.telecom[#{i}].value" }
+        end
+      when 'phone'
+        if international
+          if alternate && contact[:alternate_international_telephone][:value].nil?
+            contact[:alternate_international_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
+          elsif !alternate && contact[:international_telephone][:value].nil?
+            contact[:international_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
+          end
+        elsif alternate && contact[:alternate_primary_telephone][:value].nil?
+          contact[:alternate_primary_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
+          contact[:alternate_primary_telephone_type] = from_phone_type_extension(t, i)
+        elsif alternate && contact[:alternate_secondary_telephone][:value].nil?
+          contact[:alternate_secondary_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
+          contact[:alternate_secondary_telephone_type] = from_phone_type_extension(t, i)
+        elsif !alternate && contact[:primary_telephone][:value].nil?
+          contact[:primary_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
+          contact[:primary_telephone_type] = from_phone_type_extension(t, i)
+        elsif !alternate && contact[:secondary_telephone][:value].nil?
+          contact[:secondary_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
+          contact[:secondary_telephone_type] = from_phone_type_extension(t, i)
+        end
+      end
+    end
+    contact
   end
 
   def to_communication(language, preferred)
