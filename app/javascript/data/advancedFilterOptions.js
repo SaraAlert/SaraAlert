@@ -115,6 +115,7 @@ export const advancedFilterOptions = [
     title: 'Common Exposure Cohort Name (Text)',
     description: 'Monitoree common exposure cohort name or description',
     type: 'search',
+    tooltip: 'Leaving this field blank will return monitorees with missing and null values.',
   },
   {
     name: 'email',
@@ -151,12 +152,14 @@ export const advancedFilterOptions = [
     title: 'Primary Contact Telephone Number (Exact Match) (Text)',
     description: 'Monitorees with a specified 10 digit primary contact telephone number',
     type: 'search',
+    tooltip: 'This will ignore any special characters in the phone number, such as - and ()',
   },
   {
     name: 'telephone-number-partial',
     title: 'Primary Contact Telephone Number (Contains) (Text)',
     description: 'Monitorees with a primary contact telephone number that contains specified digits',
     type: 'search',
+    tooltip: 'This will ignore any special characters in the phone number, such as - and ()',
   },
 
   /* SELECT FILTER OPTIONS */

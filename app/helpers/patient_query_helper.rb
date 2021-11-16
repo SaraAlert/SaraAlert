@@ -516,7 +516,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = if filter[:value].blank?
                      patients.where(primary_telephone: [nil, ''])
                    else
-                     patients.where('patients.primary_telephone like ?', "%#{filter[:value]}%")
+                     patients.where('patients.primary_telephone like ?', "%#{filter[:value].delete('^0-9')}%")
                    end
       when 'ten-day-quarantine'
         patients = advanced_filter_quarantine_option(patients, filter, :ten_day)

@@ -218,6 +218,51 @@ class PatientQueryHelperTest < ActionView::TestCase
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
+  test 'advanced filter telephone number contains without special characters' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user, primary_telephone: '+1111234444')
+    patient_2 = create(:patient, creator: user, primary_telephone: '+2341117272')
+    create(:patient, creator: user, primary_telephone: '+5555555555')
+
+    patients = Patient.all
+    filters = [{ filterOption: { 'name' => 'telephone-number-partial' }, additionalFilterOption: {}, value: '234' }]
+    tz_offset = 300
+
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    assert_equal [patient_1, patient_2].pluck(:id), filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter telephone number contains with special characters' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user, primary_telephone: '+2341117272')
+    create(:patient, creator: user, primary_telephone: '+1111234444')
+    create(:patient, creator: user, primary_telephone: '+5555555555')
+
+    patients = Patient.all
+    filters = [{ filterOption: { 'name' => 'telephone-number-partial' }, additionalFilterOption: {}, value: '(234)-111' }]
+    tz_offset = 300
+
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    assert_equal [patient_1].pluck(:id), filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter telephone number exact match' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user, primary_telephone: '+1111234444')
+    create(:patient, creator: user, primary_telephone: '+2111234444')
+    create(:patient, creator: user, primary_telephone: '+1111234445')
+
+    patients = Patient.all
+    filters = [{ filterOption: { 'name' => 'telephone-number' }, additionalFilterOption: {}, value: '(111)-123-4444' }]
+    tz_offset = 300
+
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    assert_equal [patient_1].pluck(:id), filtered_patients.pluck(:id)
+  end
+
   # --- COMBINATION ADVANCED FILTER QUERIES --- #
 
   test 'advanced filter laboratory single filter option results' do
