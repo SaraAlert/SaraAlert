@@ -344,7 +344,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           # Map multi-select type filter from { label, value } to values
           filter_contact_types = filter[:value].pluck(:value)
 
-          # Get patients where assigned_user is any of the assigned users specified in the filter
+          # Get patients where contact type is any of the contact types specified in the filter
           patients = patients.where(contact_type: filter_contact_types)
         end
       when 'continous-exposure'
@@ -626,13 +626,17 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   def advanced_filter_common_exposure_cohorts(patients, filter)
     common_exposure_cohorts = patients.joins(:common_exposure_cohorts)
     filter[:value].each do |field|
+      # Map multi-select type filter from { label, value } to values
+      value = field[:value].pluck(:value)
+
+      # Get patients where cohort value is any of the cohort values specified in the filter
       case field[:name]
       when 'cohort-type'
-        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_type: field[:value] })
+        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_type: value }) unless value&.include?('<any>')
       when 'cohort-name'
-        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_name: field[:value] })
+        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_name: value })
       when 'cohort-location'
-        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_location: field[:value] })
+        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_location: value })
       end
     end
 

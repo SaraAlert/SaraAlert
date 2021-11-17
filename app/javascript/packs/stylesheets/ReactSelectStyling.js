@@ -4,7 +4,7 @@ import colors from './constants.scss';
 // with raw CSS. Custom objects can be defined here and included
 // in each component as necessary
 const cursorPointerStyle = {
-  option: base => ({ ...base, cursor: 'pointer' }),
+  option: base => ({ ...base, cursor: 'pointer', minHeight: '2rem' }),
 };
 
 const cursorPointerStyleLg = {

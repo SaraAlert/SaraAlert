@@ -424,8 +424,9 @@ export const advancedFilterOptions = [
       {
         name: 'cohort-type',
         title: 'cohort type',
-        type: 'select',
+        type: 'multi',
         options: [
+          '<any>',
           '',
           'Adult Congregate Living Facility',
           'Child Care Facility',
@@ -444,14 +445,14 @@ export const advancedFilterOptions = [
       {
         name: 'cohort-name',
         title: 'cohort name/description',
-        type: 'select',
-        options: [''], // Populated asynchronously in the AdvancedFilter component
+        type: 'multi',
+        options: [], // Populated asynchronously in the AdvancedFilter component
       },
       {
         name: 'cohort-location',
         title: 'cohort location',
-        type: 'select',
-        options: [''], // Populated asynchronously in the AdvancedFilter component
+        type: 'multi',
+        options: [], // Populated asynchronously in the AdvancedFilter component
       },
     ],
   },
