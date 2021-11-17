@@ -1037,7 +1037,7 @@ class AdvancedFilter extends React.Component {
                 min="0"
                 onChange={event => this.changeValue(index, { firstBound: event?.target?.value, secondBound: value.secondBound })}
               />
-              <div className="text-center my-auto mx-4">
+              <div className="text-center my-1 mx-4">
                 <b>AND</b>
               </div>
               <Form.Control
@@ -1322,7 +1322,7 @@ class AdvancedFilter extends React.Component {
               )}
               {combinationIndex + 1 === total && combinationIndex + 1 < filter.fields.length && (
                 <React.Fragment>
-                  <div className="my-auto" data-for={`${filter.name}-${statementIndex}-combination-add`} data-tip="">
+                  <div className="my-1" data-for={`${filter.name}-${statementIndex}-combination-add`} data-tip="">
                     <Button
                       className="btn-circle"
                       variant="secondary"
