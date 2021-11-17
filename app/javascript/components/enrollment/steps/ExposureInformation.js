@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Card, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Card, Col, Form } from 'react-bootstrap';
+import ReactTooltip from 'react-tooltip';
 import * as yup from 'yup';
 import moment from 'moment';
 import _ from 'lodash';
@@ -509,21 +510,21 @@ class ExposureInformation extends React.Component {
             />
           </div>
         )}
-        {this.state.current.common_exposure_cohorts?.length >= 10 ? (
-          <OverlayTrigger overlay={<Tooltip>You may only add up to 10 cohorts</Tooltip>}>
-            <Button id="add-new-cohort-button" variant="outline-primary" size="md" className="btn-square add-new-cohort-button" disabled>
-              Add New Cohort
-            </Button>
-          </OverlayTrigger>
-        ) : (
+        <span data-for="add_new_cohort_disable_reason" data-tip="">
           <Button
             id="add-new-cohort-button"
             variant="outline-primary"
             size="md"
             className="btn-square add-new-cohort-button"
+            disabled={this.state.current.common_exposure_cohorts?.length >= 10}
             onClick={() => this.toggleCommonExposureCohortModal(true)}>
             Add New Cohort
           </Button>
+        </span>
+        {this.state.current.common_exposure_cohorts?.length >= 10 && (
+          <ReactTooltip id="add_new_cohort_disable_reason" multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+            <span>You may only add up to 10 cohorts</span>
+          </ReactTooltip>
         )}
         {this.state.showCommonExposureCohortModal && (
           <CommonExposureCohortModal

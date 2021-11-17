@@ -6,6 +6,7 @@ import _ from 'lodash';
 
 import Patient from '../../components/patient/Patient';
 import FollowUpFlagPanel from '../../components/patient/follow_up_flag/FollowUpFlagPanel';
+import CommonExposureCohortTable from '../../components/patient/common_exposure_cohorts/CommonExposureCohortsTable';
 import InfoTooltip from '../../components/util/InfoTooltip';
 import BadgeHoH from '../../components/patient/icons/BadgeHoH';
 import { Heading } from '../../utils/Heading';
@@ -580,6 +581,7 @@ describe('Patient', () => {
         expect(section.find('li').at(index).find('.risk-val').exists()).toBe(false);
       }
     });
+    expect(section.find(CommonExposureCohortTable).exists()).toBe(true);
   });
 
   it('Displays "None specified" if there are no risk factors', () => {

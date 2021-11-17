@@ -1,12 +1,15 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import { Button, Card, Form } from 'react-bootstrap';
+import { Card, Form } from 'react-bootstrap';
 
 import ExposureInformation from '../../../components/enrollment/steps/ExposureInformation';
 import PublicHealthManagement from '../../../components/enrollment/steps/PublicHealthManagement';
 import DateInput from '../../../components/util/DateInput';
 import { blankExposureMockPatient, blankIsolationMockPatient, mockPatient1, mockPatient2 } from '../../mocks/mockPatients';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
+import { mockCommonExposureCohort1, mockCommonExposureCohort2 } from '../../mocks/mockCommonExposureCohorts';
+import CommonExposureCohortsTable from '../../../components/patient/common_exposure_cohorts/CommonExposureCohortsTable';
+import CommonExposureCohortModal from '../../../components/patient/common_exposure_cohorts/CommonExposureCohortModal';
 
 const previousMock = jest.fn();
 const nextMock = jest.fn();
@@ -18,6 +21,7 @@ function getShallowWrapper(patient, showBtn) {
     isolation: patient.isolation,
     patient: patient,
     propagatedFields: {},
+    common_exposure_cohorts: [mockCommonExposureCohort1, mockCommonExposureCohort2],
   };
   return shallow(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} authenticity_token={'123'} />);
 }
@@ -27,6 +31,7 @@ function getMountedWrapper(patient, showBtn) {
     isolation: patient.isolation,
     patient: patient,
     propagatedFields: {},
+    common_exposure_cohorts: [mockCommonExposureCohort1, mockCommonExposureCohort2],
   };
   return mount(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} authenticity_token={'123'} />);
 }
@@ -47,9 +52,10 @@ describe('ExposureInformation', () => {
     expect(wrapper.find(Form).exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').exists()).toBe(true);
     expect(wrapper.find(PublicHealthManagement).exists()).toBe(true);
-    expect(wrapper.find(Button).length).toEqual(3);
-    expect(wrapper.find(Button).at(1).text()).toEqual('Previous');
-    expect(wrapper.find(Button).at(2).text()).toEqual('Next');
+    expect(wrapper.find('#add-new-cohort-button').exists()).toBe(true);
+    expect(wrapper.find(CommonExposureCohortsTable).exists()).toBe(true);
+    expect(wrapper.find('#enrollment-previous-button').exists()).toBe(true);
+    expect(wrapper.find('#enrollment-next-button').exists()).toBe(true);
   });
 
   it('Properly renders all main components when monitoree is in isolation', () => {
@@ -63,9 +69,10 @@ describe('ExposureInformation', () => {
     expect(wrapper.find(Form).exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').exists()).toBe(false);
     expect(wrapper.find(PublicHealthManagement).exists()).toBe(false);
-    expect(wrapper.find(Button).length).toEqual(3);
-    expect(wrapper.find(Button).at(1).text()).toEqual('Previous');
-    expect(wrapper.find(Button).at(2).text()).toEqual('Next');
+    expect(wrapper.find('#add-new-cohort-button').exists()).toBe(true);
+    expect(wrapper.find(CommonExposureCohortsTable).exists()).toBe(true);
+    expect(wrapper.find('#enrollment-previous-button').exists()).toBe(true);
+    expect(wrapper.find('#enrollment-next-button').exists()).toBe(true);
   });
 
   it('Properly renders exposure information inputs when creating a new monitoree', () => {
@@ -112,6 +119,9 @@ describe('ExposureInformation', () => {
 
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').exists()).toBe(true);
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').hostNodes().prop('checked')).toBe(false);
+
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').exists()).toBe(true);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').hostNodes().prop('checked')).toBe(false);
 
     expect(wrapper.find('#exposure_notes').exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').hostNodes().prop('value')).toEqual('');
@@ -163,6 +173,9 @@ describe('ExposureInformation', () => {
 
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').exists()).toBe(true);
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').hostNodes().prop('checked')).toBe(mockPatient2.crew_on_passenger_or_cargo_flight);
+
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').exists()).toBe(true);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').hostNodes().prop('checked')).toBe(mockPatient2.member_of_a_common_exposure_cohort);
 
     expect(wrapper.find('#exposure_notes').exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').hostNodes().prop('value')).toEqual(mockPatient2.exposure_notes);
@@ -498,6 +511,46 @@ describe('ExposureInformation', () => {
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').prop('checked')).toBe(false);
   });
 
+  it('Changing Risk Factor: "Member of Common Exposure Cohort" properly updates state and calls props.setEnrollmentState', () => {
+    const wrapper = getShallowWrapper(blankExposureMockPatient);
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(0);
+    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(false);
+    expect(wrapper.state('modified')).toEqual({});
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(false);
+
+    wrapper.find('#member_of_a_common_exposure_cohort').simulate('change', { target: { id: 'member_of_a_common_exposure_cohort', value: true } });
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(1);
+    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(true);
+    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort).toBe(true);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(true);
+
+    wrapper.find('#member_of_a_common_exposure_cohort').simulate('change', { target: { id: 'member_of_a_common_exposure_cohort', value: false } });
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(2);
+    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(false);
+    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort).toBe(false);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(false);
+  });
+
+  it('Clicking "Add New Cohort" properly opens cohort modal', () => {
+    const wrapper = getShallowWrapper(blankExposureMockPatient);
+    expect(wrapper.find('#add-new-cohort-button').prop('disabled')).toBe(false);
+    expect(wrapper.find(CommonExposureCohortModal).exists()).toBe(false);
+    wrapper.find('#add-new-cohort-button').simulate('click');
+    expect(wrapper.find(CommonExposureCohortModal).exists()).toBe(true);
+  });
+
+  it('"Add New Cohort" button should be disabled if max number of cohorts already exist', () => {
+    const patient = blankExposureMockPatient;
+    const current = {
+      isolation: patient.isolation,
+      patient: patient,
+      propagatedFields: {},
+      common_exposure_cohorts: Array(10).fill(mockCommonExposureCohort2),
+    };
+    const wrapper = shallow(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} />);
+    expect(wrapper.find('#add-new-cohort-button').prop('disabled')).toBe(true);
+  });
+
   it('Changing Notes properly updates state and calls props.setEnrollmentState', () => {
     const wrapper = getMountedWrapper(blankExposureMockPatient);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(0);
@@ -533,19 +586,20 @@ describe('ExposureInformation', () => {
 
   it('Hides "Previous" and "Next" buttons if requisite functions are not passed in via props', () => {
     const wrapper = shallow(<ExposureInformation currentState={{ isolation: false, patient: blankExposureMockPatient, propagatedFields: {} }} patient={blankIsolationMockPatient} showPreviousButton={false} jurisdiction_paths={mockJurisdictionPaths} />);
-    expect(wrapper.find(Button).length).toEqual(1);
+    expect(wrapper.find('#enrollment-previous-button').exists()).toBe(false);
+    expect(wrapper.find('#enrollment-next-button').exists()).toBe(false);
   });
 
   it('Hides the "Previous" button when props.showPreviousButton is false', () => {
     const wrapper = getShallowWrapper(blankIsolationMockPatient);
-    expect(wrapper.find(Button).length).toEqual(2);
-    expect(wrapper.find(Button).at(1).text()).toEqual('Next');
+    expect(wrapper.find('#enrollment-previous-button').exists()).toBe(false);
+    expect(wrapper.find('#enrollment-next-button').exists()).toBe(true);
   });
 
   it('Clicking the "Previous" button calls props.previous', () => {
     const wrapper = getShallowWrapper(blankIsolationMockPatient, true);
     expect(previousMock).not.toHaveBeenCalled();
-    wrapper.find(Button).at(1).simulate('click');
+    wrapper.find('#enrollment-previous-button').simulate('click');
     expect(previousMock).toHaveBeenCalled();
   });
 
@@ -553,7 +607,7 @@ describe('ExposureInformation', () => {
     const wrapper = getShallowWrapper(blankIsolationMockPatient);
     const validateSpy = jest.spyOn(wrapper.instance(), 'validate');
     expect(validateSpy).not.toHaveBeenCalled();
-    wrapper.find(Button).at(1).simulate('click');
+    wrapper.find('#enrollment-next-button').simulate('click');
     expect(validateSpy).toHaveBeenCalled();
   });
 });
