@@ -1097,7 +1097,11 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
       risk_factors.merge!(sub_ext_risk_factors.transform_values { |v| { value: v[:value], path: v[:path].sub(SA_EXT_BASE_URL, '') } })
     end
-    risk_factors[:common_exposure_cohorts_attributes] = { value: common_exposure_cohorts } if common_exposure_cohorts.present?
+
+    # Existing cohorts must be deleted otherwise updates will be additive, there is also no nil? check because cohorts can be deleted
+    CommonExposureCohort.where(patient_id: patient.id).destroy_all if patient.id.present?
+    risk_factors[:common_exposure_cohorts_attributes] = { value: common_exposure_cohorts }
+
     risk_factors
   end
 

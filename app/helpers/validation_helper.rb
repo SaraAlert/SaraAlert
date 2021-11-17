@@ -326,7 +326,11 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     product_name: { label: 'Vaccine Product Name', checks: [:enum] },
     administration_date: { label: 'Vaccine Administration Date', checks: [:date] },
     dose_number: { label: 'Vaccine Dose Number', checks: [:enum] },
-    notes: { label: 'Vaccine Notes', checks: [] }
+    notes: { label: 'Vaccine Notes', checks: [] },
+    # common exposure cohorts
+    cohort_type: { label: 'Cohort Type', checks: [:enum] },
+    cohort_name: { label: 'Cohort Name/Description', checks: [] },
+    cohort_location: { label: 'Cohort Location', checks: [] }
   }.freeze
 
   # Validates if a given date value is between (inclusive) two dates.

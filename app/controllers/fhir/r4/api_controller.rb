@@ -1074,7 +1074,7 @@ class Fhir::R4::ApiController < ApplicationApiController
 
   # Search for patients
   def search_patients(options, if_none_exist: false)
-    query = accessible_patients.includes(:jurisdiction, :creator, { transfers: %i[from_jurisdiction to_jurisdiction who] })
+    query = accessible_patients.includes(:jurisdiction, :creator, :common_exposure_cohorts, { transfers: %i[from_jurisdiction to_jurisdiction who] })
 
     # Do not return any patients if filtering for duplicates and no valid search params are provided
     return [] if if_none_exist && (options.keys & VALID_PATIENT_SEARCH_PARAMS).empty?
@@ -1318,7 +1318,7 @@ class Fhir::R4::ApiController < ApplicationApiController
     # NOTE: "isolation" is a special case, because it is not a monitoring field, but it has side effects that are handled
     # alongside monitoring fields
     info_updates = updates.filter { |attr, _value| PatientHelper.monitoring_fields.exclude?(attr) || attr == :isolation }
-    Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, nil, @current_actor_label, is_api_edit: true)
+    Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, {}, @current_actor_label, is_api_edit: true)
 
     # Handle History for monitoree monitoring information updates
     history_data = {

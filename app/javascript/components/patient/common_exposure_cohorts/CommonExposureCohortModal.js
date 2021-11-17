@@ -28,10 +28,12 @@ class CommonExposureCohortModal extends React.Component {
   }
 
   handleChange = event => {
-    event.persist();
-    this.setState(state => {
-      return { common_exposure_cohort: { ...state.common_exposure_cohort, [event?.target?.id]: event?.target?.value } };
-    });
+    if (event?.target?.value?.length <= 200) {
+      event.persist();
+      this.setState(state => {
+        return { common_exposure_cohort: { ...state.common_exposure_cohort, [event?.target?.id]: event?.target?.value } };
+      });
+    }
   };
 
   render() {
