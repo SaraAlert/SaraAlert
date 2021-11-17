@@ -33,7 +33,7 @@ class BulkExportTest < ApiControllerTestCase
     download_id = response.headers['Content-Location'].split('/').last
     assert_not_nil download_id
     assert_enqueued_jobs 1
-    assert_enqueued_with(job: ExportFhirJob, args: [@system_everything_app, ApiDownload.find_by_id(download_id), { since: nil }])
+    assert_enqueued_with(job: ExportFhirJob, args: [@system_everything_app, ApiDownload.find_by(id: download_id), { since: nil }])
   end
 
   test 'should kick off an export with _since parameter' do
@@ -50,7 +50,7 @@ class BulkExportTest < ApiControllerTestCase
     download_id = response.headers['Content-Location'].split('/').last
     assert_not_nil download_id
     assert_enqueued_jobs 1
-    assert_enqueued_with(job: ExportFhirJob, args: [@system_everything_app, ApiDownload.find_by_id(download_id), { since: DateTime.parse(since) }])
+    assert_enqueued_with(job: ExportFhirJob, args: [@system_everything_app, ApiDownload.find_by(id: download_id), { since: DateTime.parse(since) }])
   end
 
   test 'should be 422 unprocessable when _since is invalid' do
