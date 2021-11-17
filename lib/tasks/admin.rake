@@ -52,6 +52,15 @@ namespace :admin do
     end
   end
 
+  desc "Import/Update Jurisdiction custom messages"
+  task import_or_update_jurisdiction_messages: :environment do
+    ActiveRecord::Base.transaction do
+      YAML.load_file("config/sara/jurisdiction_messages.yml").each do |jur_name, jur_values|
+        parse_custom_messages(nil, jur_name, jur_values)
+      end
+    end
+  end
+
   # This is useful in case the base/sample jurisdiction.yml is run on prod and the jurisdictions with generic names need to be removed
   # Example Usage: rake admin:delete_jurisdiction_with_id ID=3
   desc "Delete Jurisdiction"
@@ -148,7 +157,7 @@ namespace :admin do
     jurisdiction.save
 
 
-    # Parse and recursively create children jurisdictions if  included
+    # Parse and recursively create children jurisdictions if included
     children_jurs = nil
     if jur_values != nil
       children_jurs = jur_values['children']
@@ -159,6 +168,33 @@ namespace :admin do
       end
     end
 
+  end
+
+  def parse_custom_messages(parent, jur_name, jur_values)
+    jurisdiction = nil
+    matching_jurisdictions = Jurisdiction.where(name: jur_name)
+    matching_jurisdictions.each do |matching_jurisdiction|
+      # Also works for the case where parent is nil ie: top-level jurisdiction
+      if matching_jurisdiction.parent&.path == parent&.path
+        jurisdiction = matching_jurisdiction
+        break
+      end
+    end
+
+    unless jurisdiction.nil? || jur_values.nil?
+      jurisdiction.update(custom_messages: jur_values['messages']&.to_json)
+    end
+
+    # Parse and recursively create custom messages for child jurisdictions if included
+    children_jurs = nil
+    if jur_values != nil
+      children_jurs = jur_values['children']
+    end
+    if children_jurs != nil
+      children_jurs.each do |child_jur_name, child_jur_vals|
+        parse_custom_messages(jurisdiction, child_jur_name, child_jur_vals)
+      end
+    end
   end
 
   desc "Transfer Jurisdiction Resources To Another Jurisdiction"

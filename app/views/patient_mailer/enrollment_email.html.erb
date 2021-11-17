@@ -7,7 +7,11 @@
     <% @patients.each do |patient| %>
       <p><%= t('assessments.html.email.shared.greeting', locale: @lang, name: patient[:patient]&.initials_age('-')) %></p>
 
-      <p><%= t('assessments.html.email.enrollment.info1', locale: @lang) %></p>
+      <% if @custom_enrollment_message.present? %>
+        <p><%= sanitize @custom_enrollment_message %></p>
+      <% else %>
+        <p><%= t('assessments.html.email.enrollment.info1', locale: @lang) %></p>
+      <% end %>
 
       <%= render partial: 'main_mailer/responsive_button', locals: {
             patient: patient,

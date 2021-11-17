@@ -68,6 +68,13 @@ class Jurisdiction < ApplicationRecord
     contact_info
   end
 
+  def custom_messages_for_hierarchy
+    path&.reverse&.each do |jur|
+      return JSON.parse(jur.custom_messages) unless jur.custom_messages.nil?
+    end
+    nil
+  end
+
   # This calculates the current threshold condition hash which is usually only meant to be called after updating threshold conditions
   # Otherwise, simply reference the :current_threshold_condition_hash field to avoid extra computation and queries
   def calculate_current_threshold_condition_hash
