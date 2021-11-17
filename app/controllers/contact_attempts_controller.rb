@@ -31,7 +31,7 @@ class ContactAttemptsController < ApplicationController
       comment = "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt"
       comment += " logged on a household member’s record (Sara Alert ID: #{patient_id}) and also applied to this monitoree" unless member.id == patient_id
       comment += '.'
-      comment += " Note: #{note}" unless note.blank?
+      comment += " Note: #{note}" if note.present?
 
       History.create!(patient_id: member.id,
                       created_by: current_user.email,

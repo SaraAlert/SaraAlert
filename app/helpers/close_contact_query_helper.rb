@@ -18,13 +18,13 @@ module CloseContactQueryHelper
     entries = permitted_params[:entries]&.to_i || 10
     page = permitted_params[:page]&.to_i || 0
 
-    if sort_direction.present? && !%w[asc desc].include?(sort_direction)
+    if sort_direction.present? && %w[asc desc].exclude?(sort_direction)
       error_message = "Unable to sort column in specified direction in request: '#{sort_direction}'"
       raise StandardError, error_message
     end
 
-    if sort_order.present? && !%w[first_name last_name primary_telephone email last_date_of_exposure assigned_user contact_attempts enrolled_id
-                                  notes].include?(sort_order)
+    if sort_order.present? && %w[first_name last_name primary_telephone email last_date_of_exposure assigned_user contact_attempts enrolled_id
+                                 notes].exclude?(sort_order)
       error_message = "Unable to sort by specified column in request: '#{sort_order}'"
       raise StandardError, error_message
     end
