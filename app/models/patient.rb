@@ -159,12 +159,12 @@ class Patient < ApplicationRecord
   validates_with PatientDateValidator
   validates_with AssociatedRecordLimitValidator
 
+  # rubocop:disable Rails/HasManyOrHasOneDependent
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
   belongs_to :jurisdiction
 
-  has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'
-
+  has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id', inverse_of: 'responder'
   has_many :assessments
   has_many :laboratories
   has_many :vaccines
@@ -173,7 +173,9 @@ class Patient < ApplicationRecord
   has_many :transfers
   has_many :contact_attempts
   has_many :common_exposure_cohorts
+  # rubocop:enable Rails/HasManyOrHasOneDependent
 
+  around_save :inform_responder, if: :responder_id_changed?
   before_update :set_time_zone, if: proc { |patient|
     patient.monitored_address_state_changed? || patient.address_state_changed?
   }
@@ -182,9 +184,8 @@ class Patient < ApplicationRecord
     self.enrolled_isolation = isolation
   end
 
-  around_save :inform_responder, if: :responder_id_changed?
-  around_destroy :inform_responder
   before_update :handle_update
+  around_destroy :inform_responder
 
   accepts_nested_attributes_for :laboratories, :vaccines, :common_exposure_cohorts
 
@@ -289,8 +290,8 @@ class Patient < ApplicationRecord
         # HoH is unconditionally ineligible if it has paused notifications
         pause_notifications: false
       )
-      .where('dependents_patients.monitoring = ?', true)
-      .where('dependents_patients.purged = ?', false)
+      .where(dependents_patients: { monitoring: true })
+      .where(dependents_patients: { purged: false })
       .where(
         'dependents_patients.isolation = ? '\
         'OR dependents_patients.continuous_exposure = ? '\
@@ -522,7 +523,7 @@ class Patient < ApplicationRecord
       .where(symptom_onset: nil)
       .where.not(latest_assessment_at: nil)
       .where('first_positive_lab_at < ?', 10.days.ago)
-      .where('extended_isolation IS NULL OR extended_isolation < ?', Date.today)
+      .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
   }
 
   # Individuals that meet the symptomatic non test based review requirement (isolation workflow only)
@@ -532,14 +533,14 @@ class Patient < ApplicationRecord
       .where(isolation: true)
       .where('symptom_onset <= ?', 10.days.ago)
       .where(latest_fever_or_fever_reducer_at: nil)
-      .where('extended_isolation IS NULL OR extended_isolation < ?', Date.today)
+      .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(isolation: true)
         .where('symptom_onset <= ?', 10.days.ago)
         .where('latest_fever_or_fever_reducer_at < ?', 24.hours.ago)
-        .where('extended_isolation IS NULL OR extended_isolation < ?', Date.today)
+        .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
       )
   }
 
@@ -551,7 +552,7 @@ class Patient < ApplicationRecord
       .where.not(latest_assessment_at: nil)
       .where(latest_fever_or_fever_reducer_at: nil)
       .where('negative_lab_count >= ?', 2)
-      .where('extended_isolation IS NULL OR extended_isolation < ?', Date.today)
+      .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
       .or(
         where(monitoring: true)
         .where(purged: false)
@@ -559,7 +560,7 @@ class Patient < ApplicationRecord
         .where.not(latest_assessment_at: nil)
         .where('latest_fever_or_fever_reducer_at < ?', 24.hours.ago)
         .where('negative_lab_count >= ?', 2)
-        .where('extended_isolation IS NULL OR extended_isolation < ?', Date.today)
+        .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
       )
   }
 
@@ -666,11 +667,11 @@ class Patient < ApplicationRecord
   scope :enrolled_in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Yesterday'
-      where('patients.created_at >= ? AND patients.created_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.created_at >= ? AND patients.created_at < ?', 1.day.ago.to_date.to_datetime, Time.zone.today.to_datetime)
     when 'Last 7 Days'
-      where('patients.created_at >= ? AND patients.created_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.created_at >= ? AND patients.created_at < ?', 7.days.ago.to_date.to_datetime, Time.zone.today.to_datetime)
     when 'Last 14 Days'
-      where('patients.created_at >= ? AND patients.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.created_at >= ? AND patients.created_at < ?', 14.days.ago.to_date.to_datetime, Time.zone.today.to_datetime)
     when 'Total'
       all
     else
@@ -682,11 +683,11 @@ class Patient < ApplicationRecord
   scope :closed_in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Yesterday'
-      where('patients.closed_at >= ? AND patients.closed_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.closed_at >= ? AND patients.closed_at < ?', 1.day.ago.to_date.to_datetime, Time.zone.today.to_datetime)
     when 'Last 7 Days'
-      where('patients.closed_at >= ? AND patients.closed_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.closed_at >= ? AND patients.closed_at < ?', 7.days.ago.to_date.to_datetime, Time.zone.today.to_datetime)
     when 'Last 14 Days'
-      where('patients.closed_at >= ? AND patients.closed_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.closed_at >= ? AND patients.closed_at < ?', 14.days.ago.to_date.to_datetime, Time.zone.today.to_datetime)
     when 'Total'
       where.not(closed_at: nil)
     else
@@ -698,9 +699,9 @@ class Patient < ApplicationRecord
   scope :exposure_to_isolation_in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Yesterday'
-      where('patients.exposure_to_isolation_at >= ? AND patients.exposure_to_isolation_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.exposure_to_isolation_at >= ? AND patients.exposure_to_isolation_at < ?', 1.day.ago.to_date.to_datetime, Time.zone.today.to_datetime)
     when 'Last 7 Days'
-      where('patients.exposure_to_isolation_at >= ? AND patients.exposure_to_isolation_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.exposure_to_isolation_at >= ? AND patients.exposure_to_isolation_at < ?', 7.days.ago.to_date.to_datetime, Time.zone.today.to_datetime)
     when 'Last 14 Days'
       where('patients.exposure_to_isolation_at >= ?', 14.days.ago.to_date.to_datetime)
     when 'Total'
@@ -714,11 +715,11 @@ class Patient < ApplicationRecord
   scope :isolation_to_exposure_in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Yesterday'
-      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 1.day.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 1.day.ago.to_date.to_datetime, Time.zone.today.to_datetime)
     when 'Last 7 Days'
-      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 7.days.ago.to_date.to_datetime, Time.zone.today.to_datetime)
     when 'Last 14 Days'
-      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
+      where('patients.isolation_to_exposure_at >= ? AND patients.isolation_to_exposure_at < ?', 14.days.ago.to_date.to_datetime, Time.zone.today.to_datetime)
     when 'Total'
       where.not(isolation_to_exposure_at: nil)
     else
@@ -883,7 +884,7 @@ class Patient < ApplicationRecord
 
   # Order individuals based on their public health assigned risk assessment
   def self.order_by_risk(asc: true)
-    order_by = <<~SQL
+    order_by = <<~SQL.squish
       CASE
       WHEN exposure_risk_assessment='High' THEN 0
       WHEN exposure_risk_assessment='Medium' THEN 1
@@ -893,7 +894,7 @@ class Patient < ApplicationRecord
       END
     SQL
 
-    order_by_rev = <<~SQL
+    order_by_rev = <<~SQL.squish
       CASE
       WHEN exposure_risk_assessment IS NULL THEN 4
       WHEN exposure_risk_assessment='High' THEN 3
@@ -907,14 +908,14 @@ class Patient < ApplicationRecord
 
   # Order individuals based if they are or are not flagged for follow-up
   def self.order_by_follow_up_flag(asc: true)
-    order_by = <<~SQL
+    order_by = <<~SQL.squish
       CASE
       WHEN follow_up_reason IS NOT NULL THEN 0
       WHEN follow_up_reason IS NULL THEN 1
       END
     SQL
 
-    order_by_rev = <<~SQL
+    order_by_rev = <<~SQL.squish
       CASE
       WHEN follow_up_reason IS NOT NULL THEN 1
       WHEN follow_up_reason IS NULL THEN 0
@@ -988,7 +989,7 @@ class Patient < ApplicationRecord
   def self.responder_for_number(tel_number)
     return nil if tel_number.nil?
 
-    where('primary_telephone = ?', tel_number)
+    where(primary_telephone: tel_number)
       .where('responder_id = id')
   end
 
@@ -997,7 +998,7 @@ class Patient < ApplicationRecord
   def self.responder_for_email(email)
     return nil if email.nil?
 
-    where('email = ?', email)
+    where(email: email)
       .where('responder_id = id')
   end
 
@@ -1332,7 +1333,7 @@ class Patient < ApplicationRecord
   # Otherwise, return 8am local time the next day.
   def time_to_notify_closed
     patient_local_time = Time.now.getlocal(address_timezone_offset)
-    return patient_local_time if (8..19).include? patient_local_time.hour
+    return patient_local_time if (8..19).cover? patient_local_time.hour
 
     return patient_local_time.change(hour: 8, min: 0) if patient_local_time.hour < 8
 
