@@ -966,13 +966,13 @@ class PatientQueryHelperTest < ActionView::TestCase
     user_2 = create(:public_health_enroller_user)
     user_3 = create(:public_health_enroller_user)
     patient_1 = create(:patient, creator: user_1)
-    patient_1.update_attribute('assigned_user', user_1[:id])
+    patient_1.update(assigned_user: user_1[:id])
     patient_2 = create(:patient, creator: user_1)
-    patient_2.update_attribute('assigned_user', user_1[:id])
+    patient_2.update(assigned_user: user_1[:id])
     patient_3 = create(:patient, creator: user_2)
-    patient_3.update_attribute('assigned_user', user_2[:id])
+    patient_3.update(assigned_user: user_2[:id])
     patient_4 = create(:patient, creator: user_3)
-    patient_4.update_attribute('assigned_user', user_3[:id])
+    patient_4.update(assigned_user: user_3[:id])
 
     patients = Patient.all
 
@@ -984,7 +984,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with assigned user user_1 or user_2 or user_3
     filters = [{ filterOption: {}, additionalFilterOption: nil,
@@ -994,7 +994,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with assigned user user_1 or user_2
     filters = [{ filterOption: {}, additionalFilterOption: nil,
@@ -1003,14 +1003,14 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # No selected assigned user should not filter out any monitorees
     filters = [{ filterOption: {}, additionalFilterOption: nil, value: [] }]
     filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Invalid assigned user should not return any monitorees
     filters = [{ filterOption: {}, additionalFilterOption: nil,
@@ -1018,7 +1018,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = []
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with assigned user user_1 or invalid assigned user
     filters = [{ filterOption: {}, additionalFilterOption: nil,
@@ -1027,7 +1027,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   test 'advanced filter jurisdiction filters by jurisdiction' do
@@ -1054,7 +1054,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with jurisdiction of user_1 or user_2 or user_3
     filters = [{ filterOption: {}, additionalFilterOption: nil,
@@ -1064,7 +1064,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with jurisdiction of user_1 or user_2
     filters = [{ filterOption: {}, additionalFilterOption: nil,
@@ -1073,14 +1073,14 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # No selected jurisdiction should not filter out any monitorees
     filters = [{ filterOption: {}, additionalFilterOption: nil, value: [] }]
     filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Invalid jurisdiction should not return any monitorees
     filters = [{ filterOption: {}, additionalFilterOption: nil,
@@ -1088,7 +1088,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = []
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with jurisdiction of user_2 or invalid jurisdiction
     filters = [{ filterOption: {}, additionalFilterOption: nil,
@@ -1097,7 +1097,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_3]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
   # --- SELECT ADVANCED FILTER QUERIES --- #
@@ -1215,13 +1215,13 @@ class PatientQueryHelperTest < ActionView::TestCase
     user_2 = create(:public_health_enroller_user)
     user_3 = create(:public_health_enroller_user)
     patient_1 = create(:patient, creator: user)
-    patient_1.update_attribute('assigned_user', user_1[:id])
+    patient_1.update(assigned_user: user_1[:id])
     patient_2 = create(:patient, creator: user)
-    patient_2.update_attribute('assigned_user', user_1[:id])
+    patient_2.update(assigned_user: user_1[:id])
     patient_3 = create(:patient, creator: user)
-    patient_3.update_attribute('assigned_user', user_2[:id])
+    patient_3.update(assigned_user: user_2[:id])
     patient_4 = create(:patient, creator: user)
-    patient_4.update_attribute('assigned_user', user_3[:id])
+    patient_4.update(assigned_user: user_3[:id])
 
     params = ActionController::Parameters.new({
                                                 query: {
@@ -1247,14 +1247,14 @@ class PatientQueryHelperTest < ActionView::TestCase
                                               })
     filtered_patients = patients_table_data(params, user)
     filtered_patients_array = [patient_1, patient_2, patient_3]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients[:linelist]&.pluck(:id)
   end
 
   test 'patients table data does not filter when nothing selected in multi-select advanced filter' do
     Patient.destroy_all
     user = create(:public_health_enroller_user)
     patient = create(:patient, creator: user)
-    patient.update_attribute('assigned_user', user[:id])
+    patient.update(assigned_user: user[:id])
 
     params = ActionController::Parameters.new({
                                                 query: {
@@ -1277,7 +1277,7 @@ class PatientQueryHelperTest < ActionView::TestCase
                                               })
     filtered_patients = patients_table_data(params, user)
     filtered_patients_array = [patient]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients[:linelist]&.pluck(:id)
   end
 
   test 'patients table data filters by jurisdiction multi-select advanced filter' do
@@ -1317,7 +1317,7 @@ class PatientQueryHelperTest < ActionView::TestCase
                                               })
     filtered_patients = patients_table_data(params, user_1)
     filtered_patients_array = [patient_1, patient_2]
-    assert_equal filtered_patients_array.map { |p| p[:id] }, filtered_patients[:linelist]&.pluck(:id)
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients[:linelist]&.pluck(:id)
   end
 end
 # rubocop:enable Metrics/ClassLength
