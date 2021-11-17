@@ -494,7 +494,7 @@ class ExposureInformation extends React.Component {
               type="switch"
               id="member_of_a_common_exposure_cohort"
               label="MEMBER OF A COMMON EXPOSURE COHORT"
-              checked={this.state.current.patient.crew_on_passenger_or_cargo_flight || false}
+              checked={this.state.current.patient.member_of_a_common_exposure_cohort || false}
               onChange={this.handleChange}
             />
           </Form.Group>

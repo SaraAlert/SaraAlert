@@ -987,6 +987,8 @@ class ApiControllerTest < ApiControllerTestCase
                        healthcare-personnel-facility-name]
     cohort_fields = %w[member-of-a-common-exposure-cohort]
     exposure_risk_factors_extensions.select { |e| boolean_fields.map { |v| "#{base_path}#{v}" }.include?(e['url']) }.each do |extension|
+      next if !extension.key?('valueBoolean') && extension.dig('extension', 0, 'valueBoolean').nil?
+
       bool_value = extension.key?('valueBoolean') ? extension['valueBoolean'] : extension.dig('extension', 0, 'valueBoolean').present?
       assert_equal(mock_patient.send(extension['url'].remove(base_path).underscore.to_sym), bool_value)
     end
@@ -994,7 +996,9 @@ class ApiControllerTest < ApiControllerTestCase
       assert_equal(mock_patient.send(extension['url'].remove(base_path).underscore.to_sym), extension['valueString'])
     end
     exposure_risk_factors_extensions.select { |e| cohort_fields.map { |v| "#{base_path}#{v}" }.include?(e['url']) }.each do |extension|
-      cohort = extension['extension'].map { |ext| [ext['url'].remove("#{base_path}member-of-a-common-exposure-").underscore.to_sym, ext['valueString']] }.to_h
+      cohort = extension['extension']&.map { |ext| [ext['url'].remove("#{base_path}member-of-a-common-exposure-").underscore.to_sym, ext['valueString']] }.to_h
+      next unless cohort.present?
+
       assert(mock_patient.common_exposure_cohorts.any? { |c| %i[cohort_type cohort_name cohort_location].all? { |field| c[field] == cohort[field] } })
     end
   end

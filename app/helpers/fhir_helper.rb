@@ -1104,7 +1104,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
     # Existing cohorts must be deleted otherwise updates will be additive, there is also no nil? check because cohorts can be deleted
     CommonExposureCohort.where(patient_id: patient.id).destroy_all if patient.id.present?
-    risk_factors[:common_exposure_cohorts_attributes] = { value: common_exposure_cohorts }
+    risk_factors[:common_exposure_cohorts_attributes] = { value: common_exposure_cohorts } if common_exposure_cohorts.present?
 
     risk_factors
   end
