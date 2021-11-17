@@ -17,6 +17,6 @@ module Roles
 
   # Role values that users can be assigned to
   def self.all_assignable_role_values
-    constants.map { |c| const_get(c) if c != :NONE }.compact
+    constants.filter_map { |c| const_get(c) if c != :NONE }
   end
 end

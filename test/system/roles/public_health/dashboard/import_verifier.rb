@@ -39,6 +39,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     monitored_address_city: :address_city,
     monitored_address_state: :address_state
   }.freeze
+  ADDRESS_FIELDS = %i[address_line_1 address_city address_zip address_line_2].freeze
 
   def verify_epi_x_field_validation(jurisdiction, workflow, file_name)
     sheet = get_xlsx(file_name).sheet(0)
@@ -166,7 +167,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
           elsif field == :foreign_address_country
             assert_equal(international_address ? row[index].to_s : '', patient[field].to_s, err_msg)
           # import address to international address if international
-          elsif international_address && %i[address_line_1 address_city address_zip address_line_2].include?(field)
+          elsif international_address && ADDRESS_FIELDS.include?(field)
             assert_equal(row[index].to_s, patient[ImportController::FOREIGN_ADDRESS_MAPPINGS[field]].to_s, err_msg)
           elsif international_address && field == :address_state
             assert_equal(normalize_state_field(row[index].to_s), patient[ImportController::FOREIGN_ADDRESS_MAPPINGS[field]].to_s, err_msg)
