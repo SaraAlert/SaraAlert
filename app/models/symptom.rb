@@ -17,8 +17,8 @@ class Symptom < ApplicationRecord
 
   validates :type, inclusion: valid_types, presence: true
 
-  after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
+  after_save :update_patient_linelist_after_save
 
   scope :fever_or_fever_reducer, lambda {
     where(['(name = ? OR name = ?) AND bool_value = ?', 'fever', 'used-a-fever-reducer', true])
@@ -61,7 +61,7 @@ class Symptom < ApplicationRecord
   private
 
   def update_patient_linelist_after_save
-    patient = Patient.joins(assessments: :reported_condition).where('conditions.id = ?', condition_id).first
+    patient = Patient.joins(assessments: :reported_condition).where(conditions: { id: condition_id }).first
     return unless patient
 
     patient.update(
@@ -72,7 +72,7 @@ class Symptom < ApplicationRecord
   end
 
   def update_patient_linelist_before_destroy
-    patient = Patient.joins(assessments: :reported_condition).where('conditions.id = ?', condition_id).first
+    patient = Patient.joins(assessments: :reported_condition).where(conditions: { id: condition_id }).first
     return unless patient
 
     patient.update(
