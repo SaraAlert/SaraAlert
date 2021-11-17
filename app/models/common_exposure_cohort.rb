@@ -8,6 +8,10 @@ class CommonExposureCohort < ApplicationRecord
                         'Group Home', 'Healthcare Facility', 'Place of Worship', 'School or University', 'Shelter', 'Substance Abuse Treatment Center',
                         'Workplace', 'Other'].freeze
 
+  columns.each do |column|
+    validates column.name.to_sym, length: { maximum: 200 } if column.type == :string
+  end
+
   validates :cohort_type, inclusion: {
     in: VALID_COHORT_TYPES,
     message: "is not an acceptable value, acceptable values are: '#{VALID_COHORT_TYPES.reject(&:blank?).join("', '")}'"

@@ -226,8 +226,8 @@ class PatientsController < ApplicationController
       History.lab_result(patient: patient, created_by: current_user.email, comment: "User edited a lab result (ID: #{laboratory[:id]}).")
     end
 
-    # Update common exposure cohorts if present
-    if common_exposure_cohorts.present?
+    # Update common exposure cohorts if present (need to use nil? check instead of empty?/present? for deletions)
+    unless common_exposure_cohorts.nil?
       original_cohort_ids = patient.common_exposure_cohorts.pluck(:id)
       updated_cohort_ids = common_exposure_cohorts.map { |cohort| cohort[:id] }
       deleted_cohort_ids = original_cohort_ids - updated_cohort_ids

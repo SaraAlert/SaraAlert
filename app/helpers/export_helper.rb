@@ -381,9 +381,9 @@ module ExportHelper # rubocop:todo Metrics/ModuleLength
             patient_details[:cohort_1_location] = patients_cohorts[patient.id].first[:cohort_location] if fields.include?(:cohort_1_location)
           end
           if patients_cohorts[patient.id]&.second&.present?
-            patient_details[:cohort_2_type] = patients_cohorts[patient.id].first[:cohort_type] if fields.include?(:cohort_2_type)
-            patient_details[:cohort_2_name] = patients_cohorts[patient.id].first[:cohort_name] if fields.include?(:cohort_2_name)
-            patient_details[:cohort_2_location] = patients_cohorts[patient.id].first[:cohort_location] if fields.include?(:cohort_2_location)
+            patient_details[:cohort_2_type] = patients_cohorts[patient.id].second[:cohort_type] if fields.include?(:cohort_2_type)
+            patient_details[:cohort_2_name] = patients_cohorts[patient.id].second[:cohort_name] if fields.include?(:cohort_2_name)
+            patient_details[:cohort_2_location] = patients_cohorts[patient.id].second[:cohort_location] if fields.include?(:cohort_2_location)
           end
         end
 

@@ -414,8 +414,8 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     cohort_type: 'Cohort Type',
     cohort_name: 'Cohort Name/Description',
     cohort_location: 'Cohort Location',
-    created_at: 'Close Contact Created Date',
-    updated_at: 'Close Contact Updated Date'
+    created_at: 'Common Exposure Cohort Created Date',
+    updated_at: 'Common Exposure Cohort Updated Date'
   }.freeze
 
   TRANSFER_FIELD_NAMES = {

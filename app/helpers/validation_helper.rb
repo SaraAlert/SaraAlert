@@ -214,7 +214,9 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     # vaccines
     group_name: Vaccine.group_name_options,
     product_name: (Vaccine.group_name_options.map { |group_name| Vaccine.product_name_options(group_name) }).flatten,
-    dose_number: Vaccine::DOSE_OPTIONS
+    dose_number: Vaccine::DOSE_OPTIONS,
+    # common exposure cohorts
+    cohort_type: CommonExposureCohort::VALID_COHORT_TYPES
   }.freeze
 
   VALID_EXPOSURE_ENUMS = {

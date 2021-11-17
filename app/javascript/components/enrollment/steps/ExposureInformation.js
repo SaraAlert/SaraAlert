@@ -489,14 +489,23 @@ class ExposureInformation extends React.Component {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-            <Form.Check
-              className="pt-2 my-auto"
-              type="switch"
-              id="member_of_a_common_exposure_cohort"
-              label="MEMBER OF A COMMON EXPOSURE COHORT"
-              checked={this.state.current.common_exposure_cohorts?.length > 0}
-              disabled={true}
-            />
+            <OverlayTrigger
+              overlay={
+                <Tooltip>
+                  {this.state.current.common_exposure_cohorts?.length > 0 ? 'All cohorts must be deleted to de-toggle' : 'Add a new cohort to toggle on'}
+                </Tooltip>
+              }>
+              <div>
+                <Form.Check
+                  className="pt-2 my-auto"
+                  type="switch"
+                  id="member_of_a_common_exposure_cohort"
+                  label="MEMBER OF A COMMON EXPOSURE COHORT"
+                  checked={this.state.current.common_exposure_cohorts?.length > 0}
+                  disabled
+                />
+              </div>
+            </OverlayTrigger>
           </Form.Group>
         </Form.Row>
         {this.state.current.common_exposure_cohorts?.length > 0 && (
