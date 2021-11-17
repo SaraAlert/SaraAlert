@@ -13,8 +13,12 @@ class CommonExposureCohortsTable extends React.Component {
             <th>Cohort Location</th>
             {this.props.isEditable && (
               <React.Fragment>
-                <th></th>
-                <th></th>
+                <th>
+                  <span hidden>Edit Cohort</span>
+                </th>
+                <th>
+                  <span hidden>Delete Cohort</span>
+                </th>
               </React.Fragment>
             )}
           </tr>

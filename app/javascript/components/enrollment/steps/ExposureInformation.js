@@ -509,7 +509,7 @@ class ExposureInformation extends React.Component {
           </Form.Group>
         </Form.Row>
         {this.state.current.common_exposure_cohorts?.length > 0 && (
-          <div className="common-exposure-cohort-table-wrapper">
+          <div className="enrollment-common-exposure-cohorts-table-wrapper">
             <CommonExposureCohortsTable
               common_exposure_cohorts={this.state.current.common_exposure_cohorts}
               isEditable={true}

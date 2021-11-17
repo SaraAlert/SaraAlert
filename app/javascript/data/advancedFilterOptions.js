@@ -426,8 +426,6 @@ export const advancedFilterOptions = [
         title: 'cohort type',
         type: 'multi',
         options: [
-          '<any>',
-          '',
           'Adult Congregate Living Facility',
           'Child Care Facility',
           'Community Event or Mass Gathering',

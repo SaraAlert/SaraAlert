@@ -265,6 +265,9 @@ namespace :demo do
     }
     data = initialize_static_data.merge(variable_data)
 
+    # Freeze beginning of day outside loop to prevent problems when script is called over midnight
+    beginning_of_today = DateTime.now.beginning_of_day
+
     days.times do |day|
       if created_patients > patient_limit
         puts "Patient limit of #{patient_limit} has been reached!"
@@ -273,7 +276,7 @@ namespace :demo do
 
       # Calculate number of days ago
       data[:days_ago] = days - day
-      data[:beginning_of_day] = data[:beginning_of_day] - data[:days_ago].days
+      data[:beginning_of_day] = beginning_of_today - data[:days_ago].days
 
       # Create the patients for this day
       printf("Simulating day #{day + 1} (#{data[:beginning_of_day].to_date}):\n")

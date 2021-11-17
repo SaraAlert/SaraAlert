@@ -632,7 +632,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       # Get patients where cohort value is any of the cohort values specified in the filter
       case field[:name]
       when 'cohort-type'
-        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_type: value }) unless value&.include?('<any>')
+        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_type: value })
       when 'cohort-name'
         common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_name: value })
       when 'cohort-location'

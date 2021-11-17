@@ -94,12 +94,12 @@ class AdvancedFilter extends React.Component {
             if (nestedFilter.name === 'cohort-type') {
               dynamicallyLoadedOptions['cohort-type'] = nestedFilter.options;
             } else if (nestedFilter.name === 'cohort-name' && response?.data?.cohort_names) {
-              nestedFilter.options = [].concat(response.data.cohort_names).map(option => {
+              nestedFilter.options = response.data.cohort_names.map(option => {
                 return { value: option, label: option };
               });
               dynamicallyLoadedOptions['cohort-name'] = nestedFilter.options;
             } else if (nestedFilter.name === 'cohort-location' && response?.data?.cohort_locations) {
-              nestedFilter.options = [].concat(response.data.cohort_locations).map(option => {
+              nestedFilter.options = response.data.cohort_locations.map(option => {
                 return { value: option, label: option };
               });
               dynamicallyLoadedOptions['cohort-location'] = nestedFilter.options;

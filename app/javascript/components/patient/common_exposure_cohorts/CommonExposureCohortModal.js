@@ -41,14 +41,12 @@ class CommonExposureCohortModal extends React.Component {
           <Modal.Title>{this.props.common_exposure_cohort ? 'Update' : 'Add'} Common Exposure Cohort</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Group>
+          <Form.Group controlId="cohort_type">
             <Form.Label className="input-label">Cohort Type</Form.Label>
             <Form.Control
-              id="cohort_type"
               as="select"
               size="lg"
               className="form-square"
-              aria-label="Cohort Type Select"
               value={this.state.common_exposure_cohort.cohort_type || ''}
               onChange={this.handleChange}>
               {COHORT_TYPES.map((cohort_type, index) => (
@@ -56,16 +54,14 @@ class CommonExposureCohortModal extends React.Component {
               ))}
             </Form.Control>
           </Form.Group>
-          <Form.Group>
+          <Form.Group controlId="cohort_name">
             <Form.Label className="input-label">Cohort Name/Description</Form.Label>
             <Form.Control
-              id="cohort_name"
               as="input"
               list="cohort_names"
               autoComplete="off"
               size="lg"
               className="form-square"
-              aria-label="Cohort Name"
               onChange={this.handleChange}
               value={this.state.common_exposure_cohort.cohort_name || ''}
             />
@@ -79,16 +75,14 @@ class CommonExposureCohortModal extends React.Component {
               })}
             </datalist>
           </Form.Group>
-          <Form.Group>
+          <Form.Group controlId="cohort_location">
             <Form.Label className="input-label">Cohort Location</Form.Label>
             <Form.Control
-              id="cohort_location"
               as="input"
               list="cohort_locations"
               autoComplete="off"
               size="lg"
               className="form-square"
-              aria-label="Cohort Location"
               onChange={this.handleChange}
               value={this.state.common_exposure_cohort.cohort_location || ''}
             />
