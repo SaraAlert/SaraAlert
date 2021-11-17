@@ -989,7 +989,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       to_risk_factor_subextension('healthcare-personnel', 'healthcare-personnel-facility-name', patient.healthcare_personnel,
                                   patient.healthcare_personnel_facility_name),
       to_bool_extension(patient.travel_to_affected_country_or_area || false, 'travel-from-affected-country-or-area'),
-      to_bool_extension(patient.crew_on_passenger_or_cargo_flight || false, 'crew-on-passenger-or-cargo-flight')
+      to_bool_extension(patient.crew_on_passenger_or_cargo_flight || false, 'crew-on-passenger-or-cargo-flight'),
+      to_bool_extension(patient.member_of_a_common_exposure_cohort || false, 'member-of-a-common-exposure-cohort')
     ]
 
     subextensions.concat(to_common_exposure_cohort_subextension(patient.common_exposure_cohorts))
@@ -1053,7 +1054,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     risk_factors =
       {
         travel_to_affected_country_or_area: from_bool_extension_false_default(ext, "Patient.extension[#{ext_idx}]", 'travel-from-affected-country-or-area'),
-        crew_on_passenger_or_cargo_flight: from_bool_extension_false_default(ext, "Patient.extension[#{ext_idx}]", 'crew-on-passenger-or-cargo-flight')
+        crew_on_passenger_or_cargo_flight: from_bool_extension_false_default(ext, "Patient.extension[#{ext_idx}]", 'crew-on-passenger-or-cargo-flight'),
+        member_of_a_common_exposure_cohort: from_bool_extension_false_default(ext, "Patient.extension[#{ext_idx}]", 'member-of-a-common-exposure-cohort')
+
       }
     common_exposure_cohorts = []
     ext.extension&.each_with_index do |sub_ext, sub_ext_idx|
@@ -1090,7 +1093,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
           cohort_field_value = from_string_extension(sub_ext, base_path, "member-of-a-common-exposure-#{cohort_field.to_s.dasherize}")
           common_exposure_cohort[cohort_field] = cohort_field_value[:value] if cohort_field_value[:value].present?
         end
-        common_exposure_cohorts << common_exposure_cohort
+        # Common Exposure Cohort will be empty if this is just the boolean field
+        common_exposure_cohorts << common_exposure_cohort unless common_exposure_cohort.empty?
       end
 
       next if sub_ext_risk_factors.nil?

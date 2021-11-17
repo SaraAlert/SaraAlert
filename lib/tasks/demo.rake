@@ -554,6 +554,7 @@ namespace :demo do
     if patient[:contact_of_known_case] && rand < 0.9
       patient[:contact_of_known_case_id] = data[:known_case_ids][patient[:jurisdiction_id]].sample(rand(1..3)).join(', ')
     end
+    patient[:member_of_a_common_exposure_cohort] = rand < 0.35
     patient[:travel_to_affected_country_or_area] = rand < 0.1
     patient[:laboratory_personnel] = rand < 0.25
     patient[:laboratory_personnel_facility_name] = Faker::Company.name if patient[:laboratory_personnel] && rand < 0.5

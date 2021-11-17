@@ -25,8 +25,8 @@ Rails.application.config.filter_parameters += %i[password first_name middle_name
                                                  date_of_arrival additional_planned_travel_start_date
                                                  additional_planned_travel_end_date
                                                  additional_planned_travel_related_notes last_date_of_exposure
-                                                 potential_exposure_location potential_exposure_country
-                                                 contact_of_known_case exposure_risk_assessment
+                                                 potential_exposure_location potential_exposure_country exposure_risk_assessment
+                                                 contact_of_known_case member_of_a_common_exposure_cohort
                                                  travel_to_affected_country_or_area laboratory_personnel
                                                  laboratory_personnel_facility_name healthcare_personnel
                                                  healthcare_personnel_facility_name crew_on_passenger_or_cargo_flight

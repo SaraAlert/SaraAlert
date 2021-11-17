@@ -103,6 +103,7 @@ monitoree_2:
     healthcare_personnel: true
     healthcare_personnel_facility_name: 'HP Facility Name'
     crew_on_passenger_or_cargo_flight: true
+    member_of_a_common_exposure_cohort: true
     contact_of_known_case: true
     exposure_risk_assessment: 'Medium'
     monitoring_plan: 'Self-monitoring with delegated supervision'

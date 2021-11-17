@@ -370,6 +370,7 @@ patient_12:
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: true
   healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: false
   laboratory_personnel: true
   public_health_action: 'Recommended laboratory testing'
@@ -393,6 +394,7 @@ patient_13:
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: true
   healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: false
   public_health_action: 'Recommended laboratory testing'
@@ -416,6 +418,7 @@ patient_14:
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: false
   healthcare_personnel: true
+  member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: false
   laboratory_personnel: false
   public_health_action: 'Recommended medical evaluation of symptoms'
@@ -439,6 +442,7 @@ patient_15:
   travel_to_affected_country_or_area: false
   was_in_health_care_facility_with_known_cases: true
   healthcare_personnel: false
+  member_of_a_common_exposure_cohort: true
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: false
   public_health_action: 'Recommended medical evaluation of symptoms'
@@ -463,6 +467,7 @@ patient_16:
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: false
   healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: false
   public_health_action: 'Document results of medical evaluation'
@@ -486,6 +491,7 @@ patient_17:
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: false
   healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: false
   public_health_action: 'Recommended medical evaluation of symptoms'
@@ -510,6 +516,7 @@ patient_18:
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: true
   healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: true
   public_health_action: 'Document results of medical evaluation'
@@ -532,6 +539,7 @@ patient_19:
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: false
   healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: false
   laboratory_personnel: true
   public_health_action: 'Recommended medical evaluation of symptoms'
@@ -554,6 +562,7 @@ patient_20:
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: true
   healthcare_personnel: false
+  member_of_a_common_exposure_cohort: true
   crew_on_passenger_or_cargo_flight: false
   laboratory_personnel: false
   public_health_action: 'Recommended medical evaluation of symptoms'

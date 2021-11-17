@@ -243,23 +243,13 @@ class CacheAnalyticsJob < ApplicationJob
   def self.monitoree_counts_by_risk_factor(analytic_id, monitorees)
     counts = []
     RISK_FACTORS.each do |risk_factor, label|
-      if risk_factor == :member_of_a_common_exposure_cohort
-        monitorees.monitoring_open
-                  .where_assoc_exists(:common_exposure_cohorts)
-                  .group(:isolation)
-                  .size
-                  .map do |isolation, total|
-                    counts.append(monitoree_count(analytic_id, true, 'Risk Factor', label, total, isolation ? 'Isolation' : 'Exposure'))
-                  end
-      else
-        monitorees.monitoring_open
-                  .where(risk_factor => true)
-                  .group(risk_factor, :isolation)
-                  .size
-                  .map do |(_, isolation), total|
-                    counts.append(monitoree_count(analytic_id, true, 'Risk Factor', label, total, isolation ? 'Isolation' : 'Exposure'))
-                  end
-      end
+      monitorees.monitoring_open
+                .where(risk_factor => true)
+                .group(risk_factor, :isolation)
+                .size
+                .map do |(_, isolation), total|
+                  counts.append(monitoree_count(analytic_id, true, 'Risk Factor', label, total, isolation ? 'Isolation' : 'Exposure'))
+                end
     end
     counts
   end

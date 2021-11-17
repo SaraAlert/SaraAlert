@@ -960,6 +960,7 @@ class ApiControllerTest < ApiControllerTestCase
                                    was_in_health_care_facility_with_known_cases_facility_name: 'hospital',
                                    laboratory_personnel: true, laboratory_personnel_facility_name: 'lab',
                                    healthcare_personnel: false, healthcare_personnel_facility_name: 'facility',
+                                   member_of_a_common_exposure_cohort: true,
                                    travel_to_affected_country_or_area: false,
                                    crew_on_passenger_or_cargo_flight: true,
                                    common_exposure_cohorts_attributes: [
@@ -981,7 +982,7 @@ class ApiControllerTest < ApiControllerTestCase
     # risk factors are inserted as a collection of other basic extensions
     exposure_risk_factors_extensions = body['extension'].detect { |e| e['url'].eql?("#{base_path}exposure-risk-factors") } ['extension']
     boolean_fields = %w[contact-of-known-case was-in-healthcare-facility-with-known-case laboratory-personnel healthcare-personnel
-                        travel-to-affected-country-or-area crew-on-passenger-or-cargo-flight]
+                        member-of-a-common-exposure-cohort travel-to-affected-country-or-area crew-on-passenger-or-cargo-flight]
     string_fields = %w[contact-of-known-case-id was-in-health-care-facility-with-known-cases-facility-name laboratory-personnel-facility-name
                        healthcare-personnel-facility-name]
     cohort_fields = %w[member-of-a-common-exposure-cohort]

@@ -13,7 +13,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   TELEPHONE_FIELDS = %i[primary_telephone secondary_telephone alternate_primary_telephone alternate_secondary_telephone].freeze
   BOOL_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander race_other race_unknown
                    race_refused_to_answer interpretation_required contact_of_known_case travel_to_affected_country_or_area
-                   was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight].freeze
+                   was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight
+                   member_of_a_common_exposure_cohort].freeze
   STATE_FIELDS = %i[address_state foreign_monitored_address_state additional_planned_travel_destination_state].freeze
   MONITORED_ADDRESS_FIELDS = %i[monitored_address_line_1 monitored_address_city monitored_address_state monitored_address_line_2 monitored_address_zip].freeze
   # TODO: when workflow specific case status validation re-enabled: take out 'case_status'
@@ -25,7 +26,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   RISK_FACTOR_FIELDS = %i[contact_of_known_case was_in_health_care_facility_with_known_cases].freeze
   # TODO: when workflow specific case status validation re-enabled: uncomment
   # WORKFLOW_SPECIFIC_FIELDS = %i[case_status].freeze
-  NON_IMPORTED_PATIENT_FIELDS = %i[full_status member_of_a_common_exposure_cohort
+  NON_IMPORTED_PATIENT_FIELDS = %i[full_status
                                    lab_1_type lab_1_specimen_collection lab_1_report lab_1_result
                                    lab_2_type lab_2_specimen_collection lab_2_report lab_2_result
                                    vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number vaccine_1_notes

@@ -140,6 +140,7 @@ class Patient extends React.Component {
       this.props.details.additional_planned_travel_end_date;
     const showRiskFactors =
       this.props.details.contact_of_known_case ||
+      this.props.details.member_of_a_common_exposure_cohort ||
       this.props.details.travel_to_affected_country_or_area ||
       this.props.details.was_in_health_care_facility_with_known_cases ||
       this.props.details.laboratory_personnel ||
@@ -713,12 +714,14 @@ class Patient extends React.Component {
                         <span className="risk-factor">Crew on Passenger or Cargo Flight</span>
                       </li>
                     )}
-                    {this.props.details.common_exposure_cohorts?.length > 0 && (
+                    {(this.props.details.member_of_a_common_exposure_cohort || this.props.details.common_exposure_cohorts?.length > 0) && (
                       <li>
                         <span className="risk-factor">Member of a Common Exposure Cohort</span>
-                        <div className="common-exposure-cohorts-table-wrapper">
-                          <CommonExposureCohortsTable common_exposure_cohorts={this.props.details.common_exposure_cohorts} size="sm" isEditable={false} />
-                        </div>
+                        {this.props.details.common_exposure_cohorts?.length > 0 && (
+                          <div className="common-exposure-cohorts-table-wrapper">
+                            <CommonExposureCohortsTable common_exposure_cohorts={this.props.details.common_exposure_cohorts} size="sm" isEditable={false} />
+                          </div>
+                        )}
                       </li>
                     )}
                   </ul>

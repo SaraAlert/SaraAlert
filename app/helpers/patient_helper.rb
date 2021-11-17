@@ -172,6 +172,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       :healthcare_personnel_facility_name,
       :exposure_notes,
       :crew_on_passenger_or_cargo_flight,
+      :member_of_a_common_exposure_cohort,
       :monitoring_plan,
       :exposure_risk_assessment,
       :isolation,
@@ -275,6 +276,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       healthcare_personnel_facility_name
       exposure_notes
       crew_on_passenger_or_cargo_flight
+      member_of_a_common_exposure_cohort
       isolation
       jurisdiction_id
       assigned_user

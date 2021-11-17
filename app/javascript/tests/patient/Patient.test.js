@@ -37,6 +37,7 @@ const plannedTravelLabels = ['Type', 'Place', 'Port of Departure', 'Start Date',
 const plannedTravelFields = ['additional_planned_travel_type', ['additional_planned_travel_destination_country', 'additional_planned_travel_destination_state'], 'additional_planned_travel_port_of_departure', 'additional_planned_travel_start_date', 'additional_planned_travel_end_date'];
 const riskFactors = [
   { key: 'Close Contact with a Known Case', val: mockPatient2.contact_of_known_case_id },
+  { key: 'Member of a Common Exposure Cohort', val: mockPatient2.member_of_a_common_exposure_cohort_type },
   { key: 'Travel from Affected Country or Area', val: null },
   { key: 'Was in Healthcare Facility with Known Cases', val: mockPatient2.was_in_health_care_facility_with_known_cases_facility_name },
   { key: 'Laboratory Personnel', val: mockPatient2.laboratory_personnel_facility_name },

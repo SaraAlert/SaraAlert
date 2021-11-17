@@ -8,14 +8,13 @@ class CommonExposureCohort < ApplicationRecord
                         'Group Home', 'Healthcare Facility', 'Place of Worship', 'School or University', 'Shelter', 'Substance Abuse Treatment Center',
                         'Workplace', 'Other'].freeze
 
-  columns.each do |column|
-    validates column.name.to_sym, length: { maximum: 200 } if column.type == :string
-  end
-
-  validates :cohort_type, inclusion: {
+  validates :cohort_type, length: { maximum: 200 }, inclusion: {
     in: VALID_COHORT_TYPES,
     message: "is not an acceptable value, acceptable values are: '#{VALID_COHORT_TYPES.reject(&:blank?).join("', '")}'"
   }
+
+  validates :cohort_name, length: { maximum: 200 }
+  validates :cohort_location, length: { maximum: 200 }
 
   validate :validate_cohort_fields_present?
 
