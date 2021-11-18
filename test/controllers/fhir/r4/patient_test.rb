@@ -20,6 +20,8 @@ class ApiControllerTest < ApiControllerTestCase
   test 'should get patient via show' do
     patient_id = 1
     patient = Patient.find_by(id: patient_id)
+    patient.alternate_preferred_contact_method = 'Telephone call'
+    patient.alternate_contact_type = 'Caregiver'
     resource_path = "/fhir/r4/Patient/#{patient_id}"
     get(
       resource_path,
@@ -29,7 +31,7 @@ class ApiControllerTest < ApiControllerTestCase
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['id']
     assert_equal 'Patient', json_response['resourceType']
-    assert_equal 4, json_response['telecom'].count
+    assert_equal 6, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert_equal 'Telephone call', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-method' }['valueString']
     assert_equal 'Morning', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-time' }['valueString']
@@ -55,6 +57,8 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
     assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
     assert_equal patient.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
+    assert_equal patient.alternate_preferred_contact_method, fhir_ext_str(json_response, 'alternate-preferred-contact-method')
+    assert_equal patient.alternate_contact_type, fhir_ext_str(json_response, 'alternate-contact-type')
   end
 
   test 'should get patient via show using _format parameter' do
@@ -187,6 +191,8 @@ class ApiControllerTest < ApiControllerTestCase
   #----- create tests -----
   test 'SYSTEM FLOW: should create Patient via create' do
     patient = Patient.find_by(id: 1)
+    patient.alternate_preferred_contact_method = 'Telephone call'
+    patient.alternate_contact_type = 'Caregiver'
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
@@ -201,7 +207,7 @@ class ApiControllerTest < ApiControllerTestCase
     assert_not h.first.nil?
     assert_equal 1, h.count
     assert_equal 'Patient', json_response['resourceType']
-    assert_equal 4, json_response['telecom'].count
+    assert_equal 6, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
     assert_equal 'USA, State 1',
@@ -225,10 +231,14 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
     assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
     assert_equal patient.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
+    assert_equal patient.alternate_preferred_contact_method, fhir_ext_str(json_response, 'alternate-preferred-contact-method')
+    assert_equal patient.alternate_contact_type, fhir_ext_str(json_response, 'alternate-contact-type')
   end
 
   test 'USER FLOW: should create Patient via create' do
     patient = Patient.find_by(id: 1)
+    patient.alternate_preferred_contact_method = 'Telephone call'
+    patient.alternate_contact_type = 'Caregiver'
     post(
       '/fhir/r4/Patient', params: @patient_1.to_json,
                           headers: { Authorization: "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
@@ -243,7 +253,7 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal 1, h.count
     assert_equal 'state1_epi@example.com (API)', h.first.created_by
     assert_equal 'Patient', json_response['resourceType']
-    assert_equal 4, json_response['telecom'].count
+    assert_equal 6, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
     assert_equal 'USA, State 1',
@@ -266,6 +276,8 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
     assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
     assert_equal patient.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
+    assert_equal patient.alternate_preferred_contact_method, fhir_ext_str(json_response, 'alternate-preferred-contact-method')
+    assert_equal patient.alternate_contact_type, fhir_ext_str(json_response, 'alternate-contact-type')
   end
 
   test 'should calculate Patient age via create' do

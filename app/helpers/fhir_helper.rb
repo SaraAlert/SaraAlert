@@ -270,6 +270,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       contact_name: from_string_extension(patient, 'Patient', 'contact-name'),
       alternate_contact_type: from_string_extension(patient, 'Patient', 'alternate-contact-type'),
       alternate_contact_name: from_string_extension(patient, 'Patient', 'alternate-contact-name'),
+      alternate_preferred_contact_method: from_string_extension(patient, 'Patient', 'alternate-preferred-contact-method'),
       **from_exposure_risk_factors_extension(patient),
       **from_report_source_extension(patient)
     }
@@ -881,20 +882,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def from_telecom(telecom)
-    contact = {
-      email: { value: nil, path: '' },
-      primary_telephone: { value: nil, path: '' },
-      secondary_telephone: { value: nil, path: '' },
-      primary_telephone_type: { value: nil, path: '' },
-      secondary_telephone_type: { value: nil, path: '' },
-      international_telephone: { value: nil, path: '' },
-      alternate_email: { value: nil, path: '' },
-      alternate_primary_telephone: { value: nil, path: '' },
-      alternate_secondary_telephone: { value: nil, path: '' },
-      alternate_primary_telephone_type: { value: nil, path: '' },
-      alternate_secondary_telephone_type: { value: nil, path: '' },
-      alternate_international_telephone: { value: nil, path: '' }
-    }
+    contact = %i[email primary_telephone secondary_telephone primary_telephone_type secondary_telephone_type international_telephone alternate_email
+                 alternate_primary_telephone alternate_secondary_telephone alternate_primary_telephone_type alternate_secondary_telephone_type
+                 alternate_international_telephone].map { |field| [field, { value: nil, path: '' }] }.to_h
     int_phone_extension = to_bool_extension(true, 'international-telephone')
     alt_extension = to_bool_extension(true, 'alternate-contact')
 
