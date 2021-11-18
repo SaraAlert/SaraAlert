@@ -100,6 +100,24 @@ class ExposureInformation extends React.Component {
     );
   };
 
+  handleRiskFactorChange = event => {
+    let field = event.target.id;
+    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    let toggleField = field.replace('_id', '').replace('_facility_name', '');
+    let toggleValue = value?.length > 0 ? true : this.state.current.patient[toggleField];
+    let current = this.state.current;
+    let modified = this.state.modified;
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [field]: value, [toggleField]: toggleValue } },
+        modified: { ...modified, patient: { ...modified.patient, [field]: value, [toggleField]: toggleValue } },
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
+  };
+
   handlePublicHealthManagementChange = (value, field) => {
     let current = this.state.current;
     let modified = this.state.modified;
@@ -126,6 +144,58 @@ class ExposureInformation extends React.Component {
         this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
+  };
+
+  handleCohortChange = (common_exposure_cohort, common_exposure_cohort_index) => {
+    const current = this.state.current;
+    const modified = this.state.modified;
+    let common_exposure_cohorts = this.state.current.common_exposure_cohorts;
+    // Need to compare with undefined because index value of 0 evaluates to false
+    if (common_exposure_cohort_index === undefined) {
+      // Add new cohort to table
+      common_exposure_cohorts = common_exposure_cohorts ? common_exposure_cohorts.concat([common_exposure_cohort]) : [common_exposure_cohort];
+    } else {
+      // Update existing cohort from table
+      common_exposure_cohorts[`${common_exposure_cohort_index}`] = common_exposure_cohort;
+    }
+    const toggle = common_exposure_cohorts?.length > 0 ? true : this.state.current.patient.member_of_a_common_exposure_cohort;
+
+    // TODO: prevent adding duplicate cohorts
+    this.setState(
+      {
+        current: { ...current, common_exposure_cohorts, patient: { ...current.patient, member_of_a_common_exposure_cohort: toggle } },
+        modified: { ...modified, common_exposure_cohorts, patient: { ...current.patient, member_of_a_common_exposure_cohort: toggle } },
+        showCommonExposureCohortModal: false,
+        common_exposure_cohort: null,
+        common_exposure_cohort_index: null,
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
+  };
+
+  handleCohortDelete = async index => {
+    const self = this;
+    if (await confirmDialog('Are you sure you want to delete this common exposure cohort for this monitoree?', { title: 'Delete Common Exposure Cohort' })) {
+      self.setState(
+        state => {
+          const common_exposure_cohorts = state.current.common_exposure_cohorts;
+          common_exposure_cohorts.splice(index, 1);
+          return {
+            current: { ...state.current, common_exposure_cohorts },
+            modified: { ...state.modified, common_exposure_cohorts },
+          };
+        },
+        () => {
+          self.props.setEnrollmentState({ ...this.state.modified });
+        }
+      );
+    }
+  };
+
+  toggleCommonExposureCohortModal = (showCommonExposureCohortModal, common_exposure_cohort, common_exposure_cohort_index) => {
+    this.setState({ showCommonExposureCohortModal, common_exposure_cohort, common_exposure_cohort_index });
   };
 
   updateStaticValidations = () => {
@@ -220,56 +290,6 @@ class ExposureInformation extends React.Component {
           self.setState({ errors: issues });
         }
       });
-  };
-
-  handleCohortChange = (common_exposure_cohort, common_exposure_cohort_index) => {
-    // TODO: prevent adding duplicate cohorts
-    this.setState(
-      state => {
-        let common_exposure_cohorts = state.current.common_exposure_cohorts;
-        // Need to compare with undefined because index value of 0 evaluates to false
-        if (common_exposure_cohort_index === undefined) {
-          // Add new cohort to table
-          common_exposure_cohorts = common_exposure_cohorts ? common_exposure_cohorts.concat([common_exposure_cohort]) : [common_exposure_cohort];
-        } else {
-          // Update existing cohort from table
-          common_exposure_cohorts[`${common_exposure_cohort_index}`] = common_exposure_cohort;
-        }
-        return {
-          current: { ...state.current, common_exposure_cohorts },
-          modified: { ...state.modified, common_exposure_cohorts },
-          showCommonExposureCohortModal: false,
-          common_exposure_cohort: null,
-          common_exposure_cohort_index: null,
-        };
-      },
-      () => {
-        this.props.setEnrollmentState({ ...this.state.modified });
-      }
-    );
-  };
-
-  handleCohortDelete = async index => {
-    const self = this;
-    if (await confirmDialog('Are you sure you want to delete this common exposure cohort for this monitoree?', { title: 'Delete Common Exposure Cohort' })) {
-      self.setState(
-        state => {
-          const common_exposure_cohorts = state.current.common_exposure_cohorts;
-          common_exposure_cohorts.splice(index, 1);
-          return {
-            current: { ...state.current, common_exposure_cohorts },
-            modified: { ...state.modified, common_exposure_cohorts },
-          };
-        },
-        () => {
-          self.props.setEnrollmentState({ ...this.state.modified });
-        }
-      );
-    }
-  };
-
-  toggleCommonExposureCohortModal = (showCommonExposureCohortModal, common_exposure_cohort, common_exposure_cohort_index) => {
-    this.setState({ showCommonExposureCohortModal, common_exposure_cohort, common_exposure_cohort_index });
   };
 
   renderExposureFields = () => {
@@ -368,6 +388,7 @@ class ExposureInformation extends React.Component {
               id="contact_of_known_case"
               label="CLOSE CONTACT WITH A KNOWN CASE"
               checked={this.state.current.patient.contact_of_known_case || false}
+              disabled={this.state.current.patient.contact_of_known_case_id?.length > 0}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -378,7 +399,7 @@ class ExposureInformation extends React.Component {
               id="contact_of_known_case_id"
               placeholder="enter case ID"
               value={this.state.current.patient.contact_of_known_case_id || ''}
-              onChange={this.handleChange}
+              onChange={this.handleRiskFactorChange}
               aria-label="Enter Case Id"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
@@ -406,6 +427,7 @@ class ExposureInformation extends React.Component {
               id="was_in_health_care_facility_with_known_cases"
               label="WAS IN HEALTHCARE FACILITY WITH KNOWN CASES"
               checked={this.state.current.patient.was_in_health_care_facility_with_known_cases || false}
+              disabled={this.state.current.patient.was_in_health_care_facility_with_known_cases_facility_name?.length > 0}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -416,7 +438,7 @@ class ExposureInformation extends React.Component {
               id="was_in_health_care_facility_with_known_cases_facility_name"
               placeholder="enter facility name"
               value={this.state.current.patient.was_in_health_care_facility_with_known_cases_facility_name || ''}
-              onChange={this.handleChange}
+              onChange={this.handleRiskFactorChange}
               aria-label="Enter Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
@@ -432,6 +454,7 @@ class ExposureInformation extends React.Component {
               id="laboratory_personnel"
               label="LABORATORY PERSONNEL"
               checked={this.state.current.patient.laboratory_personnel || false}
+              disabled={this.state.current.patient.laboratory_personnel_facility_name?.length > 0}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -442,7 +465,7 @@ class ExposureInformation extends React.Component {
               id="laboratory_personnel_facility_name"
               placeholder="enter facility name"
               value={this.state.current.patient.laboratory_personnel_facility_name || ''}
-              onChange={this.handleChange}
+              onChange={this.handleRiskFactorChange}
               aria-label="Enter Laboratory Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
@@ -458,6 +481,7 @@ class ExposureInformation extends React.Component {
               id="healthcare_personnel"
               label="HEALTHCARE PERSONNEL"
               checked={this.state.current.patient.healthcare_personnel || false}
+              disabled={this.state.current.patient.healthcare_personnel_facility_name?.length > 0}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -468,7 +492,7 @@ class ExposureInformation extends React.Component {
               id="healthcare_personnel_facility_name"
               placeholder="enter facility name"
               value={this.state.current.patient.healthcare_personnel_facility_name || ''}
-              onChange={this.handleChange}
+              onChange={this.handleRiskFactorChange}
               aria-label="Enter Healthcare Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
@@ -496,6 +520,7 @@ class ExposureInformation extends React.Component {
               id="member_of_a_common_exposure_cohort"
               label="MEMBER OF A COMMON EXPOSURE COHORT"
               checked={this.state.current.patient.member_of_a_common_exposure_cohort || false}
+              disabled={this.state.current.common_exposure_cohorts?.length > 0}
               onChange={this.handleChange}
             />
           </Form.Group>
