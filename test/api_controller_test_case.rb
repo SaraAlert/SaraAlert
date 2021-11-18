@@ -283,7 +283,12 @@ class ApiControllerTestCase < ActionDispatch::IntegrationTest
       travel_related_notes: 'travel notes',
       additional_planned_travel_related_notes: 'additional travel notes',
       follow_up_reason: 'Duplicate',
-      follow_up_note: 'This is a follow up note.'
+      follow_up_note: 'This is a follow up note.',
+      alternate_preferred_contact_method: "Telephone call",
+      alternate_contact_type: "Caregiver",
+      alternate_email: "test@test.com",
+      alternate_primary_telephone: "+15555555555",
+      alternate_primary_telephone_type: "Smartphone"
     )
     @patient_1 = Patient.find_by(id: 1).as_fhir
 
