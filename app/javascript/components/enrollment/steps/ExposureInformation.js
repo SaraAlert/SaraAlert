@@ -36,7 +36,7 @@ class ExposureInformation extends React.Component {
       .post(window.BASE_PATH + '/jurisdictions/common_exposure_cohorts', {
         query: {
           jurisdiction: this.props.currentState.patient.jurisdiction_id,
-          scope: 'exact',
+          scope: 'all',
         },
       })
       .catch(() => {})
@@ -104,7 +104,7 @@ class ExposureInformation extends React.Component {
     let field = event.target.id;
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let toggleField = field.replace('_id', '').replace('_facility_name', '');
-    let toggleValue = value?.length > 0 ? true : this.state.current.patient[toggleField];
+    let toggleValue = value?.length > 0 ? true : this.state.current.patient[String(toggleField)];
     let current = this.state.current;
     let modified = this.state.modified;
     this.setState(

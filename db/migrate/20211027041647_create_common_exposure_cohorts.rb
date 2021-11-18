@@ -21,19 +21,19 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
       {
         name: 'cohort-type',
         title: 'cohort type',
-        type: 'select',
+        type: 'multi',
         options: CommonExposureCohort::VALID_COHORT_TYPES.reject(&:nil?)
       },
       {
         name: 'cohort-name',
         title: 'cohort name/description',
-        type: 'select',
+        type: 'multi',
         options: []
       },
       {
         name: 'cohort-location',
         title: 'cohort location',
-        type: 'select',
+        type: 'multi',
         options: []
       }
     ]
@@ -54,8 +54,11 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
 
     begin
       ActiveRecord::Base.transaction do
+        # Auto populate boolean risk factors (this cannot be reversed)
+        autopopulate_boolean_risk_factors
+
         # Create common exposure cohorts based on old field
-        Patient.where.not(member_of_a_common_exposure_cohort_type: [nil, '']).in_batches(of: PATIENT_BATCH_SIZE).each do |batch_group|
+        Patient.where(purged: false).where.not(member_of_a_common_exposure_cohort_type: [nil, '']).in_batches(of: PATIENT_BATCH_SIZE).each do |batch_group|
           common_exposure_cohorts = []
           batch_group.pluck(:id, :member_of_a_common_exposure_cohort_type, :created_at).each do |(patient_id, cohort_name, created_at)|
             common_exposure_cohorts << CommonExposureCohort.new(
@@ -129,7 +132,7 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
     begin
       ActiveRecord::Base.transaction do
         # Update old field with common exposure cohorts
-        Patient.where_assoc_exists(:common_exposure_cohorts).in_batches(of: PATIENT_BATCH_SIZE).each do |batch_group|
+        Patient.where(purged: false).where_assoc_exists(:common_exposure_cohorts).in_batches(of: PATIENT_BATCH_SIZE).each do |batch_group|
           updates = {}
           CommonExposureCohort.where(patient_id: batch_group.pluck(:id)).order(:updated_at).each do |common_exposure_cohort|
             updates[common_exposure_cohort[:patient_id]] = {
@@ -188,6 +191,38 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
     ensure
       ActiveRecord::Base.record_timestamps = true
     end
+  end
+
+  def autopopulate_boolean_risk_factors
+    execute <<-SQL.squish
+      UPDATE patients
+      SET contact_of_known_case = true
+      WHERE purged = false AND contact_of_known_case_id IS NOT NULL
+    SQL
+
+    execute <<-SQL.squish
+      UPDATE patients
+      SET was_in_health_care_facility_with_known_cases = true
+      WHERE purged = false AND was_in_health_care_facility_with_known_cases_facility_name IS NOT NULL
+    SQL
+
+    execute <<-SQL.squish
+      UPDATE patients
+      SET laboratory_personnel = true
+      WHERE purged = false AND laboratory_personnel_facility_name IS NOT NULL
+    SQL
+
+    execute <<-SQL.squish
+      UPDATE patients
+      SET healthcare_personnel = true
+      WHERE purged = false AND healthcare_personnel_facility_name IS NOT NULL
+    SQL
+
+    execute <<-SQL.squish
+      UPDATE patients
+      SET member_of_a_common_exposure_cohort = true
+      WHERE purged = false AND member_of_a_common_exposure_cohort_type IS NOT NULL
+    SQL
   end
 
   def migrate_advanced_filter_contents(contents)
