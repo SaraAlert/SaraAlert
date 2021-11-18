@@ -35,7 +35,7 @@ class ExposureInformation extends React.Component {
     axios
       .post(window.BASE_PATH + '/jurisdictions/common_exposure_cohorts', {
         query: {
-          jurisdiction: this.props.currentState.patient.jurisdiction_id,
+          jurisdiction: this.props.current_user.jurisdiction_id,
           scope: 'all',
         },
       })
@@ -670,6 +670,7 @@ ExposureInformation.propTypes = {
   assigned_users: PropTypes.array,
   showPreviousButton: PropTypes.bool,
   authenticity_token: PropTypes.string,
+  current_user: PropTypes.object,
 };
 
 export default ExposureInformation;

@@ -308,6 +308,7 @@ class Enrollment extends React.Component {
               assigned_users={this.props.assigned_users}
               showPreviousButton={!this.props.edit_mode && !this.state.review_mode}
               authenticity_token={this.props.authenticity_token}
+              current_user={this.props.current_user}
             />
           </Carousel.Item>
           {this.state.enrollmentState.patient.isolation && (
