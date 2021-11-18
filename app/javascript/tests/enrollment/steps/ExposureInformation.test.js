@@ -23,7 +23,7 @@ function getShallowWrapper(patient, showBtn) {
     propagatedFields: {},
     common_exposure_cohorts: [mockCommonExposureCohort1, mockCommonExposureCohort2],
   };
-  return shallow(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} authenticity_token={'123'} />);
+  return shallow(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} authenticity_token={'123'} current_user={{ jurisdiction_id: patient.jurisdiction_id }} />);
 }
 
 function getMountedWrapper(patient, showBtn) {
@@ -33,7 +33,7 @@ function getMountedWrapper(patient, showBtn) {
     propagatedFields: {},
     common_exposure_cohorts: [mockCommonExposureCohort1, mockCommonExposureCohort2],
   };
-  return mount(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} authenticity_token={'123'} />);
+  return mount(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} authenticity_token={'123'} current_user={{ jurisdiction_id: patient.jurisdiction_id }} />);
 }
 
 afterEach(() => {
@@ -547,7 +547,7 @@ describe('ExposureInformation', () => {
       propagatedFields: {},
       common_exposure_cohorts: Array(10).fill(mockCommonExposureCohort2),
     };
-    const wrapper = shallow(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} />);
+    const wrapper = shallow(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} current_user={{ jurisdiction_id: patient.jurisdiction_id }} />);
     expect(wrapper.find('#add-new-cohort-button').prop('disabled')).toBe(true);
   });
 
@@ -585,7 +585,7 @@ describe('ExposureInformation', () => {
   });
 
   it('Hides "Previous" and "Next" buttons if requisite functions are not passed in via props', () => {
-    const wrapper = shallow(<ExposureInformation currentState={{ isolation: false, patient: blankExposureMockPatient, propagatedFields: {} }} patient={blankIsolationMockPatient} showPreviousButton={false} jurisdiction_paths={mockJurisdictionPaths} />);
+    const wrapper = shallow(<ExposureInformation currentState={{ isolation: false, patient: blankExposureMockPatient, propagatedFields: {} }} patient={blankIsolationMockPatient} showPreviousButton={false} jurisdiction_paths={mockJurisdictionPaths} current_user={{ jurisdiction_id: blankIsolationMockPatient.jurisdiction_id }} />);
     expect(wrapper.find('#enrollment-previous-button').exists()).toBe(false);
     expect(wrapper.find('#enrollment-next-button').exists()).toBe(false);
   });
