@@ -1022,18 +1022,18 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   def to_common_exposure_cohort_subextension(common_exposure_cohorts)
     common_exposure_cohorts.map do |common_exposure_cohort|
       FHIR::Extension.new(
-        url: "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort",
+        url: "#{SA_EXT_BASE_URL}common-exposure-cohort",
         extension: [
           common_exposure_cohort[:cohort_type].blank? ? nil : FHIR::Extension.new(
-            url: "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort-type",
+            url: 'cohort-type',
             valueString: common_exposure_cohort[:cohort_type]
           ),
           common_exposure_cohort[:cohort_name].blank? ? nil : FHIR::Extension.new(
-            url: "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort-name",
+            url: 'cohort-name',
             valueString: common_exposure_cohort[:cohort_name]
           ),
           common_exposure_cohort[:cohort_location].blank? ? nil : FHIR::Extension.new(
-            url: "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort-location",
+            url: 'cohort-location',
             valueString: common_exposure_cohort[:cohort_location]
           )
         ]
@@ -1087,10 +1087,10 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
             healthcare_personnel: from_bool_extension_false_default(sub_ext, base_path, 'healthcare-personnel'),
             healthcare_personnel_facility_name: from_string_extension(sub_ext, base_path, 'healthcare-personnel-facility-name')
           }
-      when "#{SA_EXT_BASE_URL}member-of-a-common-exposure-cohort"
+      when "#{SA_EXT_BASE_URL}common-exposure-cohort"
         common_exposure_cohort = {}
         %i[cohort_type cohort_name cohort_location].each do |cohort_field|
-          cohort_field_value = from_string_extension(sub_ext, base_path, "member-of-a-common-exposure-#{cohort_field.to_s.dasherize}")
+          cohort_field_value = from_string_extension(sub_ext, base_path, cohort_field.to_s.dasherize.to_s)
           common_exposure_cohort[cohort_field] = cohort_field_value[:value] if cohort_field_value[:value].present?
         end
         # Common Exposure Cohort will be empty if this is just the boolean field

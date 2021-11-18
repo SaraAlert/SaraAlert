@@ -331,7 +331,12 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     # common exposure cohorts
     cohort_type: { label: 'Cohort Type', checks: [:enum] },
     cohort_name: { label: 'Cohort Name/Description', checks: [] },
-    cohort_location: { label: 'Cohort Location', checks: [] }
+    cohort_location: { label: 'Cohort Location', checks: [] },
+    # NOTE: In the API, common exposure cohorts are accessed from the patient model,
+    # so we need the full paths below to access the values
+    'common_exposure_cohorts.cohort_type': { label: 'Cohort Type', checks: [:enum] },
+    'common_exposure_cohorts.cohort_name': { label: 'Cohort Name/Description', checks: [] },
+    'common_exposure_cohorts.cohort_location': { label: 'Cohort Location', checks: [] }
   }.freeze
 
   # Validates if a given date value is between (inclusive) two dates.
