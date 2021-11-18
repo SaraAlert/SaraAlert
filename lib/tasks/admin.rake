@@ -182,7 +182,10 @@ namespace :admin do
     end
 
     unless jurisdiction.nil? || jur_values.nil?
-      jurisdiction.update(custom_messages: jur_values['messages']&.to_json)
+      if jur_values['messages'].present?
+        puts "Updating custom messages for jurisdiction: #{jurisdiction[:path]}"
+        jurisdiction.update!(custom_messages: jur_values['messages']&.to_json)
+      end
     end
 
     # Parse and recursively create custom messages for child jurisdictions if included

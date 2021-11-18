@@ -15,7 +15,7 @@ class PatientMailer < ApplicationMailer
     end
     @lang = patient.select_language(:email)
     @contact_info = patient.jurisdiction.contact_info
-    @custom_enrollment_message = patient&.jurisdiction&.custom_messages_for_hierarchy&.dig('assessments', 'html', 'email', 'info1', @lang&.to_s)
+    @custom_enrollment_message = patient&.jurisdiction&.custom_messages_for_hierarchy&.dig('assessments', 'html', 'email', 'enrollment', 'info1', @lang&.to_s)
 
     mail(to: patient.email&.strip, subject: I18n.t('assessments.html.email.enrollment.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }

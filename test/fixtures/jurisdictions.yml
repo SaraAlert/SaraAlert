@@ -24,6 +24,7 @@ jurisdiction_3:
   path: 'USA, State 2'
   unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 2')].pack('H*')].pack('m0'))[0, 10] %>
   current_threshold_condition_hash: <%= Digest::SHA256.hexdigest('USA, State 2' + '1') %>
+  custom_messages: "{\"assessments\":{\"html\":{\"email\":{\"enrollment\":{\"info1\":{\"eng\":\"Welcome to symptom monitoring for \\u003ca href=\\\"http://example.com\\\"\\u003eState 1 DOH\\u003c/a\\u003e.\\u003cbr\\u003e\\u003cbr\\u003e\\n- Lorem\\u003cbr\\u003e\\n- Ipsum\\n\",\"spa\":\"Bienvenido a la monitorización de los síntomas para \\u003ca href=\\\"http://example.com\\\"\\u003eEl State 1 DOH\\u003c/a\\u003e\\u003cbr\\u003e\\u003cbr\\u003e\\n- Lorem\\u003cbr\\u003e\\n- Ipsum\\n\"}}}},\"twilio\":{\"sms\":{\"prompt\":{\"intro\":{\"eng\":\"You've been identified by State 1 DOH to be enrolled in Sara Alert to be monitored for COVID symptoms.\\n\\nFor privacy and more info, visit saraalert.org.\\n\",\"spa\":\"El State 1 DOH lo identifico para inscribirse en Sara Alert para ser monitoreado por sintomas de COVID.\\n\\nPara privacidad y mas informacion, visite saraalert.org.\"}}}}}}"
 jurisdiction_4:
   id: 4
   created_at: <%= 50.days.ago %>

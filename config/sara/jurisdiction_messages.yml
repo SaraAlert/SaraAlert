@@ -5,15 +5,16 @@
         assessments:
           html:
             email:
-              info1:
-                eng: |
-                  Welcome to symptom monitoring for <a href="http://example.com">State 1 DOH</a><br><br>
-                  - Lorem<br>
-                  - Ipsum
-                spa: |
-                  Bienvenido a la monitorización de los síntomas para <a href="http://example.com">El State 1 DOH</a><br><br>
-                  - Lorem<br>
-                  - Ipsum
+              enrollment:
+                info1:
+                  eng: |
+                    Welcome to symptom monitoring for <a href="http://example.com">State 1 DOH</a>.<br><br>
+                    - Lorem<br>
+                    - Ipsum
+                  spa: |
+                    Bienvenido a la monitorización de los síntomas para <a href="http://example.com">El State 1 DOH</a><br><br>
+                    - Lorem<br>
+                    - Ipsum
           twilio:
             sms:
               prompt:

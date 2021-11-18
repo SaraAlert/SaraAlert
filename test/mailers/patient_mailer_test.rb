@@ -248,6 +248,36 @@ class PatientMailerTest < ActionMailer::TestCase
       assert_includes email_body, I18n.t('assessments.html.email.shared.footer', locale: lang)
     end
 
+    test "enrollment email custom messages in #{language}" do
+      @patient.update(primary_language: language.to_s, jurisdiction: Jurisdiction.find(3))
+      email = PatientMailer.enrollment_email(@patient).deliver_now
+      email_body = email.parts.first.body.to_s.tr("\n", ' ').tr("\r", '')
+      lang = Languages.supported_language?(@patient.primary_language, :email) ? @patient.primary_language : 'eng'
+      case lang
+      when 'eng'
+        assert_includes email_body, 'Welcome to symptom monitoring for'
+      when 'spa'
+        assert_includes email_body, 'Bienvenido a la monitorización de los síntomas para'
+      else
+        assert_includes email_body, I18n.t('assessments.html.email.enrollment.info1', locale: lang)
+      end
+    end
+
+    test "enrollment email custom messages for descendent jurisdiction in #{language}" do
+      @patient.update(primary_language: language.to_s, jurisdiction: Jurisdiction.find(6))
+      email = PatientMailer.enrollment_email(@patient).deliver_now
+      email_body = email.parts.first.body.to_s.tr("\n", ' ').tr("\r", '')
+      lang = Languages.supported_language?(@patient.primary_language, :email) ? @patient.primary_language : 'eng'
+      case lang
+      when 'eng'
+        assert_includes email_body, 'Welcome to symptom monitoring for'
+      when 'spa'
+        assert_includes email_body, 'Bienvenido a la monitorización de los síntomas para'
+      else
+        assert_includes email_body, I18n.t('assessments.html.email.enrollment.info1', locale: lang)
+      end
+    end
+
     test "enrollment sms weblink message contents not using messaging service in #{language}" do
       ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
       @patient.update(primary_language: language.to_s)
