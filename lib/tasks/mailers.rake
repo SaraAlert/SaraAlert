@@ -17,11 +17,27 @@ namespace :mailers do
     user = User.new(email: 'foobar@foobar.foo', password: 'foobarfoobar2')
     test_patient = Patient.new(creator: user)
     test_patient.responder = test_patient
+    test_patient.first_name = "Test"
+    test_patient.last_name = "McTest"
     test_patient.email = '<test_email>'
     test_patient.submission_token = SecureRandom.urlsafe_base64[0, 10]
     test_patient.jurisdiction = Jurisdiction.where(name: 'County 1').first
+    test_patient.primary_language = 'eng'
     test_patient.save!
     PatientMailer.enrollment_email(test_patient).deliver_now
+  end
+
+  desc "Test making an enrollment sms"
+  task test_enrollment_sms: :environment do
+    # patient = Patient.first.dup
+    # patient.first_name = "Test"
+    # patient.last_name = "McTest"
+    # patient.primary_language = "eng"
+    # patient.age = 27
+    # patient.jurisdiction = Jurisdiction.where(name: 'County 1').first
+    # patient.primary_telephone = <Test Number in E164 format>
+    # patient.save!
+    # PatientMailer.enrollment_sms_text_based(patient).deliver_now
   end
 
   desc "Test making an assessment sms"
