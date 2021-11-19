@@ -197,31 +197,41 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
     execute <<-SQL.squish
       UPDATE patients
       SET contact_of_known_case = true
-      WHERE purged = false AND contact_of_known_case_id IS NOT NULL
+      WHERE purged = false
+      AND contact_of_known_case_id <> ''
+      AND contact_of_known_case_id IS NOT NULL
     SQL
 
     execute <<-SQL.squish
       UPDATE patients
       SET was_in_health_care_facility_with_known_cases = true
-      WHERE purged = false AND was_in_health_care_facility_with_known_cases_facility_name IS NOT NULL
+      WHERE purged = false
+      AND was_in_health_care_facility_with_known_cases_facility_name <> ''
+      AND was_in_health_care_facility_with_known_cases_facility_name IS NOT NULL
     SQL
 
     execute <<-SQL.squish
       UPDATE patients
       SET laboratory_personnel = true
-      WHERE purged = false AND laboratory_personnel_facility_name IS NOT NULL
+      WHERE purged = false
+      AND laboratory_personnel_facility_name <> ''
+      AND laboratory_personnel_facility_name IS NOT NULL
     SQL
 
     execute <<-SQL.squish
       UPDATE patients
       SET healthcare_personnel = true
-      WHERE purged = false AND healthcare_personnel_facility_name IS NOT NULL
+      WHERE purged = false
+      AND healthcare_personnel_facility_name <> ''
+      AND healthcare_personnel_facility_name IS NOT NULL
     SQL
 
     execute <<-SQL.squish
       UPDATE patients
       SET member_of_a_common_exposure_cohort = true
-      WHERE purged = false AND member_of_a_common_exposure_cohort_type IS NOT NULL
+      WHERE purged = false
+      AND member_of_a_common_exposure_cohort_type <> ''
+      AND member_of_a_common_exposure_cohort_type IS NOT NULL
     SQL
   end
 
