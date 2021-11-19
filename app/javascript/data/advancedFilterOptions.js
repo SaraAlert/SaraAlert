@@ -115,6 +115,7 @@ export const advancedFilterOptions = [
     title: 'Common Exposure Cohort Name (Text)',
     description: 'Monitoree common exposure cohort name or description',
     type: 'search',
+    tooltip: 'Leaving this field blank will return monitorees with missing and null values.',
   },
   {
     name: 'email',
