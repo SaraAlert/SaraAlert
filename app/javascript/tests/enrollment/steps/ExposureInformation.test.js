@@ -16,12 +16,12 @@ const nextMock = jest.fn();
 const setEnrollmentStateMock = jest.fn();
 const exposureInputLabels = ['LAST DATE OF EXPOSURE', 'EXPOSURE LOCATION', 'EXPOSURE COUNTRY', 'CONTINUOUS EXPOSURE', 'EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)', 'CLOSE CONTACT WITH A KNOWN CASE', 'TRAVEL FROM AFFECTED COUNTRY OR AREA', 'WAS IN HEALTHCARE FACILITY WITH KNOWN CASES', 'LABORATORY PERSONNEL', 'HEALTHCARE PERSONNEL', 'CREW ON PASSENGER OR CARGO FLIGHT', 'MEMBER OF A COMMON EXPOSURE COHORT', 'NOTES'];
 
-function getShallowWrapper(patient, showBtn) {
+function getShallowWrapper(patient, showBtn, noCohorts) {
   const current = {
     isolation: patient.isolation,
     patient: patient,
     propagatedFields: {},
-    common_exposure_cohorts: [mockCommonExposureCohort1, mockCommonExposureCohort2],
+    common_exposure_cohorts: noCohorts ? [] : [mockCommonExposureCohort1, mockCommonExposureCohort2],
   };
   return shallow(<ExposureInformation previous={previousMock} next={nextMock} setEnrollmentState={setEnrollmentStateMock} currentState={current} patient={patient} showPreviousButton={showBtn} has_dependents={false} jurisdiction_paths={mockJurisdictionPaths} assigned_users={[]} authenticity_token={'123'} current_user={{ jurisdiction_id: patient.jurisdiction_id }} />);
 }
@@ -226,7 +226,7 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('modified').patient.last_date_of_exposure).toBeNull();
     expect(wrapper.state('current').patient.continuous_exposure).toBe(false);
     expect(wrapper.find(DateInput).prop('date')).toBeNull();
-    expect(wrapper.find('#continuous_exposure').prop('checked')).toBe(false);
+    // expect(wrapper.find('#continuous_exposure').prop('checked')).toBe(false);
   });
 
   it('Changing Exposure Location properly updates state and calls props.setEnrollmentState', () => {
@@ -294,15 +294,17 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('current').patient.contact_of_known_case_id).toBeNull();
     expect(wrapper.state('modified')).toEqual({});
     expect(wrapper.find('#contact_of_known_case').prop('checked')).toBe(false);
+    expect(wrapper.find('#contact_of_known_case').prop('disabled')).toBe(false);
     expect(wrapper.find('#contact_of_known_case_id').prop('value')).toEqual('');
 
-    wrapper.find('#contact_of_known_case').simulate('change', { target: { id: 'contact_of_known_case', value: true } });
+    wrapper.find('#contact_of_known_case').simulate('change', true);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(1);
     expect(wrapper.state('current').patient.contact_of_known_case).toBe(true);
     expect(wrapper.state('current').patient.contact_of_known_case_id).toBeNull();
     expect(wrapper.state('modified').patient.contact_of_known_case).toBe(true);
     expect(wrapper.state('modified').patient.contact_of_known_case_id).toBeUndefined();
     expect(wrapper.find('#contact_of_known_case').prop('checked')).toBe(true);
+    expect(wrapper.find('#contact_of_known_case').prop('disabled')).toBe(false);
     expect(wrapper.find('#contact_of_known_case_id').prop('value')).toEqual('');
 
     wrapper.find('#contact_of_known_case_id').simulate('change', { target: { id: 'contact_of_known_case_id', value: '123' } });
@@ -312,25 +314,38 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('modified').patient.contact_of_known_case).toBe(true);
     expect(wrapper.state('modified').patient.contact_of_known_case_id).toEqual('123');
     expect(wrapper.find('#contact_of_known_case').prop('checked')).toBe(true);
-    expect(wrapper.find('#contact_of_known_case_id').prop('value')).toEqual('123');
-
-    wrapper.find('#contact_of_known_case').simulate('change', { target: { id: 'contact_of_known_case', value: false } });
-    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(3);
-    expect(wrapper.state('current').patient.contact_of_known_case).toBe(false);
-    expect(wrapper.state('current').patient.contact_of_known_case_id).toEqual('123');
-    expect(wrapper.state('modified').patient.contact_of_known_case).toBe(false);
-    expect(wrapper.state('modified').patient.contact_of_known_case_id).toEqual('123');
-    expect(wrapper.find('#contact_of_known_case').prop('checked')).toBe(false);
+    expect(wrapper.find('#contact_of_known_case').prop('disabled')).toBe(true);
     expect(wrapper.find('#contact_of_known_case_id').prop('value')).toEqual('123');
 
     wrapper.find('#contact_of_known_case_id').simulate('change', { target: { id: 'contact_of_known_case_id', value: '' } });
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(3);
+    expect(wrapper.state('current').patient.contact_of_known_case).toBe(true);
+    expect(wrapper.state('current').patient.contact_of_known_case_id).toEqual('');
+    expect(wrapper.state('modified').patient.contact_of_known_case).toBe(true);
+    expect(wrapper.state('modified').patient.contact_of_known_case_id).toEqual('');
+    expect(wrapper.find('#contact_of_known_case').prop('checked')).toBe(true);
+    expect(wrapper.find('#contact_of_known_case').prop('disabled')).toBe(false);
+    expect(wrapper.find('#contact_of_known_case_id').prop('value')).toEqual('');
+
+    wrapper.find('#contact_of_known_case').simulate('change', false);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(4);
     expect(wrapper.state('current').patient.contact_of_known_case).toBe(false);
     expect(wrapper.state('current').patient.contact_of_known_case_id).toEqual('');
     expect(wrapper.state('modified').patient.contact_of_known_case).toBe(false);
     expect(wrapper.state('modified').patient.contact_of_known_case_id).toEqual('');
     expect(wrapper.find('#contact_of_known_case').prop('checked')).toBe(false);
+    expect(wrapper.find('#contact_of_known_case').prop('disabled')).toBe(false);
     expect(wrapper.find('#contact_of_known_case_id').prop('value')).toEqual('');
+
+    wrapper.find('#contact_of_known_case_id').simulate('change', { target: { id: 'contact_of_known_case_id', value: '123' } });
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(5);
+    expect(wrapper.state('current').patient.contact_of_known_case).toBe(true);
+    expect(wrapper.state('current').patient.contact_of_known_case_id).toEqual('123');
+    expect(wrapper.state('modified').patient.contact_of_known_case).toBe(true);
+    expect(wrapper.state('modified').patient.contact_of_known_case_id).toEqual('123');
+    expect(wrapper.find('#contact_of_known_case').prop('checked')).toBe(true);
+    expect(wrapper.find('#contact_of_known_case').prop('disabled')).toBe(true);
+    expect(wrapper.find('#contact_of_known_case_id').prop('value')).toEqual('123');
   });
 
   it('Changing Risk Factor: "Travel to Affected Country or Area" properly updates state and calls props.setEnrollmentState', () => {
@@ -339,18 +354,21 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('current').patient.travel_to_affected_country_or_area).toBe(false);
     expect(wrapper.state('modified')).toEqual({});
     expect(wrapper.find('#travel_to_affected_country_or_area').prop('checked')).toBe(false);
+    expect(wrapper.find('#travel_to_affected_country_or_area').prop('disabled')).toBe(false);
 
-    wrapper.find('#travel_to_affected_country_or_area').simulate('change', { target: { id: 'travel_to_affected_country_or_area', value: true } });
+    wrapper.find('#travel_to_affected_country_or_area').simulate('change', true);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(1);
     expect(wrapper.state('current').patient.travel_to_affected_country_or_area).toBe(true);
     expect(wrapper.state('modified').patient.travel_to_affected_country_or_area).toBe(true);
     expect(wrapper.find('#travel_to_affected_country_or_area').prop('checked')).toBe(true);
+    expect(wrapper.find('#travel_to_affected_country_or_area').prop('disabled')).toBe(false);
 
-    wrapper.find('#travel_to_affected_country_or_area').simulate('change', { target: { id: 'travel_to_affected_country_or_area', value: false } });
+    wrapper.find('#travel_to_affected_country_or_area').simulate('change', false);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(2);
     expect(wrapper.state('current').patient.travel_to_affected_country_or_area).toBe(false);
     expect(wrapper.state('modified').patient.travel_to_affected_country_or_area).toBe(false);
     expect(wrapper.find('#travel_to_affected_country_or_area').prop('checked')).toBe(false);
+    expect(wrapper.find('#travel_to_affected_country_or_area').prop('disabled')).toBe(false);
   });
 
   it('Changing Risk Factor: "Was in Healthcare Facility with Known Cases" properly updates state and calls props.setEnrollmentState', () => {
@@ -360,15 +378,17 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('current').patient.was_in_health_care_facility_with_known_cases_facility_name).toBeNull();
     expect(wrapper.state('modified')).toEqual({});
     expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('checked')).toBe(false);
+    expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('disabled')).toBe(false);
     expect(wrapper.find('#was_in_health_care_facility_with_known_cases_facility_name').prop('value')).toEqual('');
 
-    wrapper.find('#was_in_health_care_facility_with_known_cases').simulate('change', { target: { id: 'was_in_health_care_facility_with_known_cases', value: true } });
+    wrapper.find('#was_in_health_care_facility_with_known_cases').simulate('change', true);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(1);
     expect(wrapper.state('current').patient.was_in_health_care_facility_with_known_cases).toBe(true);
     expect(wrapper.state('current').patient.was_in_health_care_facility_with_known_cases_facility_name).toBeNull();
     expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases).toBe(true);
     expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases_facility_name).toBeUndefined();
     expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('checked')).toBe(true);
+    expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('disabled')).toBe(false);
     expect(wrapper.find('#was_in_health_care_facility_with_known_cases_facility_name').prop('value')).toEqual('');
 
     wrapper.find('#was_in_health_care_facility_with_known_cases_facility_name').simulate('change', { target: { id: 'was_in_health_care_facility_with_known_cases_facility_name', value: '123' } });
@@ -378,25 +398,38 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases).toBe(true);
     expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases_facility_name).toEqual('123');
     expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('checked')).toBe(true);
-    expect(wrapper.find('#was_in_health_care_facility_with_known_cases_facility_name').prop('value')).toEqual('123');
-
-    wrapper.find('#was_in_health_care_facility_with_known_cases').simulate('change', { target: { id: 'was_in_health_care_facility_with_known_cases', value: false } });
-    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(3);
-    expect(wrapper.state('current').patient.was_in_health_care_facility_with_known_cases).toBe(false);
-    expect(wrapper.state('current').patient.was_in_health_care_facility_with_known_cases_facility_name).toEqual('123');
-    expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases).toBe(false);
-    expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases_facility_name).toEqual('123');
-    expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('checked')).toBe(false);
+    expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('disabled')).toBe(true);
     expect(wrapper.find('#was_in_health_care_facility_with_known_cases_facility_name').prop('value')).toEqual('123');
 
     wrapper.find('#was_in_health_care_facility_with_known_cases_facility_name').simulate('change', { target: { id: 'was_in_health_care_facility_with_known_cases_facility_name', value: '' } });
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(3);
+    expect(wrapper.state('current').patient.was_in_health_care_facility_with_known_cases).toBe(true);
+    expect(wrapper.state('current').patient.was_in_health_care_facility_with_known_cases_facility_name).toEqual('');
+    expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases).toBe(true);
+    expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases_facility_name).toEqual('');
+    expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('checked')).toBe(true);
+    expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('disabled')).toBe(false);
+    expect(wrapper.find('#was_in_health_care_facility_with_known_cases_facility_name').prop('value')).toEqual('');
+
+    wrapper.find('#was_in_health_care_facility_with_known_cases').simulate('change', false);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(4);
     expect(wrapper.state('current').patient.was_in_health_care_facility_with_known_cases).toBe(false);
     expect(wrapper.state('current').patient.was_in_health_care_facility_with_known_cases_facility_name).toEqual('');
     expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases).toBe(false);
     expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases_facility_name).toEqual('');
     expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('checked')).toBe(false);
+    expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('disabled')).toBe(false);
     expect(wrapper.find('#was_in_health_care_facility_with_known_cases_facility_name').prop('value')).toEqual('');
+
+    wrapper.find('#was_in_health_care_facility_with_known_cases_facility_name').simulate('change', { target: { id: 'was_in_health_care_facility_with_known_cases_facility_name', value: '123' } });
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(5);
+    expect(wrapper.state('current').patient.was_in_health_care_facility_with_known_cases).toBe(true);
+    expect(wrapper.state('current').patient.was_in_health_care_facility_with_known_cases_facility_name).toEqual('123');
+    expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases).toBe(true);
+    expect(wrapper.state('modified').patient.was_in_health_care_facility_with_known_cases_facility_name).toEqual('123');
+    expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('checked')).toBe(true);
+    expect(wrapper.find('#was_in_health_care_facility_with_known_cases').prop('disabled')).toBe(true);
+    expect(wrapper.find('#was_in_health_care_facility_with_known_cases_facility_name').prop('value')).toEqual('123');
   });
 
   it('Changing Risk Factor: "Laboratory Personnel" properly updates state and calls props.setEnrollmentState', () => {
@@ -406,15 +439,17 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('current').patient.laboratory_personnel_facility_name).toBeNull();
     expect(wrapper.state('modified')).toEqual({});
     expect(wrapper.find('#laboratory_personnel').prop('checked')).toBe(false);
+    expect(wrapper.find('#laboratory_personnel').prop('disabled')).toBe(false);
     expect(wrapper.find('#laboratory_personnel_facility_name').prop('value')).toEqual('');
 
-    wrapper.find('#laboratory_personnel').simulate('change', { target: { id: 'laboratory_personnel', value: true } });
+    wrapper.find('#laboratory_personnel').simulate('change', true);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(1);
     expect(wrapper.state('current').patient.laboratory_personnel).toBe(true);
     expect(wrapper.state('current').patient.laboratory_personnel_facility_name).toBeNull();
     expect(wrapper.state('modified').patient.laboratory_personnel).toBe(true);
     expect(wrapper.state('modified').patient.laboratory_personnel_facility_name).toBeUndefined();
     expect(wrapper.find('#laboratory_personnel').prop('checked')).toBe(true);
+    expect(wrapper.find('#laboratory_personnel').prop('disabled')).toBe(false);
     expect(wrapper.find('#laboratory_personnel_facility_name').prop('value')).toEqual('');
 
     wrapper.find('#laboratory_personnel_facility_name').simulate('change', { target: { id: 'laboratory_personnel_facility_name', value: 'MGH' } });
@@ -424,25 +459,38 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('modified').patient.laboratory_personnel).toBe(true);
     expect(wrapper.state('modified').patient.laboratory_personnel_facility_name).toEqual('MGH');
     expect(wrapper.find('#laboratory_personnel').prop('checked')).toBe(true);
-    expect(wrapper.find('#laboratory_personnel_facility_name').prop('value')).toEqual('MGH');
-
-    wrapper.find('#laboratory_personnel').simulate('change', { target: { id: 'laboratory_personnel', value: false } });
-    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(3);
-    expect(wrapper.state('current').patient.laboratory_personnel).toBe(false);
-    expect(wrapper.state('current').patient.laboratory_personnel_facility_name).toEqual('MGH');
-    expect(wrapper.state('modified').patient.laboratory_personnel).toBe(false);
-    expect(wrapper.state('modified').patient.laboratory_personnel_facility_name).toEqual('MGH');
-    expect(wrapper.find('#laboratory_personnel').prop('checked')).toBe(false);
+    expect(wrapper.find('#laboratory_personnel').prop('disabled')).toBe(true);
     expect(wrapper.find('#laboratory_personnel_facility_name').prop('value')).toEqual('MGH');
 
     wrapper.find('#laboratory_personnel_facility_name').simulate('change', { target: { id: 'laboratory_personnel_facility_name', value: '' } });
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(3);
+    expect(wrapper.state('current').patient.laboratory_personnel).toBe(true);
+    expect(wrapper.state('current').patient.laboratory_personnel_facility_name).toEqual('');
+    expect(wrapper.state('modified').patient.laboratory_personnel).toBe(true);
+    expect(wrapper.state('modified').patient.laboratory_personnel_facility_name).toEqual('');
+    expect(wrapper.find('#laboratory_personnel').prop('checked')).toBe(true);
+    expect(wrapper.find('#laboratory_personnel').prop('disabled')).toBe(false);
+    expect(wrapper.find('#laboratory_personnel_facility_name').prop('value')).toEqual('');
+
+    wrapper.find('#laboratory_personnel').simulate('change', false);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(4);
     expect(wrapper.state('current').patient.laboratory_personnel).toBe(false);
     expect(wrapper.state('current').patient.laboratory_personnel_facility_name).toEqual('');
     expect(wrapper.state('modified').patient.laboratory_personnel).toBe(false);
     expect(wrapper.state('modified').patient.laboratory_personnel_facility_name).toEqual('');
     expect(wrapper.find('#laboratory_personnel').prop('checked')).toBe(false);
+    expect(wrapper.find('#laboratory_personnel').prop('disabled')).toBe(false);
     expect(wrapper.find('#laboratory_personnel_facility_name').prop('value')).toEqual('');
+
+    wrapper.find('#laboratory_personnel_facility_name').simulate('change', { target: { id: 'laboratory_personnel_facility_name', value: 'MGH' } });
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(5);
+    expect(wrapper.state('current').patient.laboratory_personnel).toBe(true);
+    expect(wrapper.state('current').patient.laboratory_personnel_facility_name).toEqual('MGH');
+    expect(wrapper.state('modified').patient.laboratory_personnel).toBe(true);
+    expect(wrapper.state('modified').patient.laboratory_personnel_facility_name).toEqual('MGH');
+    expect(wrapper.find('#laboratory_personnel').prop('checked')).toBe(true);
+    expect(wrapper.find('#laboratory_personnel').prop('disabled')).toBe(true);
+    expect(wrapper.find('#laboratory_personnel_facility_name').prop('value')).toEqual('MGH');
   });
 
   it('Changing Risk Factor: "Healthcare Personnel" properly updates state and calls props.setEnrollmentState', () => {
@@ -452,15 +500,17 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('current').patient.healthcare_personnel_facility_name).toBeNull();
     expect(wrapper.state('modified')).toEqual({});
     expect(wrapper.find('#healthcare_personnel').prop('checked')).toBe(false);
+    expect(wrapper.find('#healthcare_personnel').prop('disabled')).toBe(false);
     expect(wrapper.find('#healthcare_personnel_facility_name').prop('value')).toEqual('');
 
-    wrapper.find('#healthcare_personnel').simulate('change', { target: { id: 'healthcare_personnel', value: true } });
+    wrapper.find('#healthcare_personnel').simulate('change', true);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(1);
     expect(wrapper.state('current').patient.healthcare_personnel).toBe(true);
     expect(wrapper.state('current').patient.healthcare_personnel_facility_name).toBeNull();
     expect(wrapper.state('modified').patient.healthcare_personnel).toBe(true);
     expect(wrapper.state('modified').patient.healthcare_personnel_facility_name).toBeUndefined();
     expect(wrapper.find('#healthcare_personnel').prop('checked')).toBe(true);
+    expect(wrapper.find('#healthcare_personnel').prop('disabled')).toBe(false);
     expect(wrapper.find('#healthcare_personnel_facility_name').prop('value')).toEqual('');
 
     wrapper.find('#healthcare_personnel_facility_name').simulate('change', { target: { id: 'healthcare_personnel_facility_name', value: 'MGH' } });
@@ -470,25 +520,38 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('modified').patient.healthcare_personnel).toBe(true);
     expect(wrapper.state('modified').patient.healthcare_personnel_facility_name).toEqual('MGH');
     expect(wrapper.find('#healthcare_personnel').prop('checked')).toBe(true);
-    expect(wrapper.find('#healthcare_personnel_facility_name').prop('value')).toEqual('MGH');
-
-    wrapper.find('#healthcare_personnel').simulate('change', { target: { id: 'healthcare_personnel', value: false } });
-    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(3);
-    expect(wrapper.state('current').patient.healthcare_personnel).toBe(false);
-    expect(wrapper.state('current').patient.healthcare_personnel_facility_name).toEqual('MGH');
-    expect(wrapper.state('modified').patient.healthcare_personnel).toBe(false);
-    expect(wrapper.state('modified').patient.healthcare_personnel_facility_name).toEqual('MGH');
-    expect(wrapper.find('#healthcare_personnel').prop('checked')).toBe(false);
+    expect(wrapper.find('#healthcare_personnel').prop('disabled')).toBe(true);
     expect(wrapper.find('#healthcare_personnel_facility_name').prop('value')).toEqual('MGH');
 
     wrapper.find('#healthcare_personnel_facility_name').simulate('change', { target: { id: 'healthcare_personnel_facility_name', value: '' } });
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(3);
+    expect(wrapper.state('current').patient.healthcare_personnel).toBe(true);
+    expect(wrapper.state('current').patient.healthcare_personnel_facility_name).toEqual('');
+    expect(wrapper.state('modified').patient.healthcare_personnel).toBe(true);
+    expect(wrapper.state('modified').patient.healthcare_personnel_facility_name).toEqual('');
+    expect(wrapper.find('#healthcare_personnel').prop('checked')).toBe(true);
+    expect(wrapper.find('#healthcare_personnel').prop('disabled')).toBe(false);
+    expect(wrapper.find('#healthcare_personnel_facility_name').prop('value')).toEqual('');
+
+    wrapper.find('#healthcare_personnel').simulate('change', false);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(4);
     expect(wrapper.state('current').patient.healthcare_personnel).toBe(false);
     expect(wrapper.state('current').patient.healthcare_personnel_facility_name).toEqual('');
     expect(wrapper.state('modified').patient.healthcare_personnel).toBe(false);
     expect(wrapper.state('modified').patient.healthcare_personnel_facility_name).toEqual('');
     expect(wrapper.find('#healthcare_personnel').prop('checked')).toBe(false);
+    expect(wrapper.find('#healthcare_personnel').prop('disabled')).toBe(false);
     expect(wrapper.find('#healthcare_personnel_facility_name').prop('value')).toEqual('');
+
+    wrapper.find('#healthcare_personnel_facility_name').simulate('change', { target: { id: 'healthcare_personnel_facility_name', value: 'MGH' } });
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(5);
+    expect(wrapper.state('current').patient.healthcare_personnel).toBe(true);
+    expect(wrapper.state('current').patient.healthcare_personnel_facility_name).toEqual('MGH');
+    expect(wrapper.state('modified').patient.healthcare_personnel).toBe(true);
+    expect(wrapper.state('modified').patient.healthcare_personnel_facility_name).toEqual('MGH');
+    expect(wrapper.find('#healthcare_personnel').prop('checked')).toBe(true);
+    expect(wrapper.find('#healthcare_personnel').prop('disabled')).toBe(true);
+    expect(wrapper.find('#healthcare_personnel_facility_name').prop('value')).toEqual('MGH');
   });
 
   it('Changing Risk Factor: "Crew on Passenger or Cargo Flight" properly updates state and calls props.setEnrollmentState', () => {
@@ -497,38 +560,71 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('current').patient.crew_on_passenger_or_cargo_flight).toBe(false);
     expect(wrapper.state('modified')).toEqual({});
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').prop('checked')).toBe(false);
+    expect(wrapper.find('#crew_on_passenger_or_cargo_flight').prop('disabled')).toBe(false);
 
-    wrapper.find('#crew_on_passenger_or_cargo_flight').simulate('change', { target: { id: 'crew_on_passenger_or_cargo_flight', value: true } });
+    wrapper.find('#crew_on_passenger_or_cargo_flight').simulate('change', true);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(1);
     expect(wrapper.state('current').patient.crew_on_passenger_or_cargo_flight).toBe(true);
     expect(wrapper.state('modified').patient.crew_on_passenger_or_cargo_flight).toBe(true);
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').prop('checked')).toBe(true);
+    expect(wrapper.find('#crew_on_passenger_or_cargo_flight').prop('disabled')).toBe(false);
 
-    wrapper.find('#crew_on_passenger_or_cargo_flight').simulate('change', { target: { id: 'crew_on_passenger_or_cargo_flight', value: false } });
+    wrapper.find('#crew_on_passenger_or_cargo_flight').simulate('change', false);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(2);
     expect(wrapper.state('current').patient.crew_on_passenger_or_cargo_flight).toBe(false);
     expect(wrapper.state('modified').patient.crew_on_passenger_or_cargo_flight).toBe(false);
     expect(wrapper.find('#crew_on_passenger_or_cargo_flight').prop('checked')).toBe(false);
+    expect(wrapper.find('#crew_on_passenger_or_cargo_flight').prop('disabled')).toBe(false);
   });
 
   it('Changing Risk Factor: "Member of Common Exposure Cohort" properly updates state and calls props.setEnrollmentState', () => {
-    const wrapper = getShallowWrapper(blankExposureMockPatient);
+    const wrapper = getShallowWrapper(blankExposureMockPatient, false, true);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(0);
     expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(false);
     expect(wrapper.state('modified')).toEqual({});
     expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(false);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('disabled')).toBe(false);
+    expect(wrapper.find(CommonExposureCohortsTable).exists()).toBe(false);
 
-    wrapper.find('#member_of_a_common_exposure_cohort').simulate('change', { target: { id: 'member_of_a_common_exposure_cohort', value: true } });
+    wrapper.find('#member_of_a_common_exposure_cohort').simulate('change', true);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(1);
     expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(true);
     expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort).toBe(true);
     expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(true);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('disabled')).toBe(false);
+    expect(wrapper.find(CommonExposureCohortsTable).exists()).toBe(false);
 
-    wrapper.find('#member_of_a_common_exposure_cohort').simulate('change', { target: { id: 'member_of_a_common_exposure_cohort', value: false } });
+    wrapper.instance().handleCohortChange(mockCommonExposureCohort2);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(2);
+    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(true);
+    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort).toBe(true);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(true);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('disabled')).toBe(true);
+    expect(wrapper.find(CommonExposureCohortsTable).exists()).toBe(true);
+
+    wrapper.instance().handleCohortDelete(0);
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(3);
+    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(true);
+    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort).toBe(true);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(true);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('disabled')).toBe(false);
+    expect(wrapper.find(CommonExposureCohortsTable).exists()).toBe(false);
+
+    wrapper.find('#member_of_a_common_exposure_cohort').simulate('change', false);
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(4);
     expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(false);
     expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort).toBe(false);
     expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(false);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('disabled')).toBe(false);
+    expect(wrapper.find(CommonExposureCohortsTable).exists()).toBe(false);
+
+    wrapper.instance().handleCohortChange(mockCommonExposureCohort2);
+    expect(setEnrollmentStateMock).toHaveBeenCalledTimes(5);
+    expect(wrapper.state('current').patient.member_of_a_common_exposure_cohort).toBe(true);
+    expect(wrapper.state('modified').patient.member_of_a_common_exposure_cohort).toBe(true);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('checked')).toBe(true);
+    expect(wrapper.find('#member_of_a_common_exposure_cohort').prop('disabled')).toBe(true);
+    expect(wrapper.find(CommonExposureCohortsTable).exists()).toBe(true);
   });
 
   it('Clicking "Add New Cohort" properly opens cohort modal', () => {

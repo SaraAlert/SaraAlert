@@ -190,27 +190,31 @@ class ExposureInformation extends React.Component {
     );
   };
 
-  handleCohortDelete = async index => {
+  handleCohortDelete = index => {
     const self = this;
-    if (await confirmDialog('Are you sure you want to delete this common exposure cohort for this monitoree?', { title: 'Delete Common Exposure Cohort' })) {
-      self.setState(
-        state => {
-          const common_exposure_cohorts = state.current.common_exposure_cohorts;
-          common_exposure_cohorts.splice(index, 1);
-          return {
-            current: { ...state.current, common_exposure_cohorts },
-            modified: { ...state.modified, common_exposure_cohorts },
-          };
-        },
-        () => {
-          self.props.setEnrollmentState({ ...this.state.modified });
-        }
-      );
-    }
+    self.setState(
+      state => {
+        const common_exposure_cohorts = state.current.common_exposure_cohorts;
+        common_exposure_cohorts.splice(index, 1);
+        return {
+          current: { ...state.current, common_exposure_cohorts },
+          modified: { ...state.modified, common_exposure_cohorts },
+        };
+      },
+      () => {
+        self.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
   };
 
   toggleCommonExposureCohortModal = (showCommonExposureCohortModal, common_exposure_cohort, common_exposure_cohort_index) => {
     this.setState({ showCommonExposureCohortModal, common_exposure_cohort, common_exposure_cohort_index });
+  };
+
+  toggleCohortDeleteDialog = async index => {
+    if (await confirmDialog('Are you sure you want to delete this common exposure cohort for this monitoree?', { title: 'Delete Common Exposure Cohort' })) {
+      this.handleCohortDelete(index);
+    }
   };
 
   updateStaticValidations = () => {
@@ -307,7 +311,7 @@ class ExposureInformation extends React.Component {
       });
   };
 
-  renderRiskFactorToggle = (toggleField, disabled, tooltipText) => {
+  renderRiskFactorToggle = (toggleField, toggleLabel, disabled, tooltipText) => {
     const tooltipId = `${toggleField}-tooltip`;
     return (
       <React.Fragment>
@@ -334,7 +338,7 @@ class ExposureInformation extends React.Component {
           </ReactTooltip>
         )}
         <Form.Label htmlFor={toggleField} className="mb-0">
-          {_.upperCase(toggleField.replaceAll('_', ' '))}
+          {toggleLabel}
         </Form.Label>
       </React.Fragment>
     );
@@ -433,6 +437,7 @@ class ExposureInformation extends React.Component {
           <Form.Group as={Col} md="auto" className="mb-0">
             {this.renderRiskFactorToggle(
               'contact_of_known_case',
+              'CLOSE CONTACT WITH A KNOWN CASE',
               this.state.current.patient.contact_of_known_case_id?.length > 0,
               'The Case ID field must be cleared to de-toggle'
             )}
@@ -454,13 +459,14 @@ class ExposureInformation extends React.Component {
         </Form.Row>
         <Form.Row className="risk-factor-row mb-1">
           <Form.Group as={Col} md="auto" className="mb-0">
-            {this.renderRiskFactorToggle('travel_to_affected_country_or_area')}
+            {this.renderRiskFactorToggle('travel_to_affected_country_or_area', 'TRAVEL FROM AFFECTED COUNTRY OR AREA')}
           </Form.Group>
         </Form.Row>
         <Form.Row className="risk-factor-row mb-1">
           <Form.Group as={Col} md="auto" className="mb-0">
             {this.renderRiskFactorToggle(
               'was_in_health_care_facility_with_known_cases',
+              'WAS IN HEALTHCARE FACILITY WITH KNOWN CASES',
               this.state.current.patient.was_in_health_care_facility_with_known_cases_facility_name?.length > 0,
               'The Facility Name field must be cleared to de-toggle'
             )}
@@ -484,6 +490,7 @@ class ExposureInformation extends React.Component {
           <Form.Group as={Col} md="auto" className="mb-0">
             {this.renderRiskFactorToggle(
               'laboratory_personnel',
+              'LABORATORY PERSONNEL',
               this.state.current.patient.laboratory_personnel_facility_name?.length > 0,
               'The Facility Name field must be cleared to de-toggle'
             )}
@@ -507,6 +514,7 @@ class ExposureInformation extends React.Component {
           <Form.Group as={Col} md="auto" className="mb-0">
             {this.renderRiskFactorToggle(
               'healthcare_personnel',
+              'HEALTHCARE PERSONNEL',
               this.state.current.patient.healthcare_personnel_facility_name?.length > 0,
               'The Facility Name field must be cleared to de-toggle'
             )}
@@ -528,13 +536,14 @@ class ExposureInformation extends React.Component {
         </Form.Row>
         <Form.Row className="risk-factor-row mb-1">
           <Form.Group as={Col} md="auto" className="mb-0">
-            {this.renderRiskFactorToggle('crew_on_passenger_or_cargo_flight')}
+            {this.renderRiskFactorToggle('crew_on_passenger_or_cargo_flight', 'CREW ON PASSENGER OR CARGO FLIGHT')}
           </Form.Group>
         </Form.Row>
         <Form.Row className="risk-factor-row">
           <Form.Group as={Col} md="auto" className="mb-0">
             {this.renderRiskFactorToggle(
               'member_of_a_common_exposure_cohort',
+              'MEMBER OF A COMMON EXPOSURE COHORT',
               this.state.current.common_exposure_cohorts?.length > 0,
               'All cohorts must be deleted to de-toggle'
             )}
@@ -546,7 +555,7 @@ class ExposureInformation extends React.Component {
               common_exposure_cohorts={this.state.current.common_exposure_cohorts}
               isEditable={true}
               onEditCohort={index => this.toggleCommonExposureCohortModal(true, this.state.current.common_exposure_cohorts[`${index}`], index)}
-              onDeleteCohort={this.handleCohortDelete}
+              onDeleteCohort={this.toggleCohortDeleteDialog}
             />
           </div>
         )}
