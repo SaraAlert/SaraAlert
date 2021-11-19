@@ -37,3 +37,13 @@
 .add-new-cohort-button {
   margin: 0.75rem 2.25rem;
 }
+
+.container_row {
+  display: grid;
+}
+
+.risk-factor-row {
+  min-height: 35px;
+  display: flex;
+  align-items: center;
+}
