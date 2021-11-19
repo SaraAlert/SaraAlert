@@ -1,0 +1,29 @@
+'USA':
+  children:
+    'State 1':
+      messages:
+        assessments:
+          html:
+            email:
+              enrollment:
+                info1:
+                  eng: |
+                    Welcome to symptom monitoring for <a href="http://example.com">State 1 DOH</a>.<br><br>
+                    - Lorem<br>
+                    - Ipsum
+                  spa: |
+                    Bienvenido a la monitorización de los síntomas para <a href="http://example.com">El State 1 DOH</a><br><br>
+                    - Lorem<br>
+                    - Ipsum
+          twilio:
+            sms:
+              prompt:
+                intro:
+                  eng: |
+                    You've been identified by State 1 DOH to be enrolled in Sara Alert to be monitored for COVID symptoms.
+
+                    For privacy and more info, visit saraalert.org.
+                  spa: |
+                    El State 1 DOH lo identifico para inscribirse en Sara Alert para ser monitoreado por sintomas de COVID.
+
+                    Para privacidad y mas informacion, visite saraalert.org.

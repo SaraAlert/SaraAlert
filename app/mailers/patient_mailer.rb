@@ -15,6 +15,8 @@ class PatientMailer < ApplicationMailer
     end
     @lang = patient.select_language(:email)
     @contact_info = patient.jurisdiction.contact_info
+    @custom_enrollment_message = patient&.jurisdiction&.custom_messages_for_hierarchy&.dig('assessments', 'html', 'email', 'enrollment', 'info1', @lang&.to_s)
+
     mail(to: patient.email&.strip, subject: I18n.t('assessments.html.email.enrollment.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
@@ -35,7 +37,10 @@ class PatientMailer < ApplicationMailer
     end
 
     lang = patient.select_language(:sms)
-    contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: patient&.initials_age('-'))
+    custom_msg = patient&.jurisdiction&.custom_messages_for_hierarchy&.dig('assessments', 'twilio', 'sms', 'prompt', 'intro', lang&.to_s)
+    contents = custom_msg.present? ?
+      "#{patient&.initials_age('-')},\n#{custom_msg}" :
+      I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: patient&.initials_age('-'))
     threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]
     message = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash }
     success = TwilioSender.send_sms(patient, [message])
