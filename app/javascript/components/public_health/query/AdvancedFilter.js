@@ -821,7 +821,7 @@ class AdvancedFilter extends React.Component {
    */
   renderSearchStatement = (filter, index, value, additionalFilterOption) => {
     // compute tooltip for specific search cases
-    let tooltip = filter.tooltip !== undefined ? filter.tooltip : '';
+    let tooltip = filter.tooltip || '';
     if (filter.name === 'close-contact-with-known-case-id') {
       if (additionalFilterOption === 'Exact Match') {
         tooltip =
