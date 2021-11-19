@@ -318,7 +318,7 @@ class ExposureInformation extends React.Component {
         <span data-for={tooltipId} data-tip="">
           <Switch
             id={toggleField}
-            checked={this.state.current.patient[toggleField] || false}
+            checked={this.state.current.patient[String(toggleField)] || false}
             disabled={disabled}
             onChange={value => {
               this.handleRiskFactorToggle(toggleField, value);
