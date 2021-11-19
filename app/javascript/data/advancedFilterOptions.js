@@ -419,7 +419,7 @@ export const advancedFilterOptions = [
     description: 'Monitorees with specified Common Exposure Cohort criteria',
     type: 'combination',
     tooltip:
-      'Returns records that contain at least one Common Exposure Cohort entry that meets all user-specified criteria (e.g., searching for a specific Common Exposure Cohort Type and Name/Description will only return records containing at least one Common Exposure Cohort entry with matching values in both fields).',
+      'Returns records that contain at least one Common Exposure Cohort entry that meets all user-specified criteria (e.g., searching for a specific Common Exposure Cohort Type and Name/Description will only return records containing at least one Common Exposure Cohort entry with matching values in both fields). Leaving these fields blank will not filter out any monitorees.',
     fields: [
       {
         name: 'cohort-type',

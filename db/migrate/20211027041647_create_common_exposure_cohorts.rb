@@ -16,7 +16,7 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
     type: 'combination',
     tooltip: 'Returns records that contain at least one Common Exposure Cohort entry that meets all user-specified criteria (e.g., searching for a specific '\
              'Common Exposure Cohort Type and Name/Description will only return records containing at least one Common Exposure Cohort entry with matching '\
-             'values in both fields).',
+             'values in both fields). Leaving these fields blank will not filter out any monitorees.',
     fields: [
       {
         name: 'cohort-type',

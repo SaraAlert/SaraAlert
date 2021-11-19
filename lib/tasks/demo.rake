@@ -554,7 +554,7 @@ namespace :demo do
     if patient[:contact_of_known_case] && rand < 0.9
       patient[:contact_of_known_case_id] = data[:known_case_ids][patient[:jurisdiction_id]].sample(rand(1..3)).join(', ')
     end
-    patient[:member_of_a_common_exposure_cohort] = rand < 0.35
+    patient[:member_of_a_common_exposure_cohort] = rand < 0.45
     patient[:travel_to_affected_country_or_area] = rand < 0.1
     patient[:laboratory_personnel] = rand < 0.25
     patient[:laboratory_personnel_facility_name] = Faker::Company.name if patient[:laboratory_personnel] && rand < 0.5
@@ -668,8 +668,9 @@ namespace :demo do
     # Create common exposure cohorts
     puts '  - Creating common exposure cohorts...'
     cohorts = []
-    cohort_patients = new_patients.where(isolation: false).limit(new_patients.count * rand(30..40) / 100).order('RAND()').to_a +
-                      new_patients.where(isolation: true).limit(new_patients.count * rand(5..10) / 100).order('RAND()').to_a
+    cohort_patients = new_patients.where(member_of_a_common_exposure_cohort: true)
+    cohort_patients = cohort_patients.where(isolation: false).limit(new_patients.count * rand(30..40) / 100).order('RAND()').to_a +
+                      cohort_patients.where(isolation: true).limit(new_patients.count * rand(5..10) / 100).order('RAND()').to_a
     cohort_patients.each do |patient|
       n = AssociatedRecordLimitValidator::COMMON_EXPOSURE_COHORTS_MAX - Math.sqrt(rand(1..AssociatedRecordLimitValidator::COMMON_EXPOSURE_COHORTS_MAX**2)).floor
       data[:common_exposure_cohorts][patient[:jurisdiction_id]].sample(n).each do |cohort|

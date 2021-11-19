@@ -819,6 +819,7 @@ class AdvancedFilter extends React.Component {
         className="advanced-filter-options-dropdown"
         styles={cursorPointerStyle}
         theme={bootstrapSelectTheme}
+        menuPortalTarget={document.body}
       />
     );
   };
@@ -985,6 +986,7 @@ class AdvancedFilter extends React.Component {
           }}
           styles={cursorPointerStyle}
           theme={bootstrapSelectTheme}
+          menuPortalTarget={document.body}
         />
         {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
       </div>
@@ -1273,13 +1275,14 @@ class AdvancedFilter extends React.Component {
                   value={combinationValue.value}
                   options={combinationFilter.options}
                   className="advanced-filter-combination-multi-select-options advanced-filter-multi-select-options my-0 mx-3 py-0"
-                  styles={cursorPointerStyle}
-                  theme={bootstrapSelectTheme}
                   placeholder=""
                   aria-label="Advanced Filter Combination Multi-select Options"
                   onChange={value => {
                     this.changeCombinationMultiValue(statementIndex, combinationIndex, value);
                   }}
+                  styles={cursorPointerStyle}
+                  theme={bootstrapSelectTheme}
+                  menuPortalTarget={document.body}
                 />
               )}
               {combinationFilter?.type === 'date' && (

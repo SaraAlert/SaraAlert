@@ -297,13 +297,21 @@ class CustomExport extends React.Component {
                                             ?.title?.replace(/\b\w/g, l => l.toUpperCase())}
                                           :
                                         </b>
-                                        {typeof f.value === 'string'
-                                          ? f.value === ''
-                                            ? '<blank>'
-                                            : f.value
-                                          : f.value?.when === ''
-                                          ? '<blank>'
-                                          : `${f.value.when}  ${moment(filter.value.date).format('MM/DD/YYYY')}`}
+                                        {typeof f.value === 'string' && (f.value === '' ? '<blank>' : f.value)}
+                                        {typeof f.value === 'object' &&
+                                          f.value.when &&
+                                          (f.value.when === '' ? '<blank>' : `${f.value.when}  ${moment(filter.value.date).format('MM/DD/YYYY')}`)}
+                                        {Array.isArray(f.value) && (
+                                          <div style={{ display: 'inline-grid' }}>
+                                            {f.value?.map((elem, ind) => {
+                                              return (
+                                                <span key={`filter-${index}-${i}-${ind}`} className="mb-0">
+                                                  {elem.label}
+                                                </span>
+                                              );
+                                            })}
+                                          </div>
+                                        )}
                                       </span>
                                     );
                                   })}

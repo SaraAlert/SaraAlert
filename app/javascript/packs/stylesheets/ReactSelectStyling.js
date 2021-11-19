@@ -4,10 +4,12 @@ import colors from './constants.scss';
 // with raw CSS. Custom objects can be defined here and included
 // in each component as necessary
 const cursorPointerStyle = {
+  menuPortal: base => ({ ...base, zIndex: 9999 }),
   option: base => ({ ...base, cursor: 'pointer', minHeight: '2rem' }),
 };
 
 const cursorPointerStyleLg = {
+  menuPortal: base => ({ ...base, zIndex: 9999 }),
   option: base => ({ ...base, cursor: 'pointer', minHeight: '2.25rem' }),
   control: base => ({ ...base, fontSize: '1.25rem', fontWeight: 400, fontFamily: 'Arial', color: colors.datepickerGray, paddingLeft: '0.25rem' }),
 };
