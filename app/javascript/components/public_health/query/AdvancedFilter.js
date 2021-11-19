@@ -821,7 +821,7 @@ class AdvancedFilter extends React.Component {
    */
   renderSearchStatement = (filter, index, value, additionalFilterOption) => {
     // compute tooltip for specific search cases
-    let tooltip = '';
+    let tooltip = filter.tooltip || '';
     if (filter.name === 'close-contact-with-known-case-id') {
       if (additionalFilterOption === 'Exact Match') {
         tooltip =
@@ -830,9 +830,6 @@ class AdvancedFilter extends React.Component {
         tooltip =
           'Returns records that contain a user-entered search value when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “123, 90” or “12” or “1451). ';
       }
-    }
-
-    if (filter.name === 'close-contact-with-known-case-id' || filter.name === 'cohort') {
       tooltip += 'Leaving this field blank will return monitorees with missing and null values.';
     }
 
