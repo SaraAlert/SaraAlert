@@ -1,5 +1,4 @@
 import { mockNote } from './mockNote';
-import { mockCommonExposureCohort1, mockCommonExposureCohort2 } from './mockCommonExposureCohorts';
 
 const blankExposureMockPatient = {
   additional_planned_travel_destination: null,
@@ -524,7 +523,6 @@ const mockPatient2 = {
   black_or_african_american: null,
   case_status: 'Confirmed',
   closed_at: '2020-09-13T20:32:02.000Z',
-  common_exposure_cohorts: [mockCommonExposureCohort1, mockCommonExposureCohort2],
   contact_name: null,
   contact_of_known_case: true,
   contact_of_known_case_id: '1000',

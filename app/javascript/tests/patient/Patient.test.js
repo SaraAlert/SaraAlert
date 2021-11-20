@@ -12,6 +12,7 @@ import BadgeHoH from '../../components/patient/icons/BadgeHoH';
 import { Heading } from '../../utils/Heading';
 import { mockUser1 } from '../mocks/mockUsers';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, mockPatient6, blankIsolationMockPatient, blankExposureMockPatient } from '../mocks/mockPatients';
+import { mockCommonExposureCohort1, mockCommonExposureCohort2 } from '../mocks/mockCommonExposureCohorts';
 import { mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 import { formatName, formatDate, formatRace, convertCommonLanguageCodeToName } from '../helpers';
 
@@ -558,7 +559,7 @@ describe('Patient', () => {
   });
 
   it('Properly renders potential exposure information section', () => {
-    const additionalProps = { details: mockPatient2 };
+    const additionalProps = { details: { ...mockPatient2, common_exposure_cohorts: [mockCommonExposureCohort1, mockCommonExposureCohort2] } };
     const wrapper = getWrapper(additionalProps);
     const section = wrapper.find('#potential-exposure-information');
     expect(section.find(Heading).children().at(0).text()).toEqual('Potential Exposure');

@@ -18,8 +18,8 @@ describe('CommonExposureCohortsTable', () => {
   it('Properly renders common exposure cohorts', () => {
     const wrapper = getWrapper(false);
     cohorts.forEach((cohort, index) => {
-      expect(wrapper.find(`#common-exposure-cohort-edit-button-${index}`).exists()).toBe(false);
-      expect(wrapper.find(`#common-exposure-cohort-delete-button-${index}`).exists()).toBe(false);
+      expect(wrapper.find('tr').at(index).find(`#common-exposure-cohort-edit-button-${index}`).exists()).toBe(false);
+      expect(wrapper.find('tr').at(index).find(`#common-exposure-cohort-delete-button-${index}`).exists()).toBe(false);
       ['cohort_type', 'cohort_name', 'cohort_location'].forEach(field => {
         expect(wrapper.text()).toContain(cohort[String(field)]);
       });
@@ -29,8 +29,8 @@ describe('CommonExposureCohortsTable', () => {
   it('Properly renders edit and cancel buttons when appropriate', () => {
     const wrapper = getWrapper(true);
     cohorts.forEach((_, index) => {
-      expect(wrapper.find(`#common-exposure-cohort-edit-button-${index}`).exists()).toBe(true);
-      expect(wrapper.find(`#common-exposure-cohort-delete-button-${index}`).exists()).toBe(true);
+      expect(wrapper.find('tr').at(index).find(`#common-exposure-cohort-edit-button-${index}`).exists()).toBe(true);
+      expect(wrapper.find('tr').at(index).find(`#common-exposure-cohort-delete-button-${index}`).exists()).toBe(true);
     });
   });
 
