@@ -23,7 +23,6 @@ class CommonExposureCohortModal extends React.Component {
     super(props);
     this.state = {
       common_exposure_cohort: props.common_exposure_cohort || {},
-      showCohortModal: false,
     };
   }
 
