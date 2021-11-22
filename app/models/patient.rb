@@ -157,18 +157,22 @@ class Patient < ApplicationRecord
   validates_with TimeZoneValidator
   validates_with IsolationSymptomOnsetValidator, on: %i[api_create]
   validates_with PatientDateValidator
+  validates_with AssociatedRecordLimitValidator
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
-  has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'
-  has_many :assessments
   belongs_to :jurisdiction
-  has_many :histories
-  has_many :transfers
+
+  has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'
+
+  has_many :assessments
   has_many :laboratories
   has_many :vaccines
   has_many :close_contacts
+  has_many :histories
+  has_many :transfers
   has_many :contact_attempts
+  has_many :common_exposure_cohorts
 
   before_update :set_time_zone, if: proc { |patient|
     patient.monitored_address_state_changed? || patient.address_state_changed?
@@ -182,7 +186,7 @@ class Patient < ApplicationRecord
   around_destroy :inform_responder
   before_update :handle_update
 
-  accepts_nested_attributes_for :laboratories, :vaccines
+  accepts_nested_attributes_for :laboratories, :vaccines, :common_exposure_cohorts
 
   # Most recent assessment
   def latest_assessment
@@ -1349,15 +1353,53 @@ class Patient < ApplicationRecord
   end
 
   # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.
-  def self.detailed_history_edit(patient_before, patient_after, attributes, history_creator_label, is_api_edit: false)
+  def self.detailed_history_edit(patient_before, patient_after, attributes, other_updates, history_creator_label, is_api_edit: false)
+    actions = []
+
     diffs = patient_diff(patient_before, patient_after, attributes)
-    return if diffs.length.zero?
+    if diffs.length.positive?
+      pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
+      actions << "#{is_api_edit ? 'Monitoree record edited via API. ' : 'User edited a monitoree record. '} Changes were: #{pretty_diff.join(', ')}."
+    end
 
-    pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
-    comment = is_api_edit ? 'Monitoree record edited via API. ' : 'User edited a monitoree record. '
-    comment += "Changes were: #{pretty_diff.join(', ')}."
+    if other_updates.dig(:common_exposure_cohorts, :created).present?
+      other_updates[:common_exposure_cohorts][:created].each do |cohort|
+        comment = "User created a common exposure cohort (ID: #{cohort[:id]}"
+        comment += ", Cohort Type: #{cohort[:cohort_type]}" if cohort[:cohort_type].present?
+        comment += ", Cohort Name/Description: #{cohort[:cohort_name]}" if cohort[:cohort_name].present?
+        comment += ", Cohort Location: #{cohort[:cohort_location]}" if cohort[:cohort_location].present?
+        comment += ').'
+        actions << comment
+      end
+    end
 
-    History.record_edit(patient: patient_after, created_by: history_creator_label, comment: comment)
+    if other_updates.dig(:common_exposure_cohorts, :updated).present?
+      other_updates[:common_exposure_cohorts][:updated].each do |(old_cohort, new_cohort)|
+        cohort_diffs = %i[cohort_type cohort_name cohort_location].filter { |field| old_cohort[field] != new_cohort[field] }.map do |field|
+          { attribute: field, before: old_cohort[field], after: new_cohort[field] }
+        end
+        next if cohort_diffs.empty?
+
+        pretty_cohort_diff = cohort_diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
+        comment = "User edited a common exposure cohort (ID: #{old_cohort[:id]}, Changes were: #{pretty_cohort_diff.join(', ')})."
+        actions << comment
+      end
+    end
+
+    if other_updates.dig(:common_exposure_cohorts, :deleted).present?
+      other_updates[:common_exposure_cohorts][:deleted].each do |cohort|
+        comment = "User deleted a common exposure cohort (ID: #{cohort[:id]}"
+        comment += ", Cohort Type: #{cohort[:cohort_type]}" if cohort[:cohort_type].present?
+        comment += ", Cohort Name/Description: #{cohort[:cohort_name]}" if cohort[:cohort_name].present?
+        comment += ", Cohort Location: #{cohort[:cohort_location]}" if cohort[:cohort_location].present?
+        comment += ').'
+        actions << comment
+      end
+    end
+
+    return if actions.empty?
+
+    History.record_edit(patient: patient_after, created_by: history_creator_label, comment: actions.join(' '))
   end
 
   # Construct a diff for a patient update to keep track of changes

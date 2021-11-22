@@ -38,6 +38,7 @@ class Enrollment extends React.Component {
         isolation: !!props.patient.isolation,
         blocked_sms: props.blocked_sms,
         first_positive_lab: props.first_positive_lab,
+        common_exposure_cohorts: _.cloneDeep(props.common_exposure_cohorts),
       },
     };
   }
@@ -57,6 +58,7 @@ class Enrollment extends React.Component {
         isolation: Object.prototype.hasOwnProperty.call(enrollmentState, 'isolation') ? !!enrollmentState.isolation : currentEnrollmentState.isolation,
         blocked_sms: enrollmentState.blocked_sms,
         first_positive_lab: enrollmentState.first_positive_lab,
+        common_exposure_cohorts: enrollmentState.common_exposure_cohorts,
       },
     });
   }, 1000);
@@ -134,6 +136,14 @@ class Enrollment extends React.Component {
         data['laboratory'] = { id: this.props.first_positive_lab.id, ..._.pick(this.state.enrollmentState.first_positive_lab, diffKeysLab) };
       } else {
         data['patient']['laboratories_attributes'] = [this.state.enrollmentState.first_positive_lab];
+      }
+      // TODO: handle delete lab
+    }
+    if (this.state.enrollmentState.common_exposure_cohorts) {
+      if (!this.props.edit_mode) {
+        data['patient']['common_exposure_cohorts_attributes'] = this.state.enrollmentState.common_exposure_cohorts;
+      } else if (!_.isEqual(this.props.common_exposure_cohorts, this.state.enrollmentState.common_exposure_cohorts)) {
+        data['common_exposure_cohorts'] = this.state.enrollmentState.common_exposure_cohorts;
       }
     }
     data['bypass_duplicate'] = false;
@@ -296,9 +306,9 @@ class Enrollment extends React.Component {
               has_dependents={this.props.has_dependents}
               jurisdiction_paths={this.props.jurisdiction_paths}
               assigned_users={this.props.assigned_users}
-              first_positive_lab={this.props.first_positive_lab}
               showPreviousButton={!this.props.edit_mode && !this.state.review_mode}
               authenticity_token={this.props.authenticity_token}
+              current_user={this.props.current_user}
             />
           </Carousel.Item>
           {this.state.enrollmentState.patient.isolation && (
@@ -353,6 +363,7 @@ Enrollment.propTypes = {
   has_dependents: PropTypes.bool,
   blocked_sms: PropTypes.bool,
   first_positive_lab: PropTypes.object,
+  common_exposure_cohorts: PropTypes.array,
   workflow: PropTypes.string,
 };
 

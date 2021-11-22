@@ -17,7 +17,7 @@ class PatientPage extends React.Component {
           <Patient
             current_user={this.props.current_user}
             jurisdiction_paths={this.props.jurisdiction_paths}
-            details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
+            details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms, common_exposure_cohorts: this.props.common_exposure_cohorts }}
             hoh={this.props.other_household_members.find(patient => patient.head_of_household)}
             collapse={this.props.can_modify_subject_status}
             edit_mode={false}
@@ -72,6 +72,7 @@ PatientPage.propTypes = {
   other_household_members: PropTypes.array,
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
+  common_exposure_cohorts: PropTypes.array,
   blocked_sms: PropTypes.bool,
   workflow: PropTypes.string,
 };

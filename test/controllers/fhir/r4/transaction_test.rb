@@ -305,6 +305,7 @@ class TransactionTest < ApiControllerTestCase
     @bundle.entry.last.resource.address[0].state = 'fooville'
     original_patients = Patient.count
     original_labs = Laboratory.count
+    original_cohorts = CommonExposureCohort.count
     post(
       '/fhir/r4',
       params: @bundle.to_json,
@@ -314,5 +315,6 @@ class TransactionTest < ApiControllerTestCase
     assert_response :unprocessable_entity
     assert_equal original_patients, Patient.count
     assert_equal original_labs, Laboratory.count
+    assert_equal original_cohorts, CommonExposureCohort.count
   end
 end

@@ -954,16 +954,21 @@ class ApiControllerTest < ApiControllerTestCase
   end
 
   test 'update exposure risk factors' do
+    base_path = 'http://saraalert.org/StructureDefinition/'
     mock_patient = build(:patient, contact_of_known_case: false, contact_of_known_case_id: '123',
                                    was_in_health_care_facility_with_known_cases: true,
                                    was_in_health_care_facility_with_known_cases_facility_name: 'hospital',
                                    laboratory_personnel: true, laboratory_personnel_facility_name: 'lab',
                                    healthcare_personnel: false, healthcare_personnel_facility_name: 'facility',
                                    member_of_a_common_exposure_cohort: true,
-                                   member_of_a_common_exposure_cohort_type: 'laboratory member',
                                    travel_to_affected_country_or_area: false,
-                                   crew_on_passenger_or_cargo_flight: true)
-    @patient_1.extension.delete_if { |extension| extension.url.eql?('http://saraalert.org/StructureDefinition/exposure-risk-factors') }
+                                   crew_on_passenger_or_cargo_flight: true,
+                                   common_exposure_cohorts_attributes: [
+                                     { cohort_type: 'Workplace' },
+                                     { cohort_type: 'Place of Worship', cohort_name: 'Cornerstone Church' },
+                                     { cohort_location: 'Boston, MA' }
+                                   ])
+    @patient_1.extension.delete_if { |extension| extension.url.eql?("#{base_path}exposure-risk-factors") }
     @patient_1.extension << to_exposure_risk_factors_extension(mock_patient)
 
     put(
@@ -975,18 +980,26 @@ class ApiControllerTest < ApiControllerTestCase
     assert_response :success
     body = JSON.parse(response.body)
     # risk factors are inserted as a collection of other basic extensions
-    exposure_risk_factors_extensions = body['extension'].detect do |e|
-                                         e['url'].eql?('http://saraalert.org/StructureDefinition/exposure-risk-factors')
-                                       end ['extension']
-    boolean_fields = %w[contact-of-known-case was-in-healthcare-facility-with-known-case laboratory-ersonnel healthcare-personnel
+    exposure_risk_factors_extensions = body['extension'].detect { |e| e['url'].eql?("#{base_path}exposure-risk-factors") } ['extension']
+    boolean_fields = %w[contact-of-known-case was-in-healthcare-facility-with-known-case laboratory-personnel healthcare-personnel
                         member-of-a-common-exposure-cohort travel-to-affected-country-or-area crew-on-passenger-or-cargo-flight]
     string_fields = %w[contact-of-known-case-id was-in-health-care-facility-with-known-cases-facility-name laboratory-personnel-facility-name
-                       healthcare-personnel-facility-name member-of-a-common-exposure-cohort-type]
-    exposure_risk_factors_extensions.select { |e| boolean_fields.include?(e['url']) }.each do |extension|
-      assert_equal(mock_patient.send(extension['url'].underscore.to_sym), extension['valueBoolean'])
+                       healthcare-personnel-facility-name]
+    cohort_fields = %w[member-of-a-common-exposure-cohort]
+    exposure_risk_factors_extensions.select { |e| boolean_fields.map { |v| "#{base_path}#{v}" }.include?(e['url']) }.each do |extension|
+      next if !extension.key?('valueBoolean') && extension.dig('extension', 0, 'valueBoolean').nil?
+
+      bool_value = extension.key?('valueBoolean') ? extension['valueBoolean'] : extension.dig('extension', 0, 'valueBoolean').present?
+      assert_equal(mock_patient.send(extension['url'].remove(base_path).underscore.to_sym), bool_value)
     end
-    exposure_risk_factors_extensions.select { |e| string_fields.include?(e['url']) }.each do |extension|
-      assert_equal(mock_patient.send(extension['url'].underscore.to_sym), extension['valueString'])
+    exposure_risk_factors_extensions.select { |e| string_fields.map { |v| "#{base_path}#{v}" }.include?(e['url']) }.each do |extension|
+      assert_equal(mock_patient.send(extension['url'].remove(base_path).underscore.to_sym), extension['valueString'])
+    end
+    exposure_risk_factors_extensions.select { |e| cohort_fields.map { |v| "#{base_path}#{v}" }.include?(e['url']) }.each do |extension|
+      cohort = extension['extension']&.map { |ext| [ext['url'].remove("#{base_path}member-of-a-common-exposure-").underscore.to_sym, ext['valueString']] }.to_h
+      next unless cohort.present?
+
+      assert(mock_patient.common_exposure_cohorts.any? { |c| %i[cohort_type cohort_name cohort_location].all? { |field| c[field] == cohort[field] } })
     end
   end
 

@@ -12,9 +12,9 @@ namespace :perf do
   #
   desc 'Trim database down to a specific number of patients'
   task trim: :environment do
-    unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+    unless Rails.env.development? || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
       puts 'bundle exec rails perf:populate'
-      raise 'This task is only for use in a development environment' 
+      raise 'This task is only for use in a development environment'
     end
 
     if ENV['PATIENT_COUNT'].nil? || ENV['PATIENT_COUNT'].to_i <= 0
@@ -96,9 +96,9 @@ namespace :perf do
   #
   desc 'Completely populate the performance database'
   task populate: :environment do
-    unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+    unless Rails.env.development? || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
       puts 'bundle exec rails perf:populate'
-      raise 'This task is only for use in a development environment' 
+      raise 'This task is only for use in a development environment'
     end
 
     puts 'This task will run the following rake tasks:'
@@ -167,7 +167,7 @@ namespace :perf do
   #
   desc 'Configure the users in the database for performance testing'
   task setup_performance_test_users: :environment do
-    raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+    raise 'This task is only for use in a development environment' unless Rails.env.development? || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
     num_jurisdictions = Jurisdiction.count
     puts "Creating users for #{num_jurisdictions} jurisdictions\n"

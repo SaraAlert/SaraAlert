@@ -6,11 +6,13 @@ import _ from 'lodash';
 
 import Patient from '../../components/patient/Patient';
 import FollowUpFlagPanel from '../../components/patient/follow_up_flag/FollowUpFlagPanel';
+import CommonExposureCohortTable from '../../components/patient/common_exposure_cohorts/CommonExposureCohortsTable';
 import InfoTooltip from '../../components/util/InfoTooltip';
 import BadgeHoH from '../../components/patient/icons/BadgeHoH';
 import { Heading } from '../../utils/Heading';
 import { mockUser1 } from '../mocks/mockUsers';
 import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5, mockPatient6, blankIsolationMockPatient, blankExposureMockPatient } from '../mocks/mockPatients';
+import { mockCommonExposureCohort1, mockCommonExposureCohort2 } from '../mocks/mockCommonExposureCohorts';
 import { mockJurisdictionPaths } from '../mocks/mockJurisdiction';
 import { formatName, formatDate, formatRace, convertCommonLanguageCodeToName } from '../helpers';
 
@@ -37,12 +39,12 @@ const plannedTravelLabels = ['Type', 'Place', 'Port of Departure', 'Start Date',
 const plannedTravelFields = ['additional_planned_travel_type', ['additional_planned_travel_destination_country', 'additional_planned_travel_destination_state'], 'additional_planned_travel_port_of_departure', 'additional_planned_travel_start_date', 'additional_planned_travel_end_date'];
 const riskFactors = [
   { key: 'Close Contact with a Known Case', val: mockPatient2.contact_of_known_case_id },
-  { key: 'Member of a Common Exposure Cohort', val: mockPatient2.member_of_a_common_exposure_cohort_type },
   { key: 'Travel from Affected Country or Area', val: null },
   { key: 'Was in Healthcare Facility with Known Cases', val: mockPatient2.was_in_health_care_facility_with_known_cases_facility_name },
   { key: 'Laboratory Personnel', val: mockPatient2.laboratory_personnel_facility_name },
   { key: 'Healthcare Personnel', val: mockPatient2.healthcare_personnel_facility_name },
   { key: 'Crew on Passenger or Cargo Flight', val: null },
+  { key: 'Member of a Common Exposure Cohort', val: null },
 ];
 
 function getWrapper(additionalProps) {
@@ -557,7 +559,7 @@ describe('Patient', () => {
   });
 
   it('Properly renders potential exposure information section', () => {
-    const additionalProps = { details: mockPatient2 };
+    const additionalProps = { details: { ...mockPatient2, common_exposure_cohorts: [mockCommonExposureCohort1, mockCommonExposureCohort2] } };
     const wrapper = getWrapper(additionalProps);
     const section = wrapper.find('#potential-exposure-information');
     expect(section.find(Heading).children().at(0).text()).toEqual('Potential Exposure');
@@ -580,6 +582,7 @@ describe('Patient', () => {
         expect(section.find('li').at(index).find('.risk-val').exists()).toBe(false);
       }
     });
+    expect(section.find(CommonExposureCohortTable).exists()).toBe(true);
   });
 
   it('Displays "None specified" if there are no risk factors', () => {

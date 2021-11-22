@@ -31,7 +31,9 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
                                    lab_2_type lab_2_specimen_collection lab_2_report lab_2_result
                                    vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number vaccine_1_notes
                                    vaccine_2_group_name vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number vaccine_2_notes
-                                   vaccine_3_group_name vaccine_3_product_name vaccine_3_administration_date vaccine_3_dose_number vaccine_3_notes].freeze
+                                   vaccine_3_group_name vaccine_3_product_name vaccine_3_administration_date vaccine_3_dose_number vaccine_3_notes
+                                   cohort_1_type cohort_1_name cohort_1_location
+                                   cohort_2_type cohort_2_name cohort_2_location].freeze
   EPI_X_MONITORED_ADDRESS_FIELDS = {
     monitored_address_line_1: :address_line_1,
     monitored_address_city: :address_city,
@@ -237,15 +239,17 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(NORMALIZED_ENUMS[field][normalize_enum_field_value(row[index])].to_s, patient[field].to_s, err_msg)
           elsif TIME_FIELDS.include?(field)
             assert_equal(NORMALIZED_INVERTED_TIME_OPTIONS[normalize_enum_field_value(row[index])].to_s, patient[field].to_s, err_msg)
-          elsif NON_IMPORTED_PATIENT_FIELDS.exclude?(field)
+          elsif NON_IMPORTED_PATIENT_FIELDS.exclude?(field) && field.present?
             assert_equal(row[index].to_s, patient[field].to_s, err_msg)
           end
         end
-        verify_laboratory(patient, row[87..90]) if row[87..90].filter(&:present?).any?
-        verify_laboratory(patient, row[91..94]) if row[91..94].filter(&:present?).any?
-        verify_vaccine(patient, row[102..106]) if row[102..106].filter(&:present?).any?
-        verify_vaccine(patient, row[107..111]) if row[107..111].filter(&:present?).any?
-        verify_vaccine(patient, row[114..118]) if row[114..118].filter(&:present?).any?
+        verify_laboratory(patient, row[87..90], 1) if row[87..90].filter(&:present?).any?
+        verify_laboratory(patient, row[91..94], 2) if row[91..94].filter(&:present?).any?
+        verify_vaccine(patient, row[102..106], 1) if row[102..106].filter(&:present?).any?
+        verify_vaccine(patient, row[107..111], 2) if row[107..111].filter(&:present?).any?
+        verify_vaccine(patient, row[114..118], 3) if row[114..118].filter(&:present?).any?
+        verify_cohort(patient, row[132..134], 1) if row[132..134].filter(&:present?).any?
+        verify_cohort(patient, row[135..137], 2) if row[135..137].filter(&:present?).any?
         assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_num}")
       end
     end
@@ -328,7 +332,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def verify_laboratory(patient, data)
+  def verify_laboratory(patient, data, num)
     laboratory = Laboratory.where(
       patient_id: patient.id,
       lab_type: data[0].to_s,
@@ -336,10 +340,10 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       report: data[2],
       result: data[3].to_s
     )
-    assert laboratory.exists?, "Lab result for patient: #{patient.first_name} #{patient.last_name} not found"
+    assert laboratory.exists?, "Lab result #{num} for patient: #{patient.first_name} #{patient.last_name} not found"
   end
 
-  def verify_vaccine(patient, data)
+  def verify_vaccine(patient, data, num)
     vaccine = Vaccine.where(
       patient_id: patient.id,
       group_name: NORMALIZED_ENUMS[:group_name][normalize_enum_field_value(data[0])],
@@ -348,7 +352,17 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       dose_number: NORMALIZED_ENUMS[:dose_number][normalize_enum_field_value(data[3])],
       notes: data[4]
     )
-    assert vaccine.exists?, "Vaccination for patient: #{patient.first_name} #{patient.last_name} not found"
+    assert vaccine.exists?, "Vaccination #{num} for patient: #{patient.first_name} #{patient.last_name} not found"
+  end
+
+  def verify_cohort(patient, data, num)
+    cohort = CommonExposureCohort.where(
+      patient_id: patient.id,
+      cohort_type: data[0].to_s,
+      cohort_name: data[1].to_s,
+      cohort_location: data[2].to_s
+    )
+    assert cohort.exists?, "Common Exposure Cohort #{num} for patient: #{patient.first_name} #{patient.last_name} not found"
   end
 
   def verify_existence(element, label, value, index)

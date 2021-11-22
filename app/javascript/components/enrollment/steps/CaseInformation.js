@@ -340,7 +340,6 @@ const staticValidations = {
   healthcare_personnel_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   laboratory_personnel_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   was_in_health_care_facility_with_known_cases_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  member_of_a_common_exposure_cohort_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   travel_to_affected_country_or_area: yup.boolean().nullable(),
   was_in_health_care_facility_with_known_cases: yup.boolean().nullable(),
   crew_on_passenger_or_cargo_flight: yup.boolean().nullable(),

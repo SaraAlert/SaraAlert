@@ -59,7 +59,7 @@ function formatPhoneNumberVisually(phone_number) {
     .replace(/\D/g, '')
     .match(/^(\d{3})(\d{3})(\d{4})$/);
   return match ? `${match[1]}-${match[2]}-${match[3]}` : '';
-};
+}
 
 /**
  * Transforms a phone number string into the e164 format that the server uses
@@ -112,9 +112,9 @@ function formatRace(patient) {
  * @param {*} date : a date of birth value in YYYY-MM-DD format
  * @returns boolean true if patient is under 18, false if not
  */
- function isMinor(date) {
+function isMinor(date) {
   return moment(date, 'YYYY-MM-DD').isAfter(moment().subtract(18, 'years'));
- }
+}
 
 /**
  * Formats values in the date of birth column to be human readable and include whether that DOB indicates a minor.

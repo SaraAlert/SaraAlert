@@ -21,6 +21,7 @@
                       race_options: ValidationHelper::RACE_OPTIONS,
                       blocked_sms: @patient.blocked_sms,
                       first_positive_lab: @patient.laboratories.where(result: 'positive').order(:specimen_collection).first,
+                      common_exposure_cohorts: @patient.common_exposure_cohorts,
                       symptomatic_assessments_exist: @patient.assessments.where(symptomatic: true).any?,
                       workflow: @dashboard
                     }) %>

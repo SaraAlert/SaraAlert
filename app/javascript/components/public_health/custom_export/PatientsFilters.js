@@ -173,6 +173,7 @@ class PatientsFilters extends React.Component {
                 }
                 authenticity_token={this.props.authenticity_token}
                 updateStickySettings={false}
+                jurisdiction_id={this.props.jurisdiction.id}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 all_assigned_users={this.props.all_assigned_users}
               />

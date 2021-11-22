@@ -3,7 +3,7 @@
 namespace :exports do
   desc 'Export record to PHDC format'
   task patient_to_phdc: :environment do
-    raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+    raise 'This task is only for use in a development environment' unless Rails.env.development? || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
     patient_id = ENV['ID']
     unless Patient.exists?(patient_id)
       puts "Error: Patient with id #{patient_id} not found"
@@ -16,7 +16,7 @@ namespace :exports do
 
   desc 'Export all records to PHDC format'
   task patients_to_phdc: :environment do
-    raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+    raise 'This task is only for use in a development environment' unless Rails.env.development? || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
     phdc_converter = PHDC::Serializer.new
 

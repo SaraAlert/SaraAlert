@@ -43,13 +43,13 @@ class AdvancedFilter extends React.Component {
 
     // For each multi type filter, format the options in the way react-select requires
     advancedFilterOptions
-      .filter(option => option.type === 'multi')
+      .filter(filter => filter.type === 'multi')
       .forEach(multiFilter => {
-        const filterIndex = advancedFilterOptions.findIndex(option => option.name === multiFilter.name);
+        const filterIndex = advancedFilterOptions.findIndex(filter => filter.name === multiFilter.name);
         let formattedOptions = [];
         if (multiFilter.name === 'jurisdiction') {
           formattedOptions = _.toPairs(this.props.jurisdiction_paths).map(([id, path]) => {
-            return { label: path, value: id };
+            return { value: id, label: path };
           });
         } else if (multiFilter.name === 'assigned-user') {
           formattedOptions = this.props.all_assigned_users.map(user => {
@@ -63,18 +63,84 @@ class AdvancedFilter extends React.Component {
         advancedFilterOptions[Number(filterIndex)].options = formattedOptions;
       });
 
+    advancedFilterOptions
+      .filter(filter => filter.type === 'combination')
+      .forEach(combinationFilter => {
+        const filterIndex = advancedFilterOptions.findIndex(filter => filter.name === combinationFilter.name);
+        combinationFilter.fields
+          .filter(nestedFilter => nestedFilter.type === 'multi')
+          .forEach(nestedFilter => {
+            const nestedFilterIndex = combinationFilter.fields.findIndex(nestedOption => nestedOption.name === nestedFilter.name);
+            advancedFilterOptions[Number(filterIndex)].fields[Number(nestedFilterIndex)].options = nestedFilter.options.map(option => {
+              return { value: option, label: option };
+            });
+          });
+      });
+
+    const dynamicallyLoadedOptions = {};
+
+    // Dynamically populate common exposure cohort name/description and location options
+    axios
+      .post(window.BASE_PATH + '/jurisdictions/common_exposure_cohorts', {
+        query: {
+          jurisdiction: this.props.jurisdiction_id,
+          scope: 'all',
+        },
+      })
+      .then(response => {
+        advancedFilterOptions
+          .find(filter => filter.name === 'common-exposure-cohort')
+          ?.fields?.forEach(nestedFilter => {
+            if (nestedFilter.name === 'cohort-type') {
+              dynamicallyLoadedOptions['cohort-type'] = nestedFilter.options;
+            } else if (nestedFilter.name === 'cohort-name' && response?.data?.cohort_names) {
+              nestedFilter.options = response.data.cohort_names.map(option => {
+                return { value: option, label: option };
+              });
+              dynamicallyLoadedOptions['cohort-name'] = nestedFilter.options;
+            } else if (nestedFilter.name === 'cohort-location' && response?.data?.cohort_locations) {
+              nestedFilter.options = response.data.cohort_locations.map(option => {
+                return { value: option, label: option };
+              });
+              dynamicallyLoadedOptions['cohort-location'] = nestedFilter.options;
+            }
+          });
+      })
+      // Load saved filters after blank options are replaced by dynamically loaded ones
+      .then(() => this.loadSavedFilters(dynamicallyLoadedOptions));
+
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
       this.addStatement();
     }
+  }
 
+  /**
+   * Grab saved filters
+   */
+  loadSavedFilters = dynamicallyLoadedOptions => {
     // Set a timestamp to include in url to ensure browser cache is not re-used on page navigation
     const timestamp = `?t=${new Date().getTime()}`;
 
-    // Grab saved filters
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios.get(window.BASE_PATH + '/user_filters' + timestamp).then(response => {
-      this.setState({ savedFilters: response.data }, () => {
+      const savedFilters = response.data;
+      savedFilters.forEach(savedFilter => {
+        savedFilter.contents
+          ?.filter(filter => filter?.filterOption?.name === 'common-exposure-cohort')
+          .forEach(filter => {
+            filter.filterOption?.fields?.forEach(nestedFilter => {
+              if (nestedFilter.name === 'cohort-type' && dynamicallyLoadedOptions['cohort-type']) {
+                nestedFilter.options = dynamicallyLoadedOptions['cohort-type'];
+              } else if (nestedFilter.name === 'cohort-name' && dynamicallyLoadedOptions['cohort-name']) {
+                nestedFilter.options = dynamicallyLoadedOptions['cohort-name'];
+              } else if (nestedFilter.name === 'cohort-location' && dynamicallyLoadedOptions['cohort-location']) {
+                nestedFilter.options = dynamicallyLoadedOptions['cohort-location'];
+              }
+            });
+          });
+      });
+      this.setState({ savedFilters }, () => {
         // Apply filter if it exists in local storage
         let sessionFilter = this.getLocalStorage(`SaraFilter`);
         if (this.props.updateStickySettings) {
@@ -91,7 +157,7 @@ class AdvancedFilter extends React.Component {
         }
       });
     });
-  }
+  };
 
   /**
    * Get a local storage value
@@ -533,8 +599,7 @@ class AdvancedFilter extends React.Component {
    * @param {*} value - Current filter value
    */
   changeMultiValue = (index, value) => {
-    value = !value ? [] : value;
-    this.changeValue(index, value);
+    this.changeValue(index, value || []);
   };
 
   /**
@@ -547,6 +612,19 @@ class AdvancedFilter extends React.Component {
     const currentCombinationFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
     const newValue = [...currentCombinationFilter.value];
     newValue[parseInt(combinationIndex)] = value;
+    this.changeValue(statementIndex, newValue);
+  };
+
+  /**
+   * Change value of a filter statement of type multi-select within a combination filter
+   * @param {Number} statementIndex - Current overall statement filter index
+   * @param {Number} combinationIndex - Index of the statement within the combination filter that needs to be updated
+   * @param {*} value - New value for the statement at the combination index
+   */
+  changeCombinationMultiValue = (statementIndex, combinationIndex, value) => {
+    const currentCombinationFilter = this.state.activeFilterOptions[parseInt(statementIndex)];
+    const newValue = [...currentCombinationFilter.value];
+    newValue[parseInt(combinationIndex)]['value'] = value || [];
     this.changeValue(statementIndex, newValue);
   };
 
@@ -582,6 +660,8 @@ class AdvancedFilter extends React.Component {
     let value = null;
     if (combinationFilter.type === 'select') {
       value = { name: name, value: combinationFilter.options[0] };
+    } else if (combinationFilter.type === 'multi') {
+      value = { name: name, value: [] };
     } else if (combinationFilter.type === 'date') {
       value = {
         name: name,
@@ -739,6 +819,7 @@ class AdvancedFilter extends React.Component {
         className="advanced-filter-options-dropdown"
         styles={cursorPointerStyle}
         theme={bootstrapSelectTheme}
+        menuPortalTarget={document.body}
       />
     );
   };
@@ -900,9 +981,12 @@ class AdvancedFilter extends React.Component {
           className="advanced-filter-multi-select w-100"
           placeholder=""
           aria-label="Advanced Filter Multi-select Options"
-          onChange={event => {
-            this.changeMultiValue(index, event);
+          onChange={value => {
+            this.changeMultiValue(index, value);
           }}
+          styles={cursorPointerStyle}
+          theme={bootstrapSelectTheme}
+          menuPortalTarget={document.body}
         />
         {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
       </div>
@@ -955,7 +1039,7 @@ class AdvancedFilter extends React.Component {
                 min="0"
                 onChange={event => this.changeValue(index, { firstBound: event?.target?.value, secondBound: value.secondBound })}
               />
-              <div className="text-center my-auto mx-4">
+              <div className="text-center my-1 mx-4">
                 <b>AND</b>
               </div>
               <Form.Control
@@ -1139,6 +1223,7 @@ class AdvancedFilter extends React.Component {
    * @param {*} combinationValue - Value of this statement within the combination filter (name/value pair)
    */
   renderCombinationStatement = (filter, statementIndex, combinationIndex, total, combinationValue) => {
+    const combinationFilter = this.getCombinationFilter(filter, combinationValue.name);
     return (
       <React.Fragment key={'rowkey-filter-m' + combinationIndex}>
         {combinationIndex > 0 && combinationIndex < total && (
@@ -1167,7 +1252,7 @@ class AdvancedFilter extends React.Component {
                   );
                 })}
               </Form.Control>
-              {this.getCombinationFilter(filter, combinationValue.name).type === 'select' && (
+              {combinationFilter?.type === 'select' && (
                 <Form.Control
                   as="select"
                   value={combinationValue.value}
@@ -1178,12 +1263,29 @@ class AdvancedFilter extends React.Component {
                   onChange={event => {
                     this.changeCombinationValue(statementIndex, combinationIndex, { name: combinationValue.name, value: event.target.value });
                   }}>
-                  {this.getCombinationFilter(filter, combinationValue.name).options.map((option, o_index) => {
+                  {combinationFilter.options.map((option, o_index) => {
                     return <option key={o_index}>{option}</option>;
                   })}
                 </Form.Control>
               )}
-              {this.getCombinationFilter(filter, combinationValue.name).type === 'date' && (
+              {combinationFilter?.type === 'multi' && (
+                <Select
+                  closeMenuOnSelect={false}
+                  isMulti
+                  value={combinationValue.value}
+                  options={combinationFilter.options}
+                  className="advanced-filter-combination-multi-select-options advanced-filter-multi-select-options my-0 mx-3 py-0"
+                  placeholder=""
+                  aria-label="Advanced Filter Combination Multi-select Options"
+                  onChange={value => {
+                    this.changeCombinationMultiValue(statementIndex, combinationIndex, value);
+                  }}
+                  styles={cursorPointerStyle}
+                  theme={bootstrapSelectTheme}
+                  menuPortalTarget={document.body}
+                />
+              )}
+              {combinationFilter?.type === 'date' && (
                 <React.Fragment>
                   <Form.Control
                     as="select"
@@ -1223,7 +1325,7 @@ class AdvancedFilter extends React.Component {
               )}
               {combinationIndex + 1 === total && combinationIndex + 1 < filter.fields.length && (
                 <React.Fragment>
-                  <div className="my-auto" data-for={`${filter.name}-${statementIndex}-combination-add`} data-tip="">
+                  <div className="my-1" data-for={`${filter.name}-${statementIndex}-combination-add`} data-tip="">
                     <Button
                       className="btn-circle"
                       variant="secondary"
@@ -1517,6 +1619,7 @@ AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
   advancedFilterUpdate: PropTypes.func,
   updateStickySettings: PropTypes.bool,
+  jurisdiction_id: PropTypes.number,
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
 };

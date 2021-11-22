@@ -38,32 +38,36 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                       'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation', 'Reporter ID', 'Workflow',
                       'First Positive Lab', 'Follow-Up Reason', 'Follow-Up Note'].freeze
 
-  SARA_ALERT_FORMAT_FIELDS = %i[first_name middle_name last_name date_of_birth sex white black_or_african_american american_indian_or_alaska_native asian
-                                native_hawaiian_or_other_pacific_islander ethnicity primary_language secondary_language interpretation_required nationality
-                                user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss address_line_1 address_city address_state address_line_2
-                                address_zip address_county foreign_address_line_1 foreign_address_city foreign_address_country foreign_address_line_2
-                                foreign_address_zip foreign_address_line_3 foreign_address_state monitored_address_line_1 monitored_address_city
-                                monitored_address_state monitored_address_line_2 monitored_address_zip monitored_address_county foreign_monitored_address_line_1
-                                foreign_monitored_address_city foreign_monitored_address_state foreign_monitored_address_line_2 foreign_monitored_address_zip
-                                foreign_monitored_address_county preferred_contact_method primary_telephone primary_telephone_type secondary_telephone
-                                secondary_telephone_type preferred_contact_time email port_of_origin date_of_departure source_of_report flight_or_vessel_number
-                                flight_or_vessel_carrier port_of_entry_into_usa date_of_arrival travel_related_notes additional_planned_travel_type
-                                additional_planned_travel_destination additional_planned_travel_destination_state additional_planned_travel_destination_country
-                                additional_planned_travel_port_of_departure additional_planned_travel_start_date additional_planned_travel_end_date
-                                additional_planned_travel_related_notes last_date_of_exposure potential_exposure_location potential_exposure_country
-                                contact_of_known_case contact_of_known_case_id travel_to_affected_country_or_area was_in_health_care_facility_with_known_cases
-                                was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel laboratory_personnel_facility_name
-                                healthcare_personnel healthcare_personnel_facility_name crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort
-                                member_of_a_common_exposure_cohort_type exposure_risk_assessment monitoring_plan exposure_notes full_status symptom_onset
-                                case_status lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report
-                                lab_2_result jurisdiction_path assigned_user gender_identity sexual_orientation race_other race_unknown
-                                race_refused_to_answer vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number
-                                vaccine_1_notes vaccine_2_group_name vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number
-                                vaccine_2_notes follow_up_reason follow_up_note vaccine_3_group_name vaccine_3_product_name vaccine_3_administration_date
-                                vaccine_3_dose_number vaccine_3_notes international_telephone contact_type contact_name alternate_contact_type
-                                alternate_contact_name alternate_preferred_contact_method alternate_preferred_contact_time alternate_primary_telephone
-                                alternate_primary_telephone_type alternate_secondary_telephone alternate_secondary_telephone_type
-                                alternate_international_telephone alternate_email].freeze
+  SARA_ALERT_FORMAT_FIELDS = [:first_name, :middle_name, :last_name, :date_of_birth, :sex, :white, :black_or_african_american,
+                              :american_indian_or_alaska_native, :asian, :native_hawaiian_or_other_pacific_islander, :ethnicity, :primary_language,
+                              :secondary_language, :interpretation_required, :nationality, :user_defined_id_statelocal, :user_defined_id_cdc,
+                              :user_defined_id_nndss, :address_line_1, :address_city, :address_state, :address_line_2, :address_zip, :address_county,
+                              :foreign_address_line_1, :foreign_address_city, :foreign_address_country, :foreign_address_line_2, :foreign_address_zip,
+                              :foreign_address_line_3, :foreign_address_state, :monitored_address_line_1, :monitored_address_city, :monitored_address_state,
+                              :monitored_address_line_2, :monitored_address_zip, :monitored_address_county, :foreign_monitored_address_line_1,
+                              :foreign_monitored_address_city, :foreign_monitored_address_state, :foreign_monitored_address_line_2,
+                              :foreign_monitored_address_zip, :foreign_monitored_address_county, :preferred_contact_method, :primary_telephone,
+                              :primary_telephone_type, :secondary_telephone, :secondary_telephone_type, :preferred_contact_time, :email, :port_of_origin,
+                              :date_of_departure, :source_of_report, :flight_or_vessel_number, :flight_or_vessel_carrier, :port_of_entry_into_usa,
+                              :date_of_arrival, :travel_related_notes, :additional_planned_travel_type, :additional_planned_travel_destination,
+                              :additional_planned_travel_destination_state, :additional_planned_travel_destination_country,
+                              :additional_planned_travel_port_of_departure, :additional_planned_travel_start_date, :additional_planned_travel_end_date,
+                              :additional_planned_travel_related_notes, :last_date_of_exposure, :potential_exposure_location, :potential_exposure_country,
+                              :contact_of_known_case, :contact_of_known_case_id, :travel_to_affected_country_or_area,
+                              :was_in_health_care_facility_with_known_cases, :was_in_health_care_facility_with_known_cases_facility_name, :laboratory_personnel,
+                              :laboratory_personnel_facility_name, :healthcare_personnel, :healthcare_personnel_facility_name,
+                              :crew_on_passenger_or_cargo_flight, :member_of_a_common_exposure_cohort, nil, :exposure_risk_assessment, :monitoring_plan,
+                              :exposure_notes, :full_status, :symptom_onset, :case_status, :lab_1_type, :lab_1_specimen_collection, :lab_1_report,
+                              :lab_1_result, :lab_2_type, :lab_2_specimen_collection, :lab_2_report, :lab_2_result, :jurisdiction_path, :assigned_user,
+                              :gender_identity, :sexual_orientation, :race_other, :race_unknown, :race_refused_to_answer, :vaccine_1_group_name,
+                              :vaccine_1_product_name, :vaccine_1_administration_date, :vaccine_1_dose_number, :vaccine_1_notes, :vaccine_2_group_name,
+                              :vaccine_2_product_name, :vaccine_2_administration_date, :vaccine_2_dose_number, :vaccine_2_notes, :follow_up_reason,
+                              :follow_up_note, :vaccine_3_group_name, :vaccine_3_product_name, :vaccine_3_administration_date, :vaccine_3_dose_number,
+                              :vaccine_3_notes, :international_telephone, :contact_type, :contact_name, :alternate_contact_type, :alternate_contact_name,
+                              :alternate_preferred_contact_method, :alternate_preferred_contact_time, :alternate_primary_telephone,
+                              :alternate_primary_telephone_type, :alternate_secondary_telephone, :alternate_secondary_telephone_type,
+                              :alternate_international_telephone, :alternate_email, :cohort_1_type, :cohort_1_name, :cohort_1_location, :cohort_2_type,
+                              :cohort_2_name, :cohort_2_location].freeze
 
   SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                                'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
@@ -91,11 +95,12 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                'Race Refused to Answer', 'Vaccine 1 Group Name', 'Vaccine 1 Product Name', 'Vaccine 1 Administration Date',
                                'Vaccine 1 Dose Number', 'Vaccine 1 Notes', 'Vaccine 2 Group Name', 'Vaccine 2 Product Name', 'Vaccine 2 Administration Date',
                                'Vaccine 2 Dose Number', 'Vaccine 2 Notes', 'Follow-Up Reason', 'Follow-Up Note', 'Vaccine 3 Group Name',
-                               'Vaccine 3 Product Name', 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes',
-                               'International Telephone', 'Primary Contact Relationship', 'Primary Contact Name', 'Alternate Contact Relationship',
-                               'Alternate Contact Name', 'Alternate Preferred Contact Method', 'Alternate Preferred Contact Time',
-                               'Alternate Primary Telephone', 'Alternate Primary Telephone Type', 'Alternate Secondary Telephone',
-                               'Alternate Secondary Telephone Type', 'Alternate International Telephone', 'Alternate Email'].freeze
+                               'Vaccine 3 Product Name', 'Vaccine 3 Administration Date', 'Vaccine 3 Dose Number', 'Vaccine 3 Notes', 'International Telephone',
+                               'Primary Contact Relationship', 'Primary Contact Name', 'Alternate Contact Relationship', 'Alternate Contact Name',
+                               'Alternate Preferred Contact Method', 'Alternate Preferred Contact Time', 'Alternate Primary Telephone',
+                               'Alternate Primary Telephone Type', 'Alternate Secondary Telephone', 'Alternate Secondary Telephone Type',
+                               'Alternate International Telephone', 'Alternate Email', 'Cohort 1 Type', 'Cohort 1 Name/Description', 'Cohort 1 Location',
+                               'Cohort 2 Type', 'Cohort 2 Name/Description', 'Cohort 2 Location'].freeze
 
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
   # of fields between Sara Alert Format and Full History Patients
@@ -119,6 +124,20 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
   FULL_HISTORY_VACCINES_HEADERS = ['Patient ID', 'Vaccine Group', 'Product Name', 'Administration Date', 'Dose Number', 'Notes', 'Created At',
                                    'Updated At'].freeze
 
+  FULL_HISTORY_CLOSE_CONTACT_FIELDS = %i[patient_id first_name last_name primary_telephone email contact_attempts last_date_of_exposure assigned_user notes
+                                         enrolled_id created_at updated_at].freeze
+
+  FULL_HISTORY_CLOSE_CONTACT_HEADERS = ['Patient ID', 'First Name', 'Last Name', 'Primary Telephone', 'Email', 'Contact Attempts', 'Last Date of Exposure',
+                                        'Assigned User', 'Notes', 'Enrolled ID', 'Created At', 'Updated At'].freeze
+
+  FULL_HISTORY_COMMON_EXPOSURE_COHORT_FIELDS = %i[patient_id cohort_type cohort_name cohort_location created_at updated_at].freeze
+
+  FULL_HISTORY_COMMON_EXPOSURE_COHORT_HEADERS = ['Patient ID', 'Cohort Type', 'Cohort Name/Description', 'Cohort Location', 'Created At', 'Updated At'].freeze
+
+  FULL_HISTORY_TRANSFER_FIELDS = %i[patient_id who from_jurisdiction to_jurisdiction created_at updated_at].freeze
+
+  FULL_HISTORY_TRANSFER_HEADERS = ['Patient ID', 'Who Initiated Transfer', 'From Jurisdiction', 'To Jurisdiction', 'Created At', 'Updated At'].freeze
+
   FULL_HISTORY_HISTORIES_FIELDS = %i[patient_id id original_comment_id comment created_by history_type created_at updated_at deleted_by delete_reason].freeze
 
   FULL_HISTORY_HISTORIES_HEADERS = ['Patient ID', 'Comment ID', 'Original Comment ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At',
@@ -136,11 +155,10 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                 flight_or_vessel_carrier port_of_entry_into_usa additional_planned_travel_type additional_planned_travel_destination
                 additional_planned_travel_destination_state additional_planned_travel_destination_country additional_planned_travel_port_of_departure
                 potential_exposure_location potential_exposure_country contact_of_known_case_id was_in_health_care_facility_with_known_cases_facility_name
-                laboratory_personnel_facility_name healthcare_personnel_facility_name member_of_a_common_exposure_cohort_type exposure_risk_assessment
-                monitoring_plan case_status gender_identity sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason contact_type
-                contact_name alternate_contact_type alternate_contact_name alternate_preferred_contact_method alternate_preferred_contact_time
-                alternate_primary_telephone_type alternate_secondary_telephone_type alternate_international_telephone
-                alternate_email],
+                laboratory_personnel_facility_name healthcare_personnel_facility_name exposure_risk_assessment monitoring_plan case_status gender_identity
+                sexual_orientation risk_level monitoring_reason public_health_action follow_up_reason contact_type contact_name alternate_contact_type
+                alternate_contact_name alternate_preferred_contact_method alternate_preferred_contact_time alternate_primary_telephone_type
+                alternate_secondary_telephone_type alternate_international_telephone alternate_email],
     notes: %i[travel_related_notes additional_planned_travel_related_notes exposure_notes follow_up_note],
     dates: %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date last_date_of_exposure
               symptom_onset first_positive_lab_at extended_isolation contact_became_case_at],
@@ -157,7 +175,8 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     lab_fields: %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result],
     vaccine_fields: %i[vaccine_1_group_name vaccine_1_product_name vaccine_1_administration_date vaccine_1_dose_number vaccine_1_notes vaccine_2_group_name
                        vaccine_2_product_name vaccine_2_administration_date vaccine_2_dose_number vaccine_2_notes vaccine_3_group_name vaccine_3_product_name
-                       vaccine_3_administration_date vaccine_3_dose_number vaccine_3_notes]
+                       vaccine_3_administration_date vaccine_3_dose_number vaccine_3_notes],
+    cohort_fields: %i[cohort_1_type cohort_1_name cohort_1_location cohort_2_type cohort_2_name cohort_2_location]
   }.freeze
 
   PATIENT_FIELD_NAMES = {
@@ -277,8 +296,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     healthcare_personnel: 'Health Care Personnel',
     healthcare_personnel_facility_name: 'Health Care Personnel Facility Name',
     crew_on_passenger_or_cargo_flight: 'Crew on Passenger or Cargo Flight',
-    member_of_a_common_exposure_cohort: 'Member of a Common Exposure Cohort',
-    member_of_a_common_exposure_cohort_type: 'Common Exposure Cohort Name',
+    member_of_a_common_exposure_cohort: 'Member of a Common Exposure Cohort?',
     exposure_notes: 'Exposure Notes',
     # Enrollment Info - Record Creation and Updates
     creator: 'Enroller',
@@ -387,6 +405,19 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     updated_at: 'Close Contact Updated Date'
   }.freeze
 
+  COMMON_EXPOSURE_COHORT_FIELD_NAMES = {
+    patient_id: 'Sara Alert ID',
+    user_defined_id_statelocal: 'State/Local ID',
+    user_defined_id_cdc: 'CDC ID',
+    user_defined_id_nndss: 'NNDSS ID',
+    id: 'Common Exposure Cohort ID',
+    cohort_type: 'Cohort Type',
+    cohort_name: 'Cohort Name/Description',
+    cohort_location: 'Cohort Location',
+    created_at: 'Common Exposure Cohort Created Date',
+    updated_at: 'Common Exposure Cohort Updated Date'
+  }.freeze
+
   TRANSFER_FIELD_NAMES = {
     patient_id: 'Sara Alert ID',
     user_defined_id_statelocal: 'State/Local ID',
@@ -422,6 +453,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     laboratories: LABORATORY_FIELD_NAMES,
     vaccines: VACCINE_FIELD_NAMES,
     close_contacts: CLOSE_CONTACT_FIELD_NAMES,
+    common_exposure_cohorts: COMMON_EXPOSURE_COHORT_FIELD_NAMES,
     transfers: TRANSFER_FIELD_NAMES,
     histories: HISTORY_FIELD_NAMES
   }.freeze
@@ -510,8 +542,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                                                   was_in_health_care_facility_with_known_cases
                                                                   was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel
                                                                   laboratory_personnel_facility_name healthcare_personnel healthcare_personnel_facility_name
-                                                                  crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort
-                                                                  member_of_a_common_exposure_cohort_type exposure_notes])
+                                                                  crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort exposure_notes])
                 ]
               },
               rct_node(:patients, 'Record Creation and Updates', %i[creator created_at updated_at])
@@ -561,6 +592,12 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                                            enrolled_id created_at updated_at])]
   }.freeze
 
+  COMMON_EXPOSURE_COHORTS_EXPORT_OPTIONS = {
+    label: 'Common Exposure Cohorts',
+    nodes: [rct_node(:common_exposure_cohorts, 'Common Exposure Cohorts', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id
+                                                                             cohort_type cohort_name cohort_location created_at updated_at])]
+  }.freeze
+
   TRANSFERS_EXPORT_OPTIONS = {
     label: 'Transfers',
     nodes: [rct_node(:transfers, 'Transfers', %i[patient_id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss id who from_jurisdiction
@@ -579,6 +616,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
     laboratories: LABORATORIES_EXPORT_OPTIONS,
     vaccines: VACCINES_EXPORT_OPTIONS,
     close_contacts: CLOSE_CONTACTS_EXPORT_OPTIONS,
+    common_exposure_cohorts: COMMON_EXPOSURE_COHORTS_EXPORT_OPTIONS,
     transfers: TRANSFERS_EXPORT_OPTIONS,
     histories: HISTORIES_EXPORT_OPTIONS
   }.freeze
@@ -605,6 +643,21 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
         checked: FULL_HISTORY_VACCINES_FIELDS,
         headers: FULL_HISTORY_VACCINES_HEADERS,
         tab: 'Vaccinations'
+      },
+      close_contacts: {
+        checked: FULL_HISTORY_CLOSE_CONTACT_FIELDS,
+        headers: FULL_HISTORY_CLOSE_CONTACT_HEADERS,
+        tab: 'Close Contacts'
+      },
+      common_exposure_cohorts: {
+        checked: FULL_HISTORY_COMMON_EXPOSURE_COHORT_FIELDS,
+        headers: FULL_HISTORY_COMMON_EXPOSURE_COHORT_HEADERS,
+        tab: 'Common Exposure Cohorts'
+      },
+      transfers: {
+        checked: FULL_HISTORY_TRANSFER_FIELDS,
+        headers: FULL_HISTORY_TRANSFER_HEADERS,
+        tab: 'Transfers'
       },
       histories: {
         checked: FULL_HISTORY_HISTORIES_FIELDS,

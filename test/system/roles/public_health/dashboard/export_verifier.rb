@@ -233,19 +233,19 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     data = settings[:data].deep_dup
 
     patient_ids = patients.pluck(:id)
-    validate_custom_export_monitoree_details(patients, data, settings, export_file) if settings.dig(:data, :patients, :checked)&.present?
+    verify_custom_export_monitoree_details(patients, data, settings, export_file) if settings.dig(:data, :patients, :checked)&.present?
 
-    validate_custom_export_assessmemts(patients, data, settings, export_file) if settings.dig(:data, :assessments, :checked)&.present?
+    verify_custom_export_assessmemts(patients, data, settings, export_file) if settings.dig(:data, :assessments, :checked)&.present?
 
-    validate_custom_export_vaccines(patients, data, settings, export_file) if settings.dig(:data, :vaccines, :checked)&.present?
+    verify_custom_export_vaccines(patients, data, settings, export_file) if settings.dig(:data, :vaccines, :checked)&.present?
 
     if settings.dig(:data, :laboratories, :checked)&.present?
       laboratories = laboratories_by_patient_ids(patient_ids)
       laboratories_sheet = export_file.sheet('Lab Results')
       assert_equal(laboratories.size, laboratories_sheet.last_row - 1, 'Number of laboratories in Lab Reports List')
 
-      # TODO: Validate lab headers
-      # TODO: Validate lab cells
+      # TODO: Verify lab headers
+      # TODO: Verify lab cells
     end
 
     if settings.dig(:data, :close_contacts, :checked)&.present?
@@ -253,8 +253,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       close_contacts_sheet = export_file.sheet('Close Contacts')
       assert_equal(close_contacts.size, close_contacts_sheet.last_row - 1, 'Number of close contacts in Close Contacts List')
 
-      # TODO: Validate close contact headers
-      # TODO: Validate close contact cells
+      # TODO: Verify close contact headers
+      # TODO: Verify close contact cells
     end
 
     if settings.dig(:data, :transfers, :checked)&.present?
@@ -262,8 +262,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       transfers_sheet = export_file.sheet('Transfers')
       assert_equal(transfers.size, transfers_sheet.last_row - 1, 'Number of transfers in Transfers List')
 
-      # TODO: Validate transfers headers
-      # TODO: Validate transfers cells
+      # TODO: Verify transfers headers
+      # TODO: Verify transfers cells
     end
 
     return unless settings.dig(:data, :histories, :checked)&.present?
@@ -272,11 +272,11 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     histories_sheet = export_file.sheet('History')
     assert_equal(histories.size, histories_sheet.last_row - 1, 'Number of histories in History List')
 
-    # TODO: Validate history headers
-    # TODO: Validate history cells
+    # TODO: Verify history headers
+    # TODO: Verify history cells
   end
 
-  def validate_custom_export_monitoree_details(patients, data, _settings, export_file)
+  def verify_custom_export_monitoree_details(patients, data, _settings, export_file)
     patients_sheet = export_file.sheet('Monitorees')
     assert_equal(patients.size, patients_sheet.last_row - 1, 'Number of patients in Monitorees List')
 
@@ -287,12 +287,12 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     checked.delete(:race)
     checked.insert(race_index, *PATIENT_FIELD_TYPES[:races])
 
-    # Validate headers
+    # Verify headers
     checked.each_with_index do |header, col|
       assert_equal(PATIENT_FIELD_NAMES[header], patients_sheet.cell(1, col + 1), "For header: #{header} in Monitorees List")
     end
 
-    # Validate cell values
+    # Verify cell values
     patients.each_with_index do |patient, row|
       patient_details = { id: patient.id }.merge(patient.custom_export_details_for_export)
       checked.each_with_index do |field, col|
@@ -318,7 +318,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def validate_custom_export_assessmemts(patients, data, settings, export_file)
+  def verify_custom_export_assessmemts(patients, data, settings, export_file)
     assessments = assessments_by_patient_ids(patients.pluck(:id))
     assessments_sheet = export_file.sheet('Reports')
     assert_equal(assessments.size, assessments_sheet.last_row - 1, 'Number of assessments in Reports List')
@@ -338,12 +338,12 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       headers += symptom_labels.to_a.sort
     end
 
-    # Validate assessment headers
+    # Verify assessment headers
     headers.each_with_index do |header, col|
       assert_equal(header, assessments_sheet.cell(1, col + 1), "For header: #{header} in Reports")
     end
 
-    # Validate assessment cells
+    # Verify assessment cells
     assessment_row = 0
     patients.find_each do |patient|
       patient.assessments.find_each do |assessment|
@@ -372,20 +372,20 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def validate_custom_export_vaccines(patients, data, _settings, export_file)
+  def verify_custom_export_vaccines(patients, data, _settings, export_file)
     vaccines = vaccines_by_patient_ids(patients.pluck(:id))
     vaccines_sheet = export_file.sheet('Vaccinations')
     assert_equal(vaccines.size, vaccines_sheet.last_row - 1, 'Number of vaccines in Vaccinations List')
 
     checked = data.dig(:vaccines, :checked)
 
-    # Validate vaccine headers
+    # Verify vaccine headers
     headers = checked.map { |field| VACCINE_FIELD_NAMES[field] }
     headers.each_with_index do |header, col|
       assert_equal(header, vaccines_sheet.cell(1, col + 1), "For header: #{header} in Vaccines")
     end
 
-    # Validate vaccine cells
+    # Verify vaccine cells
     vaccine_row = 0
     patients.find_each do |patient|
       patient.vaccines.find_each do |vaccine|

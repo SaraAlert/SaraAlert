@@ -1,11 +1,16 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Form } from 'react-bootstrap';
+import Switch from 'react-switch';
+import ReactTooltip from 'react-tooltip';
 import * as yup from 'yup';
 import moment from 'moment';
 import _ from 'lodash';
+import axios from 'axios';
 
 import PublicHealthManagement from './PublicHealthManagement';
+import CommonExposureCohortModal from '../../patient/common_exposure_cohorts/CommonExposureCohortModal';
+import CommonExposureCohortsTable from '../../patient/common_exposure_cohorts/CommonExposureCohortsTable';
 import confirmDialog from '../../util/ConfirmDialog';
 import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
@@ -22,11 +27,25 @@ class ExposureInformation extends React.Component {
       sorted_jurisdiction_paths: _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalAssignedUser: this.props.currentState.patient.assigned_user,
+      showCommonExposureCohortModal: false,
     };
   }
 
   componentDidMount() {
     this.updateStaticValidations();
+    axios
+      .post(window.BASE_PATH + '/jurisdictions/common_exposure_cohorts', {
+        query: {
+          jurisdiction: this.props.current_user.jurisdiction_id,
+          scope: 'all',
+        },
+      })
+      .catch(() => {})
+      .then(response => {
+        if (response?.data?.cohort_names || response?.data?.cohort_locations) {
+          this.setState({ cohort_names: response.data.cohort_names, cohort_locations: response.data.cohort_locations });
+        }
+      });
   }
 
   componentDidUpdate(prevProps) {
@@ -68,13 +87,45 @@ class ExposureInformation extends React.Component {
     // turn off CE if LDE is populated
     if (date) {
       current.patient.continuous_exposure = false;
-      modified = { patient: { ...modified.patient, continuous_exposure: false } };
+      modified = { ...modified, patient: { ...modified.patient, continuous_exposure: false } };
     }
     this.updateExposureValidations({ ...current.patient, last_date_of_exposure: date });
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, last_date_of_exposure: date } },
         modified: { ...modified, patient: { ...modified.patient, last_date_of_exposure: date } },
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
+  };
+
+  handleRiskFactorToggle = (field, value) => {
+    let current = this.state.current;
+    let modified = this.state.modified;
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [field]: value } },
+        modified: { ...modified, patient: { ...modified.patient, [field]: value } },
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
+  };
+
+  handleRiskFactorChange = event => {
+    let field = event.target.id;
+    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    let toggleField = field.replace('_id', '').replace('_facility_name', '');
+    let toggleValue = value?.length > 0 ? true : this.state.current.patient[String(toggleField)];
+    let current = this.state.current;
+    let modified = this.state.modified;
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [field]: value, [toggleField]: toggleValue } },
+        modified: { ...modified, patient: { ...modified.patient, [field]: value, [toggleField]: toggleValue } },
       },
       () => {
         this.props.setEnrollmentState({ ...this.state.modified });
@@ -108,6 +159,62 @@ class ExposureInformation extends React.Component {
         this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
+  };
+
+  handleCohortChange = (common_exposure_cohort, common_exposure_cohort_index) => {
+    const current = this.state.current;
+    const modified = this.state.modified;
+    let common_exposure_cohorts = this.state.current.common_exposure_cohorts;
+    // Need to compare with undefined because index value of 0 evaluates to false
+    if (common_exposure_cohort_index === undefined) {
+      // Add new cohort to table
+      common_exposure_cohorts = common_exposure_cohorts ? common_exposure_cohorts.concat([common_exposure_cohort]) : [common_exposure_cohort];
+    } else {
+      // Update existing cohort from table
+      common_exposure_cohorts[`${common_exposure_cohort_index}`] = common_exposure_cohort;
+    }
+    const toggle = common_exposure_cohorts?.length > 0 ? true : this.state.current.patient.member_of_a_common_exposure_cohort;
+
+    // TODO: prevent adding duplicate cohorts
+    this.setState(
+      {
+        current: { ...current, common_exposure_cohorts, patient: { ...current.patient, member_of_a_common_exposure_cohort: toggle } },
+        modified: { ...modified, common_exposure_cohorts, patient: { ...current.patient, member_of_a_common_exposure_cohort: toggle } },
+        showCommonExposureCohortModal: false,
+        common_exposure_cohort: null,
+        common_exposure_cohort_index: null,
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
+  };
+
+  handleCohortDelete = index => {
+    const self = this;
+    self.setState(
+      state => {
+        const common_exposure_cohorts = state.current.common_exposure_cohorts;
+        common_exposure_cohorts.splice(index, 1);
+        return {
+          current: { ...state.current, common_exposure_cohorts },
+          modified: { ...state.modified, common_exposure_cohorts },
+        };
+      },
+      () => {
+        self.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
+  };
+
+  toggleCommonExposureCohortModal = (showCommonExposureCohortModal, common_exposure_cohort, common_exposure_cohort_index) => {
+    this.setState({ showCommonExposureCohortModal, common_exposure_cohort, common_exposure_cohort_index });
+  };
+
+  toggleCohortDeleteDialog = async index => {
+    if (await confirmDialog('Are you sure you want to delete this common exposure cohort for this monitoree?', { title: 'Delete Common Exposure Cohort' })) {
+      this.handleCohortDelete(index);
+    }
   };
 
   updateStaticValidations = () => {
@@ -204,6 +311,39 @@ class ExposureInformation extends React.Component {
       });
   };
 
+  renderRiskFactorToggle = (toggleField, toggleLabel, disabled, tooltipText) => {
+    const tooltipId = `${toggleField}-tooltip`;
+    return (
+      <React.Fragment>
+        <span data-for={tooltipId} data-tip="">
+          <Switch
+            id={toggleField}
+            checked={this.state.current.patient[String(toggleField)] || false}
+            disabled={disabled}
+            onChange={value => {
+              this.handleRiskFactorToggle(toggleField, value);
+            }}
+            onColor="#226891"
+            offColor="#ADB5BD"
+            uncheckedIcon={false}
+            checkedIcon={false}
+            height={15}
+            width={30}
+            className="pr-2"
+          />
+        </span>
+        {disabled && (
+          <ReactTooltip id={tooltipId} multiline={true} place="right" type="dark" effect="solid">
+            <span>{tooltipText}</span>
+          </ReactTooltip>
+        )}
+        <Form.Label htmlFor={toggleField} className="mb-0">
+          {toggleLabel}
+        </Form.Label>
+      </React.Fragment>
+    );
+  };
+
   renderExposureFields = () => {
     return (
       <React.Fragment>
@@ -293,24 +433,23 @@ class ExposureInformation extends React.Component {
           </Form.Group>
         </Form.Row>
         <Form.Label className="input-label pb-1">EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)</Form.Label>
-        <Form.Row>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-            <Form.Check
-              type="switch"
-              id="contact_of_known_case"
-              label="CLOSE CONTACT WITH A KNOWN CASE"
-              checked={this.state.current.patient.contact_of_known_case || false}
-              onChange={this.handleChange}
-            />
+        <Form.Row className="risk-factor-row mb-1">
+          <Form.Group as={Col} md="auto" className="mb-0">
+            {this.renderRiskFactorToggle(
+              'contact_of_known_case',
+              'CLOSE CONTACT WITH A KNOWN CASE',
+              this.state.current.patient.contact_of_known_case_id?.length > 0,
+              'The Case ID field must be cleared to de-toggle'
+            )}
           </Form.Group>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+          <Form.Group as={Col} md="auto" className="mb-0 ml-4 pt-1">
             <Form.Control
               size="sm"
               className="form-square"
               id="contact_of_known_case_id"
               placeholder="enter case ID"
               value={this.state.current.patient.contact_of_known_case_id || ''}
-              onChange={this.handleChange}
+              onChange={this.handleRiskFactorChange}
               aria-label="Enter Case Id"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
@@ -318,37 +457,28 @@ class ExposureInformation extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-            <Form.Check
-              className="pt-2 my-auto"
-              type="switch"
-              id="travel_to_affected_country_or_area"
-              label="TRAVEL FROM AFFECTED COUNTRY OR AREA"
-              checked={this.state.current.patient.travel_to_affected_country_or_area || false}
-              onChange={this.handleChange}
-            />
+        <Form.Row className="risk-factor-row mb-1">
+          <Form.Group as={Col} md="auto" className="mb-0">
+            {this.renderRiskFactorToggle('travel_to_affected_country_or_area', 'TRAVEL FROM AFFECTED COUNTRY OR AREA')}
           </Form.Group>
         </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-            <Form.Check
-              className="pt-2 my-auto"
-              type="switch"
-              id="was_in_health_care_facility_with_known_cases"
-              label="WAS IN HEALTHCARE FACILITY WITH KNOWN CASES"
-              checked={this.state.current.patient.was_in_health_care_facility_with_known_cases || false}
-              onChange={this.handleChange}
-            />
+        <Form.Row className="risk-factor-row mb-1">
+          <Form.Group as={Col} md="auto" className="mb-0">
+            {this.renderRiskFactorToggle(
+              'was_in_health_care_facility_with_known_cases',
+              'WAS IN HEALTHCARE FACILITY WITH KNOWN CASES',
+              this.state.current.patient.was_in_health_care_facility_with_known_cases_facility_name?.length > 0,
+              'The Facility Name field must be cleared to de-toggle'
+            )}
           </Form.Group>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+          <Form.Group as={Col} md="auto" className="mb-0 ml-4 pt-1">
             <Form.Control
               size="sm"
               className="form-square"
               id="was_in_health_care_facility_with_known_cases_facility_name"
               placeholder="enter facility name"
               value={this.state.current.patient.was_in_health_care_facility_with_known_cases_facility_name || ''}
-              onChange={this.handleChange}
+              onChange={this.handleRiskFactorChange}
               aria-label="Enter Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
@@ -356,25 +486,23 @@ class ExposureInformation extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-            <Form.Check
-              className="pt-2 my-auto"
-              type="switch"
-              id="laboratory_personnel"
-              label="LABORATORY PERSONNEL"
-              checked={this.state.current.patient.laboratory_personnel || false}
-              onChange={this.handleChange}
-            />
+        <Form.Row className="risk-factor-row mb-1">
+          <Form.Group as={Col} md="auto" className="mb-0">
+            {this.renderRiskFactorToggle(
+              'laboratory_personnel',
+              'LABORATORY PERSONNEL',
+              this.state.current.patient.laboratory_personnel_facility_name?.length > 0,
+              'The Facility Name field must be cleared to de-toggle'
+            )}
           </Form.Group>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+          <Form.Group as={Col} md="auto" className="mb-0 ml-4 pt-1">
             <Form.Control
               size="sm"
               className="form-square"
               id="laboratory_personnel_facility_name"
               placeholder="enter facility name"
               value={this.state.current.patient.laboratory_personnel_facility_name || ''}
-              onChange={this.handleChange}
+              onChange={this.handleRiskFactorChange}
               aria-label="Enter Laboratory Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
@@ -382,25 +510,23 @@ class ExposureInformation extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-            <Form.Check
-              className="pt-2 my-auto"
-              type="switch"
-              id="healthcare_personnel"
-              label="HEALTHCARE PERSONNEL"
-              checked={this.state.current.patient.healthcare_personnel || false}
-              onChange={this.handleChange}
-            />
+        <Form.Row className="risk-factor-row mb-1">
+          <Form.Group as={Col} md="auto" className="mb-0">
+            {this.renderRiskFactorToggle(
+              'healthcare_personnel',
+              'HEALTHCARE PERSONNEL',
+              this.state.current.patient.healthcare_personnel_facility_name?.length > 0,
+              'The Facility Name field must be cleared to de-toggle'
+            )}
           </Form.Group>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+          <Form.Group as={Col} md="auto" className="mb-0 ml-4 pt-1">
             <Form.Control
               size="sm"
               className="form-square"
               id="healthcare_personnel_facility_name"
               placeholder="enter facility name"
               value={this.state.current.patient.healthcare_personnel_facility_name || ''}
-              onChange={this.handleChange}
+              onChange={this.handleRiskFactorChange}
               aria-label="Enter Healthcare Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
@@ -408,44 +534,57 @@ class ExposureInformation extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-            <Form.Check
-              className="pt-2 my-auto"
-              type="switch"
-              id="crew_on_passenger_or_cargo_flight"
-              label="CREW ON PASSENGER OR CARGO FLIGHT"
-              checked={this.state.current.patient.crew_on_passenger_or_cargo_flight || false}
-              onChange={this.handleChange}
-            />
+        <Form.Row className="risk-factor-row mb-1">
+          <Form.Group as={Col} md="auto" className="mb-0">
+            {this.renderRiskFactorToggle('crew_on_passenger_or_cargo_flight', 'CREW ON PASSENGER OR CARGO FLIGHT')}
           </Form.Group>
         </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-            <Form.Check
-              className="pt-2 my-auto"
-              type="switch"
-              id="member_of_a_common_exposure_cohort"
-              label="MEMBER OF A COMMON EXPOSURE COHORT"
-              checked={this.state.current.patient.member_of_a_common_exposure_cohort || false}
-              onChange={this.handleChange}
-            />
-          </Form.Group>
-          <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
-            <Form.Control
-              size="sm"
-              className="form-square"
-              id="member_of_a_common_exposure_cohort_type"
-              placeholder="enter description"
-              value={this.state.current.patient.member_of_a_common_exposure_cohort_type || ''}
-              onChange={this.handleChange}
-              aria-label="Enter Cohort Description"
-            />
-            <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['member_of_a_common_exposure_cohort_type']}
-            </Form.Control.Feedback>
+        <Form.Row className="risk-factor-row">
+          <Form.Group as={Col} md="auto" className="mb-0">
+            {this.renderRiskFactorToggle(
+              'member_of_a_common_exposure_cohort',
+              'MEMBER OF A COMMON EXPOSURE COHORT',
+              this.state.current.common_exposure_cohorts?.length > 0,
+              'All cohorts must be deleted to de-toggle'
+            )}
           </Form.Group>
         </Form.Row>
+        {this.state.current.common_exposure_cohorts?.length > 0 && (
+          <div className="enrollment-common-exposure-cohorts-table-wrapper">
+            <CommonExposureCohortsTable
+              common_exposure_cohorts={this.state.current.common_exposure_cohorts}
+              isEditable={true}
+              onEditCohort={index => this.toggleCommonExposureCohortModal(true, this.state.current.common_exposure_cohorts[`${index}`], index)}
+              onDeleteCohort={this.toggleCohortDeleteDialog}
+            />
+          </div>
+        )}
+        <span data-for="add_new_cohort_disable_reason" data-tip="">
+          <Button
+            id="add-new-cohort-button"
+            variant="outline-primary"
+            size="md"
+            className="btn-square add-new-cohort-button"
+            disabled={this.state.current.common_exposure_cohorts?.length >= 10}
+            onClick={() => this.toggleCommonExposureCohortModal(true)}>
+            Add New Cohort
+          </Button>
+        </span>
+        {this.state.current.common_exposure_cohorts?.length >= 10 && (
+          <ReactTooltip id="add_new_cohort_disable_reason" multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+            <span>You may only add up to 10 cohorts</span>
+          </ReactTooltip>
+        )}
+        {this.state.showCommonExposureCohortModal && (
+          <CommonExposureCohortModal
+            common_exposure_cohort={this.state.common_exposure_cohort}
+            common_exposure_cohort_index={this.state.common_exposure_cohort_index}
+            cohort_names={this.state.cohort_names}
+            cohort_locations={this.state.cohort_locations}
+            onChange={this.handleCohortChange}
+            onHide={() => this.toggleCommonExposureCohortModal(false)}
+          />
+        )}
         {!this.props.currentState.isolation && (
           <Form.Row>
             <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-3 mb-2">
@@ -530,7 +669,6 @@ const staticValidations = {
   healthcare_personnel_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   laboratory_personnel_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   was_in_health_care_facility_with_known_cases_facility_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  member_of_a_common_exposure_cohort_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   travel_to_affected_country_or_area: yup.boolean().nullable(),
   was_in_health_care_facility_with_known_cases: yup.boolean().nullable(),
   crew_on_passenger_or_cargo_flight: yup.boolean().nullable(),
@@ -556,6 +694,7 @@ ExposureInformation.propTypes = {
   assigned_users: PropTypes.array,
   showPreviousButton: PropTypes.bool,
   authenticity_token: PropTypes.string,
+  current_user: PropTypes.object,
 };
 
 export default ExposureInformation;

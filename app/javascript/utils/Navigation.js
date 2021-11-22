@@ -3,11 +3,11 @@
  * @param {Boolean} firstParam - whether the nav param is the first query param in the URL
  */
 function navQueryParam(workflow, firstParam) {
-  return workflow ? `${firstParam ? '?' : '&'}nav=${workflow}` : "";
+  return workflow ? `${firstParam ? '?' : '&'}nav=${workflow}` : '';
 }
 
 /**
- * @param {String} id - the ID of the patient to link to 
+ * @param {String} id - the ID of the patient to link to
  * @param {String} workflow  - the workflow for the nav query param
  */
 function patientHref(id, workflow) {

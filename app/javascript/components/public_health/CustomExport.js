@@ -182,6 +182,7 @@ class CustomExport extends React.Component {
       this.state.preset?.config?.data?.laboratories?.checked?.length > 0 ||
       this.state.preset?.config?.data?.vaccines?.checked?.length > 0 ||
       this.state.preset?.config?.data?.close_contacts?.checked?.length > 0 ||
+      this.state.preset?.config?.data?.common_exposure_cohorts?.checked?.length > 0 ||
       this.state.preset?.config?.data?.transfers?.checked?.length > 0 ||
       this.state.preset?.config?.data?.histories?.checked?.length > 0;
     const non_zero_records_selected =
@@ -296,13 +297,21 @@ class CustomExport extends React.Component {
                                             ?.title?.replace(/\b\w/g, l => l.toUpperCase())}
                                           :
                                         </b>
-                                        {typeof f.value === 'string'
-                                          ? f.value === ''
-                                            ? '<blank>'
-                                            : f.value
-                                          : f.value?.when === ''
-                                          ? '<blank>'
-                                          : `${f.value.when}  ${moment(filter.value.date).format('MM/DD/YYYY')}`}
+                                        {typeof f.value === 'string' && (f.value === '' ? '<blank>' : f.value)}
+                                        {typeof f.value === 'object' &&
+                                          f.value.when &&
+                                          (f.value.when === '' ? '<blank>' : `${f.value.when}  ${moment(filter.value.date).format('MM/DD/YYYY')}`)}
+                                        {Array.isArray(f.value) && (
+                                          <div style={{ display: 'inline-grid' }}>
+                                            {f.value?.map((elem, ind) => {
+                                              return (
+                                                <span key={`filter-${index}-${i}-${ind}`} className="mb-0">
+                                                  {elem.label}
+                                                </span>
+                                              );
+                                            })}
+                                          </div>
+                                        )}
                                       </span>
                                     );
                                   })}
@@ -345,6 +354,8 @@ class CustomExport extends React.Component {
                       authenticity_token={this.props.authenticity_token}
                       jurisdiction_paths={this.props.jurisdiction_paths}
                       all_assigned_users={this.props.all_assigned_users}
+                      all_cohort_names={this.props.all_cohort_names}
+                      all_cohort_locations={this.props.all_cohort_locations}
                       jurisdiction={this.props.jurisdiction}
                       query={this.state.custom_patient_query}
                       onQueryChange={(field, value, cb) =>
@@ -436,6 +447,20 @@ class CustomExport extends React.Component {
                     expanded={this.state.preset?.config?.data?.close_contacts?.expanded}
                     onCheck={checked => this.handlePresetChange('config.data.close_contacts.checked', checked)}
                     onExpand={expanded => this.handlePresetChange('config.data.close_contacts.expanded', expanded)}
+                    showNodeIcon={false}
+                    icons={rctIcons}
+                  />
+                </Col>
+              </Row>
+              <Row className="mx-3 py-1 g-border-top">
+                <Col md={24} className="p-1">
+                  <CheckboxTree
+                    id="rct-common-exposure-cohorts-elements"
+                    nodes={this.props.options?.common_exposure_cohorts?.nodes}
+                    checked={this.state.preset?.config?.data?.common_exposure_cohorts?.checked}
+                    expanded={this.state.preset?.config?.data?.common_exposure_cohorts?.expanded}
+                    onCheck={checked => this.handlePresetChange('config.data.common_exposure_cohorts.checked', checked)}
+                    onExpand={expanded => this.handlePresetChange('config.data.common_exposure_cohorts.expanded', expanded)}
                     showNodeIcon={false}
                     icons={rctIcons}
                   />
@@ -590,6 +615,8 @@ CustomExport.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
+  all_cohort_names: PropTypes.array,
+  all_cohort_locations: PropTypes.array,
   jurisdiction: PropTypes.object,
   tabs: PropTypes.object,
   preset: PropTypes.object,
