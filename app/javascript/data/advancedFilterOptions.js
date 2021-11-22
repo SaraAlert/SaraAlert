@@ -111,13 +111,6 @@ export const advancedFilterOptions = [
     options: ['Exact Match', 'Contains'],
   },
   {
-    name: 'cohort',
-    title: 'Common Exposure Cohort Name (Text)',
-    description: 'Monitoree common exposure cohort name or description',
-    type: 'search',
-    tooltip: 'Leaving this field blank will return monitorees with missing and null values.',
-  },
-  {
     name: 'email',
     title: 'Primary Contact Email (Text)',
     description: 'Monitoree primary contact email address',
@@ -249,8 +242,20 @@ export const advancedFilterOptions = [
     title: 'Primary Contact Relationship (Multi-select)',
     description: 'Monitoree primary contact relationship',
     type: 'multi',
-    options: ['Self', 'Parent/Guardian', 'Spouse/Partner', 'Caregiver', 'Healthcare Provide', 'Facility Representative', 'Group Home Manager/Administrator', 'Surrogate/Proxy', 'Other', 'Unknown'],
-    tooltip: 'If multiple Contact Relationships are selected, records with any of those options as their Primary Contact Relationship will be returned. Leaving this field blank will not filter out any monitorees.',
+    options: [
+      'Self',
+      'Parent/Guardian',
+      'Spouse/Partner',
+      'Caregiver',
+      'Healthcare Provide',
+      'Facility Representative',
+      'Group Home Manager/Administrator',
+      'Surrogate/Proxy',
+      'Other',
+      'Unknown',
+    ],
+    tooltip:
+      'If multiple Contact Relationships are selected, records with any of those options as their Primary Contact Relationship will be returned. Leaving this field blank will not filter out any monitorees.',
   },
   {
     name: 'jurisdiction',
@@ -405,6 +410,47 @@ export const advancedFilterOptions = [
         title: 'dose number',
         type: 'select',
         options: ['', '1', '2', '3', 'Unknown'],
+      },
+    ],
+  },
+  {
+    name: 'common-exposure-cohort',
+    title: 'Common Exposure Cohort (Combination)',
+    description: 'Monitorees with specified Common Exposure Cohort criteria',
+    type: 'combination',
+    tooltip:
+      'Returns records that contain at least one Common Exposure Cohort entry that meets all user-specified criteria (e.g., searching for a specific Common Exposure Cohort Type and Name/Description will only return records containing at least one Common Exposure Cohort entry with matching values in both fields). Leaving these fields blank will not filter out any monitorees.',
+    fields: [
+      {
+        name: 'cohort-type',
+        title: 'cohort type',
+        type: 'multi',
+        options: [
+          'Adult Congregate Living Facility',
+          'Child Care Facility',
+          'Community Event or Mass Gathering',
+          'Correctional Facility',
+          'Group Home',
+          'Healthcare Facility',
+          'Place of Worship',
+          'School or University',
+          'Shelter',
+          'Substance Abuse Treatment Center',
+          'Workplace',
+          'Other',
+        ],
+      },
+      {
+        name: 'cohort-name',
+        title: 'cohort name/description',
+        type: 'multi',
+        options: [], // Populated asynchronously in the AdvancedFilter component
+      },
+      {
+        name: 'cohort-location',
+        title: 'cohort location',
+        type: 'multi',
+        options: [], // Populated asynchronously in the AdvancedFilter component
       },
     ],
   },

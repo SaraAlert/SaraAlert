@@ -91,6 +91,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
   def full_history_details_for_export
     labs = Laboratory.where(patient_id: id).order(specimen_collection: :desc)
     vaccines = Vaccine.where(patient_id: id).order(administration_date: :desc)
+    cohorts = CommonExposureCohort.where(patient_id: id).order(created_at: :desc)
     {
       first_name: first_name || '',
       middle_name: middle_name || '',
@@ -172,7 +173,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       healthcare_personnel_facility_name: healthcare_personnel_facility_name || '',
       crew_on_passenger_or_cargo_flight: crew_on_passenger_or_cargo_flight || false,
       member_of_a_common_exposure_cohort: member_of_a_common_exposure_cohort || false,
-      member_of_a_common_exposure_cohort_type: member_of_a_common_exposure_cohort_type || '',
+      member_of_a_common_exposure_cohort_type: nil,
       exposure_risk_assessment: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
       exposure_notes: exposure_notes || '',
@@ -223,7 +224,13 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       alternate_secondary_telephone: alternate_secondary_telephone || '',
       alternate_secondary_telephone_type: alternate_secondary_telephone_type || '',
       alternate_international_telephone: alternate_international_telephone || '',
-      alternate_email: alternate_email || ''
+      alternate_email: alternate_email || '',
+      cohort_1_type: cohorts[0]&.cohort_type || '',
+      cohort_1_name: cohorts[0]&.cohort_name || '',
+      cohort_1_location: cohorts[0]&.cohort_location || '',
+      cohort_2_type: cohorts[1]&.cohort_type || '',
+      cohort_2_name: cohorts[1]&.cohort_name || '',
+      cohort_2_location: cohorts[1]&.cohort_location || ''
     }
   end
 

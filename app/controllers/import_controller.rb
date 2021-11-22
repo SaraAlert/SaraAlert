@@ -123,6 +123,22 @@ class ImportController < ApplicationController
               @errors << ValidationError.new(error, row_ind).message
             end
           end
+
+          cohorts = []
+          cohorts.push(cohort(row[132..134], row_ind)) if row[132..134].filter(&:present?).any?
+          cohorts.push(cohort(row[135..137], row_ind)) if row[135..137].filter(&:present?).any?
+
+          patient[:common_exposure_cohorts_attributes] = cohorts unless cohorts.empty?
+
+          # Validate using Common Exposure Cohort model validators without saving
+          cohorts.each do |cohort_data|
+            validation_cohort = CommonExposureCohort.new(cohort_data)
+            next if validation_cohort.valid?
+
+            format_model_validation_errors(validation_cohort).each do |error|
+              @errors << ValidationError.new(error, row_ind).message
+            end
+          end
         end
 
         # Validate using Patient model validators without saving
@@ -213,6 +229,14 @@ class ImportController < ApplicationController
       administration_date: import_field(:administration_date, data[2], row_ind),
       dose_number: import_field(:dose_number, data[3], row_ind),
       notes: import_field(:notes, data[4], row_ind)
+    }
+  end
+
+  def cohort(data, row_ind)
+    {
+      cohort_type: import_field(:cohort_type, data[0], row_ind),
+      cohort_name: import_field(:cohort_name, data[1], row_ind),
+      cohort_location: import_field(:cohort_location, data[2], row_ind)
     }
   end
 

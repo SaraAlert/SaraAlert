@@ -337,18 +337,14 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
             patients = patients.where('contact_of_known_case_id REGEXP ?', value_string.to_s)
           end
         end
-      when 'cohort'
-        patients = if filter[:value].blank?
-                     patients.where(member_of_a_common_exposure_cohort_type: [nil, ''])
-                   else
-                     patients.where('lower(patients.member_of_a_common_exposure_cohort_type) like ?', "%#{filter[:value]&.downcase}%")
-                   end
+      when 'common-exposure-cohort'
+        patients = advanced_filter_common_exposure_cohorts(patients, filter)
       when 'contact-type'
         if filter[:value].present?
           # Map multi-select type filter from { label, value } to values
           filter_contact_types = filter[:value].pluck(:value)
 
-          # Get patients where assigned_user is any of the assigned users specified in the filter
+          # Get patients where contact type is any of the contact types specified in the filter
           patients = patients.where(contact_type: filter_contact_types)
         end
       when 'continous-exposure'
@@ -625,6 +621,26 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     end
 
     patients.where(id: vaccines)
+  end
+
+  def advanced_filter_common_exposure_cohorts(patients, filter)
+    common_exposure_cohorts = patients.joins(:common_exposure_cohorts)
+    filter[:value].each do |field|
+      # Map multi-select type filter from { label, value } to values
+      value = field[:value].pluck(:value)
+
+      # Get patients where cohort value is any of the cohort values specified in the filter
+      case field[:name]
+      when 'cohort-type'
+        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_type: value })
+      when 'cohort-name'
+        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_name: value })
+      when 'cohort-location'
+        common_exposure_cohorts = common_exposure_cohorts.where(common_exposure_cohorts: { cohort_location: value })
+      end
+    end
+
+    patients.where(id: common_exposure_cohorts)
   end
 
   # Filter patients by a set time range for the given field

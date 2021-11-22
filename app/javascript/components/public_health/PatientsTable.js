@@ -695,6 +695,7 @@ class PatientsTable extends React.Component {
                     advancedFilterUpdate={this.advancedFilterUpdate}
                     authenticity_token={this.props.authenticity_token}
                     updateStickySettings={true}
+                    jurisdiction_id={this.props.jurisdiction.id}
                     jurisdiction_paths={this.props.jurisdiction_paths}
                     all_assigned_users={this.props.all_assigned_users}
                   />
@@ -810,6 +811,8 @@ PatientsTable.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
+  all_cohort_names: PropTypes.array,
+  all_cohort_locations: PropTypes.array,
   workflow: PropTypes.oneOf(['global', 'exposure', 'isolation']),
   jurisdiction: PropTypes.exact({
     id: PropTypes.number,

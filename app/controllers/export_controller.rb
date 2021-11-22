@@ -119,6 +119,24 @@ class ExportController < ApplicationController
           name: 'Vaccinations',
           tab: 'Vaccinations'
         },
+        close_contacts: {
+          checked: FULL_HISTORY_CLOSE_CONTACT_FIELDS,
+          headers: FULL_HISTORY_CLOSE_CONTACT_HEADERS,
+          name: 'Close-Contacts',
+          tab: 'Close Contacts'
+        },
+        common_exposure_cohorts: {
+          checked: FULL_HISTORY_COMMON_EXPOSURE_COHORT_FIELDS,
+          headers: FULL_HISTORY_COMMON_EXPOSURE_COHORT_HEADERS,
+          name: 'Common-Exposure-Cohorts',
+          tab: 'Common Exposure Cohorts'
+        },
+        transfers: {
+          checked: FULL_HISTORY_TRANSFER_FIELDS,
+          headers: FULL_HISTORY_TRANSFER_HEADERS,
+          name: 'Transfers',
+          tab: 'Transfers'
+        },
         histories: {
           checked: FULL_HISTORY_HISTORIES_FIELDS,
           headers: FULL_HISTORY_HISTORIES_HEADERS,
@@ -222,6 +240,9 @@ class ExportController < ApplicationController
         close_contacts: {
           checked: validate_checked_fields(data, :close_contacts)
         },
+        common_exposure_cohorts: {
+          checked: validate_checked_fields(data, :common_exposure_cohorts)
+        },
         transfers: {
           checked: validate_checked_fields(data, :transfers)
         },
@@ -258,11 +279,11 @@ class ExportController < ApplicationController
 
   def validate_checked_fields(data, data_type)
     unsanitized_checked = data.require(data_type).permit(checked: [])[:checked]
-    raise StandardError('Checked must be an array') unless unsanitized_checked.is_a?(Array)
+    raise StandardError, 'Checked must be an array' unless unsanitized_checked.is_a?(Array)
 
     checked = unsanitized_checked.map(&:to_sym)
     checked.each do |field|
-      raise StandardError("Unknown field '#{field}' for '#{data_type}'") unless ALL_FIELDS_NAMES[data_type].key?(field)
+      raise StandardError, "Unknown field '#{field}' for '#{data_type}'" unless ALL_FIELDS_NAMES[data_type].key?(field)
     end
 
     checked

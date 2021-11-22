@@ -119,7 +119,6 @@ class EnrollmentFormSteps < ApplicationSystemTestCase
         { id: 'healthcare_personnel_facility_name', type: :text, info_page: true },
         { id: 'crew_on_passenger_or_cargo_flight', type: :risk_factor, info_page: true, label: 'Crew on Passenger or Cargo Flight' },
         { id: 'member_of_a_common_exposure_cohort', type: :risk_factor, info_page: true, label: 'Member of a Common Exposure Cohort' },
-        { id: 'member_of_a_common_exposure_cohort_type', type: :text, info_page: true },
         { id: 'symptom_onset', type: :recent_date, required: true, info_page: true },
         { id: 'first_positive_lab', type: :button, label: 'Enter Lab Result' },
         { id: 'lab_type', type: :select },
