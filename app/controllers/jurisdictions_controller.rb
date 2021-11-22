@@ -47,7 +47,7 @@ class JurisdictionsController < ApplicationController
       return render json: e, status: :bad_request
     end
 
-    # Get distinct cohortt names and locations from filtered patients
+    # Get distinct cohort names and locations from filtered patients
     patient_ids = patients_by_query(current_user, query).where_assoc_exists(:common_exposure_cohorts)
 
     cohort_names = CommonExposureCohort.where(patient_id: patient_ids)

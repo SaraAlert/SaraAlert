@@ -240,7 +240,7 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
       next unless fo.dig('filterOption', 'name') == 'cohort'
 
       fo['filterOption'] = NEW_COHORT_FILTER_OPTION
-      fo['value'] = [{ name: 'cohort-name', value: fo['value'] }.deep_stringify_keys]
+      fo['value'] = [{ name: 'cohort-name', value: [{ value: fo['value'], label: fo['value'] }] }.deep_stringify_keys]
     end
   end
 
@@ -249,7 +249,7 @@ class CreateCommonExposureCohorts < ActiveRecord::Migration[6.1]
       next unless fo.dig('filterOption', 'name') == 'common-exposure-cohort'
 
       fo['filterOption'] = OLD_COHORT_FILTER_OPTION
-      fo['value'] = fo['value']&.first['value']
+      fo['value'] = fo['value']&.first['value']&.first['value']
     end
   end
 end
