@@ -747,7 +747,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                                'patients.last_assessment_reminder_sent, patients.preferred_contact_time, patients.extended_isolation, '\
                                'patients.latest_fever_or_fever_reducer_at, patients.first_positive_lab_at, patients.negative_lab_count, '\
                                'patients.head_of_household, patients.follow_up_reason, patients.follow_up_note, jurisdictions.name AS jurisdiction_name, '\
-                               'jurisdictions.path AS jurisdiction_path, jurisdictions.id AS jurisdiction_id')
+                               'jurisdictions.path AS jurisdiction_path, jurisdictions.id AS jurisdiction_id, patients.primary_telephone')
 
     # execute query and get total count
     total = patients.total_entries
@@ -759,7 +759,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         id: patient[:id],
         name: patient.displayed_name,
         state_local_id: patient[:user_defined_id_statelocal] || '',
-        dob: patient[:date_of_birth]&.strftime('%F') || ''
+        dob: patient[:date_of_birth]&.strftime('%F') || '',
+        primary_telephone: patient[:primary_telephone] || '', 
       }
 
       # populate fields specific to this linelist only if relevant

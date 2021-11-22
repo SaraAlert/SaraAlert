@@ -4,7 +4,7 @@ import { Form, Row, Col, Button, Modal, InputGroup, OverlayTrigger, Tooltip } fr
 import axios from 'axios';
 import _ from 'lodash';
 import { formatDate } from '../../../../utils/DateTime';
-import { formatNameAlt } from '../../../../utils/PatientFormatters';
+import { formatNameAlt, formatPhoneNumberVisually } from '../../../../utils/PatientFormatters';
 
 import BadgeHoH from '../../icons/BadgeHoH';
 import CustomTable from '../../../layout/CustomTable';
@@ -21,6 +21,7 @@ class MoveToHousehold extends React.Component {
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
           { field: 'jurisdiction', label: 'Jurisdiction', isSortable: true, tooltip: null },
           { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: formatDate },
+          { field: 'primary_telephone', label: 'Phone Number', isSortable: false, tooltip: null, filter: this.renderPhoneNumber },
           { field: 'select', label: '', isSortable: false, tooltip: null, filter: this.createSelectButton, className: 'text-center', onClick: this.submit },
         ],
         rowData: [],
@@ -73,6 +74,14 @@ class MoveToHousehold extends React.Component {
       );
     }
     return <a href={patientHref(rowData.id, this.props.workflow)}>{name}</a>;
+  };
+
+  /**
+   * Uses custom phone number formatter for the phone number in the table
+   * @param {Object} data - provided by CustomTable about each cell in the column this filter is called in.
+   */
+  renderPhoneNumber = data => {
+    return formatPhoneNumberVisually(data.value);
   };
 
   /**
@@ -288,7 +297,8 @@ class MoveToHousehold extends React.Component {
                 </p>
                 <InputGroup size="md">
                   <InputGroup.Prepend>
-                    <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
+                    <OverlayTrigger
+                      overlay={<Tooltip>Search by Monitoree Name, Date of Birth, Phone Number, State/Local ID, CDC ID, or NNDSS/Case ID</Tooltip>}>
                       <InputGroup.Text className="rounded-0">
                         <i className="fas fa-search"></i>
                         <label htmlFor="search-input" className="ml-1 mb-0">
