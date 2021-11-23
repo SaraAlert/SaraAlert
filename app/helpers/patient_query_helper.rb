@@ -175,7 +175,9 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients.where('lower(user_defined_id_statelocal) like ?', "#{search&.downcase}%").or(
           patients.where('lower(user_defined_id_cdc) like ?', "#{search&.downcase}%").or(
             patients.where('lower(user_defined_id_nndss) like ?', "#{search&.downcase}%").or(
-              patients.where('date_of_birth like ?', "#{search&.downcase}%")
+              patients.where('date_of_birth like ?', "#{search&.downcase}%").or(
+                patients.where('primary_telephone like ?', "%#{search.delete('^0-9')}%")
+              )
             )
           )
         )
@@ -794,7 +796,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       linelist << details
     end
 
-    { linelist: linelist, fields: %i[name state_local_id dob].concat(fields), total: total }
+    { linelist: linelist, fields: %i[name state_local_id dob primary_telephone].concat(fields), total: total }
   end
 
   def linelist_specific_fields(workflow, tab)
