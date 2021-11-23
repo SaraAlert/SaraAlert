@@ -997,7 +997,7 @@ class ApiControllerTest < ApiControllerTestCase
     end
     exposure_risk_factors_extensions.select { |e| cohort_fields.map { |v| "#{base_path}#{v}" }.include?(e['url']) }.each do |extension|
       cohort = extension['extension']&.map { |ext| [ext['url'].remove("#{base_path}member-of-a-common-exposure-").underscore.to_sym, ext['valueString']] }.to_h
-      next unless cohort.present?
+      next if cohort.blank?
 
       assert(mock_patient.common_exposure_cohorts.any? { |c| %i[cohort_type cohort_name cohort_location].all? { |field| c[field] == cohort[field] } })
     end
