@@ -229,7 +229,7 @@ class PatientsController < ApplicationController
     # Update common exposure cohorts if present (need to use nil? check instead of empty?/present? for deletions)
     unless common_exposure_cohorts.nil?
       original_cohort_ids = patient.common_exposure_cohorts.pluck(:id)
-      updated_cohort_ids = common_exposure_cohorts.map { |cohort| cohort[:id] }
+      updated_cohort_ids = common_exposure_cohorts.pluck(:id)
       deleted_cohort_ids = original_cohort_ids - updated_cohort_ids
 
       # Save old cohort data for history
