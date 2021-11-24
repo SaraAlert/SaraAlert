@@ -624,10 +624,14 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def advanced_filter_common_exposure_cohorts(patients, filter)
+    # Do not filter any patients if all values are blank since these are multi-select filters
+    return patients unless filter[:value].any? { |field| field[:value].pluck(:value).present? }
+
     common_exposure_cohorts = patients.joins(:common_exposure_cohorts)
     filter[:value].each do |field|
       # Map multi-select type filter from { label, value } to values
       value = field[:value].pluck(:value)
+      next unless value.present?
 
       # Get patients where cohort value is any of the cohort values specified in the filter
       case field[:name]
