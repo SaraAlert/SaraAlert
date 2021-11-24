@@ -159,21 +159,19 @@ class Patient < ApplicationRecord
   validates_with PatientDateValidator
   validates_with AssociatedRecordLimitValidator
 
-  # rubocop:disable Rails/HasManyOrHasOneDependent
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
   belongs_to :jurisdiction
 
-  has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id', inverse_of: 'responder'
-  has_many :assessments
-  has_many :laboratories
-  has_many :vaccines
-  has_many :close_contacts
-  has_many :histories
-  has_many :transfers
-  has_many :contact_attempts
-  has_many :common_exposure_cohorts
-  # rubocop:enable Rails/HasManyOrHasOneDependent
+  has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id', inverse_of: 'responder', dependent: nil
+  has_many :assessments, dependent: nil
+  has_many :laboratories, dependent: nil
+  has_many :vaccines, dependent: nil
+  has_many :close_contacts, dependent: nil
+  has_many :histories, dependent: nil
+  has_many :transfers, dependent: nil
+  has_many :contact_attempts, dependent: nil
+  has_many :common_exposure_cohorts, dependent: nil
 
   around_save :inform_responder, if: :responder_id_changed?
   before_update :set_time_zone, if: proc { |patient|
