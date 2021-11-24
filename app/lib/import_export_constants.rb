@@ -105,10 +105,11 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
   # of fields between Sara Alert Format and Full History Patients
   FULL_HISTORY_PATIENTS_FIELDS = ([:id] + SARA_ALERT_FORMAT_FIELDS + %i[first_positive_lab_at extended_isolation enrolled_workflow
-                                                                        contact_became_case_at]).freeze
+                                                                        contact_became_case_at monitoring_reason closed_at expected_purge_ts]).freeze
 
   FULL_HISTORY_PATIENTS_HEADERS = (['Patient ID'] + SARA_ALERT_FORMAT_HEADERS + ['First Positive Lab', 'Extended Isolation Date', 'Enrolled Workflow',
-                                                                                 'Exposure Monitorees that became Cases at']).freeze
+                                                                                 'Exposure Monitorees that became Cases at', 'Reason for Closure', 'Closed At',
+                                                                                 'Expected Purge Date']).freeze
 
   FULL_HISTORY_ASSESSMENTS_FIELDS = %i[patient_id symptomatic who_reported reported_at created_at updated_at symptoms].freeze
 
