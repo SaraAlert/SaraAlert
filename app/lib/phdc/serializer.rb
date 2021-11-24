@@ -313,38 +313,47 @@ module PHDC
         qrq_org_notes << comp_obs_helper('OBS', 'EVN', code, value)
       end
 
-      # Signs and Symptoms Information Section
+      # Active Problems Information Section HTML table
 
       sas_component = Ox::Element.new(:component)
       structured_body << sas_component
       sas_section = Ox::Element.new(:section)
       sas_component << sas_section
-      sas_id = Ox::Element.new(:id)
-      sas_id['root'] = '2.16.840.1.113883.19'
-      sas_id['extension'] = patient.id
-      sas_section << sas_id
-      sas_section << code_helper('123-5897', 'Local-codesystem-oid', 'Signs and Symptoms Section', 'LocalSystem')
-      sas_section_title = Ox::Element.new(:title)
-      sas_section_title << 'SIGNS AND SYMPTOMS'
-      sas_section << sas_section_title
+      sas_section << template_id_helper('2.16.840.1.113883.10.20.22.2.5', nil)
+      sas_section << template_id_helper('2.16.840.1.113883.10.20.22.2.5', '2015-08-01')
+      sas_section << template_id_helper('2.16.840.1.113883.10.20.22.2.5.1', nil)
+      sas_section << template_id_helper('2.16.840.1.113883.10.20.22.2.5.1', '2015-08-01')
+      sas_section << code_helper('11450-4', '2.16.840.1.113883.6.1', 'Problem List', 'LOINC')
+      sas_title = Ox::Element.new(:title)
+      sas_title << 'Active Problems'
+      sas_section << sas_title
+      sas_text = Ox::Element.new(:text)
+      sas_section << sas_text
+      sas_paragraph = Ox::Element.new(:paragraph)
+      sas_paragraph << 'Patient Symptomatic Events'
+      sas_text << sas_paragraph
+      sas_table = Ox::Element.new(:table)
+      sas_table['border'] = '5'
+      sas_text << sas_table
+      sas_colgroup = Ox::Element.new(:colgroup)
+      sas_colgroup << col_helper('30%')
+      sas_colgroup << col_helper('30%')
+      sas_colgroup << col_helper('40%')
+      sas_thead = Ox::Element.new(:thead)
+      sas_table << sas_thead
+      sas_thead_tr = Ox::Element.new(:tr)
+      sas_thead << sas_thead_tr
+      sas_thead_tr << th_helper('Problem Type')
+      sas_thead_tr << th_helper('Indicator')
+      sas_thead_tr << th_helper('Date(s)')
+      sas_tbody = Ox::Element.new(:tbody)
+      sas_table << sas_tbody
       symptomatic_assessments.each do |assessment|
-        sas_entry = entry_helper('COMP')
-        sas_section << sas_entry
-        sas_obs = observation_helper('OBS', 'EVN')
-        sas_entry << sas_obs
-        sas_obs << code_helper('INV576', '2.16.840.1.114222.4.5.232', 'Symptomatic', 'PHIN Questions')
-        effective_time = Ox::Element.new(:effectiveTime)
-        effective_time['value'] = assessment.updated_at.strftime('%Y%m%d%H%M%S%z')
-        sas_obs << effective_time
-        sas_val = value_helper_code('CE', 'Y', '2.16.840.1.113883.12.136', 'Yes')
-        sas_val['codeSystemName'] = 'Yes/No Indicator (HL7)'
-        sas_obs << sas_val
-        translation = Ox::Element.new(:translation)
-        translation['codeSystem'] = '2.16.840.1.113883.12.136'
-        translation['codeSystemName'] = 'Yes/No Indicator (HL7)'
-        translation['displayName'] = 'Yes'
-        translation['code'] = 'Y'
-        sas_val << translation
+        sas_tbody_tr = Ox::Element.new(:tr)
+        sas_tbody << sas_tbody_tr
+        sas_tbody_tr << td_helper('Patient Symptomatic')
+        sas_tbody_tr << td_helper('Yes')
+        sas_tbody_tr << td_helper(assessment.updated_at.strftime('%FT%T%:z'))
       end
 
       # Return XML
@@ -451,6 +460,31 @@ module PHDC
       observation_el << code
       observation_el << value
       component_el
+    end
+
+    def template_id_helper(root, extension)
+      template_id = Ox::Element.new(:templateId)
+      template_id['root'] = root
+      template_id['extension'] = extension if extension.present?
+      template_id
+    end
+
+    def col_helper(width)
+      col = Ox::Element.new(:col)
+      col['width'] = width
+      col
+    end
+
+    def th_helper(header)
+      th = Ox::Element.new(:th)
+      th << header
+      th
+    end
+
+    def td_helper(content)
+      td = Ox::Element.new(:td)
+      td << content
+      td
     end
   end
 end
