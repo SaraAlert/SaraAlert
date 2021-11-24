@@ -764,7 +764,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         name: patient.displayed_name,
         state_local_id: patient[:user_defined_id_statelocal] || '',
         dob: patient[:date_of_birth]&.strftime('%F') || '',
-        primary_telephone: patient[:primary_telephone] || '', 
+        primary_telephone: patient[:primary_telephone] || ''
       }
 
       # populate fields specific to this linelist only if relevant

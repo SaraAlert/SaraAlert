@@ -110,7 +110,7 @@ class PublicHealthControllerTest < ActionController::TestCase
       user = create(:public_health_user, jurisdiction: user_jur)
       sign_in user
 
-      common_fields = %w[name state_local_id dob]
+      common_fields = %w[name state_local_id dob primary_telephone]
 
       post :patients, params: { query: { workflow: 'exposure', tab: 'symptomatic' } }, as: :json
       json_response = JSON.parse(response.body)
