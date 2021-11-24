@@ -143,7 +143,8 @@ class PatientsFilters extends React.Component {
           <Col md={24} className="my-1 px-1">
             <InputGroup size="sm" className="d-flex justify-content-between">
               <InputGroup.Prepend>
-                <OverlayTrigger overlay={<Tooltip>Search by Monitoree Name, Date of Birth, State/Local ID, CDC ID, or NNDSS/Case ID</Tooltip>}>
+                <OverlayTrigger
+                  overlay={<Tooltip>Search by Monitoree Name, Date of Birth, Email, Phone Number, State/Local ID, CDC ID, or NNDSS/Case ID</Tooltip>}>
                   <InputGroup.Text className="rounded-0">
                     <FontAwesomeIcon icon="search" />
                     <label htmlFor="search" className="ml-1 mb-0">
