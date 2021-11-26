@@ -631,7 +631,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     filter[:value].each do |field|
       # Map multi-select type filter from { label, value } to values
       value = field[:value].pluck(:value)
-      next unless value.present?
+      next if value.blank?
 
       # Get patients where cohort value is any of the cohort values specified in the filter
       case field[:name]
