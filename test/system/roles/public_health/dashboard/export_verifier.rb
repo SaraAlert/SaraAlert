@@ -101,6 +101,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
             sleep(4)
             assert_in_delta(details[field].to_datetime, csv[row][col].to_datetime, 1, "For field: #{field}")
           end
+        elsif %i[primary_telephone].include?(field)
+          assert_equal(format_phone_number(details[field]).to_s, csv[row][col].to_s || '', "For field: #{field}")
         else
           assert_equal(details[field].to_s, csv[row][col].to_s, "For field: #{field}")
         end

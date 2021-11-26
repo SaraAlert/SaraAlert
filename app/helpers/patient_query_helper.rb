@@ -176,8 +176,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           patients.where('lower(user_defined_id_cdc) like ?', "#{search&.downcase}%").or(
             patients.where('lower(user_defined_id_nndss) like ?', "#{search&.downcase}%").or(
               patients.where('date_of_birth like ?', "#{search&.downcase}%").or(
-                patients.where('primary_telephone like ?', "%#{search.delete('^0-9')}%").or(
-                  patients.where('lower(patients.email) like ?', "%#{search&.downcase}%")
+                patients.where('lower(patients.email) like ?', "#{search&.downcase}%").or(
+                  patients.where('primary_telephone like ?', "%#{search.delete('^0-9')}%")
                 )
               )
             )

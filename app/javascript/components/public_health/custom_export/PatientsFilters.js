@@ -144,7 +144,9 @@ class PatientsFilters extends React.Component {
             <InputGroup size="sm" className="d-flex justify-content-between">
               <InputGroup.Prepend>
                 <OverlayTrigger
-                  overlay={<Tooltip>Search by Monitoree Name, Date of Birth, Email, Phone Number, State/Local ID, CDC ID, or NNDSS/Case ID</Tooltip>}>
+                  overlay={
+                    <Tooltip>Search by Monitoree Name, Date of Birth, Email, Primary Telephone Number, State/Local ID, CDC ID, or NNDSS/Case ID</Tooltip>
+                  }>
                   <InputGroup.Text className="rounded-0">
                     <FontAwesomeIcon icon="search" />
                     <label htmlFor="search" className="ml-1 mb-0">
