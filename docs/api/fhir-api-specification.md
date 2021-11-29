@@ -638,44 +638,39 @@ Get a monitoree via an id, e.g.:
           "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
         },
         {
-          "extension": [
-            {
-              "url": "member-of-a-common-exposure-cohort",
-              "valueBoolean": true
-            }
-          ],
+          "valueBoolean": true,
           "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
         },
         {
           "extension": [
             {
-              "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-type",
+              "url": "cohort-type",
               "valueString": "Shelter"
             }
           ],
-          "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+          "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
         },
         {
           "extension": [
             {
-              "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-name",
+              "url": "cohort-name",
               "valueString": "Monahan-Stracke"
             }
           ],
-          "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+          "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
         },
         {
           "extension": [
             {
-              "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-type",
+              "url": "cohort-type",
               "valueString": "Correctional Facility"
             },
             {
-              "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-location",
+              "url": "cohort-location",
               "valueString": "North Carmenhaven, CA"
             }
           ],
-          "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+          "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
         },
         {
           "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
@@ -1857,44 +1852,39 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
                 "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
               },
               {
-                "extension": [
-                  {
-                    "url": "member-of-a-common-exposure-cohort",
-                    "valueBoolean": true
-                  }
-                ],
+                "valueBoolean": true,
                 "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
               },
               {
                 "extension": [
                   {
-                    "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-type",
+                    "url": "cohort-type",
                     "valueString": "Shelter"
                   }
                 ],
-                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
               },
               {
                 "extension": [
                   {
-                    "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-name",
+                    "url": "cohort-name",
                     "valueString": "Monahan-Stracke"
                   }
                 ],
-                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
               },
               {
                 "extension": [
                   {
-                    "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-type",
+                    "url": "cohort-type",
                     "valueString": "Correctional Facility"
                   },
                   {
-                    "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-location",
+                    "url": "cohort-location",
                     "valueString": "North Carmenhaven, CA"
                   }
                 ],
-                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
               },
               {
                 "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
@@ -3259,44 +3249,39 @@ The complex `http://saraalert.org/StructureDefinition/exposure-risk-factors` ext
       "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
     },
     {
-      "extension": [
-        {
-          "url": "member-of-a-common-exposure-cohort",
-          "valueBoolean": true
-        }
-      ],
+      "valueBoolean": true,
       "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
     },
     {
       "extension": [
         {
-          "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-type",
+          "url": "cohort-type",
           "valueString": "Shelter"
         }
       ],
-      "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+      "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
     },
     {
       "extension": [
         {
-          "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-name",
+          "url": "cohort-name",
           "valueString": "Monahan-Stracke"
         }
       ],
-      "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+      "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
     },
     {
       "extension": [
         {
-          "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-type",
+          "url": "cohort-type",
           "valueString": "Correctional Facility"
         },
         {
-          "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-location",
+          "url": "cohort-location",
           "valueString": "North Carmenhaven, CA"
         }
       ],
-      "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+      "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
@@ -4488,44 +4473,39 @@ GET `[base]/Patient?given=john&family=doe`
                 "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
               },
               {
-                "extension": [
-                  {
-                    "url": "member-of-a-common-exposure-cohort",
-                    "valueBoolean": true
-                  }
-                ],
+                "valueBoolean": true,
                 "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
               },
               {
                 "extension": [
                   {
-                    "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-type",
+                    "url": "cohort-type",
                     "valueString": "Shelter"
                   }
                 ],
-                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
               },
               {
                 "extension": [
                   {
-                    "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-name",
+                    "url": "cohort-name",
                     "valueString": "Monahan-Stracke"
                   }
                 ],
-                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
               },
               {
                 "extension": [
                   {
-                    "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-type",
+                    "url": "cohort-type",
                     "valueString": "Correctional Facility"
                   },
                   {
-                    "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort-location",
+                    "url": "cohort-location",
                     "valueString": "North Carmenhaven, CA"
                   }
                 ],
-                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
               },
               {
                 "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
@@ -5448,12 +5428,7 @@ GET `[base]/Patient?_count=2`
                 "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
               },
               {
-                "extension": [
-                  {
-                    "url": "member-of-a-common-exposure-cohort",
-                    "valueBoolean": false
-                  }
-                ],
+                "valueBoolean": false,
                 "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
               },
               {
@@ -5834,12 +5809,7 @@ GET `[base]/Patient?_count=2`
                 "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
               },
               {
-                "extension": [
-                  {
-                    "url": "member-of-a-common-exposure-cohort",
-                    "valueBoolean": false
-                  }
-                ],
+                "valueBoolean": false,
                 "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
               },
               {
