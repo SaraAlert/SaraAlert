@@ -65,7 +65,6 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       user_defined_id_statelocal: user_defined_id_statelocal || '',
       sex: sex || '',
       date_of_birth: date_of_birth&.strftime('%F') || '',
-      primary_telephone: primary_telephone || '',
       end_of_monitoring: (continuous_exposure ? 'Continuous Exposure' : end_of_monitoring) || '',
       exposure_risk_assessment: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
@@ -84,7 +83,8 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       workflow: isolation ? 'Isolation' : 'Exposure',
       first_positive_lab_at: first_positive_lab_at || '',
       follow_up_reason: follow_up_reason || '',
-      follow_up_note: follow_up_note || ''
+      follow_up_note: follow_up_note || '',
+      primary_telephone: primary_telephone || ''
     }
   end
 
