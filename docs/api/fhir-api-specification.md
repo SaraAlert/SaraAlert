@@ -2824,11 +2824,29 @@ Use `http://saraalert.org/StructureDefinition/preferred-contact-method` to speci
 }
 ```
 
+Use `http://saraalert.org/StructureDefinition/alternate-preferred-contact-method` to specify the Sara Alert preferred contact method for an alternate contact of the monitoree (options are: `E-mailed Web Link`, `SMS Texted Weblink`, `Telephone call`, `SMS Text-message`, `Opt-out`, and `Unknown`).
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
+  "valueString": "E-mailed Web Link"
+}
+```
+
 Use `http://saraalert.org/StructureDefinition/preferred-contact-time` to specify the monitoree's Sara Alert preferred contact time (options are: `Morning`, `Afternoon`, and `Evening`).
 
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+  "valueString": "Morning"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/alternate-preferred-contact-time` to specify the Sara Alert preferred contact time for an alternate contact of the monitoree (options are: `Morning`, `Afternoon`, and `Evening`).
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/alternate-preferred-contact-time",
   "valueString": "Morning"
 }
 ```
@@ -3191,6 +3209,42 @@ The `http://saraalert.org/StructureDefinition/sexual-orientation` extension repr
 }
 ```
 
+The `http://saraalert.org/StructureDefinition/contact-type` extension represents the contact type of a monitoree.
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/contact-type",
+  "valueString": "Parent/Guardian"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/contact-name` extension represents the contact name of a monitoree.
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/contact-name",
+  "valueString": "Lynwood Ortiz"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/alternate-contact-type` extension represents the contact type of the alternate contact of a monitoree.
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/alternate-contact-type",
+  "valueString": "Group Home Manager/Administrator"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/alternate-contact-name` extension represents the contact name of the alternate contact of a monitoree.
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/alternate-contact-name",
+  "valueString": "Maria Ernser"
+}
+```
+
 The complex `http://saraalert.org/StructureDefinition/exposure-risk-factors` extension represents the exposure risk factors that apply for the monitoree.
 
 ```json
@@ -3332,6 +3386,24 @@ The `http://saraalert.org/StructureDefinition/international-telephone` indicates
     ],
     "system": "phone",
     "value": "+44 5555 555555"
+  }
+]
+```
+
+The `http://saraalert.org/StructureDefinition/alternate-contact` indicates if a telecom is associated with an alternate contact. Note that this extension should be placed on an element in the `Patient.telecom` array. If this extension is not present on a telecom in the `Patient.telecom` array, the telecom is assumed to be associated with a primary contact.
+
+```json
+"telecom": [
+  {
+    "extension": [
+      {
+        "url": "http://saraalert.org/StructureDefinition/alternate-contact",
+        "valueBoolean": true
+      }
+    ],
+    "system": "phone",
+    "value": "+15555555555",
+    "rank": 1
   }
 ]
 ```
