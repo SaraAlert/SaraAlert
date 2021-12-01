@@ -336,6 +336,7 @@ module PHDC
       sas_table['border'] = '5'
       sas_text << sas_table
       sas_colgroup = Ox::Element.new(:colgroup)
+      sas_table << sas_colgroup
       sas_colgroup << col_helper('30%')
       sas_colgroup << col_helper('30%')
       sas_colgroup << col_helper('40%')
