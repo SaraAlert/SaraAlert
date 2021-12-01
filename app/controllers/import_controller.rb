@@ -393,15 +393,15 @@ class ImportController < ApplicationController
     continuous_exposure_boolean = import_and_validate_bool_field(field, continuous_exposure_value, row_ind)
 
     if continuous_exposure_boolean
-      @warnings[VALIDATION[field][:label]] = "Your import contains one or multiple monitorees with Continuous Exposure " \
-                                             "enabled. Please note that monitorees with Continuous Exposure enabled " \
-                                             "will receive symptom assessments indefinitely unless a Sara Alert user " \
-                                             "manually deactivates Continuous Exposure after import. To proceed with " \
-                                             "this import, select 'Proceed with Import' to acknowledge you understand " \
-                                             "and intend to import monitorees with Continuous Exposure enabled. If you " \
-                                             "did not intend to import monitorees with Continuous Exposure enabled, " \
-                                             "please select 'Cancel Import', update your import file as needed, and " \
-                                             "re-attempt to import."
+      @warnings[VALIDATION[field][:label]] = 'Your import contains one or multiple monitorees with Continuous Exposure ' \
+                                             'enabled. Please note that monitorees with Continuous Exposure enabled ' \
+                                             'will receive symptom assessments indefinitely unless a Sara Alert user ' \
+                                             'manually deactivates Continuous Exposure after import. To proceed with ' \
+                                             'this import, select \'Proceed with Import\' to acknowledge you understand ' \
+                                             'and intend to import monitorees with Continuous Exposure enabled. If you ' \
+                                             'did not intend to import monitorees with Continuous Exposure enabled, ' \
+                                             'please select \'Cancel Import\', update your import file as needed, and ' \
+                                             're-attempt to import.'
     end
 
     return continuous_exposure_boolean if last_date_of_exposure_value.blank?
