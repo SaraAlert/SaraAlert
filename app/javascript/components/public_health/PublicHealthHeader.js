@@ -145,6 +145,40 @@ class PublicHealthHeader extends React.Component {
     );
   }
 
+  renderWarningModal() {
+    return (
+      <Modal
+        dialogClassName="modal-import"
+        scrollable="true"
+        backdrop="static"
+        show={this.state.showWarningModal}
+        onHide={async () => {
+          this.setState({ showWarningModal: false, importType: null, importData: null });
+        }}>
+        <Modal.Header closeButton>
+          <Modal.Title className="h5">{this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} (warning)</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {this.state.importData?.warnings &&
+            Object.keys(this.state.importData.warnings).map(key => (
+              <span key={key}>
+                <h5>{key} Warning</h5>
+                <p>{this.state.importData.warnings[key]}</p>
+              </span>
+            ))}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => this.setState({ showWarningModal: false, importType: null, importData: null })}>
+            Cancel Import
+          </Button>
+          <Button variant="primary" onClick={() => this.setState({ showWarningModal: false, showImportModal: true })}>
+            Proceed With Import
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -221,6 +255,7 @@ class PublicHealthHeader extends React.Component {
           </Col>
         </Row>
         {this.renderUploadModal()}
+        {this.renderWarningModal()}
         {this.renderImportModal()}
       </React.Fragment>
     );
