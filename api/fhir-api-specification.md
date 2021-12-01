@@ -4,6 +4,7 @@ title: FHIR Interface Specification
 parent: API
 nav_order: 4
 ---
+
 <details open markdown="block">
   <summary>
     Table of contents
@@ -21,53 +22,56 @@ JSON is currently the only supported format. Please make use of the `application
 <a name="data-representation"/>
 
 ### Data Representation
+
 Because the Sara Alert API follows the FHIR specification, there is a mapping between known kinds of Sara Alert data and their associated FHIR resources.
 
-| Sara Alert                | FHIR Resource |
-| :---------------          | :------------ |
-| Monitoree                 | [Patient](https://hl7.org/fhir/R4/patient.html)|
-| Monitoree Lab Result      | [Observation](https://hl7.org/fhir/R4/observation.html)|
-| Monitoree Daily Report    | [QuestionnaireResponse](https://www.hl7.org/fhir/questionnaireresponse.html)|
-| Monitoree Close Contact   | [RelatedPerson](https://www.hl7.org/fhir/relatedperson.html)|
-| Monitoree Immunization    | [Immunization](https://www.hl7.org/fhir/immunization.html)|
-| Monitoree History         | [Provenance](https://hl7.org/fhir/provenance.html)|
+| Sara Alert              | FHIR Resource                                                                |
+| :---------------------- | :--------------------------------------------------------------------------- |
+| Monitoree               | [Patient](https://hl7.org/fhir/R4/patient.html)                              |
+| Monitoree Lab Result    | [Observation](https://hl7.org/fhir/R4/observation.html)                      |
+| Monitoree Daily Report  | [QuestionnaireResponse](https://www.hl7.org/fhir/questionnaireresponse.html) |
+| Monitoree Close Contact | [RelatedPerson](https://www.hl7.org/fhir/relatedperson.html)                 |
+| Monitoree Immunization  | [Immunization](https://www.hl7.org/fhir/immunization.html)                   |
+| Monitoree History       | [Provenance](https://hl7.org/fhir/provenance.html)                           |
 
 <a name="supported-scopes"/>
 
 ## Supported Scopes
+
 For applications following the [SMART-on-FHIR App Launch Framework "Standalone Launch" Workflow](#standalone-launch), these are the available scopes:
 
-* `user/Patient.read`
-* `user/Patient.write`
-* `user/Patient.*` (for both read and write access to this resource)
-* `user/Observation.read`
-* `user/QuestionnaireResponse.read`
-* `user/RelatedPerson.read`
-* `user/RelatedPerson.write`
-* `user/RelatedPerson.*`
-* `user/Immunization.read`
-* `user/Immunization.write`
-* `user/Immunization.*`,
-* `user/Provenance.read`
+- `user/Patient.read`
+- `user/Patient.write`
+- `user/Patient.*` (for both read and write access to this resource)
+- `user/Observation.read`
+- `user/QuestionnaireResponse.read`
+- `user/RelatedPerson.read`
+- `user/RelatedPerson.write`
+- `user/RelatedPerson.*`
+- `user/Immunization.read`
+- `user/Immunization.write`
+- `user/Immunization.*`,
+- `user/Provenance.read`
 
 For applications following the [SMART on FHIR Backend Services Workflow](#backend-services), these are the available scopes:
 
-* `system/Patient.read`
-* `system/Patient.write`
-* `system/Patient.*` (for both read and write access to this resource)
-* `system/Observation.read`
-* `system/Observation.write`
-* `system/Observation.*`
-* `system/QuestionnaireResponse.read`
-* `system/RelatedPerson.read`
-* `system/RelatedPerson.write`
-* `system/RelatedPerson.*`
-* `system/Immunization.read`
-* `system/Immunization.write`
-* `system/Immunization.*`
-* `system/Provenance.read`
+- `system/Patient.read`
+- `system/Patient.write`
+- `system/Patient.*` (for both read and write access to this resource)
+- `system/Observation.read`
+- `system/Observation.write`
+- `system/Observation.*`
+- `system/QuestionnaireResponse.read`
+- `system/RelatedPerson.read`
+- `system/RelatedPerson.write`
+- `system/RelatedPerson.*`
+- `system/Immunization.read`
+- `system/Immunization.write`
+- `system/Immunization.*`
+- `system/Provenance.read`
 
 Please note a given application and request for access token can have have multiple scopes, which must be space-separated. For example:
+
 ```
 user/Patient.read system/Patient.read system/Observation.read
 ```
@@ -348,8 +352,8 @@ A capability statement is available at `[base]/metadata`:
   ],
   "resourceType": "CapabilityStatement"
 }
-
 ```
+
   </div>
 </details>
 
@@ -367,10 +371,7 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
 {
   "authorization_endpoint": "http://localhost:3000/oauth/authorize",
   "token_endpoint": "http://localhost:3000/oauth/token",
-  "token_endpoint_auth_methods_supported": [
-    "client_secret_basic",
-    "private_key_jwt"
-  ],
+  "token_endpoint_auth_methods_supported": ["client_secret_basic", "private_key_jwt"],
   "token_endpoint_auth_signing_alg_values_supported": ["RS384"],
   "introspection_endpoint": "http://localhost:3000/oauth/introspect",
   "revocation_endpoint": "http://localhost:3000/oauth/revoke",
@@ -404,8 +405,8 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
   ],
   "capabilities": ["launch-standalone"]
 }
-
 ```
+
   </div>
 </details>
 
@@ -637,17 +638,39 @@ Get a monitoree via an id, e.g.:
           "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
         },
         {
+          "valueBoolean": true,
+          "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+        },
+        {
           "extension": [
             {
-              "url": "member-of-a-common-exposure-cohort",
-              "valueBoolean": true
-            },
-            {
-              "url": "member-of-a-common-exposure-cohort-type",
-              "valueString": "Cruiseline cohort"
+              "url": "cohort-type",
+              "valueString": "Shelter"
             }
           ],
-          "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+          "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
+        },
+        {
+          "extension": [
+            {
+              "url": "cohort-name",
+              "valueString": "Monahan-Stracke"
+            }
+          ],
+          "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
+        },
+        {
+          "extension": [
+            {
+              "url": "cohort-type",
+              "valueString": "Correctional Facility"
+            },
+            {
+              "url": "cohort-location",
+              "valueString": "North Carmenhaven, CA"
+            }
+          ],
+          "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
         },
         {
           "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
@@ -900,12 +923,14 @@ Get a monitoree via an id, e.g.:
   "resourceType": "Patient"
 }
 ```
+
   </div>
 </details>
 
 #### Read-Only Patient Extensions
 
 The `http://saraalert.org/StructureDefinition/end-of-monitoring` extension represents the system calculated end of monitoring period. This field is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/end-of-monitoring",
@@ -914,6 +939,7 @@ The `http://saraalert.org/StructureDefinition/end-of-monitoring` extension repre
 ```
 
 The `http://saraalert.org/StructureDefinition/expected-purge-date` extension represents the date and time that the monitoree's identifiers will be eligible to be purged from the system. This field is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/expected-purge-date",
@@ -922,6 +948,7 @@ The `http://saraalert.org/StructureDefinition/expected-purge-date` extension rep
 ```
 
 The `http://saraalert.org/StructureDefinition/reason-for-closure` extension represents the reason a monitoree was closed by the user or system. This field is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/reason-for-closure",
@@ -930,6 +957,7 @@ The `http://saraalert.org/StructureDefinition/reason-for-closure` extension repr
 ```
 
 The `http://saraalert.org/StructureDefinition/closed-at` extension represents the time at which a monitoree was closed. This field is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/closed-at",
@@ -938,6 +966,7 @@ The `http://saraalert.org/StructureDefinition/closed-at` extension represents th
 ```
 
 The `http://saraalert.org/StructureDefinition/head-of-household` extension represents whether the monitoree is the head of a household. This field is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/head-of-household",
@@ -946,6 +975,7 @@ The `http://saraalert.org/StructureDefinition/head-of-household` extension repre
 ```
 
 The `http://saraalert.org/StructureDefinition/id-of-reporter` extension represents the ID of the monitoree responsible for reporting for this monitoree. If the monitoree is responsible for their own reporting, this will just be the monitoree's ID. This field is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/id-of-reporter",
@@ -954,6 +984,7 @@ The `http://saraalert.org/StructureDefinition/id-of-reporter` extension represen
 ```
 
 The `http://saraalert.org/StructureDefinition/last-assessment-reminder-sent` extension indicates the time at which the monitoree was last sent an assessment reminder. This field is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/last-assessment-reminder-sent",
@@ -962,6 +993,7 @@ The `http://saraalert.org/StructureDefinition/last-assessment-reminder-sent` ext
 ```
 
 The `http://saraalert.org/StructureDefinition/paused-notifications` extension represents whether notifications to the monitoree are paused. This field is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/paused-notifications",
@@ -970,6 +1002,7 @@ The `http://saraalert.org/StructureDefinition/paused-notifications` extension re
 ```
 
 The `http://saraalert.org/StructureDefinition/status` extension represents the current status of the monitoree. This field is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/status",
@@ -978,6 +1011,7 @@ The `http://saraalert.org/StructureDefinition/status` extension represents the c
 ```
 
 The `http://saraalert.org/StructureDefinition/user-defined-symptom-onset` extension indicates whether the symptom onset for this monitoree is user defined. This field is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/user-defined-symptom-onset",
@@ -986,6 +1020,7 @@ The `http://saraalert.org/StructureDefinition/user-defined-symptom-onset` extens
 ```
 
 The complex `http://saraalert.org/StructureDefinition/transfer` extension represents a transfer that occurred for the monitoree. This field is read-only.
+
 ```json
 {
   "extension": [
@@ -1017,7 +1052,6 @@ The complex `http://saraalert.org/StructureDefinition/transfer` extension repres
   "url": "http://saraalert.org/StructureDefinition/transfer"
 }
 ```
-
 
 <a name="read-get-obs"/>
 
@@ -1078,19 +1112,20 @@ Get a monitoree lab result via an id, e.g.:
   "resourceType": "Observation"
 }
 ```
+
   </div>
 </details>
 
 #### Read-Only Observation Extensions
 
 The `http://saraalert.org/StructureDefinition/created-at` extension indicates the time at which the laboratory was created. This extension is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/created-at",
   "valueDateTime": "2021-06-23T23:34:35+00:00"
 }
 ```
-
 
 <a name="read-get-que"/>
 
@@ -1274,14 +1309,15 @@ Get a monitoree daily report via an id, e.g.:
   ],
   "resourceType": "QuestionnaireResponse"
 }
-
 ```
+
   </div>
 </details>
 
 #### Read-Only QuestionnaireResponse Extensions
 
 The `http://saraalert.org/StructureDefinition/created-at` extension indicates the time at which the assessment was created. This extension is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/created-at",
@@ -1290,6 +1326,7 @@ The `http://saraalert.org/StructureDefinition/created-at` extension indicates th
 ```
 
 The `http://saraalert.org/StructureDefinition/symptomatic` extension indicates whether an assessment indicates a symptomatic monitoree. This extension is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/symptomatic",
@@ -1298,6 +1335,7 @@ The `http://saraalert.org/StructureDefinition/symptomatic` extension indicates w
 ```
 
 The `http://saraalert.org/StructureDefinition/who-reported` extension indicates who reported the assessment. This extension is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/who-reported",
@@ -1361,12 +1399,14 @@ Get a monitoree close contact via an id, e.g.:
   "resourceType": "RelatedPerson"
 }
 ```
+
   </div>
 </details>
 
 #### Read-Only RelatedPerson Extensions
 
 The `http://saraalert.org/StructureDefinition/created-at` extension indicates the time at which the close contact was created. This extension is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/created-at",
@@ -1375,6 +1415,7 @@ The `http://saraalert.org/StructureDefinition/created-at` extension indicates th
 ```
 
 The `http://saraalert.org/StructureDefinition/enrolled-patient` extension is used to reference the full Patient resource that corresponds to the close contact, if such a Patient exists. This extension is read-only. This field may only be updated by manually enrolling a new Patient for this close contact via the user interface.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/enrolled-patient",
@@ -1383,7 +1424,6 @@ The `http://saraalert.org/StructureDefinition/enrolled-patient` extension is use
   }
 }
 ```
-
 
 <a name="read-get-immunization"/>
 
@@ -1445,14 +1485,15 @@ Get a monitoree vaccination via an id, e.g.:
   ],
   "resourceType": "Immunization"
 }
-
 ```
+
   </div>
 </details>
 
 #### Read-Only Immunization Extensions
 
 The `http://saraalert.org/StructureDefinition/created-at` extension indicates the time at which the vaccination was created. This extension is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/created-at",
@@ -1546,12 +1587,14 @@ Get a monitoree history via an id, e.g.:
   "resourceType": "Provenance"
 }
 ```
+
   </div>
 </details>
 
 #### Read-Only Provenance Extensions
 
 The `http://saraalert.org/StructureDefinition/comment` extension represents the comment for a history. This extension is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/comment",
@@ -1560,6 +1603,7 @@ The `http://saraalert.org/StructureDefinition/comment` extension represents the 
 ```
 
 The `http://saraalert.org/StructureDefinition/history-type` extension indicates the type of history that was created. This extension is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/history-type",
@@ -1568,13 +1612,13 @@ The `http://saraalert.org/StructureDefinition/history-type` extension indicates 
 ```
 
 The `http://saraalert.org/StructureDefinition/original-id` extension indicates the original ID of a history that has been edited. This extension is read-only.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/original-id",
   "valuePositiveInt": 12572
 }
 ```
-
 
 <a name="read-get-all"/>
 
@@ -1808,17 +1852,39 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
                 "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
               },
               {
+                "valueBoolean": true,
+                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+              },
+              {
                 "extension": [
                   {
-                    "url": "member-of-a-common-exposure-cohort",
-                    "valueBoolean": true
-                  },
-                  {
-                    "url": "member-of-a-common-exposure-cohort-type",
-                    "valueString": "Cruiseline cohort"
+                    "url": "cohort-type",
+                    "valueString": "Shelter"
                   }
                 ],
-                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "cohort-name",
+                    "valueString": "Monahan-Stracke"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "cohort-type",
+                    "valueString": "Correctional Facility"
+                  },
+                  {
+                    "url": "cohort-location",
+                    "valueString": "North Carmenhaven, CA"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
               },
               {
                 "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
@@ -2423,9 +2489,9 @@ Use this route to retrieve a FHIR Bundle containing the monitoree and all their 
   "resourceType": "Bundle"
 }
 ```
+
   </div>
 </details>
-
 
 <a name="create"/>
 
@@ -2440,6 +2506,7 @@ The API supports creating new monitorees.
 To create a new monitoree, simply POST a FHIR Patient resource.
 
 **Request Body:**
+
 <details>
   <summary>Click to expand JSON snippet</summary>
   <div markdown="1">
@@ -2538,10 +2605,7 @@ To create a new monitoree, simply POST a FHIR Patient resource.
   "name": [
     {
       "family": "O'Kon89",
-      "given": [
-        "Malcolm94",
-        "Bogan39"
-      ]
+      "given": ["Malcolm94", "Bogan39"]
     }
   ],
   "telecom": [
@@ -2564,9 +2628,7 @@ To create a new monitoree, simply POST a FHIR Patient resource.
   "birthDate": "1981-03-30",
   "address": [
     {
-      "line": [
-        "22424 Daphne Key"
-      ],
+      "line": ["22424 Daphne Key"],
       "city": "West Gabrielmouth",
       "state": "Maine",
       "postalCode": "24683"
@@ -2588,9 +2650,9 @@ To create a new monitoree, simply POST a FHIR Patient resource.
   "resourceType": "Patient"
 }
 ```
+
   </div>
 </details>
-
 
 **Response:**
 
@@ -2694,10 +2756,7 @@ On success, the server will return the newly created resource with an id. This i
   "name": [
     {
       "family": "O'Kon89",
-      "given": [
-        "Malcolm94",
-        "Bogan39"
-      ]
+      "given": ["Malcolm94", "Bogan39"]
     }
   ],
   "telecom": [
@@ -2720,9 +2779,7 @@ On success, the server will return the newly created resource with an id. This i
   "birthDate": "1981-03-30",
   "address": [
     {
-      "line": [
-        "22424 Daphne Key"
-      ],
+      "line": ["22424 Daphne Key"],
       "city": "West Gabrielmouth",
       "state": "Maine",
       "postalCode": "24683"
@@ -2744,6 +2801,7 @@ On success, the server will return the newly created resource with an id. This i
   "resourceType": "Patient"
 }
 ```
+
   </div>
 </details>
 
@@ -2786,7 +2844,6 @@ Use `http://saraalert.org/StructureDefinition/symptom-onset-date` to specify whe
 
 Use `http://saraalert.org/StructureDefinition/last-exposure-date` to specify when the monitoree's last exposure occurred for use in the Sara Alert exposure workflow.
 
-
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
@@ -2804,6 +2861,7 @@ Use `http://saraalert.org/StructureDefinition/isolation` to specify if the monit
 ```
 
 Use `http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path` to specify the monitoree's assigned jurisdiction.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
@@ -2812,6 +2870,7 @@ Use `http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path` t
 ```
 
 Use `http://saraalert.org/StructureDefinition/monitoring-plan` to specify the monitoree's Sara Alert monitoring plan (options are: `None`, `Daily active monitoring`, `Self-monitoring with public health supervision`, `Self-monitoring with delegated supervision`, and `Self-observation`).
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
@@ -2820,6 +2879,7 @@ Use `http://saraalert.org/StructureDefinition/monitoring-plan` to specify the mo
 ```
 
 Use `http://saraalert.org/StructureDefinition/assigned-user` to specify the monitoree's assigned user.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/assigned-user",
@@ -2828,6 +2888,7 @@ Use `http://saraalert.org/StructureDefinition/assigned-user` to specify the moni
 ```
 
 Use `http://saraalert.org/StructureDefinition/additional-planned-travel-start-date` to specify when the monitoree is planning to begin their travel.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
@@ -2836,6 +2897,7 @@ Use `http://saraalert.org/StructureDefinition/additional-planned-travel-start-da
 ```
 
 Use `http://saraalert.org/StructureDefinition/port-of-origin` to specify the port that the monitoree traveled from.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/port-of-origin",
@@ -2844,6 +2906,7 @@ Use `http://saraalert.org/StructureDefinition/port-of-origin` to specify the por
 ```
 
 Use `http://saraalert.org/StructureDefinition/date-of-departure` to specify when the monitoree departed from the port of origin.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/date-of-departure",
@@ -2852,6 +2915,7 @@ Use `http://saraalert.org/StructureDefinition/date-of-departure` to specify when
 ```
 
 Use `http://saraalert.org/StructureDefinition/flight-or-vessel-number` to specify the plane, train, ship, or other vessel that the monitoree used to travel to their destination.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-number",
@@ -2860,6 +2924,7 @@ Use `http://saraalert.org/StructureDefinition/flight-or-vessel-number` to specif
 ```
 
 Use `http://saraalert.org/StructureDefinition/flight-or-vessel-carrier` to specify the carrier, operating company, or provider of the flight or vessel.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/flight-or-vessel-carrier",
@@ -2869,6 +2934,7 @@ Use `http://saraalert.org/StructureDefinition/flight-or-vessel-carrier` to speci
 
 Use `http://saraalert.org/StructureDefinition/date-of-arrival` to specify when the monitoree
 entered the United States after travel.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/date-of-arrival",
@@ -2877,6 +2943,7 @@ entered the United States after travel.
 ```
 
 Use `http://saraalert.org/StructureDefinition/exposure-notes` to specify additional notes about the monitoree's exposure history or case information history.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/exposure-notes",
@@ -2886,6 +2953,7 @@ Use `http://saraalert.org/StructureDefinition/exposure-notes` to specify additio
 
 Use `http://saraalert.org/StructureDefinition/travel-related-notes` to specify additional notes
 about the monitoree’s travel history.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/travel-related-notes",
@@ -2894,6 +2962,7 @@ about the monitoree’s travel history.
 ```
 
 Use `http://saraalert.org/StructureDefinition/additional-planned-travel-notes` to specify additional notes about the monitoree's planned travel.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
@@ -2902,6 +2971,7 @@ Use `http://saraalert.org/StructureDefinition/additional-planned-travel-notes` t
 ```
 
 Use `http://saraalert.org/StructureDefinition/exposure-risk-assessment` to specify the risk assessment of the monitoree's exposure to disease.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/exposure-risk-assessment",
@@ -2910,6 +2980,7 @@ Use `http://saraalert.org/StructureDefinition/exposure-risk-assessment` to speci
 ```
 
 Use `http://saraalert.org/StructureDefinition/public-health-action` to specify the public health recommendation provided to a monitoree.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/public-health-action",
@@ -2918,6 +2989,7 @@ Use `http://saraalert.org/StructureDefinition/public-health-action` to specify t
 ```
 
 Use `http://saraalert.org/StructureDefinition/potential-exposure-location` to specify a description of the location where the monitoree was potentially last exposed to a case.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/potential-exposure-location",
@@ -2926,6 +2998,7 @@ Use `http://saraalert.org/StructureDefinition/potential-exposure-location` to sp
 ```
 
 Use `http://saraalert.org/StructureDefinition/potential-exposure-country` to specify the country where the monitoree was potentially last exposed to a case.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/potential-exposure-country",
@@ -2934,6 +3007,7 @@ Use `http://saraalert.org/StructureDefinition/potential-exposure-country` to spe
 ```
 
 Use `http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired` to specify if the monitoree needs a language interpreter when speaking with public health representatives.
+
 ```json
 {
   "url": "http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired",
@@ -2942,6 +3016,7 @@ Use `http://hl7.org/fhir/StructureDefinition/patient-interpreterRequired` to spe
 ```
 
 Use `http://saraalert.org/StructureDefinition/extended-isolation` to specify a user-defined date that determines eligibility for a monitoree appearing on the Records Requiring Review linelist.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/extended-isolation",
@@ -2950,6 +3025,7 @@ Use `http://saraalert.org/StructureDefinition/extended-isolation` to specify a u
 ```
 
 Use `http://saraalert.org/StructureDefinition/follow-up-reason` to specify a reason to follow up on the monitoree (options are: `Deceased`, `Duplicate`, `High-Risk`, `Hospitalized`, `In Need of Follow-up`, `Lost to Follow-up`, `Needs Interpretation`, `Quality Assurance`, `Refused Active Monitoring`, and `Other`).
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/follow-up-reason",
@@ -2958,6 +3034,7 @@ Use `http://saraalert.org/StructureDefinition/follow-up-reason` to specify a rea
 ```
 
 Use `http://saraalert.org/StructureDefinition/follow-up-note` to specify additional details for follow up reason on the monitoree. This requires the follow up reason to be set.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/follow-up-note",
@@ -2966,6 +3043,7 @@ Use `http://saraalert.org/StructureDefinition/follow-up-note` to specify additio
 ```
 
 Use `http://saraalert.org/StructureDefinition/phone-type` to specify the type of phone attached to the primary or secondary phone number (options are: `Smartphone`, `Plain Cell`, and `Landline`). Note that this extension should be placed on the first element in the `Patient.telecom` array to specify the monitoree's primary phone type, and the second element in the `Patient.telecom` array to specify the monitoree's secondary phone type.
+
 ```json
 "telecom": [
   {
@@ -2981,6 +3059,7 @@ Use `http://saraalert.org/StructureDefinition/phone-type` to specify the type of
 ```
 
 Use `http://saraalert.org/StructureDefinition/address-type` to specify the type of an address (options are: `USA`, `Foreign`, `Monitored`, and `ForeignMonitored`). Note that this extension should be placed on an element in the `Patient.address` array. If this extension is not present on an address in the `Patient.address` array, the address is assumed to be a `USA` address.
+
 ```json
 "address": [
   {
@@ -3007,6 +3086,7 @@ Use `http://saraalert.org/StructureDefinition/address-type` to specify the type 
 ```
 
 The `http://saraalert.org/StructureDefinition/additional-planned-travel-end-date` extension represents the end date for a monitoree's additional planned travel.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-end-date",
@@ -3015,6 +3095,7 @@ The `http://saraalert.org/StructureDefinition/additional-planned-travel-end-date
 ```
 
 The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination` extension represents the destination for a monitoree's additional planned travel.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination",
@@ -3022,8 +3103,8 @@ The `http://saraalert.org/StructureDefinition/additional-planned-travel-destinat
 }
 ```
 
-
 The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination-state` extension represents the destination state for a monitoree's additional planned travel.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-state",
@@ -3032,6 +3113,7 @@ The `http://saraalert.org/StructureDefinition/additional-planned-travel-destinat
 ```
 
 The `http://saraalert.org/StructureDefinition/additional-planned-travel-destination-country` extension represents the destination country for a monitoree's additional planned travel.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-destination-country",
@@ -3040,6 +3122,7 @@ The `http://saraalert.org/StructureDefinition/additional-planned-travel-destinat
 ```
 
 The `http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure` extension represents the port of departure for a monitoree's additional planned travel.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-departure",
@@ -3048,6 +3131,7 @@ The `http://saraalert.org/StructureDefinition/additional-planned-travel-port-of-
 ```
 
 The `http://saraalert.org/StructureDefinition/additional-planned-travel-type` extension represents the type of a monitoree's additional planned travel.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-type",
@@ -3056,6 +3140,7 @@ The `http://saraalert.org/StructureDefinition/additional-planned-travel-type` ex
 ```
 
 The `http://saraalert.org/StructureDefinition/port-of-entry-into-usa` extension represents the port of entry into the USA for a monitoree.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/port-of-entry-into-usa",
@@ -3064,6 +3149,7 @@ The `http://saraalert.org/StructureDefinition/port-of-entry-into-usa` extension 
 ```
 
 The `http://saraalert.org/StructureDefinition/case-status` extension represents the case status of a monitoree.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/case-status",
@@ -3072,6 +3158,7 @@ The `http://saraalert.org/StructureDefinition/case-status` extension represents 
 ```
 
 The `http://hl7.org/fhir/StructureDefinition/patient-genderIdentity` extension represents the gender identity of a monitoree.
+
 ```json
 {
   "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
@@ -3088,6 +3175,7 @@ The `http://hl7.org/fhir/StructureDefinition/patient-genderIdentity` extension r
 ```
 
 The `http://saraalert.org/StructureDefinition/sexual-orientation` extension represents the sexual orientation of a monitoree.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/sexual-orientation",
@@ -3104,6 +3192,7 @@ The `http://saraalert.org/StructureDefinition/sexual-orientation` extension repr
 ```
 
 The complex `http://saraalert.org/StructureDefinition/exposure-risk-factors` extension represents the exposure risk factors that apply for the monitoree.
+
 ```json
 {
   "extension": [
@@ -3160,17 +3249,39 @@ The complex `http://saraalert.org/StructureDefinition/exposure-risk-factors` ext
       "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
     },
     {
+      "valueBoolean": true,
+      "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+    },
+    {
       "extension": [
         {
-          "url": "member-of-a-common-exposure-cohort",
-          "valueBoolean": true
-        },
-        {
-          "url": "member-of-a-common-exposure-cohort-type",
-          "valueString": "Cruiseline cohort"
+          "url": "cohort-type",
+          "valueString": "Shelter"
         }
       ],
-      "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+      "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
+    },
+    {
+      "extension": [
+        {
+          "url": "cohort-name",
+          "valueString": "Monahan-Stracke"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
+    },
+    {
+      "extension": [
+        {
+          "url": "cohort-type",
+          "valueString": "Correctional Facility"
+        },
+        {
+          "url": "cohort-location",
+          "valueString": "North Carmenhaven, CA"
+        }
+      ],
+      "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
     },
     {
       "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
@@ -3186,6 +3297,7 @@ The complex `http://saraalert.org/StructureDefinition/exposure-risk-factors` ext
 ```
 
 The complex `http://saraalert.org/StructureDefinition/source-of-report` extension represents the source of the report for a monitoree's arrival information.
+
 ```json
 {
   "extension": [
@@ -3203,6 +3315,7 @@ The complex `http://saraalert.org/StructureDefinition/source-of-report` extensio
 ```
 
 The `http://saraalert.org/StructureDefinition/international-telephone` indicates if a telephone number is international. Note that this extension should be placed on an element in the `Patient.telecom` array, and only has meaning when `Patient.telecom.system` is `phone`. If this extension is not present on a telecom in the `Patient.telecom` array, the telephone number is assumed to not be international.
+
 ```json
 "telecom": [
   {
@@ -3222,6 +3335,7 @@ The `http://saraalert.org/StructureDefinition/international-telephone` indicates
   }
 ]
 ```
+
 ### POST `[base]/RelatedPerson`
 
 <a name="create-post-related"/>
@@ -3229,6 +3343,7 @@ The `http://saraalert.org/StructureDefinition/international-telephone` indicates
 To create a new monitoree close contact, simply POST a FHIR RelatedPerson resource that references the monitoree.
 
 **Request Body:**
+
 <details>
   <summary>Click to expand JSON snippet</summary>
   <div markdown="1">
@@ -3269,6 +3384,7 @@ To create a new monitoree close contact, simply POST a FHIR RelatedPerson resour
   "resourceType": "RelatedPerson"
 }
 ```
+
   </div>
 </details>
 
@@ -3278,8 +3394,8 @@ To create a new monitoree close contact, simply POST a FHIR RelatedPerson resour
 
 Sara Alert includes additional extensions for attributes specific to a monitoree close contact.
 
-
 Use `http://saraalert.org/StructureDefinition/last-date-of-exposure` to specify when the close contact's last exposure occurred.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/last-date-of-exposure",
@@ -3288,6 +3404,7 @@ Use `http://saraalert.org/StructureDefinition/last-date-of-exposure` to specify 
 ```
 
 Use `http://saraalert.org/StructureDefinition/assigned-user` to specify the close contacts's assigned user.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/assigned-user",
@@ -3296,6 +3413,7 @@ Use `http://saraalert.org/StructureDefinition/assigned-user` to specify the clos
 ```
 
 Use `http://saraalert.org/StructureDefinition/notes` to specify additional notes about the close contacts's case.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/notes",
@@ -3304,13 +3422,13 @@ Use `http://saraalert.org/StructureDefinition/notes` to specify additional notes
 ```
 
 Use `http://saraalert.org/StructureDefinition/contact-attempts` to specify the number of attempts made to contact the close contact.
+
 ```json
 {
   "url": "http://saraalert.org/StructureDefinition/contact-attempts",
   "valueUnsignedInt": 2
 }
 ```
-
 
 ### POST `[base]/Immunization`
 
@@ -3319,6 +3437,7 @@ Use `http://saraalert.org/StructureDefinition/contact-attempts` to specify the n
 To create a new monitoree vaccination, simply POST a FHIR Immunization resource that references the monitoree.
 
 **Request Body:**
+
 <details>
   <summary>Click to expand JSON snippet</summary>
   <div markdown="1">
@@ -3365,6 +3484,7 @@ To create a new monitoree vaccination, simply POST a FHIR Immunization resource 
   "resourceType": "Immunization"
 }
 ```
+
   </div>
 </details>
 
@@ -3375,6 +3495,7 @@ To create a new monitoree vaccination, simply POST a FHIR Immunization resource 
 To create a new monitoree lab result, simply POST a FHIR Observation resource that references the monitoree.
 
 **Request Body:**
+
 <details>
   <summary>Click to expand JSON snippet</summary>
   <div markdown="1">
@@ -3406,13 +3527,14 @@ To create a new monitoree lab result, simply POST a FHIR Observation resource th
   "resourceType": "Observation"
 }
 ```
+
   </div>
 </details>
-
 
 <a name="update"/>
 
 ## Updating
+
 An update request creates a new current version for an existing resource.
 
 **PLEASE NOTE:** The API supports `PUT` and `PATCH` requests, which update an existing resource in different ways. A `PUT` request will replace the entire existing resource. This means that if certain attributes of the resource are omitted in the `PUT` requests, they will be replaced with null values. A `PATCH` request will only modify the attributes indicated in the request, which must follow the [JSON Patch specification](https://tools.ietf.org/html/rfc6902). Omitted attributes are unchanged. For further details on the contents of a `PATCH` request, see the [JSON Patch documentation](http://jsonpatch.com/).
@@ -3424,6 +3546,7 @@ An update request creates a new current version for an existing resource.
 **NOTE:** This is a `PUT` operation, it will replace the entire resource. If you intend to modify specific attributes instead, see [PATCH](#update-patch-pat).
 
 **Request Body:**
+
 <details>
   <summary>Click to expand JSON snippet</summary>
   <div markdown="1">
@@ -3522,10 +3645,7 @@ An update request creates a new current version for an existing resource.
   "name": [
     {
       "family": "O'Kon89",
-      "given": [
-        "Malcolm94",
-        "Bogan39"
-      ]
+      "given": ["Malcolm94", "Bogan39"]
     }
   ],
   "telecom": [
@@ -3548,9 +3668,7 @@ An update request creates a new current version for an existing resource.
   "birthDate": "1981-03-30",
   "address": [
     {
-      "line": [
-        "22424 Daphne Key"
-      ],
+      "line": ["22424 Daphne Key"],
       "city": "West Gabrielmouth",
       "state": "Maine",
       "postalCode": "24683"
@@ -3572,9 +3690,9 @@ An update request creates a new current version for an existing resource.
   "resourceType": "Patient"
 }
 ```
+
   </div>
 </details>
-
 
 **Response:**
 
@@ -3678,10 +3796,7 @@ On success, the server will update the existing resource given the id.
   "name": [
     {
       "family": "O'Kon89",
-      "given": [
-        "Malcolm94",
-        "Bogan39"
-      ]
+      "given": ["Malcolm94", "Bogan39"]
     }
   ],
   "telecom": [
@@ -3704,9 +3819,7 @@ On success, the server will update the existing resource given the id.
   "birthDate": "1981-03-30",
   "address": [
     {
-      "line": [
-        "22424 Daphne Key"
-      ],
+      "line": ["22424 Daphne Key"],
       "city": "West Gabrielmouth",
       "state": "Maine",
       "postalCode": "24683"
@@ -3728,6 +3841,7 @@ On success, the server will update the existing resource given the id.
   "resourceType": "Patient"
 }
 ```
+
   </div>
 </details>
 
@@ -3736,6 +3850,7 @@ On success, the server will update the existing resource given the id.
 ### PUT `[base]/RelatedPerson/[:id]`
 
 **Request Body:**
+
 <details>
   <summary>Click to expand JSON snippet</summary>
   <div markdown="1">
@@ -3776,6 +3891,7 @@ On success, the server will update the existing resource given the id.
   "resourceType": "RelatedPerson"
 }
 ```
+
   </div>
 </details>
 
@@ -3784,6 +3900,7 @@ On success, the server will update the existing resource given the id.
 ### PUT `[base]/Immunization/[:id]`
 
 **Request Body:**
+
 <details>
   <summary>Click to expand JSON snippet</summary>
   <div markdown="1">
@@ -3830,6 +3947,7 @@ On success, the server will update the existing resource given the id.
   "resourceType": "Immunization"
 }
 ```
+
   </div>
 </details>
 
@@ -3837,6 +3955,7 @@ On success, the server will update the existing resource given the id.
 ### PUT `[base]/Observation/[:id]`
 
 **Request Body:**
+
 <details>
   <summary>Click to expand JSON snippet</summary>
   <div markdown="1">
@@ -3865,9 +3984,10 @@ On success, the server will update the existing resource given the id.
   },
   "effectiveDateTime": "2021-05-06",
   "issued": "2021-05-07T00:00:00+00:00",
-  "resourceType": "Observation",
+  "resourceType": "Observation"
 }
 ```
+
   </div>
 </details>
 
@@ -3878,6 +3998,7 @@ On success, the server will update the existing resource given the id.
 **NOTE:** This is a `PATCH` operation, it will only modify specified attributes. If you intend to replace the entire resource instead, see [PUT](#update-put-pat).
 
 **Request Headers:**
+
 ```
 Content-Type: application/json-patch+json
 ```
@@ -3896,9 +4017,9 @@ Assume the Patient resource was originally as shown in the example Patient [GET]
   { "op": "replace", "path": "/birthDate", "value": "1985-03-30" }
 ]
 ```
+
   </div>
 </details>
-
 
 **Response:**
 
@@ -4002,10 +4123,7 @@ On success, the server will update the attributes indicated by the request.
   "name": [
     {
       "family": "O'Kon89",
-      "given": [
-        "Malcolm94",
-        "Bogan39"
-      ]
+      "given": ["Malcolm94", "Bogan39"]
     }
   ],
   "telecom": [
@@ -4028,9 +4146,7 @@ On success, the server will update the attributes indicated by the request.
   "birthDate": "1985-03-30",
   "address": [
     {
-      "line": [
-        "22424 Daphne Key"
-      ],
+      "line": ["22424 Daphne Key"],
       "city": "West Gabrielmouth",
       "state": "Maine",
       "postalCode": "24683"
@@ -4039,6 +4155,7 @@ On success, the server will update the attributes indicated by the request.
   "resourceType": "Patient"
 }
 ```
+
   </div>
 </details>
 
@@ -4049,22 +4166,21 @@ On success, the server will update the attributes indicated by the request.
 **NOTE:** See the [Patient PATCH documentation](#update-patch-pat) for a more complete explanation of PATCH.
 
 **Request Headers:**
+
 ```
 Content-Type: application/json-patch+json
 ```
 
 **Request Body:**
 
-
 <details>
   <summary>Click to expand JSON snippet</summary>
   <div markdown="1">
 
 ```json
-[
-  { "op": "remove", "path": "/name/0/family" },
-]
+[{ "op": "remove", "path": "/name/0/family" }]
 ```
+
   </div>
 </details>
 
@@ -4075,22 +4191,21 @@ Content-Type: application/json-patch+json
 **NOTE:** See the [Patient PATCH documentation](#update-patch-pat) for a more complete explanation of PATCH.
 
 **Request Headers:**
+
 ```
 Content-Type: application/json-patch+json
 ```
 
 **Request Body:**
 
-
 <details>
   <summary>Click to expand JSON snippet</summary>
   <div markdown="1">
 
 ```json
-[
-  { "op": "replace", "path": "/note/0/text", "value": "Important notes" },
-]
+[{ "op": "replace", "path": "/note/0/text", "value": "Important notes" }]
 ```
+
   </div>
 </details>
 
@@ -4100,25 +4215,23 @@ Content-Type: application/json-patch+json
 **NOTE:** See the [Patient PATCH documentation](#update-patch-pat) for a more complete explanation of PATCH.
 
 **Request Headers:**
+
 ```
 Content-Type: application/json-patch+json
 ```
 
 **Request Body:**
 
-
 <details>
   <summary>Click to expand JSON snippet</summary>
   <div markdown="1">
 
 ```json
-[
-  { "op": "replace", "path": "/valueCodeableConcept/coding/0", "value":  { "system": "http://snomed.info/sct", "code": "260385009" }}
-]
+[{ "op": "replace", "path": "/valueCodeableConcept/coding/0", "value": { "system": "http://snomed.info/sct", "code": "260385009" } }]
 ```
+
   </div>
 </details>
-
 
 <a name="search"/>
 
@@ -4360,17 +4473,39 @@ GET `[base]/Patient?given=john&family=doe`
                 "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
               },
               {
+                "valueBoolean": true,
+                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+              },
+              {
                 "extension": [
                   {
-                    "url": "member-of-a-common-exposure-cohort",
-                    "valueBoolean": true
-                  },
-                  {
-                    "url": "member-of-a-common-exposure-cohort-type",
-                    "valueString": "Cruiseline cohort"
+                    "url": "cohort-type",
+                    "valueString": "Shelter"
                   }
                 ],
-                "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "cohort-name",
+                    "valueString": "Monahan-Stracke"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "cohort-type",
+                    "valueString": "Correctional Facility"
+                  },
+                  {
+                    "url": "cohort-location",
+                    "valueString": "North Carmenhaven, CA"
+                  }
+                ],
+                "url": "http://saraalert.org/StructureDefinition/common-exposure-cohort"
               },
               {
                 "url": "http://saraalert.org/StructureDefinition/travel-from-affected-country-or-area",
@@ -4615,10 +4750,12 @@ GET `[base]/Patient?given=john&family=doe`
   "resourceType": "Bundle"
 }
 ```
+
   </div>
 </details>
 
 ### GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
+
 You can use search to find Monitoree daily reports by using the `subject` parameter.
 
 <a name="search-questionnaire-subj"/>
@@ -4816,6 +4953,7 @@ GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
   "resourceType": "Bundle"
 }
 ```
+
   </div>
 </details>
 
@@ -4894,6 +5032,7 @@ GET `[base]/Observation?subject=Patient/[:id]`
   "resourceType": "Bundle"
 }
 ```
+
   </div>
 </details>
 
@@ -4962,6 +5101,7 @@ GET `[base]/RelatedPerson?patient=Patient/[:id]`
   "resourceType": "Bundle"
 }
 ```
+
   </div>
 </details>
 
@@ -5042,6 +5182,7 @@ GET `[base]/Immunization?patient=Patient/[:id]`
   "resourceType": "Bundle"
 }
 ```
+
   </div>
 </details>
 
@@ -5108,6 +5249,7 @@ GET `[base]/Provenance?patient=Patient/[:id]`
   "resourceType": "Bundle"
 }
 ```
+
   </div>
 </details>
 
@@ -5286,12 +5428,7 @@ GET `[base]/Patient?_count=2`
                 "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
               },
               {
-                "extension": [
-                  {
-                    "url": "member-of-a-common-exposure-cohort",
-                    "valueBoolean": false
-                  }
-                ],
+                "valueBoolean": false,
                 "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
               },
               {
@@ -5672,12 +5809,7 @@ GET `[base]/Patient?_count=2`
                 "url": "http://saraalert.org/StructureDefinition/healthcare-personnel"
               },
               {
-                "extension": [
-                  {
-                    "url": "member-of-a-common-exposure-cohort",
-                    "valueBoolean": false
-                  }
-                ],
+                "valueBoolean": false,
                 "url": "http://saraalert.org/StructureDefinition/member-of-a-common-exposure-cohort"
               },
               {
@@ -5887,22 +6019,25 @@ GET `[base]/Patient?_count=2`
   "resourceType": "Bundle"
 }
 ```
+
   </div>
 </details>
 
 ## Transactions
+
 The API supports performing several actions as a single atomic "transaction" for which all of the individual changes succeed or fail together.
 
 <a name="transaction-post"/>
 
 ### POST `[base]`
+
 To perform a transaction, POST a FHIR [Bundle](https://www.hl7.org/fhir/bundle.html) resource to `[base]`. The Bundle must have `Bundle.type` set to `transaction`. There is a limit of 50 resources per transaction. Currently a transaction may only be used to create monitorees and lab results via the FHIR Patient and Observations resources, respectively. The transaction does not need to include Observation resources, and can be used to enroll monitorees in bulk. If a transaction is used to create an Observation, that Observation must reference a Patient being created by the same transaction. The transaction Bundle can contain at most 50 elements in the `Bundle.entry` array. Each entry in the `Bundle.entry` array should contain the following fields:
 
-* `fullUrl` - Must be an identifier for the resource. Since the resources are being created, they do not have a server assigned ID yet. To uniquely identify a resource, generate a UUID, for example: `urn:uuid:9c94a2bc-1929-4666-8099-9e8566b7d9ad`. An Observation should use the `fullUrl` of its corresponding Patient in `Observation.subject.reference`.
-* `resource` - Must contain the content of the Observation or Patient that is being created.
-* `request.method` - Must be `POST` as this is the only supported operation.
-* `request.url` - Must be `Patient` or `Observation`, depending on which resource is being created.
-* `request.ifNoneExist` - If present, will be the search parameters used for duplicate detection, for example: `identifier=http://saraalert.org/SaraAlert/state-local-id|EX-286392&birthdate=1966-12-01`
+- `fullUrl` - Must be an identifier for the resource. Since the resources are being created, they do not have a server assigned ID yet. To uniquely identify a resource, generate a UUID, for example: `urn:uuid:9c94a2bc-1929-4666-8099-9e8566b7d9ad`. An Observation should use the `fullUrl` of its corresponding Patient in `Observation.subject.reference`.
+- `resource` - Must contain the content of the Observation or Patient that is being created.
+- `request.method` - Must be `POST` as this is the only supported operation.
+- `request.url` - Must be `Patient` or `Observation`, depending on which resource is being created.
+- `request.ifNoneExist` - If present, will be the search parameters used for duplicate detection, for example: `identifier=http://saraalert.org/SaraAlert/state-local-id|EX-286392&birthdate=1966-12-01`
 
 See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) documentation for more details. An example request and response is shown below.
 
@@ -6078,11 +6213,11 @@ See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) docum
   ]
 }
 ```
+
   </div>
 </details>
 
 **Response:**
-
 
 <details>
   <summary>Click to expand JSON snippet</summary>
@@ -6296,103 +6431,117 @@ See the FHIR [transaction](https://www.hl7.org/fhir/http.html#transaction) docum
   "resourceType": "Bundle"
 }
 ```
+
   </div>
 </details>
 
-
 ## Bulk Data Export
+
 The API supports exporting monitoree data in bulk according the the [FHIR Bulk Data Access](https://hl7.org/fhir/uv/bulkdata/export/index.html) specification. Instead of making individual requests to gather information, bulk data export supports exporting all available monitoree data at once. The bulk data request flow includes a kick-off request, status requests, and file requests, all of which are described in subsequent sections. This documentation focuses on how bulk data export works in Sara Alert, and for details not included here, please see the
 [specification](https://hl7.org/fhir/uv/bulkdata/export/index.html).
 <a name="bulk-data-kick-off"/>
 
 ### Kick-off Request - GET `[base]/Patient/$export`
+
 This request begins the asynchronous generation of bulk data. The generated bulk data will include all monitorees for which the client has access, along with the lab results, daily reports, close contacts, immunizations, and history items of those monitorees. Since the client is requesting access to all this data, they must have the correct read scopes for Patient, Observation, QuestionnaireResponse, RelatedPerson, Immunization, and Provenance. A client can begin one bulk data export every 15 minutes. Additionally, kicking off a new request will delete the content of old requests, so a new request should not be started until the content of an old request is no longer needed.
 
 #### Request Headers
-* The `Accept` header must be set to `application/fhir+json`.
-* The `Prefer` header must be set to `respond-async`.
+
+- The `Accept` header must be set to `application/fhir+json`.
+- The `Prefer` header must be set to `respond-async`.
 
 #### Parameters
-* The API supports only the `_since` parameter. If this parameter is specified, only resources for which `meta.lastUpdated` is later than the `_since` time will be included in the response. This parameter should have a [FHIR instant](https://www.hl7.org/fhir/datatypes.html#instant) as its value.
-  * **Example:** Get only resources changed since 2021 began: `[base]/Patient/$export?_since=2021-01-01T00:00:00Z`
+
+- The API supports only the `_since` parameter. If this parameter is specified, only resources for which `meta.lastUpdated` is later than the `_since` time will be included in the response. This parameter should have a [FHIR instant](https://www.hl7.org/fhir/datatypes.html#instant) as its value.
+  - **Example:** Get only resources changed since 2021 began: `[base]/Patient/$export?_since=2021-01-01T00:00:00Z`
 
 #### Response on Success
-* `202 Accepted` status
-* The `Content-Location` header will contain a URL of the form `[base]/ExportStatus/[:id]` which can be used to request the status of the bulk data export.
+
+- `202 Accepted` status
+- The `Content-Location` header will contain a URL of the form `[base]/ExportStatus/[:id]` which can be used to request the status of the bulk data export.
 
 #### Response on Error
-* Error status
-  * `403 Forbidden` - The client does not have access to all of the required read scopes, or there is some other issue with their token.
-  * `406 Not Acceptable` - Incorrect value for `Accept` header.
-  * `422 Unprocessable Entity` - Incorrect format for `_since` parameter, or incorrect value for `Prefer` header.
-  * `401 Unauthorized` - The client's API application is not registered for us in the backend services workflow.
-  * `429 Too Many Requests` - The client already initiated an export within the last 15 minutes.
-* The body of the response will include a FHIR OperationOutcome with an error message indicating the issue.
 
+- Error status
+  - `403 Forbidden` - The client does not have access to all of the required read scopes, or there is some other issue with their token.
+  - `406 Not Acceptable` - Incorrect value for `Accept` header.
+  - `422 Unprocessable Entity` - Incorrect format for `_since` parameter, or incorrect value for `Prefer` header.
+  - `401 Unauthorized` - The client's API application is not registered for us in the backend services workflow.
+  - `429 Too Many Requests` - The client already initiated an export within the last 15 minutes.
+- The body of the response will include a FHIR OperationOutcome with an error message indicating the issue.
 
 <a name="bulk-data-status">
 
 ### Status Request - GET `[base]/ExportStatus/[:id]`
+
 After a bulk data request has successfully started, the client can use the polling URL returned in the `Content-Location` header of the response to the kick-off request. The `[:id]` in this URL uniquely identifies the client's request. The response will indicate the current status of the export.
 
 #### In Progress
+
 If the generation of data is still in progress, the export will return a `202 Accepted` status.
 
 #### Error
+
 If an error prevents the bulk data export for completing, a `500 Internal Server Error` will indicate this.
 
 #### Complete
+
 Once the export is complete, the status request will return a `200 OK` response. The body of the response will follow the JSON format described in [section 5.3.4](https://hl7.org/fhir/uv/bulkdata/export/index.html#response---complete-status) of the bulk data access specification. An example response is shown below:
 
 ```json
 {
-    "transactionTime": "2021-07-07T21:08:19+00:00",
-    "request": "https://demo.saraalert.org/fhir/r4/Patient/$export?_since=2021-07-05T12:02:02Z",
-    "requiresAccessToken": true,
-    "output": [
-        {
-            "type": "Patient",
-            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Patient.ndjson"
-        },
-        {
-            "type": "QuestionnaireResponse",
-            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/QuestionnaireResponse.ndjson"
-        },
-        {
-            "type": "Provenance",
-            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Provenance.ndjson"
-        },
-        {
-            "type": "Observation",
-            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Observation.ndjson"
-        },
-        {
-            "type": "Immunization",
-            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Immunization.ndjson"
-        },
-        {
-            "type": "RelatedPerson",
-            "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/RelatedPerson.ndjson"
-        }
-    ]
+  "transactionTime": "2021-07-07T21:08:19+00:00",
+  "request": "https://demo.saraalert.org/fhir/r4/Patient/$export?_since=2021-07-05T12:02:02Z",
+  "requiresAccessToken": true,
+  "output": [
+    {
+      "type": "Patient",
+      "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Patient.ndjson"
+    },
+    {
+      "type": "QuestionnaireResponse",
+      "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/QuestionnaireResponse.ndjson"
+    },
+    {
+      "type": "Provenance",
+      "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Provenance.ndjson"
+    },
+    {
+      "type": "Observation",
+      "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Observation.ndjson"
+    },
+    {
+      "type": "Immunization",
+      "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/Immunization.ndjson"
+    },
+    {
+      "type": "RelatedPerson",
+      "url": "https://demo.saraalert.org/fhir/r4/ExportFiles/60/RelatedPerson.ndjson"
+    }
+  ]
 }
 ```
-The `url` values listed on each element of the `output` array can be used to access the generated exports.
 
+The `url` values listed on each element of the `output` array can be used to access the generated exports.
 
 <a name="bulk-data-files">
 
 ### File Request - GET `[base]/ExportFiles/[:id]/[:filename]`
+
 Once a client's export is complete, the completed files will be available at this endpoint, where the `[:id]` is the same unique identifier used in the status requests, and the `[:filename]` is of the form `<resourceType>.ndjson`. A valid authorization token with read access to the type of resource being requested is required.
 
 #### Response on Success
+
 The response will have a `200 OK` status, and the body will include the requested resources as a [newline delimited JSON](http://ndjson.org/) file. The example below shows the format of an ndjson file:
+
 ```
 {"id":1,"name":[{"family":"McCullough24","given":["Eulah20"]}],"resourceType":"Patient"}
 {"id":4,"name":[{"family":"Konopelski65","given":["Kirby47"]}],"resourceType":"Patient"}
 {"id":6,"name":[{"family":"Herman26","given":["Barton43"]}],"resourceType":"Patient"}
 ```
+
 Note that the Patients shown in this example are not valid Sara Alert Patients, most elements have been removed for brevity.
 
 #### Response on Error
+
 The response will have a `404 Not Found` status, indicating that either the `[:filename]` parameter does not correspond to a supported FHIR Resource, or that no file of the type indicated by `[:filename]` exists for that `[:id]`.
