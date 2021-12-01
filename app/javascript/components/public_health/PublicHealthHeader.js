@@ -163,7 +163,7 @@ class PublicHealthHeader extends React.Component {
             Object.keys(this.state.importData.warnings).map(key => (
               <span key={key}>
                 <h5>{key} Warning</h5>
-                <p>{this.state.importData.warnings[key]}</p>
+                <p>{this.state.importData.warnings[`${key}`]}</p>
               </span>
             ))}
         </Modal.Body>
