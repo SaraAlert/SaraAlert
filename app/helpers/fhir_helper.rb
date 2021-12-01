@@ -886,7 +886,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   def from_telecom(telecom)
     contact = %i[email primary_telephone secondary_telephone primary_telephone_type secondary_telephone_type international_telephone alternate_email
                  alternate_primary_telephone alternate_secondary_telephone alternate_primary_telephone_type alternate_secondary_telephone_type
-                 alternate_international_telephone].map { |field| [field, { value: nil, path: '' }] }.to_h
+                 alternate_international_telephone].index_with { |_field| { value: nil, path: '' } }
     int_phone_extension = to_bool_extension(true, 'international-telephone')
     alt_extension = to_bool_extension(true, 'alternate-contact')
 
