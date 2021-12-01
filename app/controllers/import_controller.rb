@@ -408,8 +408,8 @@ class ImportController < ApplicationController
 
     err_msg = "Value '#{continuous_exposure_value}' is not valid for '#{VALIDATION[field][:label]}' with " \
               "'#{VALIDATION[:last_date_of_exposure][:label]}' of '#{last_date_of_exposure_value}.' " \
-              "Monitorees may be imported either with a Last Date of Exposure value or Continuous Exposure " \
-              "set to 'true.'"
+              'Monitorees may be imported either with a Last Date of Exposure value or Continuous Exposure ' \
+              'set to \'true.\''
 
     raise ValidationError.new(err_msg, row_ind)
   end
