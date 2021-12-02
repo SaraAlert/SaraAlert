@@ -37,6 +37,42 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       creator_agent_ref.display = patient.creator.email
     end
 
+    contact_info = {
+      contact: []
+    }
+    if patient.contact_type == 'Self'
+      contact_info[:telecom] = [
+        to_contact_point(patient.primary_telephone, 'phone', 1, patient.primary_telephone_type, false),
+        to_contact_point(patient.secondary_telephone, 'phone', 2, patient.secondary_telephone_type, false),
+        to_contact_point(patient.email, 'email', 1, nil, false),
+        to_contact_point(patient.international_telephone, 'phone', 1, nil, true)
+      ].reject(&:nil?)
+    else
+      contact_info[:contact] << {
+        telecom: [
+          to_contact_point(patient.primary_telephone, 'phone', 1, patient.primary_telephone_type, false),
+          to_contact_point(patient.secondary_telephone, 'phone', 2, patient.secondary_telephone_type, false),
+          to_contact_point(patient.email, 'email', 1, nil, false),
+          to_contact_point(patient.international_telephone, 'phone', 1, nil, true)
+        ],
+        relationship: [FHIR::CodeableConcept.new(coding: [FHIR::Coding.new(code: patient.contact_type)])],
+        name: FHIR::HumanName.new(text: patient.contact_name)
+      }
+    end
+    if %i[alternate_contact_name alternate_contact_type alternate_primary_telephone alternate_secondary_telephone alternate_email
+          alternate_international_telephone].any?(&:present?)
+      contact_info[:contact] << {
+        telecom: [
+          to_contact_point(patient.alternate_primary_telephone, 'phone', 1, patient.alternate_primary_telephone_type, false),
+          to_contact_point(patient.alternate_secondary_telephone, 'phone', 2, patient.alternate_secondary_telephone_type, false),
+          to_contact_point(patient.alternate_email, 'email', 1, nil, false),
+          to_contact_point(patient.alternate_international_telephone, 'phone', 1, nil, true)
+        ],
+        relationship: [FHIR::CodeableConcept.new(coding: [FHIR::Coding.new(code: patient.alternate_contact_type)])],
+        name: FHIR::HumanName.new(text: patient.alternate_contact_name),
+        extension: [to_bool_extension(true, 'alternate-contact')]
+      }
+    end
     FHIR::Patient.new(
       meta: FHIR::Meta.new(lastUpdated: patient.updated_at.strftime('%FT%T%:z')),
       contained: [FHIR::Provenance.new(
@@ -66,16 +102,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       ],
       active: patient.monitoring,
       name: [FHIR::HumanName.new(given: [patient.first_name, patient.middle_name].reject(&:blank?), family: patient.last_name)],
-      telecom: [
-        to_contact_point(patient.primary_telephone, 'phone', 1, patient.primary_telephone_type, false, false),
-        to_contact_point(patient.secondary_telephone, 'phone', 2, patient.secondary_telephone_type, false, false),
-        to_contact_point(patient.email, 'email', 1, nil, false, false),
-        to_contact_point(patient.international_telephone, 'phone', 1, nil, true, false),
-        to_contact_point(patient.alternate_primary_telephone, 'phone', 1, patient.alternate_primary_telephone_type, false, true),
-        to_contact_point(patient.alternate_secondary_telephone, 'phone', 2, patient.alternate_secondary_telephone_type, false, true),
-        to_contact_point(patient.alternate_email, 'email', 1, nil, false, true),
-        to_contact_point(patient.alternate_international_telephone, 'phone', 1, nil, true, true)
-      ].reject(&:nil?),
+      **contact_info,
       birthDate: patient.date_of_birth&.strftime('%F'),
       address: [
         to_address_by_type_extension(patient, 'USA'),
@@ -94,8 +121,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         *patient.transfers.map { |t| transfer_as_fhir_extension(t) },
         to_exposure_risk_factors_extension(patient),
         to_report_source_extension(patient),
-        to_string_extension(patient.contact_type, 'contact-type'),
-        to_string_extension(patient.contact_name, 'contact-name'),
         to_string_extension(patient.preferred_contact_method, 'preferred-contact-method'),
         to_string_extension(patient.preferred_contact_time, 'preferred-contact-time'),
         to_date_extension(patient.symptom_onset, 'symptom-onset-date'),
@@ -142,8 +167,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_bool_extension(patient.pause_notifications, 'paused-notifications'),
         to_string_extension(patient.status_as_string, 'status'),
         to_bool_extension(patient.user_defined_symptom_onset, 'user-defined-symptom-onset'),
-        to_string_extension(patient.alternate_contact_type, 'alternate-contact-type'),
-        to_string_extension(patient.alternate_contact_name, 'alternate-contact-name'),
         to_string_extension(patient.alternate_preferred_contact_method, 'alternate-preferred-contact-method'),
         to_string_extension(patient.alternate_preferred_contact_time, 'alternate-preferred-contact-time')
       ].reject(&:nil?)
@@ -867,7 +890,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     { value: id&.value, path: "#{base_path}.identifier[#{identifier&.index(id)}].value" }
   end
 
-  def to_contact_point(value, sys, rank, type, international, alternate)
+  def to_contact_point(value, sys, rank, type, international)
     return nil if value.blank?
 
     contact_point = FHIR::ContactPoint.new(value: value, system: sys, rank: rank)
@@ -875,8 +898,6 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     contact_point.extension << to_string_extension(type, 'phone-type') if type.present?
 
     contact_point.extension << to_bool_extension(true, 'international-telephone') if international
-
-    contact_point.extension << to_bool_extension(true, 'alternate-contact') if alternate
 
     contact_point
   end
