@@ -148,10 +148,10 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     sleep(0.5) && find('.modal-header').find('.close').click unless validity == :valid
   end
 
-  def import_sara_alert_format_with_warnings(workflow, file_name, file_type, rejects, accept_duplicates)
+  def import_sara_alert_format_with_warnings(jurisdiction, workflow, file_name, rejects, accept_duplicates)
     click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
     click_on 'Import'
-    find('a', text: "#{file_type} (#{workflow})").click
+    find('a', text: "Sara Alert Format (#{workflow})").click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
     sleep(1) # wait for import modal to open

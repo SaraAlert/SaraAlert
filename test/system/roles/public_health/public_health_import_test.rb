@@ -140,8 +140,7 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
 
   test 'import_sara_alert_format_with_warnings' do
     @@public_health_test_helper.import_sara_alert_format_with_warnings('locals2c4_epi', :exposure,
-                                                                       'Sara-Alert-Format-Exposure-Workflow-With-Continuous-Exposure.xlsx',
-                                                                       'Sara Alert Format', nil,
+                                                                       'Sara-Alert-Format-Exposure-Workflow-With-Continuous-Exposure.xlsx', nil,
                                                                        accept_duplicates: true)
   end
 
