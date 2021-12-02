@@ -230,7 +230,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       #                             NORMALIZED_EXPOSURE_ENUMS[field][normalize_enum_field_value(row[index])].to_s
       #                           end
       #   assert_equal(normalized_cell_value, patient[field].to_s, err_msg)
-      elsif %i[primary_language secondary_language].include?(field) && !row[index].blank?
+      elsif %i[primary_language secondary_language].include?(field) && row[index].present?
         assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, err_msg)
       elsif field == :jurisdiction_path
         assert_equal(row[index] ? row[index].to_s : jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, err_msg)
@@ -343,7 +343,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         assert_equal(normalize_bool_field(row[index]).to_s, patient[field].to_s, err_msg)
       elsif STATE_FIELDS.include?(field) || (field == :monitored_address_state && !row[index].nil?)
         assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, err_msg)
-      elsif field == :sex && !row[index].blank?
+      elsif field == :sex && row[index].present?
         assert_equal(SEX_ABBREVIATIONS[row[index].upcase.to_sym] || row[index]&.downcase&.capitalize, patient[field].to_s, err_msg)
       # these fields come from multiple columns
       elsif %i[travel_related_notes flight_or_vessel_carrier].include?(field)
@@ -371,10 +371,10 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       header_label = IMPORT_FORMATS[import_format][:headers][IMPORT_FORMATS[import_format][:fields].index(field)]
       checks = VALIDATION[field][:checks]
 
-      if checks.include?(:enum) && !NORMALIZED_ENUMS[field].keys.include?(normalize_enum_field_value(value))
+      if checks.include?(:enum) && !NORMALIZED_ENUMS[field].key?(normalize_enum_field_value(value))
         assert page.has_content?("Value '#{value}' for '#{header_label}' is not an acceptable value"), err_msg
       end
-      if checks.include?(:bool) && !%w[true false].include?(value.to_s.downcase)
+      if checks.include?(:bool) && %w[true false].exclude?(value.to_s.downcase)
         assert page.has_content?("Value '#{value}' for '#{field_label}' is not an acceptable value"), err_msg
       end
       if checks.include?(:date) && !value.instance_of?(Date) && value.match(/\d{4}-\d{2}-\d{2}/)
@@ -396,10 +396,10 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       if checks.include?(:phone) && Phonelib.parse(value, 'US').full_e164.nil?
         assert page.has_content?("Value '#{value}' for '#{header_label}' is not a valid phone number"), err_msg
       end
-      if checks.include?(:state) && !VALID_STATES.include?(value) && STATE_ABBREVIATIONS[value.to_s.upcase.to_sym].nil?
+      if checks.include?(:state) && VALID_STATES.exclude?(value) && STATE_ABBREVIATIONS[value.to_s.upcase.to_sym].nil?
         assert page.has_content?("'#{value}' is not a valid state for '#{field_label}'"), err_msg
       end
-      if checks.include?(:sex) && !%(Male Female Unknown M F).include?(value.to_s.capitalize)
+      if checks.include?(:sex) && %(Male Female Unknown M F).exclude?(value.to_s.capitalize)
         assert page.has_content?("Value '#{value}' for '#{field_label}' is not an acceptable value"), err_msg
       end
       if checks.include?(:email) && !ValidEmail2::Address.new(value).valid?
@@ -505,7 +505,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def displayed_epix_val(row, field)
     value = row[ImportExportConstants::EPIX_FIELDS.index(field)]
-    return nil unless value.present?
+    return nil if value.blank?
 
     value = Date.strptime(value, '%m/%d/%Y').strftime('%m/%d/%Y') if %i[date_of_birth date_of_departure].include?(field)
     value = Date.strptime(value, '%b %d %Y').strftime('%m/%d/%Y') if field == :date_of_arrival
@@ -517,7 +517,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def displayed_sdx_val(row, field)
     value = row[ImportExportConstants::SDX_FIELDS.index(field)]
-    return nil unless value.present?
+    return nil if value.blank?
 
     value = Date.strptime(value, '%m/%d/%y').strftime('%m/%d/%Y') if %i[date_of_arrival date_of_departure date_of_birth].include?(field)
     value = format_phone_number(value) if %i[primary_telephone secondary_telephone].include?(field)

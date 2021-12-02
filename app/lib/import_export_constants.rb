@@ -94,11 +94,13 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                     Days_in_US Weeks_in_US Months_in_US ConveyanceName IdentifyingNumber DateDeparture AirportCode DateArrival CityArrival CDCCaseID OnsetDate
                     Notes].freeze
 
-  SDX_FIELDS = [nil, nil, nil, :flight_or_vessel_number, :date_of_arrival, :date_of_departure, nil, :address_city, nil, :address_state, :address_line_1,
-                :address_zip, :travel_related_notes, :travel_related_notes, :port_of_entry_into_usa, :travel_related_notes, :date_of_birth, :nationality, nil,
-                nil, nil, nil, nil, :crew_on_passenger_or_cargo_flight, nil, nil, :email, :first_name, :flight_or_vessel_carrier, nil, :sex,
-                :user_defined_id_cdc, :nil, :last_name, nil, nil, nil, :primary_telephone, nil, nil, :secondary_telephone, nil, :flight_or_vessel_carrier, nil,
-                nil, nil, nil, nil, nil, nil].freeze
+  SDX_FIELDS = [:user_defined_id_cdc, :exposure_notes, :travel_related_notes, :flight_or_vessel_number, :date_of_arrival, :date_of_departure, nil,
+                :address_city, nil, :address_state, :address_line_1, :address_zip, :travel_related_notes, :travel_related_notes, :port_of_entry_into_usa,
+                :travel_related_notes, :date_of_birth, :nationality, :alternate_contact_name, :alternate_contact_name, :alternate_primary_telephone,
+                :alternate_primary_telephone_type, :alternate_contact_type, :crew_on_passenger_or_cargo_flight, nil, nil, :email, :first_name,
+                :flight_or_vessel_carrier, nil, :gender_identity, nil, nil, :last_name, :travel_related_notes, :travel_related_notes, :travel_related_notes,
+                :primary_telephone, :primary_telephone_type, nil, :secondary_telephone, :secondary_telephone_type, :flight_or_vessel_carrier,
+                :flight_or_vessel_number, nil, nil, nil, nil, nil, nil].freeze
 
   SDX_HEADERS = %w[RecordId CreateDate DocumentNumber FlightNumber ArrivalDate DepartureDate AcknowledgedQuestion AddressCity AddressGeoType AddressState
                    AddressStreet AddressZip ArrivalPortCity ArrivalPortCode ArrivalPortName ArrivalPortState BirthDate Citizenship ContactFirstName
@@ -675,6 +677,32 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
         headers: FULL_HISTORY_HISTORIES_HEADERS,
         tab: 'Edit Histories'
       }
+    }
+  }.freeze
+
+  SDX_MAPPINGS = {
+    alternate_contact_type: {
+      fathr: 'Parent/Guardian',
+      father: 'Parent/Guardian',
+      mothr: 'Parent/Guardian',
+      mother: 'Parent/Guardian',
+      sps: 'Spouse/Partner',
+      spouse: 'Spouse/Partner'
+    },
+    gender_identity: {
+      f: 'Female (Identifies as female)',
+      female: 'Female (Identifies as female)',
+      m: 'Male (Identifies as male)',
+      male: 'Male (Identifies as male)',
+      x: 'Chose not to disclose',
+      undisclosed: 'Chose not to disclose'
+    },
+    sex: {
+      f: 'Female',
+      female: 'Female',
+      m: 'Male',
+      male: 'Male',
+      undisclosed: 'Unknown'
     }
   }.freeze
 end
