@@ -422,6 +422,6 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   def get_continuous_exposure_value(value, workflow)
     return false if workflow == :isolation || value.blank?
 
-    return normalize_bool_field(value)
+    normalize_bool_field(value)
   end
 end
