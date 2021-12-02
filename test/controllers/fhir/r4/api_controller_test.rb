@@ -520,7 +520,7 @@ class ApiControllerTest < ApiControllerTestCase
 
   test 'should be bad request via create with multiple FHIR errors' do
     @patient_1.active = [1, 2]
-    @patient_1.telecom[0].value = [1, 2]
+    @patient_1.telecom = [value: [1, 2]]
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
@@ -616,7 +616,7 @@ class ApiControllerTest < ApiControllerTestCase
 
   test 'should be bad request via update with multiple FHIR errors' do
     @patient_1.active = [1, 2]
-    @patient_1.telecom[0].value = [1, 2]
+    @patient_1.telecom = [value: [1, 2]]
     put(
       '/fhir/r4/Patient/1',
       params: @patient_1.to_json,
