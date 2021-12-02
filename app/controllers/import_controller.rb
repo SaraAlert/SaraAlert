@@ -38,7 +38,7 @@ class ImportController < ApplicationController
     redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
 
     import_format = permitted_params[:format].to_sym
-    redirect_to(root_url) && return unless IMPORT_FORMATS.keys.include?(import_format)
+    redirect_to(root_url) && return unless IMPORT_FORMATS.key?(import_format)
 
     # Only query valid jurisdiction ids once
     valid_jurisdiction_ids = current_user.jurisdiction.subtree.pluck(:id)
@@ -162,11 +162,29 @@ class ImportController < ApplicationController
   def import_sdx_field(patient, field, row, row_ind, col_num)
     return if row[col_num] == 'N/A'
 
-    if %i[travel_related_notes flight_or_vessel_carrier].include?(field) # fields represented by multiple columns
+    if %i[exposure_notes travel_related_notes flight_or_vessel_carrier flight_or_vessel_number].include?(field) # fields represented by multiple columns
       value = "#{SDX_HEADERS[col_num]}: #{import_field(field, row[col_num], row_ind)}"
-      patient[field] = patient[field].blank? ? value : "#{patient[field]}, #{value}"
+      patient[field] = patient[field].blank? ? value : "#{patient[field]}; #{value}"
+    elsif field == :alternate_contact_name
+      patient[field] = patient[field].blank? ? row[col_num] : "#{patient[field]} #{row[col_num]}"
     elsif %i[date_of_arrival date_of_departure date_of_birth].include?(field)
-      patient[field] = import_field(field, Date.strptime(row[col_num], '%m/%d/%y'), row_ind) if row[col_num].present?
+      patient[field] = import_field(field, Date.strptime(row[col_num], '%m%d%Y'), row_ind) if row[col_num].present?
+    elsif %i[primary_telephone secondary_telephone alternate_primary_telephone].include?(field)
+      phone = Phonelib.parse(row[col_num], 'US')
+      patient[field] = import_field(field, row[col_num], row_ind) && return unless phone.e164.blank? || phone.e164.sub(/^\+1+/, '').length != 10
+
+      patient[:alternate_international_telephone] = row[col_num] if field == :alternate_primary_telephone
+      patient[:international_telephone] = row[col_num] if field == :primary_telephone
+      if field == :secondary_telephone
+        value = "#{SDX_HEADERS[col_num]}: #{row[col_num]}"
+        patient[:exposure_notes] = patient[:exposure_notes].blank? ? value : "#{patient[field]}; #{value}"
+      end
+    elsif %i[primary_telephone_type secondary_telephone_type alternate_primary_telephone_type].include?(field)
+      patient[field] = import_field(field, row[col_num], row_ind)
+      patient[field] = nil unless ValidationHelper::TELEPHONE_TYPES.include?(patient[field])
+    elsif %i[alternate_contact_type gender_identity].include?(field)
+      patient[field] = SDX_MAPPINGS[field][row[col_num]&.downcase&.gsub(/[ -.]/, '')]
+      patient[:sex] = SDX_MAPPINGS[:sex][row[col_num]&.downcase&.gsub(/[ -.]/, '')] if field == :gender_identity
     else
       patient[field] = import_field(field, row[col_num], row_ind)
     end
