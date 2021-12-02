@@ -233,6 +233,9 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(Languages.normalize_and_get_language_code(row[index])&.to_s, patient[field].to_s, err_msg)
           elsif field == :jurisdiction_path
             assert_equal(row[index] ? row[index].to_s : jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, err_msg)
+          elsif field == :continuous_exposure
+            continuous_exposure_value = get_continuous_exposure_value(row[index].to_s, workflow)
+            assert_equal(patient[field], continuous_exposure_value, err_msg)
           elsif field == :contact_type
             assert_equal(NORMALIZED_ENUMS[field][normalize_enum_field_value(row[index])].to_s.blank? ? 'Unknown' : row[index].to_s, patient[field].to_s,
                          err_msg)
@@ -414,5 +417,11 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def get_xlsx(file_name)
     Roo::Spreadsheet.open(file_fixture(file_name).to_s)
+  end
+
+  def get_continuous_exposure_value(value, workflow)
+    return false if workflow == :isolation || value.blank?
+
+    return normalize_bool_field(value)
   end
 end
