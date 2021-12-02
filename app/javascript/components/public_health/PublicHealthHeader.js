@@ -15,6 +15,7 @@ class PublicHealthHeader extends React.Component {
       counts: {},
       showUploadModal: false,
       showImportModal: false,
+      showWarningModal: false,
       uploading: false,
     };
   }
@@ -45,7 +46,8 @@ class PublicHealthHeader extends React.Component {
             importData: response.data,
             file: null,
             showUploadModal: false,
-            showImportModal: true,
+            showWarningModal: Object.keys(response.data.warnings).length > 0,
+            showImportModal: Object.keys(response.data.warnings).length === 0,
           });
         });
       });
