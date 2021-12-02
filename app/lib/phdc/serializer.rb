@@ -354,7 +354,7 @@ module PHDC
         sas_tbody << sas_tbody_tr
         sas_tbody_tr << td_helper('Patient Symptomatic')
         sas_tbody_tr << td_helper('Yes')
-        sas_tbody_tr << td_helper(assessment.updated_at.strftime('%FT%T%:z'))
+        sas_tbody_tr << td_helper(assessment.reported_at.strftime('%Y/%m/%d %H:%M %Z'))
       end
 
       # Return XML
