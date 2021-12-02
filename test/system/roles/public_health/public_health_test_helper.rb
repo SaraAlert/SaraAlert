@@ -248,6 +248,12 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
+  def import_sara_alert_format_with_warnings(user_label, workflow, file_name, file_type, rejects, accept_duplicates)
+    @@system_test_utils.login(user_label)
+    @@public_health_dashboard.import_sara_alert_format_with_warnings(workflow, file_name, file_type, rejects, accept_duplicates)
+    @@system_test_utils.logout
+  end
+
   def download_sara_alert_format_guidance(user_label, workflow)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.download_sara_alert_format_guidance(workflow)

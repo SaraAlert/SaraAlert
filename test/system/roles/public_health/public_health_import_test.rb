@@ -138,6 +138,13 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
     @@public_health_test_helper.import_and_cancel('locals2c4_epi', :exposure, 'Sara-Alert-Format-Exposure-Workflow.xlsx', 'Sara Alert Format')
   end
 
+  test 'import_sara_alert_format_with_warnings' do
+    @@public_health_test_helper.import_sara_alert_format_with_warnings('locals2c4_epi', :exposure,
+                                                                       'Sara-Alert-Format-Exposure-Workflow-With-Continuous-Exposure.xlsx',
+                                                                       'Sara Alert Format', nil,
+                                                                       accept_duplicates: true)
+  end
+
   # TODO: when workflow specific case status validation re-enabled: uncomment
   # test 'import sara alert format to exposure and validate workflow specific fields' do
   #   @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :exposure, 'Sara-Alert-Format-Isolation-Workflow.xlsx', :invalid_fields, [])
