@@ -125,7 +125,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         elsif %i[primary_language secondary_language].include?(field)
           assert_equal(Languages.translate_code_to_display(details[field]).to_s, cell_value || '', "For field: #{field} (row #{row + 1})")
         elsif field == :continuous_exposure
-          assert_equal(patient.continuous_exposure, cell_value.blank? ? false : ActiveModel::Type::Boolean.new.cast(cell_value), "For field: #{field} (row #{row + 1})")
+          assert_equal(patient.continuous_exposure, cell_value.blank? ? false : ActiveModel::Type::Boolean.new.cast(cell_value),
+                       "For field: #{field} (row #{row + 1})")
         else
           assert_equal(details[field].to_s, cell_value || '', "For field: #{field} (row #{row + 1})")
         end
