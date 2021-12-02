@@ -31,7 +31,7 @@ class ApiControllerTest < ApiControllerTestCase
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['id']
     assert_equal 'Patient', json_response['resourceType']
-    assert_equal 6, json_response['telecom'].count
+    assert_equal 2, json_response['contact'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert_equal 'Telephone call', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-method' }['valueString']
     assert_equal 'Morning', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-time' }['valueString']
@@ -41,8 +41,8 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal resource_path, json_response['contained'].first['target'].first['reference']
     assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
     assert_equal Patient.find_by(id: patient_id).creator.email, json_response['contained'].first['agent'].first['who']['display']
-    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
-    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
+    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['contact'].first['telecom'].first, 'phone-type')
+    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['contact'].first['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
     assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
@@ -57,8 +57,6 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
     assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
     assert_equal patient.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
-    assert_equal patient.alternate_preferred_contact_method, fhir_ext_str(json_response, 'alternate-preferred-contact-method')
-    assert_equal patient.alternate_contact_type, fhir_ext_str(json_response, 'alternate-contact-type')
   end
 
   test 'should get patient via show using _format parameter' do
@@ -207,7 +205,7 @@ class ApiControllerTest < ApiControllerTestCase
     assert_not h.first.nil?
     assert_equal 1, h.count
     assert_equal 'Patient', json_response['resourceType']
-    assert_equal 6, json_response['telecom'].count
+    assert_equal 2, json_response['contact'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
     assert_equal 'USA, State 1',
@@ -215,8 +213,8 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal "/fhir/r4/Patient/#{id}", json_response['contained'].first['target'].first['reference']
     assert_equal @system_patient_read_write_app.uid, json_response['contained'].first['agent'].first['who']['identifier']['value']
     assert_equal @system_patient_read_write_app.name, json_response['contained'].first['agent'].first['who']['display']
-    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
-    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
+    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['contact'].first['telecom'].first, 'phone-type')
+    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['contact'].first['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
     assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
@@ -231,8 +229,6 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal patient.user_defined_id_statelocal, json_response['identifier'].find { |i| i['system'].include? 'state-local-id' }['value']
     assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
     assert_equal patient.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
-    assert_equal patient.alternate_preferred_contact_method, fhir_ext_str(json_response, 'alternate-preferred-contact-method')
-    assert_equal patient.alternate_contact_type, fhir_ext_str(json_response, 'alternate-contact-type')
   end
 
   test 'USER FLOW: should create Patient via create' do
@@ -253,7 +249,7 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal 1, h.count
     assert_equal 'state1_epi@example.com (API)', h.first.created_by
     assert_equal 'Patient', json_response['resourceType']
-    assert_equal 6, json_response['telecom'].count
+    assert_equal 2, json_response['contact'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
     assert_equal 'USA, State 1',
@@ -261,8 +257,8 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal "/fhir/r4/Patient/#{id}", json_response['contained'].first['target'].first['reference']
     assert_equal Patient.find_by(id: id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
     assert_equal Patient.find_by(id: id).creator.email, json_response['contained'].first['agent'].first['who']['display']
-    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
-    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
+    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['contact'].first['telecom'].first, 'phone-type')
+    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['contact'].first['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
     assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
@@ -276,8 +272,6 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
     assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
     assert_equal patient.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
-    assert_equal patient.alternate_preferred_contact_method, fhir_ext_str(json_response, 'alternate-preferred-contact-method')
-    assert_equal patient.alternate_contact_type, fhir_ext_str(json_response, 'alternate-contact-type')
   end
 
   test 'should calculate Patient age via create' do
@@ -435,8 +429,8 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal resource_path, json_response['contained'].first['target'].first['reference']
     assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
     assert_equal Patient.find_by(id: patient_id).creator.email, json_response['contained'].first['agent'].first['who']['display']
-    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
-    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
+    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['contact'].first['telecom'].first, 'phone-type')
+    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['contact'].first['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
     assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')

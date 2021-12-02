@@ -54,7 +54,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
           to_contact_point(patient.secondary_telephone, 'phone', 2, patient.secondary_telephone_type, false),
           to_contact_point(patient.email, 'email', 1, nil, false),
           to_contact_point(patient.international_telephone, 'phone', 1, nil, true)
-        ],
+        ].reject(&:nil?),
         relationship: [FHIR::CodeableConcept.new(coding: [FHIR::Coding.new(code: patient.contact_type)])],
         name: FHIR::HumanName.new(text: patient.contact_name)
       }
@@ -67,12 +67,13 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
           to_contact_point(patient.alternate_secondary_telephone, 'phone', 2, patient.alternate_secondary_telephone_type, false),
           to_contact_point(patient.alternate_email, 'email', 1, nil, false),
           to_contact_point(patient.alternate_international_telephone, 'phone', 1, nil, true)
-        ],
+        ].reject(&:nil?),
         relationship: [FHIR::CodeableConcept.new(coding: [FHIR::Coding.new(code: patient.alternate_contact_type)])],
         name: FHIR::HumanName.new(text: patient.alternate_contact_name),
         extension: [to_bool_extension(true, 'alternate-contact')]
       }
     end
+
     FHIR::Patient.new(
       meta: FHIR::Meta.new(lastUpdated: patient.updated_at.strftime('%FT%T%:z')),
       contained: [FHIR::Provenance.new(
@@ -208,7 +209,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       first_name: { value: patient&.name&.first&.given&.first, path: 'Patient.name[0].given[0]' },
       middle_name: { value: patient&.name&.first&.given&.second, path: 'Patient.name[0].given[1]' },
       last_name: { value: patient&.name&.first&.family, path: 'Patient.name[0].family' },
-      **from_telecom(patient&.telecom),
+      **from_telecom(patient&.telecom, false, 'Patient'),
+      contact_type: { value: patient&.telecom.present? ? 'Self' : nil, path: 'Patient.telecom' },
+      **from_contact(patient&.contact),
       date_of_birth: { value: patient&.birthDate, path: 'Patient.birthDate' },
       age: { value: Patient.calc_current_age_fhir(patient&.birthDate), path: 'Patient.birthDate' },
       # foreign_address has to be mapped before address, because address_state has a validation rule that depends on foreign_address_country
@@ -289,11 +292,8 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       case_status: from_string_extension(patient, 'Patient', 'case-status'),
       gender_identity: from_gender_identity_extension(patient, 'Patient'),
       sexual_orientation: from_sexual_orientation_extension(patient, 'Patient'),
-      contact_type: from_string_extension(patient, 'Patient', 'contact-type'),
-      contact_name: from_string_extension(patient, 'Patient', 'contact-name'),
-      alternate_contact_type: from_string_extension(patient, 'Patient', 'alternate-contact-type'),
-      alternate_contact_name: from_string_extension(patient, 'Patient', 'alternate-contact-name'),
       alternate_preferred_contact_method: from_string_extension(patient, 'Patient', 'alternate-preferred-contact-method'),
+      alternate_preferred_contact_time: from_string_extension(patient, 'Patient', 'alternate-preferred-contact-time'),
       **from_exposure_risk_factors_extension(patient),
       **from_report_source_extension(patient)
     }
@@ -902,43 +902,67 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     contact_point
   end
 
-  def from_telecom(telecom)
-    contact = %i[email primary_telephone secondary_telephone primary_telephone_type secondary_telephone_type international_telephone alternate_email
-                 alternate_primary_telephone alternate_secondary_telephone alternate_primary_telephone_type alternate_secondary_telephone_type
-                 alternate_international_telephone].index_with { |_field| { value: nil, path: '' } }
+  def from_telecom(telecom, alternate, base)
     int_phone_extension = to_bool_extension(true, 'international-telephone')
-    alt_extension = to_bool_extension(true, 'alternate-contact')
-
-    telecom&.each_with_index do |t, i|
-      international = t.extension.include?(int_phone_extension)
-      alternate = t.extension.include?(alt_extension)
-      case t.system
-      when 'email'
-        if alternate && contact[:alternate_email][:value].nil?
-          contact[:alternate_email] = { value: t.value, path: "Patient.telecom[#{i}].value" }
-        elsif !alternate && contact[:email][:value].nil?
-          contact[:email] = { value: t.value, path: "Patient.telecom[#{i}].value" }
-        end
-      when 'phone'
-        if international
-          if alternate && contact[:alternate_international_telephone][:value].nil?
-            contact[:alternate_international_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
-          elsif !alternate && contact[:international_telephone][:value].nil?
-            contact[:international_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
+    if alternate
+      contact = %i[alternate_email alternate_primary_telephone alternate_secondary_telephone alternate_primary_telephone_type alternate_secondary_telephone_type
+                   alternate_international_telephone].index_with do |_field|
+        { value: nil, path: '' }
+      end
+      telecom&.each_with_index do |t, i|
+        international = t.extension.include?(int_phone_extension)
+        case t.system
+        when 'email'
+          contact[:alternate_email] = { value: t.value, path: "#{base}.telecom[#{i}].value" } if contact[:alternate_email][:value].nil?
+        when 'phone'
+          if international && contact[:alternate_international_telephone][:value].nil?
+            contact[:alternate_international_telephone] = { value: t.value, path: "#{base}.telecom[#{i}].value" }
+          elsif contact[:alternate_primary_telephone][:value].nil?
+            contact[:alternate_primary_telephone] = { value: t.value, path: "#{base}.telecom[#{i}].value" }
+            contact[:alternate_primary_telephone_type] = from_phone_type_extension(t, i)
+          elsif contact[:alternate_secondary_telephone][:value].nil?
+            contact[:alternate_secondary_telephone] = { value: t.value, path: "#{base}.telecom[#{i}].value" }
+            contact[:alternate_secondary_telephone_type] = from_phone_type_extension(t, i)
           end
-        elsif alternate && contact[:alternate_primary_telephone][:value].nil?
-          contact[:alternate_primary_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
-          contact[:alternate_primary_telephone_type] = from_phone_type_extension(t, i)
-        elsif alternate && contact[:alternate_secondary_telephone][:value].nil?
-          contact[:alternate_secondary_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
-          contact[:alternate_secondary_telephone_type] = from_phone_type_extension(t, i)
-        elsif !alternate && contact[:primary_telephone][:value].nil?
-          contact[:primary_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
-          contact[:primary_telephone_type] = from_phone_type_extension(t, i)
-        elsif !alternate && contact[:secondary_telephone][:value].nil?
-          contact[:secondary_telephone] = { value: t.value, path: "Patient.telecom[#{i}].value" }
-          contact[:secondary_telephone_type] = from_phone_type_extension(t, i)
         end
+      end
+    else
+      contact = %i[email primary_telephone secondary_telephone primary_telephone_type secondary_telephone_type international_telephone].index_with do |_field|
+        { value: nil, path: '' }
+      end
+      telecom&.each_with_index do |t, i|
+        international = t.extension.include?(int_phone_extension)
+        case t.system
+        when 'email'
+          contact[:email] = { value: t.value, path: "#{base}.telecom[#{i}].value" } if contact[:email][:value].nil?
+        when 'phone'
+          if international && contact[:international_telephone][:value].nil?
+            contact[:international_telephone] = { value: t.value, path: "#{base}.telecom[#{i}].value" }
+          elsif contact[:primary_telephone][:value].nil?
+            contact[:primary_telephone] = { value: t.value, path: "#{base}.telecom[#{i}].value" }
+            contact[:primary_telephone_type] = from_phone_type_extension(t, i)
+          elsif contact[:secondary_telephone][:value].nil?
+            contact[:secondary_telephone] = { value: t.value, path: "#{base}.telecom[#{i}].value" }
+            contact[:secondary_telephone_type] = from_phone_type_extension(t, i)
+          end
+        end
+      end
+    end
+    contact
+  end
+
+  def from_contact(patient_contact)
+    alt_extension = to_bool_extension(true, 'alternate-contact')
+    contact = {}
+    patient_contact&.each_with_index do |c, c_i|
+      alternate = c.extension.include?(alt_extension)
+      contact.merge!(from_telecom(c.telecom, alternate, "Patient.contact[#{c_i}]"))
+      if alternate
+        contact[:alternate_contact_name] = { value: c.name&.text, path: "Patient.contact[#{c_i}].name.text" }
+        contact[:alternate_contact_type] = { value: c.relationship&.first&.coding&.first&.code, path: "Patient.contact[#{c_i}].relationship.coding[0].code" }
+      else
+        contact[:contact_name] = { value: c.name&.text, path: "Patient.contact[#{c_i}].name.text" }
+        contact[:contact_type] = { value: c.relationship&.first&.coding&.first&.code, path: "Patient.contact[#{c_i}].relationship.coding[0].code" }
       end
     end
     contact
