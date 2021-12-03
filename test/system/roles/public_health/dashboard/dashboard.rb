@@ -172,13 +172,19 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     assert_content('Your import contains one or multiple monitorees with Continuous Exposure enabled')
     click_on 'Proceed With Import'
 
-    return unless validity == :valid
+    if validity == :valid
+      @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction, :exposure, file_name)
+      select_monitorees_to_import(rejects, accept_duplicates)
+      @@public_health_import_verifier.verify_sara_alert_format_import_data(
+        jurisdiction, :exposure, file_name, rejects, accept_duplicates
+      )
+    end
 
-    @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction, :exposure, file_name)
-    select_monitorees_to_import(rejects, accept_duplicates)
-    # @@public_health_import_verifier.verify_sara_alert_format_import_data(
-    #   jurisdiction, :exposure, file_name, rejects, accept_duplicates
-    # )
+    if validity == :invalid_last_date_of_exposure
+      assert_content('Monitorees may be imported either with a Last Date of Exposure value or Continuous Exposure ' \
+                'set to \'true.\'')
+    end
+    sleep(0.5) && find('.modal-header').find('.close').click unless validity == :valid
   end
 
   def import_and_cancel(workflow, file_name, file_type)

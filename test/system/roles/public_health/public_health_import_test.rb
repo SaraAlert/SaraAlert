@@ -144,10 +144,17 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
     )
   end
 
-  test 'import_sara_alert_format_isolation_workflow_with_with_warnings_and_proceed' do
+  test 'import_sara_alert_format_exposure_workflow_with_warnings_and_proceed' do
     @@public_health_test_helper.import_sara_alert_format_exposure_workflow_with_warnings_and_proceed(
-      'locals2c4_epi', 'Sara-Alert-Format-Exposure-Workflow-With-Continuous-Exposure.xlsx',
+      'state5_epi', 'Sara-Alert-Format-Exposure-Workflow-With-Continuous-Exposure.xlsx',
       :valid, nil, accept_duplicates: true
+    )
+  end
+
+  test 'import_sara_alert_format_exposure_workflow_with_warnings_and_error' do
+    @@public_health_test_helper.import_sara_alert_format_exposure_workflow_with_warnings_and_proceed(
+      'state5_epi', 'Sara-Alert-Format-Exposure-Workflow-With-Continuous-Exposure-Error.xlsx',
+      :invalid_last_date_of_exposure, nil, accept_duplicates: true
     )
   end
 
