@@ -248,9 +248,9 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def import_sara_alert_format_with_warnings(user_label, workflow, file_name, rejects, accept_duplicates)
-    jurisdiction = @@system_test_utils.login(user_label)
-    @@public_health_dashboard.import_sara_alert_format_with_warnings(jurisdiction, workflow, file_name, rejects, accept_duplicates)
+  def import_sara_alert_format_exposure_workflow_with_warnings_and_cancel(user_label, file_name)
+    @@system_test_utils.login(user_label)
+    @@public_health_dashboard.import_sara_alert_format_exposure_workflow_with_warnings_and_cancel(file_name)
     @@system_test_utils.logout
   end
 

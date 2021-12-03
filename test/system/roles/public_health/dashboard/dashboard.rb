@@ -148,19 +148,18 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     sleep(0.5) && find('.modal-header').find('.close').click unless validity == :valid
   end
 
-  def import_sara_alert_format_with_warnings(jurisdiction, workflow, file_name, rejects, accept_duplicates)
-    click_on WORKFLOW_CLICK_MAP[workflow] if workflow.present?
+  def import_sara_alert_format_exposure_workflow_with_warnings_and_cancel(file_name)
+    click_on WORKFLOW_CLICK_MAP[:exposure]
     click_on 'Import'
-    find('a', text: "Sara Alert Format (#{workflow})").click
+    find('a', text: "Sara Alert Format (exposure)").click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
     sleep(1) # wait for import modal to open
     assert_content('Your import contains one or multiple monitorees with Continuous Exposure enabled')
-    click_on 'Proceed With Import'
+    click_on 'Cancel Import'
 
-    @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction, workflow, file_name)
-    select_monitorees_to_import(rejects, accept_duplicates)
-    @@public_health_import_verifier.verify_sara_alert_format_import_data(jurisdiction, workflow, file_name, rejects, accept_duplicates)
+    sleep(0.75) # wait for import modal to close
+    assert page.has_no_content?("Import Sara Alert Format")
   end
 
   def import_and_cancel(workflow, file_name, file_type)
