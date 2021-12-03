@@ -3209,42 +3209,6 @@ The `http://saraalert.org/StructureDefinition/sexual-orientation` extension repr
 }
 ```
 
-The `http://saraalert.org/StructureDefinition/contact-type` extension represents the contact type of a monitoree.
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/contact-type",
-  "valueString": "Parent/Guardian"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/contact-name` extension represents the contact name of a monitoree.
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/contact-name",
-  "valueString": "Lynwood Ortiz"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/alternate-contact-type` extension represents the contact type of the alternate contact of a monitoree.
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/alternate-contact-type",
-  "valueString": "Group Home Manager/Administrator"
-}
-```
-
-The `http://saraalert.org/StructureDefinition/alternate-contact-name` extension represents the contact name of the alternate contact of a monitoree.
-
-```json
-{
-  "url": "http://saraalert.org/StructureDefinition/alternate-contact-name",
-  "valueString": "Maria Ernser"
-}
-```
-
 The complex `http://saraalert.org/StructureDefinition/exposure-risk-factors` extension represents the exposure risk factors that apply for the monitoree.
 
 ```json
@@ -3390,20 +3354,42 @@ The `http://saraalert.org/StructureDefinition/international-telephone` indicates
 ]
 ```
 
-The `http://saraalert.org/StructureDefinition/alternate-contact` indicates if a telecom is associated with an alternate contact. Note that this extension should be placed on an element in the `Patient.telecom` array. If this extension is not present on a telecom in the `Patient.telecom` array, the telecom is assumed to be associated with a primary contact.
+The `http://saraalert.org/StructureDefinition/alternate-contact` indicates if a contact is associated with an alternate contact. Note that this extension should be placed on an element in the `Patient.contact` array. If this extension is not present on a contact in the `Patient.contact` array, the contact is assumed to be associated with a primary contact.
 
 ```json
-"telecom": [
-  {
+"contact": [
+ {
     "extension": [
       {
         "url": "http://saraalert.org/StructureDefinition/alternate-contact",
         "valueBoolean": true
       }
     ],
-    "system": "phone",
-    "value": "+15555555555",
-    "rank": 1
+    "relationship": [
+      {
+        "coding": [
+          {
+            "code": "Surrogate/Proxy"
+          }
+        ]
+      }
+    ],
+    "name": {
+      "text": "Nicholas Freiter"
+    },
+    "telecom": [
+      {
+        "extension": [
+          {
+            "url": "http://saraalert.org/StructureDefinition/phone-type",
+            "valueString": "Landline"
+          }
+        ],
+        "system": "phone",
+        "value": "+19783024767",
+        "rank": 1
+      }
+    ]
   }
 ]
 ```
