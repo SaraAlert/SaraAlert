@@ -151,7 +151,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   def import_sara_alert_format_exposure_workflow_with_warnings_and_cancel(file_name)
     click_on WORKFLOW_CLICK_MAP[:exposure]
     click_on 'Import'
-    find('a', text: "Sara Alert Format (exposure)").click
+    find('a', text: 'Sara Alert Format (exposure)').click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
     sleep(1) # wait for import modal to open
@@ -159,7 +159,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     click_on 'Cancel Import'
 
     sleep(0.75) # wait for import modal to close
-    assert page.has_no_content?("Import Sara Alert Format")
+    assert page.has_no_content?('Import Sara Alert Format')
   end
 
   def import_and_cancel(workflow, file_name, file_type)
