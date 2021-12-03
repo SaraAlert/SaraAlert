@@ -150,9 +150,12 @@ class PublicHealthHeader extends React.Component {
   renderWarningModal() {
     return (
       <Modal
+        centered
         dialogClassName="modal-import"
+        className="import-warning-modal-container"
         scrollable="true"
         backdrop="static"
+        size="lg"
         show={this.state.showWarningModal}
         onHide={async () => {
           this.setState({ showWarningModal: false, importType: null, importData: null });
