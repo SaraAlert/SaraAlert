@@ -11,6 +11,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   TELEPHONE_FIELDS = %i[primary_telephone secondary_telephone alternate_primary_telephone alternate_secondary_telephone].freeze
+  TELEPHONE_TYPE_FIELDS = %i[primary_telephone_type secondary_telephone_type alternate_primary_telephone_type alternate_secondary_telephone_type].freeze
   BOOL_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander race_other race_unknown
                    race_refused_to_answer interpretation_required contact_of_known_case travel_to_affected_country_or_area
                    was_in_health_care_facility_with_known_cases laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight
@@ -143,6 +144,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     sheet = get_xlsx(file_name).sheet(0)
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
+      sleep(2)
       row.each_with_index do |value, index|
         verify_invalid_fields_validation_messages(import_format, jurisdiction, workflow, IMPORT_FORMATS[import_format][:fields][index], value, row_num)
       end
@@ -209,6 +211,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     # verify individual fields
     assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_num}")
     SAF_FIELDS.each_with_index do |field, index|
+      next if field.nil?
+
       err_msg = "#{field} mismatch in row #{row_num}"
       if TELEPHONE_FIELDS.include?(field)
         assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, err_msg)
@@ -331,14 +335,29 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_num}")
     SDX_FIELDS.each_with_index do |field, index|
       err_msg = "#{field} mismatch in row #{row_num}"
-      if row[index].to_s == 'N/A'
-        if %i[travel_related_notes flight_or_vessel_carrier].include?(field)
-          assert_not_includes(patient[field].to_s, row[index].to_s, err_msg)
+      if [nil, 'N/A'].include?(row[index])
+        if %i[travel_related_notes flight_or_vessel_carrier flight_or_vessel_number].include?(field)
+          assert_not_includes(patient[field].to_s, row[index].to_s, err_msg) if row[index].present?
         else
           assert_nil(patient[field], err_msg)
         end
       elsif TELEPHONE_FIELDS.include?(field)
-        assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, err_msg)
+        phone = Phonelib.parse(row[index], 'US')
+        if phone.full_e164.present? && phone.full_e164.sub(/^\+1+/, '').length == 10
+          assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, err_msg)
+        elsif field == :alternate_primary_telephone
+          assert_equal(row[index], patient[:alternate_international_telephone])
+        elsif field == :primary_telephone
+          assert_equal(row[index], patient[:international_telephone])
+        elsif field == :secondary_telephone
+          assert_includes(patient[:exposure_notes].to_s, "#{SDX_HEADERS[index]}: #{row[index]}")
+        end
+      elsif TELEPHONE_TYPE_FIELDS.include?(field)
+        if NORMALIZED_ENUMS[field].key?(normalize_enum_field_value(row[index]))
+          assert_equal(NORMALIZED_ENUMS[field][normalize_enum_field_value(row[index])], patient[field].to_s, err_msg)
+        else
+          assert_nil(patient[field])
+        end
       elsif BOOL_FIELDS.include?(field)
         assert_equal(normalize_bool_field(row[index]).to_s, patient[field].to_s, err_msg)
       elsif STATE_FIELDS.include?(field) || (field == :monitored_address_state && !row[index].nil?)
@@ -346,11 +365,31 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       elsif field == :sex && row[index].present?
         assert_equal(SEX_ABBREVIATIONS[row[index].upcase.to_sym] || row[index]&.downcase&.capitalize, patient[field].to_s, err_msg)
       # these fields come from multiple columns
-      elsif %i[travel_related_notes flight_or_vessel_carrier].include?(field)
-        assert_includes(patient[field].to_s, row[index].to_s, err_msg)
+      elsif %i[travel_related_notes flight_or_vessel_carrier flight_or_vessel_number].include?(field)
+        assert_includes(patient[field].to_s, "#{SDX_HEADERS[index]}: #{row[index]}", err_msg)
+      elsif field == :exposure_notes
+        assert_includes(patient[field].to_s, "#{SDX_HEADERS[index]}: #{Date.strptime(row[index], '%m%d%Y')}", err_msg)
       # format dates
       elsif %i[date_of_arrival date_of_departure date_of_birth].include?(field)
-        assert_equal(row[index].present? ? Date.strptime(row[index], '%m/%d/%y').to_s : '', patient[field].to_s, err_msg)
+        assert_equal(Date.strptime(row[index], '%m%d%Y').to_s, patient[field].to_s, err_msg)
+      elsif field == :gender_identity
+        normalized_value = row[index]&.downcase&.gsub(/[ -.]/, '')
+        if SDX_MAPPINGS[:gender_identity].key?(normalized_value)
+          assert_equal(SDX_MAPPINGS[:gender_identity][normalized_value], patient[:gender_identity])
+          assert_equal(SDX_MAPPINGS[:sex][normalized_value], patient[:sex])
+        else
+          assert_nil(patient[:gender_identity])
+          assert_nil(patient[:sex])
+        end
+      elsif field == :alternate_contact_type
+        normalized_value = row[index]&.downcase&.gsub(/[ -.]/, '')
+        if SDX_MAPPINGS[:alternate_contact_type].key?(normalized_value)
+          assert_equal(SDX_MAPPINGS[:alternate_contact_type][normalized_value], pattient[:alternate_contact_type])
+        else
+          assert_nil(patient[:alternate_contact_type])
+        end
+      elsif field == :alternate_contact_name
+        assert_includes(patient[field].to_s, row[index], err_msg)
       elsif !field.nil?
         assert_equal(row[index].to_s, patient[field].to_s, err_msg)
       end
@@ -372,6 +411,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       checks = VALIDATION[field][:checks]
 
       if checks.include?(:enum) && !NORMALIZED_ENUMS[field].key?(normalize_enum_field_value(value))
+        return if import_format == :sdx # field is ignored instead of strictly validated
+
         assert page.has_content?("Value '#{value}' for '#{header_label}' is not an acceptable value"), err_msg
       end
       if checks.include?(:bool) && %w[true false].exclude?(value.to_s.downcase)
@@ -486,7 +527,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     value = row[ImportExportConstants::SDX_FIELDS.index(field)]
     return nil if value.blank?
 
-    value = Date.strptime(value, '%m/%d/%y') if %i[date_of_arrival date_of_departure date_of_birth].include?(field)
+    value = Date.strptime(value, '%m%d%Y') if %i[date_of_arrival date_of_departure date_of_birth].include?(field)
     value
   end
 

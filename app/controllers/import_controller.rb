@@ -164,24 +164,27 @@ class ImportController < ApplicationController
   end
 
   def import_sdx_field(patient, field, row, row_ind, col_num)
-    return if row[col_num] == 'N/A'
+    return if [nil, 'N/A'].include?(row[col_num])
 
-    if %i[exposure_notes travel_related_notes flight_or_vessel_carrier flight_or_vessel_number].include?(field) # fields represented by multiple columns
+    if %i[travel_related_notes flight_or_vessel_carrier flight_or_vessel_number].include?(field) # fields represented by multiple columns
       value = "#{SDX_HEADERS[col_num]}: #{import_field(field, row[col_num], row_ind)}"
+      patient[field] = patient[field].blank? ? value : "#{patient[field]}; #{value}"
+    elsif field == :exposure_notes # CreateDate
+      value = "#{SDX_HEADERS[col_num]}: #{import_field(field, Date.strptime(row[col_num], '%m%d%Y'), row_ind)}"
       patient[field] = patient[field].blank? ? value : "#{patient[field]}; #{value}"
     elsif field == :alternate_contact_name
       patient[field] = patient[field].blank? ? row[col_num] : "#{patient[field]} #{row[col_num]}"
     elsif %i[date_of_arrival date_of_departure date_of_birth].include?(field)
-      patient[field] = import_field(field, Date.strptime(row[col_num], '%m%d%Y'), row_ind) if row[col_num].present?
+      patient[field] = import_field(field, Date.strptime(row[col_num], '%m%d%Y'), row_ind)
     elsif %i[primary_telephone secondary_telephone alternate_primary_telephone].include?(field)
       phone = Phonelib.parse(row[col_num], 'US')
-      patient[field] = import_field(field, row[col_num], row_ind) && return unless phone.e164.blank? || phone.e164.sub(/^\+1+/, '').length != 10
+      patient[field] = phone.full_e164 || row[col_num] && return unless phone.full_e164.blank? || phone.full_e164.sub(/^\+1+/, '').length != 10
 
       patient[:alternate_international_telephone] = row[col_num] if field == :alternate_primary_telephone
       patient[:international_telephone] = row[col_num] if field == :primary_telephone
       if field == :secondary_telephone
         value = "#{SDX_HEADERS[col_num]}: #{row[col_num]}"
-        patient[:exposure_notes] = patient[:exposure_notes].blank? ? value : "#{patient[field]}; #{value}"
+        patient[:exposure_notes] = patient[:exposure_notes].blank? ? value : "#{patient[:exposure_notes]}; #{value}"
       end
     elsif %i[primary_telephone_type secondary_telephone_type alternate_primary_telephone_type].include?(field)
       patient[field] = import_field(field, row[col_num], row_ind)
