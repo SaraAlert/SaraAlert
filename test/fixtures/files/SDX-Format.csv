@@ -8,5 +8,5 @@ RecordId,CreateDate,DocumentNumber,FlightNumber,ArrivalDate,DepartureDate,Acknow
 666666,05142021,A12345683,500,,,,Arlington,N/A,VA,,22032,Dulles,IAD,Washington Dulles,VA,02032000,US,,,,DOMESTIC,MOTHER,FALSE,GN,PASSPORT,fake.email@gmail.com,Alisha,,,,,,,,,,,,,,,,,,,,,,
 777777,05142021,A12345684,500,,,,Fairfax,N/A,VA,,22032,Dulles,IAD,Washington Dulles,VA,02042000,US,,,,DOMESTIC,mothr,FALSE,US,PASSPORT,fake.email@gmail.com,Alex,,,,,,,,,,,,,,,,,,,,,,
 888888,05142021,O12345685,500,,,,Fairfax,N/A,VA,,22032,Dulles,IAD,Washington Dulles,VA,02052000,US,,,,DOMESTIC,father,FALSE,US,PASSPORT,fake.email@gmail.com,Gina,,,,,,,,,,,,,,,,,,,,,,
-999999,05142021,A12345686,500,,,,Woodbridge,N/A,VA,,22032,Dulles,IAD,Washington Dulles,VA,02062000,US,,,,DOMESTIC,FATHR,FALSE,US,PASSPORT,fake.email@gmail.com,Maya,,,,,,,,,,,,,,,,,,,,,,
-121212,05142021,A12345687,500,,,,Woodbridge,N/A,VA,,22032,Dulles,IAD,Washington Dulles,VA,02082000,US,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+999999,05142021,A12345686,500,,,,Woodbridge,N/A,VA,,22032,Dulles,IAD,Washington Dulles,VA,02062000,US,,,2018492839,DOMESTIC,FATHR,FALSE,US,PASSPORT,fake.email@gmail.com,Maya,,,,,,,,,,,,,,,,,,,,,,
+121212,05142021,A12345687,500,,,,Woodbridge,N/A,VA,,22032,Dulles,IAD,Washington Dulles,VA,02082000,US,,,201-293-8493,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
