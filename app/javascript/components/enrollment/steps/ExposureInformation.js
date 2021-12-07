@@ -179,7 +179,7 @@ class ExposureInformation extends React.Component {
     this.setState(
       {
         current: { ...current, common_exposure_cohorts, patient: { ...current.patient, member_of_a_common_exposure_cohort: toggle } },
-        modified: { ...modified, common_exposure_cohorts, patient: { ...current.patient, member_of_a_common_exposure_cohort: toggle } },
+        modified: { ...modified, common_exposure_cohorts, patient: { ...modified.patient, member_of_a_common_exposure_cohort: toggle } },
         showCommonExposureCohortModal: false,
         common_exposure_cohort: null,
         common_exposure_cohort_index: null,
