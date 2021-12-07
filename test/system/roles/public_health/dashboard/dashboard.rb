@@ -155,7 +155,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
     sleep(1) # wait for import modal to open
-    assert_content('Your import contains one or multiple monitorees with Continuous Exposure enabled')
+    assert_content('Your import contains one or more monitorees with Continuous Exposure enabled')
     click_on 'Cancel Import'
 
     sleep(0.75) # wait for import modal to close
