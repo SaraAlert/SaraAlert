@@ -170,12 +170,16 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   def filter_by_text(patients, search)
     return patients if search.nil? || search.blank?
 
-    patients.where('lower(first_name) like ?', "#{search&.downcase}%").or(
-      patients.where('lower(last_name) like ?', "#{search&.downcase}%").or(
-        patients.where('lower(user_defined_id_statelocal) like ?', "#{search&.downcase}%").or(
-          patients.where('lower(user_defined_id_cdc) like ?', "#{search&.downcase}%").or(
-            patients.where('lower(user_defined_id_nndss) like ?', "#{search&.downcase}%").or(
-              patients.where('date_of_birth like ?', "#{search&.downcase}%")
+    patients.where('first_name like ?', "#{search&.downcase}%").or(
+      patients.where('last_name like ?', "#{search&.downcase}%").or(
+        patients.where('user_defined_id_statelocal like ?', "#{search&.downcase}%").or(
+          patients.where('user_defined_id_cdc like ?', "#{search&.downcase}%").or(
+            patients.where('user_defined_id_nndss like ?', "#{search&.downcase}%").or(
+              patients.where('date_of_birth like ?', "#{search&.downcase}%").or(
+                patients.where('patients.email like ?', "#{search&.downcase}%").or(
+                  patients.where('primary_telephone like ?', "%#{search.delete('^0-9')}%")
+                )
+              )
             )
           )
         )
@@ -747,7 +751,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                                'patients.last_assessment_reminder_sent, patients.preferred_contact_time, patients.extended_isolation, '\
                                'patients.latest_fever_or_fever_reducer_at, patients.first_positive_lab_at, patients.negative_lab_count, '\
                                'patients.head_of_household, patients.follow_up_reason, patients.follow_up_note, jurisdictions.name AS jurisdiction_name, '\
-                               'jurisdictions.path AS jurisdiction_path, jurisdictions.id AS jurisdiction_id')
+                               'jurisdictions.path AS jurisdiction_path, jurisdictions.id AS jurisdiction_id, patients.primary_telephone')
 
     # execute query and get total count
     total = patients.total_entries
@@ -759,7 +763,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         id: patient[:id],
         name: patient.displayed_name,
         state_local_id: patient[:user_defined_id_statelocal] || '',
-        dob: patient[:date_of_birth]&.strftime('%F') || ''
+        dob: patient[:date_of_birth]&.strftime('%F') || '',
+        primary_telephone: patient[:primary_telephone] || ''
       }
 
       # populate fields specific to this linelist only if relevant
@@ -793,7 +798,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       linelist << details
     end
 
-    { linelist: linelist, fields: %i[name state_local_id dob].concat(fields), total: total }
+    { linelist: linelist, fields: %i[name state_local_id dob primary_telephone].concat(fields), total: total }
   end
 
   def linelist_specific_fields(workflow, tab)

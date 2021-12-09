@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment-timezone';
+import _ from 'lodash';
 import libphonenumber from 'google-libphonenumber';
 import IconMinor from '../components/patient/icons/IconMinor';
 import { formatDate } from './DateTime';
@@ -52,7 +53,7 @@ function phoneSchemaValidator() {
  * @param {String} phone_number - phone number in e164 format
  */
 function formatPhoneNumberVisually(phone_number) {
-  if (phone_number === null || phone_number === undefined) return '';
+  if (_.isNil(phone_number)) return '';
 
   const match = phone_number
     .replace('+1', '')

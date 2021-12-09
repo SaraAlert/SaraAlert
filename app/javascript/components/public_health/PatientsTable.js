@@ -37,7 +37,7 @@ import EligibilityTooltip from '../util/EligibilityTooltip';
 import confirmDialog from '../util/ConfirmDialog';
 import { patientHref } from '../../utils/Navigation';
 import { formatDate, formatTimestamp } from '../../utils/DateTime';
-import { formatDateOfBirthTableCell } from '../../utils/PatientFormatters';
+import { formatDateOfBirthTableCell, formatPhoneNumberVisually } from '../../utils/PatientFormatters';
 
 class PatientsTable extends React.Component {
   constructor(props) {
@@ -53,6 +53,7 @@ class PatientsTable extends React.Component {
           { field: 'assigned_user', label: 'Assigned User', isSortable: true, tooltip: null },
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
           { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDOB },
+          { field: 'primary_telephone', label: 'Phone Number', isSortable: false, tooltip: null, filter: this.formatPhoneNumber },
           { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatEndOfMonitoring },
           { field: 'extended_isolation', label: 'Extended Isolation To', isSortable: true, tooltip: 'extendedIsolation', filter: formatDate },
           { field: 'first_positive_lab_at', label: 'First Positive Lab', isSortable: true, filter: formatDate },
@@ -519,6 +520,10 @@ class PatientsTable extends React.Component {
     );
   };
 
+  formatPhoneNumber = data => {
+    return formatPhoneNumberVisually(data.value);
+  };
+
   getRowCheckboxAriaLabel = rowData => {
     return `Monitoree ${rowData.name}`;
   };
@@ -673,7 +678,10 @@ class PatientsTable extends React.Component {
                 </Form.Row>
                 <InputGroup size="sm" className="d-flex justify-content-between">
                   <InputGroup.Prepend>
-                    <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
+                    <OverlayTrigger
+                      overlay={
+                        <Tooltip>Search by Monitoree Name, Date of Birth, Email, Primary Telephone Number, State/Local ID, CDC ID, or NNDSS/Case ID</Tooltip>
+                      }>
                       <InputGroup.Text className="rounded-0">
                         <i className="fas fa-search"></i>
                         <label htmlFor="search" className="ml-1 mb-0">
