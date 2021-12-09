@@ -83,7 +83,8 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       workflow: isolation ? 'Isolation' : 'Exposure',
       first_positive_lab_at: first_positive_lab_at || '',
       follow_up_reason: follow_up_reason || '',
-      follow_up_note: follow_up_note || ''
+      follow_up_note: follow_up_note || '',
+      primary_telephone: primary_telephone || ''
     }
   end
 

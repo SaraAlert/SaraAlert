@@ -53,10 +53,10 @@ module CloseContactQueryHelper
   def search(close_contact, search)
     return close_contact if search.blank?
 
-    close_contact.where('lower(first_name) like ?', "#{search&.downcase}%").or(
-      close_contact.where('lower(last_name) like ?', "#{search&.downcase}%").or(
+    close_contact.where('first_name like ?', "#{search&.downcase}%").or(
+      close_contact.where('last_name like ?', "#{search&.downcase}%").or(
         close_contact.where('primary_telephone like ?', "%#{search}%").or(
-          close_contact.where('lower(email) like ?', "#{search&.downcase}%").or(
+          close_contact.where('email like ?', "#{search&.downcase}%").or(
             close_contact.where('assigned_user like ?', "#{search&.downcase}%").or(
               close_contact.where('contact_attempts like ?', "#{search&.downcase}%")
             )
