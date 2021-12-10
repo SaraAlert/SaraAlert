@@ -161,13 +161,13 @@ class PublicHealthHeader extends React.Component {
           this.setState({ showWarningModal: false, importType: null, importData: null });
         }}>
         <Modal.Header closeButton>
-          <Modal.Title className="h5">{this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} (warning)</Modal.Title>
+          <Modal.Title className="h5">{this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} Warning</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {this.state.importData?.warnings &&
             Object.keys(this.state.importData.warnings).map(key => (
               <span key={key}>
-                <h5>{key} Warning</h5>
+                <h5>{key}</h5>
                 <p>{this.state.importData.warnings[`${key}`]}</p>
               </span>
             ))}
