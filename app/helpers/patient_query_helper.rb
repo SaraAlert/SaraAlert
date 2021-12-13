@@ -185,7 +185,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     )
 
     phone_query = search.delete('^0-9')
-    phone_query.blank? ? filtered : filtered.or(patients.where('primary_telephone like ?', "#{phone_query}%"))
+    phone_query.blank? ? filtered : filtered.or(patients.where('primary_telephone like ?', "+1#{phone_query}%"))
   end
 
   def sort(patients, order, direction)
