@@ -392,7 +392,14 @@ class ImportController < ApplicationController
 
     continuous_exposure_boolean = import_and_validate_bool_field(field, continuous_exposure_value, row_ind)
 
-    if continuous_exposure_boolean
+    if continuous_exposure_boolean && last_date_of_exposure_value.present?
+      err_msg = "Value '#{continuous_exposure_value}' is not valid for '#{VALIDATION[field][:label]}' with " \
+              "'#{VALIDATION[:last_date_of_exposure][:label]}' of '#{last_date_of_exposure_value}.' " \
+              'Monitorees may be imported either with a Last Date of Exposure value or Continuous Exposure ' \
+              'set to \'true.\''
+
+      raise ValidationError.new(err_msg, row_ind)
+    else
       @warnings[VALIDATION[field][:label]] = 'Your import contains one or more monitorees with Continuous Exposure ' \
                                              'enabled. Please note that monitorees with Continuous Exposure enabled ' \
                                              'will receive symptom assessments indefinitely unless a Sara Alert user ' \
@@ -402,16 +409,8 @@ class ImportController < ApplicationController
                                              'did not intend to import monitorees with Continuous Exposure enabled, ' \
                                              'please select \'Cancel Import\', update your import file as needed, and ' \
                                              're-attempt to import.'
+      return continuous_exposure_boolean
     end
-
-    return continuous_exposure_boolean if last_date_of_exposure_value.blank?
-
-    err_msg = "Value '#{continuous_exposure_value}' is not valid for '#{VALIDATION[field][:label]}' with " \
-              "'#{VALIDATION[:last_date_of_exposure][:label]}' of '#{last_date_of_exposure_value}.' " \
-              'Monitorees may be imported either with a Last Date of Exposure value or Continuous Exposure ' \
-              'set to \'true.\''
-
-    raise ValidationError.new(err_msg, row_ind)
   end
 end
 
