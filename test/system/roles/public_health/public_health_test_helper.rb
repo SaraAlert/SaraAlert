@@ -248,16 +248,11 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def import_sara_alert_format_exposure_workflow_with_warnings_and_cancel(user_label, file_name)
-    @@system_test_utils.login(user_label)
-    @@public_health_dashboard.import_sara_alert_format_exposure_workflow_with_warnings_and_cancel(file_name)
-    @@system_test_utils.logout
-  end
-
-  def import_sara_alert_format_exposure_workflow_with_warnings_and_proceed(user_label, file_name, validity, rejects, accept_duplicates)
+  def import_sara_alert_format_exposure_with_continuous_exposure(user_label, file_name, validity, rejects,
+                                                                 accept_duplicates: true, cancel_import: false)
     jurisdiction = @@system_test_utils.login(user_label)
-    @@public_health_dashboard.import_sara_alert_format_exposure_workflow_with_warnings_and_proceed(
-      file_name, jurisdiction, validity, rejects, accept_duplicates
+    @@public_health_dashboard.import_sara_alert_format_exposure_with_continuous_exposure(
+      file_name, jurisdiction, validity, rejects, accept_duplicates, cancel_import
     )
     @@system_test_utils.logout
   end

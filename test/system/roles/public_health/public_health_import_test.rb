@@ -138,23 +138,24 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
     @@public_health_test_helper.import_and_cancel('locals2c4_epi', :exposure, 'Sara-Alert-Format-Exposure-Workflow.xlsx', 'Sara Alert Format')
   end
 
-  test 'import_sara_alert_format_exposure_workflow_with_warnings_and_cancel' do
-    @@public_health_test_helper.import_sara_alert_format_exposure_workflow_with_warnings_and_cancel(
-      'locals2c4_epi', 'Sara-Alert-Format-Exposure-Workflow-With-Continuous-Exposure.xlsx'
+  test 'import_sara_alert_format_exposure_workflow_with_continuous_exposure_warnings_and_cancel' do
+    @@public_health_test_helper.import_sara_alert_format_exposure_with_continuous_exposure(
+      'locals2c4_epi', 'Sara-Alert-Format-Exposure-Workflow-With-Continuous-Exposure.xlsx',
+      :valid, nil, accept_duplicates: true, cancel_import: true
     )
   end
 
-  test 'import_sara_alert_format_exposure_workflow_with_warnings_and_proceed' do
-    @@public_health_test_helper.import_sara_alert_format_exposure_workflow_with_warnings_and_proceed(
+  test 'import_sara_alert_format_exposure_with_continuous_exposure_and_proceed' do
+    @@public_health_test_helper.import_sara_alert_format_exposure_with_continuous_exposure(
       'state5_epi', 'Sara-Alert-Format-Exposure-Workflow-With-Continuous-Exposure.xlsx',
-      :valid, nil, accept_duplicates: true
+      :valid, nil, accept_duplicates: true, cancel_import: false
     )
   end
 
-  test 'import_sara_alert_format_exposure_workflow_with_warnings_and_error' do
-    @@public_health_test_helper.import_sara_alert_format_exposure_workflow_with_warnings_and_proceed(
+  test 'import_sara_alert_format_exposure_with_continuous_exposure_and_errors' do
+    @@public_health_test_helper.import_sara_alert_format_exposure_with_continuous_exposure(
       'state5_epi', 'Sara-Alert-Format-Exposure-Workflow-With-Continuous-Exposure-Error.xlsx',
-      :invalid_last_date_of_exposure, nil, accept_duplicates: true
+      :invalid_last_date_of_exposure, nil, accept_duplicates: true, cancel_import: false
     )
   end
 

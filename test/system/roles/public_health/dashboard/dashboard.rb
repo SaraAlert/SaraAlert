@@ -148,39 +148,33 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     sleep(0.5) && find('.modal-header').find('.close').click unless validity == :valid
   end
 
-  def import_sara_alert_format_exposure_workflow_with_warnings_and_cancel(file_name)
+  def import_sara_alert_format_exposure_with_continuous_exposure(file_name, jurisdiction, validity, rejects,
+                                                                 accept_duplicates, cancel_import)
     click_on WORKFLOW_CLICK_MAP[:exposure]
     click_on 'Import'
     find('a', text: 'Sara Alert Format (exposure)').click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
     sleep(1) # wait for import modal to open
-    assert_content('Your import contains one or more monitorees with Continuous Exposure enabled')
-    click_on 'Cancel Import'
 
-    sleep(0.75) # wait for import modal to close
-    assert page.has_no_content?('Import Sara Alert Format')
-  end
+    case validity
+    when :valid
+      assert_content('Your import contains one or more monitorees with Continuous Exposure enabled')
+      if cancel_import
+        click_on 'Cancel Import'
 
-  def import_sara_alert_format_exposure_workflow_with_warnings_and_proceed(file_name, jurisdiction, validity, rejects, accept_duplicates)
-    click_on WORKFLOW_CLICK_MAP[:exposure]
-    click_on 'Import'
-    find('a', text: 'Sara Alert Format (exposure)').click
-    page.attach_file(file_fixture(file_name))
-    click_on 'Upload'
-    sleep(1) # wait for import modal to open
-    assert_content('Your import contains one or more monitorees with Continuous Exposure enabled')
-    click_on 'Proceed With Import'
+        sleep(0.75) # wait for import modal to close
+        assert page.has_no_content?('Import Sara Alert Format')
+      else
+        click_on 'Proceed With Import'
 
-    if validity == :valid
-      @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction, :exposure, file_name)
-      select_monitorees_to_import(rejects, accept_duplicates)
-      @@public_health_import_verifier.verify_sara_alert_format_import_data(
-        jurisdiction, :exposure, file_name, rejects, accept_duplicates
-      )
-    end
-
-    if validity == :invalid_last_date_of_exposure
+        @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction, :exposure, file_name)
+        select_monitorees_to_import(rejects, accept_duplicates)
+        @@public_health_import_verifier.verify_sara_alert_format_import_data(
+          jurisdiction, :exposure, file_name, rejects, accept_duplicates
+        )
+      end
+    when :invalid_last_date_of_exposure
       assert_content('Monitorees may be imported either with a Last Date of Exposure value or Continuous Exposure ' \
                 'set to \'true.\'')
     end
