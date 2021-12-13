@@ -170,21 +170,22 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
   def filter_by_text(patients, search)
     return patients if search.nil? || search.blank?
 
-    patients.where('first_name like ?', "#{search&.downcase}%").or(
+    filtered = patients.where('first_name like ?', "#{search&.downcase}%").or(
       patients.where('last_name like ?', "#{search&.downcase}%").or(
         patients.where('user_defined_id_statelocal like ?', "#{search&.downcase}%").or(
           patients.where('user_defined_id_cdc like ?', "#{search&.downcase}%").or(
             patients.where('user_defined_id_nndss like ?', "#{search&.downcase}%").or(
               patients.where('date_of_birth like ?', "#{search&.downcase}%").or(
-                patients.where('patients.email like ?', "#{search&.downcase}%").or(
-                  patients.where('primary_telephone like ?', "%#{search.delete('^0-9')}%")
-                )
+                patients.where('patients.email like ?', "%#{search&.downcase}%")
               )
             )
           )
         )
       )
     )
+
+    phone_query = search.delete('^0-9')
+    phone_query.blank? ? filtered : filtered.or(patients.where('primary_telephone like ?', "%#{phone_query}%"))
   end
 
   def sort(patients, order, direction)
