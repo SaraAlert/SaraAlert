@@ -46,8 +46,8 @@ class PublicHealthHeader extends React.Component {
             importData: response.data,
             file: null,
             showUploadModal: false,
-            showWarningModal: Object.keys(response.data.warnings).length > 0,
-            showImportModal: Object.keys(response.data.warnings).length === 0,
+            showWarningModal: Object.keys(response.data.warnings).length > 0 && response.data.errors.length === 0,
+            showImportModal: Object.keys(response.data.warnings).length === 0 || response.data.errors.length > 0,
           });
         });
       });
@@ -113,6 +113,7 @@ class PublicHealthHeader extends React.Component {
               ref={instance => {
                 this.importComponent = instance;
               }}
+              showWarningModal={this.state.showWarningModal}
             />
           )}
         </Modal.Body>
@@ -260,8 +261,8 @@ class PublicHealthHeader extends React.Component {
           </Col>
         </Row>
         {this.renderUploadModal()}
-        {this.renderWarningModal()}
         {this.renderImportModal()}
+        {this.renderWarningModal()}
       </React.Fragment>
     );
   }
