@@ -176,7 +176,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           patients.where('user_defined_id_cdc like ?', "#{search&.downcase}%").or(
             patients.where('user_defined_id_nndss like ?', "#{search&.downcase}%").or(
               patients.where('date_of_birth like ?', "#{search&.downcase}%").or(
-                patients.where('patients.email like ?', "%#{search&.downcase}%")
+                patients.where('patients.email like ?', "#{search&.downcase}%")
               )
             )
           )
@@ -185,7 +185,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     )
 
     phone_query = search.delete('^0-9')
-    phone_query.blank? ? filtered : filtered.or(patients.where('primary_telephone like ?', "%#{phone_query}%"))
+    phone_query.blank? ? filtered : filtered.or(patients.where('primary_telephone like ?', "#{phone_query}%"))
   end
 
   def sort(patients, order, direction)
