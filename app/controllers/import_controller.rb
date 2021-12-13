@@ -409,7 +409,7 @@ class ImportController < ApplicationController
                                              'did not intend to import monitorees with Continuous Exposure enabled, ' \
                                              'please select \'Cancel Import\', update your import file as needed, and ' \
                                              're-attempt to import.'
-      return continuous_exposure_boolean
+      continuous_exposure_boolean
     end
   end
 end
