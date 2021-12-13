@@ -95,7 +95,7 @@ class PublicHealthHeader extends React.Component {
               <Modal.Title className="h5">
                 {this.state.importType === 'saf' && 'Import Sara Alert Format'}
                 {this.state.importType === 'epix' && 'Import Epi-X'}
-                {this.state.importType === 'sdx' && 'Import SDX'} {this.state.importData.errors.length === 0 ? this.props.workflow : '(error)'}
+                {this.state.importType === 'sdx' && 'Import SDX'} {this.state.importData.errors.length === 0 ? this.props.workflow : 'Error'}
               </Modal.Title>
             </React.Fragment>
           )}
