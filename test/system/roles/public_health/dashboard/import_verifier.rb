@@ -35,11 +35,6 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
                                    vaccine_3_group_name vaccine_3_product_name vaccine_3_administration_date vaccine_3_dose_number vaccine_3_notes
                                    cohort_1_type cohort_1_name cohort_1_location
                                    cohort_2_type cohort_2_name cohort_2_location].freeze
-  EPI_X_MONITORED_ADDRESS_FIELDS = {
-    monitored_address_line_1: :address_line_1,
-    monitored_address_city: :address_city,
-    monitored_address_state: :address_state
-  }.freeze
   ADDRESS_FIELDS = %i[address_line_1 address_city address_zip address_line_2].freeze
 
   IMPORT_PAGE_FIELD_LABELS = {
