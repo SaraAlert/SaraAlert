@@ -178,7 +178,7 @@ class PublicHealthHeader extends React.Component {
             Cancel Import
           </Button>
           <Button variant="primary" onClick={() => this.setState({ showWarningModal: false, showImportModal: true })}>
-            Proceed With Import
+            Continue
           </Button>
         </Modal.Footer>
       </Modal>

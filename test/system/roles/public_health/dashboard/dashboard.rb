@@ -166,7 +166,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
         sleep(0.75) # wait for import modal to close
         assert page.has_no_content?('Import Sara Alert Format')
       else
-        click_on 'Proceed With Import'
+        click_on 'Continue'
 
         @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction, :exposure, file_name)
         select_monitorees_to_import(rejects, accept_duplicates)
