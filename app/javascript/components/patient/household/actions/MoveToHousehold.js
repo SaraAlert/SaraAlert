@@ -21,7 +21,7 @@ class MoveToHousehold extends React.Component {
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
           { field: 'jurisdiction', label: 'Jurisdiction', isSortable: true, tooltip: null },
           { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: formatDate },
-          { field: 'primary_telephone', label: 'Phone Number', isSortable: false, tooltip: null, filter: this.renderPhoneNumber },
+          { field: 'primary_telephone', label: 'Phone Number', isSortable: true, tooltip: null, filter: this.renderPhoneNumber },
           { field: 'select', label: '', isSortable: false, tooltip: null, filter: this.createSelectButton, className: 'text-center', onClick: this.submit },
         ],
         rowData: [],
