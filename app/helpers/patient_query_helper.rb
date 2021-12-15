@@ -243,7 +243,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     when 'workflow'
       patients = patients.order(Arel.sql('CASE WHEN isolation THEN 1 ELSE 0 END ' + dir), id: dir)
     when 'primary_telephone'
-      patients = patients.order(Arel.sql('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, primary_telephone ' + dir), id: dir)
+      patients = patients.order(Arel.sql('CASE WHEN primary_telephone IS NULL THEN 1 ELSE 0 END, primary_telephone ' + dir), id: dir)
     end
 
     patients
