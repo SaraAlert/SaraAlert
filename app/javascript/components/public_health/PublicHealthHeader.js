@@ -15,6 +15,7 @@ class PublicHealthHeader extends React.Component {
       counts: {},
       showUploadModal: false,
       showImportModal: false,
+      showWarningModal: false,
       uploading: false,
     };
   }
@@ -45,7 +46,8 @@ class PublicHealthHeader extends React.Component {
             importData: response.data,
             file: null,
             showUploadModal: false,
-            showImportModal: true,
+            showWarningModal: Object.keys(response.data.warnings).length > 0 && response.data.errors.length === 0,
+            showImportModal: Object.keys(response.data.warnings).length === 0 || response.data.errors.length > 0,
           });
         });
       });
@@ -111,6 +113,7 @@ class PublicHealthHeader extends React.Component {
               ref={instance => {
                 this.importComponent = instance;
               }}
+              showWarningModal={this.state.showWarningModal}
             />
           )}
         </Modal.Body>
@@ -128,7 +131,7 @@ class PublicHealthHeader extends React.Component {
         <Modal.Body>
           {this.state.importType === 'saf' && (
             <div className="mb-3">
-              <a href={`${window.location.origin}/Sara%20Alert%20Import%20Format.xlsx`}>Download formatting guidance</a> (Updated 11/30/2021)
+              <a href={`${window.location.origin}/Sara%20Alert%20Import%20Format.xlsx`}>Download formatting guidance</a> (Updated 12/28/2021)
             </div>
           )}
           <Form inline>
@@ -141,6 +144,43 @@ class PublicHealthHeader extends React.Component {
           </Form>
           {this.state.uploading && <ProgressBar animated striped now={100} className="mt-3" />}
         </Modal.Body>
+      </Modal>
+    );
+  }
+
+  renderWarningModal() {
+    return (
+      <Modal
+        centered
+        dialogClassName="modal-import"
+        className="import-warning-modal-container"
+        scrollable="true"
+        backdrop="static"
+        size="lg"
+        show={this.state.showWarningModal}
+        onHide={async () => {
+          this.setState({ showWarningModal: false, importType: null, importData: null });
+        }}>
+        <Modal.Header closeButton>
+          <Modal.Title className="h5">{this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} Warning</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {this.state.importData?.warnings &&
+            Object.keys(this.state.importData.warnings).map(key => (
+              <span key={key}>
+                <label className="h5">{key}</label>
+                <p>{this.state.importData.warnings[`${key}`]}</p>
+              </span>
+            ))}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => this.setState({ showWarningModal: false, importType: null, importData: null })}>
+            Cancel Import
+          </Button>
+          <Button variant="primary" onClick={() => this.setState({ showWarningModal: false, showImportModal: true })}>
+            Continue
+          </Button>
+        </Modal.Footer>
       </Modal>
     );
   }
@@ -222,6 +262,7 @@ class PublicHealthHeader extends React.Component {
         </Row>
         {this.renderUploadModal()}
         {this.renderImportModal()}
+        {this.renderWarningModal()}
       </React.Fragment>
     );
   }
