@@ -405,7 +405,7 @@ class ImportController < ApplicationController
                                                'enabled. Please note that monitorees with Continuous Exposure enabled ' \
                                                'will receive symptom assessments indefinitely unless a Sara Alert user ' \
                                                'manually deactivates Continuous Exposure after import. To proceed with ' \
-                                               'this import, select \'Proceed with Import\' to acknowledge you understand ' \
+                                               'this import, select \'Continue\' to acknowledge you understand ' \
                                                'and intend to import monitorees with Continuous Exposure enabled. If you ' \
                                                'did not intend to import monitorees with Continuous Exposure enabled, ' \
                                                'please select \'Cancel Import\', update your import file as needed, and ' \
