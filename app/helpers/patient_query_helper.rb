@@ -96,7 +96,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                                                                                        assigned_user state_local_id dob end_of_monitoring risk_level
                                                                                        monitoring_plan reporter public_health_action expected_purge_date
                                                                                        reason_for_closure closed_at transferred_at latest_report workflow
-                                                                                       first_positive_lab_at symptom_onset extended_isolation].include?(order)
+                                                                                       first_positive_lab_at symptom_onset extended_isolation
+                                                                                       primary_telephone].include?(order)
 
     # Validate sorting direction
     direction = query[:direction]
@@ -242,6 +243,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       patients = patients.order(Arel.sql('CASE WHEN latest_assessment_at IS NULL THEN 1 ELSE 0 END, latest_assessment_at ' + dir), id: dir)
     when 'workflow'
       patients = patients.order(Arel.sql('CASE WHEN isolation THEN 1 ELSE 0 END ' + dir), id: dir)
+    when 'primary_telephone'
+      patients = patients.order(Arel.sql('CASE WHEN primary_telephone IS NULL THEN 1 ELSE 0 END, primary_telephone ' + dir), id: dir)
     end
 
     patients
