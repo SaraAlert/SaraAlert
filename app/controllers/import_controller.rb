@@ -137,7 +137,7 @@ class ImportController < ApplicationController
     #   patient[field] = validate_workflow_specific_enums(workflow, field, row[col_num], row_ind)
     elsif field == :continuous_exposure
       patient[:continuous_exposure] = validate_continuous_exposure(workflow, field, row[col_num], row_ind,
-                                                                   row[SARA_ALERT_FORMAT_FIELDS.index(:last_date_of_exposure)])
+                                                                   row[SAF_FIELDS.index(:last_date_of_exposure)])
     else
       # TODO: when workflow specific case status validation re-enabled: this line can be updated to not have to check the case_status field
       patient[field] = import_field(field, row[col_num], row_ind) unless %i[symptom_onset case_status].include?(field) && workflow != :isolation
