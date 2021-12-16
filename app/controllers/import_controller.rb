@@ -34,10 +34,10 @@ class ImportController < ApplicationController
 
     permitted_params = params.permit(:workflow, :format)
 
-    workflow = permitted_params[:workflow].to_sym
+    workflow = permitted_params[:workflow]&.to_sym
     redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
 
-    import_format = permitted_params[:format].to_sym
+    import_format = permitted_params[:format]&.to_sym
     redirect_to(root_url) && return unless IMPORT_FORMATS.key?(import_format)
 
     # Only query valid jurisdiction ids once
@@ -178,7 +178,10 @@ class ImportController < ApplicationController
       patient[field] = import_field(field, Date.strptime(row[col_num], '%m%d%Y'), row_ind)
     elsif %i[primary_telephone secondary_telephone alternate_primary_telephone].include?(field)
       phone = Phonelib.parse(row[col_num], 'US')
-      patient[field] = phone.full_e164 || row[col_num] && return unless phone.full_e164.blank? || phone.full_e164.sub(/^\+1+/, '').length != 10
+      unless phone.full_e164.blank? || phone.full_e164.sub(/^\+1+/, '').length != 10
+        patient[field] = phone.full_e164 || row[col_num]
+        return
+      end
 
       patient[:alternate_international_telephone] = row[col_num] if field == :alternate_primary_telephone
       patient[:international_telephone] = row[col_num] if field == :primary_telephone
@@ -190,8 +193,7 @@ class ImportController < ApplicationController
       patient[field] = import_field(field, row[col_num], row_ind)
       patient[field] = nil unless ValidationHelper::TELEPHONE_TYPES.include?(patient[field])
     elsif %i[alternate_contact_type gender_identity].include?(field)
-      patient[field] = SDX_MAPPINGS[field][row[col_num]&.downcase&.gsub(/[ -.]/, '')]
-      patient[:sex] = SDX_MAPPINGS[:sex][row[col_num]&.downcase&.gsub(/[ -.]/, '')] if field == :gender_identity
+      patient[field] = SDX_MAPPINGS[field][row[col_num]&.downcase&.gsub(/[ -.]/, '')&.to_sym]
     else
       patient[field] = import_field(field, row[col_num], row_ind)
     end
