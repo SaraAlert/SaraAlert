@@ -43,6 +43,7 @@ class ImportController < ApplicationController
 
     @errors = []
     @patients = []
+    @warnings = {}
 
     # Load and parse patient import excel
     begin
@@ -168,7 +169,7 @@ class ImportController < ApplicationController
                  ' formatting guidance.'
     end
 
-    render json: { patients: @patients, errors: @errors }
+    render json: { patients: @patients, errors: @errors, warnings: @warnings }
   end
 
   private
@@ -185,6 +186,9 @@ class ImportController < ApplicationController
     # TODO: when workflow specific case status validation re-enabled: uncomment
     # elsif field == :case_status
     #   patient[field] = validate_workflow_specific_enums(workflow, field, row[col_num], row_ind)
+    elsif field == :continuous_exposure
+      patient[:continuous_exposure] = validate_continuous_exposure(workflow, field, row[col_num], row_ind,
+                                                                   row[SARA_ALERT_FORMAT_FIELDS.index(:last_date_of_exposure)])
     else
       # TODO: when workflow specific case status validation re-enabled: this line can be updated to not have to check the case_status field
       patient[field] = import_field(field, row[col_num], row_ind) unless %i[symptom_onset case_status].include?(field) && workflow != :isolation
@@ -381,6 +385,34 @@ class ImportController < ApplicationController
       err_msg += "acceptable values are: #{VALID_ISOLATION_ENUMS[field].reject(&:blank?).to_sentence}"
     end
     raise ValidationError.new(err_msg, row_ind)
+  end
+
+  def validate_continuous_exposure(workflow, field, continuous_exposure_value, row_ind, last_date_of_exposure_value)
+    return false if workflow == :isolation || continuous_exposure_value.blank?
+
+    continuous_exposure_boolean = import_and_validate_bool_field(field, continuous_exposure_value, row_ind)
+
+    if continuous_exposure_boolean
+      if last_date_of_exposure_value.present?
+        err_msg = "Value '#{continuous_exposure_value}' is not valid for '#{VALIDATION[field][:label]}' with " \
+                "'#{VALIDATION[:last_date_of_exposure][:label]}' of '#{last_date_of_exposure_value}.' " \
+                'Monitorees may be imported either with a Last Date of Exposure value or Continuous Exposure ' \
+                'set to \'true.\''
+
+        raise ValidationError.new(err_msg, row_ind)
+      else
+        @warnings[VALIDATION[field][:label]] = 'Your import contains one or more monitorees with Continuous Exposure ' \
+                                               'enabled. Please note that monitorees with Continuous Exposure enabled ' \
+                                               'will receive symptom assessments indefinitely unless a Sara Alert user ' \
+                                               'manually deactivates Continuous Exposure after import. To proceed with ' \
+                                               'this import, select \'Continue\' to acknowledge you understand ' \
+                                               'and intend to import monitorees with Continuous Exposure enabled. If you ' \
+                                               'did not intend to import monitorees with Continuous Exposure enabled, ' \
+                                               'please select \'Cancel Import\', update your import file as needed, and ' \
+                                               're-attempt to import.'
+      end
+    end
+    continuous_exposure_boolean
   end
 end
 

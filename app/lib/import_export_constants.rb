@@ -67,7 +67,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                               :alternate_preferred_contact_method, :alternate_preferred_contact_time, :alternate_primary_telephone,
                               :alternate_primary_telephone_type, :alternate_secondary_telephone, :alternate_secondary_telephone_type,
                               :alternate_international_telephone, :alternate_email, :cohort_1_type, :cohort_1_name, :cohort_1_location, :cohort_2_type,
-                              :cohort_2_name, :cohort_2_location].freeze
+                              :cohort_2_name, :cohort_2_location, :continuous_exposure].freeze
 
   SARA_ALERT_FORMAT_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                                'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
@@ -100,7 +100,7 @@ module ImportExportConstants # rubocop:todo Metrics/ModuleLength
                                'Alternate Preferred Contact Method', 'Alternate Preferred Contact Time', 'Alternate Primary Telephone',
                                'Alternate Primary Telephone Type', 'Alternate Secondary Telephone', 'Alternate Secondary Telephone Type',
                                'Alternate International Telephone', 'Alternate Email', 'Cohort 1 Type', 'Cohort 1 Name/Description', 'Cohort 1 Location',
-                               'Cohort 2 Type', 'Cohort 2 Name/Description', 'Cohort 2 Location'].freeze
+                               'Cohort 2 Type', 'Cohort 2 Name/Description', 'Cohort 2 Location', 'Continuous Exposure'].freeze
 
   # Extended Isolation Date is intentionally appended to the end even if new fields are added to Sara Alert Format to maintain more consistency in the ordering
   # of fields between Sara Alert Format and Full History Patients
