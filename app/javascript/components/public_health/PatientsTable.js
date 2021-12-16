@@ -53,7 +53,7 @@ class PatientsTable extends React.Component {
           { field: 'assigned_user', label: 'Assigned User', isSortable: true, tooltip: null },
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
           { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDOB },
-          { field: 'primary_telephone', label: 'Phone Number', isSortable: false, tooltip: null, filter: this.formatPhoneNumber },
+          { field: 'primary_telephone', label: 'Phone Number', isSortable: true, tooltip: null, filter: this.formatPhoneNumber },
           { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatEndOfMonitoring },
           { field: 'extended_isolation', label: 'Extended Isolation To', isSortable: true, tooltip: 'extendedIsolation', filter: formatDate },
           { field: 'first_positive_lab_at', label: 'First Positive Lab', isSortable: true, filter: formatDate },
