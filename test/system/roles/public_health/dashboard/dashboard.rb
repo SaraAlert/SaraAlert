@@ -122,13 +122,13 @@ class PublicHealthDashboard < ApplicationSystemTestCase
 
   def import_sara_alert_format_exposure_with_continuous_exposure(file_name, jurisdiction, validity, rejects,
                                                                  accept_duplicates, cancel_import)
-    click_on WORKFLOW_CLICK_MAP[:exposure]
+    find('#exposure-nav-btn').click
     click_on 'Import'
     find('a', text: 'Sara Alert Format (exposure)').click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
-    sleep(1) # wait for import modal to open
 
+    sleep(6) # wait for import modal to open
     case validity
     when :valid
       assert_content('Your import contains one or more monitorees with Continuous Exposure enabled')
@@ -139,12 +139,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
         assert page.has_no_content?('Import Sara Alert Format')
       else
         click_on 'Continue'
-
-        @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction, :exposure, file_name)
-        select_monitorees_to_import(rejects, accept_duplicates)
-        @@public_health_import_verifier.verify_sara_alert_format_import_data(
-          jurisdiction, :exposure, file_name, rejects, accept_duplicates
-        )
+        @@public_health_import_verifier.verify_import(:saf, jurisdiction, :exposure, file_name, rejects, accept_duplicates)
       end
     when :invalid_last_date_of_exposure
       assert_content('Monitorees may be imported either with a Last Date of Exposure value or Continuous Exposure ' \

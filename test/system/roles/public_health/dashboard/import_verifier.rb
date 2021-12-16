@@ -85,6 +85,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     end
 
     # select monitorees to import
+    sleep(3) # wait for file to upload
     if rejects.nil?
       click_on 'Import All'
       find(:css, '.confirm-dialog').find(:css, '.form-check-input').set(true) if accept_duplicates
@@ -102,7 +103,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
     # verify import data
     rejects = [] if rejects.nil?
-    sleep(2) # wait for db write
+    sleep(6) # wait for db write
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
       verify_saf_import_monitoree(jurisdiction, workflow, rejects, accept_duplicates, row, row_num) if import_format == :saf
@@ -181,7 +182,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def verify_sdx_import_page_card(jurisdiction, workflow, card, index, row)
     IMPORT_PAGE_DISPLAYED_FIELDS[:sdx].each do |field|
-      verify_existence(card, IMPORT_PAGE_FIELD_LABELS[field], displayed_epix_val(row, field), index)
+      verify_existence(card, IMPORT_PAGE_FIELD_LABELS[field], displayed_sdx_val(row, field), index)
     end
 
     return unless jurisdiction.all_patients_excluding_purged.where(first_name: epix_val(row, :first_name), last_name: epix_val(row, :last_name)).length > 1
@@ -368,18 +369,16 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       elsif %i[date_of_arrival date_of_departure date_of_birth].include?(field)
         assert_equal(Date.strptime(row[index], '%m%d%Y').to_s, patient[field].to_s, err_msg)
       elsif field == :gender_identity
-        normalized_value = row[index]&.downcase&.gsub(/[ -.]/, '')
+        normalized_value = row[index]&.downcase&.gsub(/[ -.]/, '')&.to_sym
         if SDX_MAPPINGS[:gender_identity].key?(normalized_value)
           assert_equal(SDX_MAPPINGS[:gender_identity][normalized_value], patient[:gender_identity])
-          assert_equal(SDX_MAPPINGS[:sex][normalized_value], patient[:sex])
         else
           assert_nil(patient[:gender_identity])
-          assert_nil(patient[:sex])
         end
       elsif field == :alternate_contact_type
-        normalized_value = row[index]&.downcase&.gsub(/[ -.]/, '')
+        normalized_value = row[index]&.downcase&.gsub(/[ -.]/, '')&.to_sym
         if SDX_MAPPINGS[:alternate_contact_type].key?(normalized_value)
-          assert_equal(SDX_MAPPINGS[:alternate_contact_type][normalized_value], pattient[:alternate_contact_type])
+          assert_equal(SDX_MAPPINGS[:alternate_contact_type][normalized_value], patient[:alternate_contact_type])
         else
           assert_nil(patient[:alternate_contact_type])
         end
