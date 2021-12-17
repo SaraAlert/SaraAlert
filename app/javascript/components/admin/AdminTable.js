@@ -41,6 +41,8 @@ class AdminTable extends React.Component {
         search: '',
         entries: 25,
         locked: null,
+        order: 'id',
+        direction: 'asc',
       },
       allUsersCount: null,
       entryOptions: [10, 15, 25, 50, 100],
@@ -792,6 +794,8 @@ class AdminTable extends React.Component {
             selectAll={this.state.table.selectAll}
             entryOptions={this.state.entryOptions}
             entries={this.state.query.entries}
+            orderBy={!_.isNil(this.state.query.order) ? this.state.query.order : ''}
+            sortDirection={!_.isNil(this.state.query.direction) ? this.state.query.direction : ''}
           />
         </div>
         {Object.keys(this.state.jurisdiction_paths).length && (this.state.showEditUserModal || this.state.showAddUserModal) && (

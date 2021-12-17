@@ -41,6 +41,8 @@ class AssessmentTable extends React.Component {
       query: {
         page: 0,
         entries: 10,
+        order: 'id',
+        direction: 'desc',
       },
       entryOptions: [10, 15, 25],
       cancelToken: axios.CancelToken.source(),
@@ -371,6 +373,8 @@ class AssessmentTable extends React.Component {
               entries={this.state.query.entries}
               tableCustomClass="table-has-dropdown"
               getRowClassName={this.getRowClassName}
+              orderBy={!_.isNil(this.state.query.order) ? this.state.query.order : ''}
+              sortDirection={!_.isNil(this.state.query.direction) ? this.state.query.direction : ''}
             />
             <MonitoringPeriod
               authenticity_token={this.props.authenticity_token}

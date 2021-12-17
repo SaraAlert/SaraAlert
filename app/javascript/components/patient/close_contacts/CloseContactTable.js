@@ -44,6 +44,8 @@ class CloseContactTable extends React.Component {
       query: {
         page: 0,
         entries: 10,
+        order: 'last_name',
+        direction: 'asc',
       },
       entryOptions: [10, 15, 25],
       cancelToken: axios.CancelToken.source(),
@@ -436,6 +438,8 @@ class CloseContactTable extends React.Component {
               entryOptions={this.state.entryOptions}
               entries={this.state.query.entries}
               tableCustomClass="table-has-dropdown-large"
+              orderBy={!_.isNil(this.state.query.order) ? this.state.query.order : ''}
+              sortDirection={!_.isNil(this.state.query.direction) ? this.state.query.direction : ''}
             />
           </Card.Body>
         </Card>
