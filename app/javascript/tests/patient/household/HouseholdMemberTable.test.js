@@ -42,7 +42,7 @@ describe('HouseholdMemberTable', () => {
         wrapper
           .find('th')
           .at(index + 1)
-          .find('span')
+          .children('span')
           .text()
       ).toEqual(colData.label);
       if (colData.isSortable) {
@@ -163,34 +163,29 @@ describe('HouseholdMemberTable', () => {
   });
 
   it('Clicking table headers calls handleTableSort method', () => {
-    const wrapper = getMountedWrapper(true);
+    const wrapper = getMountedWrapper(false);
     const sortSpy = jest.spyOn(wrapper.instance(), 'handleTableSort');
     wrapper.instance().forceUpdate();
     expect(sortSpy).not.toHaveBeenCalled();
     wrapper.state('table').colData.forEach((colData, index) => {
       if (colData.isSortable) {
-        wrapper
-          .find('th')
-          .at(index + 1)
-          .simulate('click');
+        wrapper.find('th').at(index).simulate('click');
         expect(sortSpy).toHaveBeenCalledTimes(2 * (index + 1) - 1);
-        expect(sortSpy).toHaveBeenCalledWith({ orderBy: colData.field, sortDirection: 'asc', page: 0 });
-        wrapper
-          .find('th')
-          .at(index + 1)
-          .simulate('click');
+        expect(sortSpy).toHaveBeenCalledWith({ orderBy: colData.field, sortDirection: colData.field === 'name' ? 'desc' : 'asc', page: 0 });
+        wrapper.find('th').at(index).simulate('click');
         expect(sortSpy).toHaveBeenCalledTimes(2 * (index + 1));
-        expect(sortSpy).toHaveBeenCalledWith({ orderBy: colData.field, sortDirection: 'desc', page: 0 });
+        expect(sortSpy).toHaveBeenCalledWith({ orderBy: colData.field, sortDirection: colData.field === 'name' ? 'asc' : 'desc', page: 0 });
       }
     });
   });
 
   it('Properly sorts table by name', () => {
     const wrapper = getMountedWrapper(true);
-    wrapper.find('th').at(1).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByNameAscending(householdMembers));
     wrapper.find('th').at(1).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortByNameDescending(householdMembers));
+    wrapper.find('th').at(1).simulate('click');
+    expect(wrapper.state('table').rowData).toEqual(sortByNameAscending(householdMembers));
   });
 
   it('Properly sorts table by DOB', () => {
@@ -228,10 +223,11 @@ describe('HouseholdMemberTable', () => {
   it('Sorting household members table maintains selected and disabled rows', () => {
     householdMembers.push(mockPatient5);
     let selectedRows = [0, 2];
-    let selectedIds = [householdMembers[0].id, householdMembers[2].id];
+    let selectedIds = [householdMembers[4].id, householdMembers[0].id];
     const wrapper = mount(<HouseholdMemberTable household_members={householdMembers} isSelectable={true} current_user={mockUser1} jurisdiction_paths={mockJurisdictionPaths} handleApplyHouseholdChange={handleApplyHouseholdChangeMock} handleApplyHouseholdIdsChange={handleApplyHouseholdIdsChangeMock} workflow={'global'} />);
 
-    // initial load
+    // sort by name, asc (initial default)
+    let sortedHouseholdMembers = sortByNameAscending(householdMembers);
     selectedRows.forEach(rowId => {
       wrapper
         .find('tbody')
@@ -254,8 +250,8 @@ describe('HouseholdMemberTable', () => {
         expect(row.find('td').at(1).find('a').text()).toEqual(formatNameAlt(householdMembers[Number(index)]));
       });
 
-    // sort by name, asc
-    let sortedHouseholdMembers = sortByNameAscending(householdMembers);
+    // sort by name, desc
+    sortedHouseholdMembers = sortByNameDescending(householdMembers);
     selectedRows = [2, 4];
     wrapper.find('th').at(1).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
@@ -274,8 +270,9 @@ describe('HouseholdMemberTable', () => {
 
     // sort by DOB, desc
     sortedHouseholdMembers = sortByDateDescending(sortedHouseholdMembers, 'date_of_birth');
-    selectedRows = [2, 3];
-    wrapper.find('th').at(2).simulate('click');
+    selectedRows = [1, 2];
+    wrapper.find('th').at(2).simulate('click'); // asc sort
+    wrapper.find('th').at(2).simulate('click'); // desc sort
     expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
     expect(wrapper.state('table').selectAll).toBe(false);
     expect(wrapper.state('table').selectedRows).toEqual(selectedRows);
@@ -292,7 +289,7 @@ describe('HouseholdMemberTable', () => {
 
     // sort by workflow, asc
     sortedHouseholdMembers = sortByAscending(sortedHouseholdMembers, 'isolation');
-    selectedRows = [1, 4];
+    selectedRows = [0, 1];
     wrapper.find('th').at(3).simulate('click');
     expect(wrapper.state('table').rowData).toEqual(sortedHouseholdMembers);
     expect(wrapper.state('table').selectAll).toBe(false);
