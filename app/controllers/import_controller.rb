@@ -32,115 +32,65 @@ class ImportController < ApplicationController
   def import
     redirect_to(root_url) && return unless current_user.can_import?
 
-    redirect_to(root_url) && return unless params.permit(:workflow)[:workflow] == 'exposure' || params.permit(:workflow)[:workflow] == 'isolation'
+    permitted_params = params.permit(:workflow, :format)
 
-    redirect_to(root_url) && return unless params.permit(:format)[:format] == 'epix' || params.permit(:format)[:format] == 'sara_alert_format'
+    workflow = permitted_params[:workflow]&.to_sym
+    redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
 
-    workflow = params.permit(:workflow)[:workflow].to_sym
-    format = params.permit(:format)[:format].to_sym
+    import_format = permitted_params[:format]&.to_sym
+    redirect_to(root_url) && return unless IMPORT_FORMATS.key?(import_format)
 
+    # Only query valid jurisdiction ids once
     valid_jurisdiction_ids = current_user.jurisdiction.subtree.pluck(:id)
 
     @errors = []
     @patients = []
     @warnings = {}
 
-    # Load and parse patient import excel
     begin
-      if format == :epix
-        ext = File.extname(params[:file].tempfile.path)
-        raise FileFormatError.new('File format must be .csv', ext) unless ext == '.csv'
+      # Load and parse patients to import
+      extension = import_format == :saf ? :xlsx : :csv
+      sheet = Roo::Spreadsheet.open(params[:file].tempfile.path, extension: extension).sheet(0)
 
-        csv = CSV.read(params[:file].tempfile.path, headers: true, skip_blanks: true, skip_lines: /^(?:,\s*)+$/)
-        validate_headers(format, csv.headers)
-      else
-        xlsx = Roo::Excelx.new(params[:file].tempfile.path, file_warning: :ignore)
-        validate_headers(format, xlsx.sheet(0).row(1))
-      end
+      # CSV file extensions need to be manually validated
+      raise Zip::Error if extension == :csv && File.extname(params[:file].tempfile.path) != '.csv'
 
-      num_rows = format == :epix ? csv.length : xlsx.sheet(0).last_row - 1
-      raise ValidationError.new('File must contain at least one monitoree to import', 2) if num_rows < 1
+      validate_headers(import_format, sheet.row(1))
+
+      # Validate number of patients to import
+      num_rows = sheet.last_row - 1
+      raise ValidationError.new('File must contain at least one monitoree to import.', 2) if num_rows < 1
       raise ValidationError.new('Please limit each import to 1000 monitorees.', 1000) if num_rows > 1000
 
-      # Define patients for duplicate detection here to avoid duplicate queries
-      patients_for_duplicate_detection = current_user.viewable_patients
+      sheet.each_with_index do |row, row_ind|
+        # Skip headers
+        next if row_ind.zero?
 
-      records = format == :epix ? csv : xlsx.sheet(0)
-      records.each_with_index do |row, row_ind|
-        next if row_ind.zero? && format == :sara_alert_format # Skip headers for excel file
-
-        fields = format == :epix ? EPI_X_FIELDS : SARA_ALERT_FORMAT_FIELDS
         patient = { isolation: workflow == :isolation }
 
         # Determine whether perm address is domestic or international for epix format
-        international_address = format == :epix && row[EPI_X_FIELDS.index(:foreign_address_country)].present? &&
-                                row[EPI_X_FIELDS.index(:foreign_address_country)]&.downcase&.strip != 'united states'
+        international_address = import_format == :epix && row[EPIX_FIELDS.index(:foreign_address_country)].present? &&
+                                row[EPIX_FIELDS.index(:foreign_address_country)]&.downcase&.strip != 'united states'
 
         # Import patient fields
-        fields.each_with_index do |field, col_num|
+        IMPORT_FORMATS[import_format][:fields].each_with_index do |field, col_num|
           # Skip fields that are not imported
           next if field.nil?
 
           begin
-            import_sara_alert_format_field(patient, field, row, row_ind, col_num, workflow, valid_jurisdiction_ids) if format == :sara_alert_format
-            import_epi_x_field(patient, field, row, row_ind, col_num, international_address) if format == :epix
+            import_saf_field(patient, field, row, row_ind, col_num, workflow, valid_jurisdiction_ids) if import_format == :saf
+            import_epix_field(patient, field, row, row_ind, col_num, international_address) if import_format == :epix
+            import_sdx_field(patient, field, row, row_ind, col_num) if import_format == :sdx
           rescue Date::Error
-            @errors << "Validation Error (row #{row_ind + 1}): '#{row[col_num]}' is not a valid date for '#{EPI_X_HEADERS[EPI_X_FIELDS.index(field)]}'"
+            header_label = IMPORT_FORMATS[import_format][:headers][IMPORT_FORMATS[import_format][:fields].index(field)]
+            @errors << "Validation Error (row #{row_ind + 1}): '#{row[col_num]}' is not a valid date for '#{header_label}'"
           rescue StandardError => e
             @errors << e&.message || "Unexpected error on row #{row_ind + 1} for #{field}: #{row[col_num]}"
           end
         end
 
         # Import lab results and vaccinations if present
-        if format == :sara_alert_format
-          lab_results = []
-          lab_results.push(lab_result(row[87..90], row_ind)) if row[87..90].filter(&:present?).any?
-          lab_results.push(lab_result(row[91..94], row_ind)) if row[91..94].filter(&:present?).any?
-          patient[:laboratories_attributes] = lab_results unless lab_results.empty?
-
-          # Validate using Laboratory model validators without saving
-          lab_results.each do |lab_data|
-            validation_lab_result = Laboratory.new(lab_data)
-            next if validation_lab_result.valid?(:import)
-
-            format_model_validation_errors(validation_lab_result).each do |error|
-              @errors << ValidationError.new(error, row_ind).message
-            end
-          end
-
-          vaccines = []
-          vaccines.push(vaccination(row[102..106], row_ind)) if row[102..106].filter(&:present?).any?
-          vaccines.push(vaccination(row[107..111], row_ind)) if row[107..111].filter(&:present?).any?
-          vaccines.push(vaccination(row[114..118], row_ind)) if row[114..118].filter(&:present?).any?
-
-          patient[:vaccines_attributes] = vaccines unless vaccines.empty?
-
-          # Validate using Vaccine model validators without saving
-          vaccines.each do |vaccine_data|
-            validation_vaccine = Vaccine.new(vaccine_data)
-            next if validation_vaccine.valid?
-
-            format_model_validation_errors(validation_vaccine).each do |error|
-              @errors << ValidationError.new(error, row_ind).message
-            end
-          end
-
-          cohorts = []
-          cohorts.push(cohort(row[132..134], row_ind)) if row[132..134].filter(&:present?).any?
-          cohorts.push(cohort(row[135..137], row_ind)) if row[135..137].filter(&:present?).any?
-
-          patient[:common_exposure_cohorts_attributes] = cohorts unless cohorts.empty?
-
-          # Validate using Common Exposure Cohort model validators without saving
-          cohorts.each do |cohort_data|
-            validation_cohort = CommonExposureCohort.new(cohort_data)
-            next if validation_cohort.valid?
-
-            format_model_validation_errors(validation_cohort).each do |error|
-              @errors << ValidationError.new(error, row_ind).message
-            end
-          end
-        end
+        import_associated_records(patient, row, row_ind) if import_format == :saf
 
         # Validate using Patient model validators without saving
         validation_patient = Patient.new(patient.slice(*Patient.attribute_names.map(&:to_sym)))
@@ -151,22 +101,21 @@ class ImportController < ApplicationController
         end
 
         # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
-        patient[:duplicate_data] = patients_for_duplicate_detection.duplicate_data_detection(patient)
+        patient[:duplicate_data] = current_user.viewable_patients.duplicate_data_detection(patient)
 
         @patients << patient
       end
     rescue ValidationError => e
-      @errors << e&.message || "Unknown error on row #{row_ind + 1}"
-    rescue Zip::Error, FileFormatError
-      # Roo throws this if the file is not an excel file
-      @errors << "File Error: Please make sure that your import file is a .#{format == :epix ? 'csv' : 'xlsx'} file."
+      @errors << e&.message || "Validation error on row #{row_ind + 1}"
+    rescue Zip::Error
+      # Roo throws this if the file is not a valid spreadsheet file
+      @errors << "File Error: Please make sure that your import file is a .#{extension} file."
     rescue ArgumentError, NoMethodError
       # Roo throws this error when the columns are not what we expect
-      @errors << "Format Error: Please make sure that .#{format == :epix ? 'csv' : 'xlsx'} import file is formatted in accordance with the formatting guidance."
+      @errors << "Format Error: Please make sure that .#{extension} import file is formatted in accordance with the formatting guidance."
     rescue StandardError => e
       # This is a catch all for any other unexpected error
-      @errors << "Unexpected Error: '#{e&.message}' Please make sure that .#{format == :epix ? 'csv' : 'xlsx'} import file is formatted in accordance with the"\
-                 ' formatting guidance.'
+      @errors << "Unexpected Error: '#{e&.message}' Please make sure that .#{extension} import file is formatted in accordance with the formatting guidance."
     end
 
     render json: { patients: @patients, errors: @errors, warnings: @warnings }
@@ -174,37 +123,34 @@ class ImportController < ApplicationController
 
   private
 
-  def import_sara_alert_format_field(patient, field, row, row_ind, col_num, workflow, valid_jurisdiction_ids)
+  def import_saf_field(patient, field, row, row_ind, col_num, workflow, valid_jurisdiction_ids)
     if field == :jurisdiction_path
-      patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[SARA_ALERT_FORMAT_FIELDS.index(:jurisdiction_path)],
+      patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[SAF_FIELDS.index(:jurisdiction_path)],
                                                                                      row_ind, valid_jurisdiction_ids)
     elsif field == :assigned_user
-      patient[:assigned_user] = row[SARA_ALERT_FORMAT_FIELDS.index(:assigned_user)].presence
+      patient[:assigned_user] = row[SAF_FIELDS.index(:assigned_user)].presence
     elsif field == :symptom_onset && workflow == :isolation
-      patient[:user_defined_symptom_onset] = row[SARA_ALERT_FORMAT_FIELDS.index(:symptom_onset)].present?
+      patient[:user_defined_symptom_onset] = row[SAF_FIELDS.index(:symptom_onset)].present?
       patient[field] = import_field(field, row[col_num], row_ind)
     # TODO: when workflow specific case status validation re-enabled: uncomment
     # elsif field == :case_status
     #   patient[field] = validate_workflow_specific_enums(workflow, field, row[col_num], row_ind)
     elsif field == :continuous_exposure
       patient[:continuous_exposure] = validate_continuous_exposure(workflow, field, row[col_num], row_ind,
-                                                                   row[SARA_ALERT_FORMAT_FIELDS.index(:last_date_of_exposure)])
+                                                                   row[SAF_FIELDS.index(:last_date_of_exposure)])
     else
       # TODO: when workflow specific case status validation re-enabled: this line can be updated to not have to check the case_status field
       patient[field] = import_field(field, row[col_num], row_ind) unless %i[symptom_onset case_status].include?(field) && workflow != :isolation
     end
   end
 
-  def import_epi_x_field(patient, field, row, row_ind, col_num, international_address)
+  def import_epix_field(patient, field, row, row_ind, col_num, international_address)
     return if field == :foreign_address_country && !international_address
 
     if %i[travel_related_notes port_of_entry_into_usa].include?(field) # fields represented by multiple columns
-      if patient[field].blank?
-        patient[field] = "#{EPI_X_HEADERS[col_num]}: #{import_field(field, row[col_num], row_ind)}"
-      else
-        patient[field] += ", #{EPI_X_HEADERS[col_num]}: #{import_field(field, row[col_num], row_ind)}"
-      end
-    elsif field == :secondary_telephone && row[EPI_X_FIELDS.index(:primary_telephone)].blank? # populate primary telephone before secondary
+      value = "#{EPIX_HEADERS[col_num]}: #{import_field(field, row[col_num], row_ind)}"
+      patient[field] = patient[field].blank? ? value : "#{patient[field]}, #{value}"
+    elsif field == :secondary_telephone && row[EPIX_FIELDS.index(:primary_telephone)].blank? # populate primary telephone before secondary
       patient[:primary_telephone] = import_field(field, row[col_num], row_ind)
     elsif international_address && %i[address_line_1 address_city address_state address_zip address_line_2].include?(field)
       patient[FOREIGN_ADDRESS_MAPPINGS[field]] = import_field(field, row[col_num], row_ind)
@@ -214,6 +160,90 @@ class ImportController < ApplicationController
       patient[field] = import_field(field, Date.strptime(row[col_num], '%b %d %Y'), row_ind) if row[col_num].present?
     else
       patient[field] = import_field(field, row[col_num], row_ind)
+    end
+  end
+
+  def import_sdx_field(patient, field, row, row_ind, col_num)
+    return if [nil, 'N/A'].include?(row[col_num])
+
+    if %i[travel_related_notes flight_or_vessel_carrier flight_or_vessel_number].include?(field) # fields represented by multiple columns
+      value = "#{SDX_HEADERS[col_num]}: #{import_field(field, row[col_num], row_ind)}"
+      patient[field] = patient[field].blank? ? value : "#{patient[field]}; #{value}"
+    elsif field == :exposure_notes # CreateDate
+      value = "#{SDX_HEADERS[col_num]}: #{import_field(field, Date.strptime(row[col_num], '%m%d%Y'), row_ind)}"
+      patient[field] = patient[field].blank? ? value : "#{patient[field]}; #{value}"
+    elsif field == :alternate_contact_name
+      patient[field] = patient[field].blank? ? row[col_num] : "#{patient[field]} #{row[col_num]}"
+    elsif %i[date_of_arrival date_of_departure date_of_birth].include?(field)
+      patient[field] = import_field(field, Date.strptime(row[col_num], '%m%d%Y'), row_ind)
+    elsif %i[primary_telephone secondary_telephone alternate_primary_telephone].include?(field)
+      phone = Phonelib.parse(row[col_num], 'US')
+      if phone.full_e164.present? && phone.full_e164.sub(/^\+1+/, '').length == 10
+        patient[field] = phone.full_e164 || row[col_num]
+        return
+      end
+
+      patient[:alternate_international_telephone] = row[col_num] if field == :alternate_primary_telephone
+      patient[:international_telephone] = row[col_num] if field == :primary_telephone
+      if field == :secondary_telephone
+        value = "#{SDX_HEADERS[col_num]}: #{row[col_num]}"
+        patient[:exposure_notes] = patient[:exposure_notes].blank? ? value : "#{patient[:exposure_notes]}; #{value}"
+      end
+    elsif %i[primary_telephone_type secondary_telephone_type alternate_primary_telephone_type].include?(field)
+      patient[field] = import_field(field, row[col_num], row_ind)
+      patient[field] = nil unless ValidationHelper::TELEPHONE_TYPES.include?(patient[field])
+    elsif %i[alternate_contact_type gender_identity].include?(field)
+      patient[field] = SDX_MAPPINGS[field][row[col_num]&.downcase&.gsub(/[ -.]/, '')&.to_sym]
+    else
+      patient[field] = import_field(field, row[col_num], row_ind)
+    end
+  end
+
+  def import_associated_records(patient, row, row_ind)
+    lab_results = []
+    lab_results.push(lab_result(row[87..90], row_ind)) if row[87..90].filter(&:present?).any?
+    lab_results.push(lab_result(row[91..94], row_ind)) if row[91..94].filter(&:present?).any?
+    patient[:laboratories_attributes] = lab_results unless lab_results.empty?
+
+    # Validate using Laboratory model validators without saving
+    lab_results.each do |lab_data|
+      validation_lab_result = Laboratory.new(lab_data)
+      next if validation_lab_result.valid?(:import)
+
+      format_model_validation_errors(validation_lab_result).each do |error|
+        @errors << ValidationError.new(error, row_ind).message
+      end
+    end
+
+    vaccines = []
+    vaccines.push(vaccination(row[102..106], row_ind)) if row[102..106].filter(&:present?).any?
+    vaccines.push(vaccination(row[107..111], row_ind)) if row[107..111].filter(&:present?).any?
+    vaccines.push(vaccination(row[114..118], row_ind)) if row[114..118].filter(&:present?).any?
+    patient[:vaccines_attributes] = vaccines unless vaccines.empty?
+
+    # Validate using Vaccine model validators without saving
+    vaccines.each do |vaccine_data|
+      validation_vaccine = Vaccine.new(vaccine_data)
+      next if validation_vaccine.valid?
+
+      format_model_validation_errors(validation_vaccine).each do |error|
+        @errors << ValidationError.new(error, row_ind).message
+      end
+    end
+
+    cohorts = []
+    cohorts.push(cohort(row[132..134], row_ind)) if row[132..134].filter(&:present?).any?
+    cohorts.push(cohort(row[135..137], row_ind)) if row[135..137].filter(&:present?).any?
+    patient[:common_exposure_cohorts_attributes] = cohorts unless cohorts.empty?
+
+    # Validate using Common Exposure Cohort model validators without saving
+    cohorts.each do |cohort_data|
+      validation_cohort = CommonExposureCohort.new(cohort_data)
+      next if validation_cohort.valid?
+
+      format_model_validation_errors(validation_cohort).each do |error|
+        @errors << ValidationError.new(error, row_ind).message
+      end
     end
   end
 
@@ -245,23 +275,15 @@ class ImportController < ApplicationController
   end
 
   def validate_headers(format, headers)
-    case format
-    when :sara_alert_format
-      SARA_ALERT_FORMAT_HEADERS.each_with_index do |field, col_num|
-        next if field == headers[col_num]
+    IMPORT_FORMATS[format][:headers].each_with_index do |field, col_num|
+      next if field == headers[col_num]
 
-        err_msg = "Invalid header in column #{col_num} should be '#{field}' instead of '#{headers[col_num]}'. "\
-                  'Please make sure to use the latest format specified by the Sara Alert Format guidance doc.'
-        raise ValidationError.new(err_msg, 0)
-      end
-    when :epix
-      EPI_X_HEADERS.each_with_index do |field, col_num|
-        next if field == headers[col_num]
+      err_msg = "Invalid header in column #{col_num} should be '#{field}' instead of '#{headers[col_num]}'. Please make sure to use the latest "
+      err_msg += 'format specified by the Sara Alert Format guidance doc.' if format == :saf
+      err_msg += 'Epi-X format.' if format == :epix
+      err_msg += 'SDX format.' if format == :sdx
 
-        err_msg = "Invalid header in column #{col_num} should be '#{field}' instead of '#{headers[col_num]}'. "\
-                  'Please make sure to use the latest Epi-X format.'
-        raise ValidationError.new(err_msg, 0)
-      end
+      raise ValidationError.new(err_msg, 0)
     end
   end
 

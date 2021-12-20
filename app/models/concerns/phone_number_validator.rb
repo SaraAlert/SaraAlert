@@ -6,7 +6,7 @@ class PhoneNumberValidator < ActiveModel::EachValidator
     return if value.blank?
 
     phone = Phonelib.parse(value, 'US')
-    return unless phone.e164.blank? || phone.e164.sub(/^\+1+/, '').length != 10
+    return unless phone.full_e164.blank? || phone.full_e164.sub(/^\+1+/, '').length != 10
 
     record.errors.add(attribute, 'is not a valid phone number')
   end
