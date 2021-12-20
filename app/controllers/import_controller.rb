@@ -178,7 +178,7 @@ class ImportController < ApplicationController
       patient[field] = import_field(field, Date.strptime(row[col_num], '%m%d%Y'), row_ind)
     elsif %i[primary_telephone secondary_telephone alternate_primary_telephone].include?(field)
       phone = Phonelib.parse(row[col_num], 'US')
-      unless phone.full_e164.blank? || phone.full_e164.sub(/^\+1+/, '').length != 10
+      if phone.full_e164.present? && phone.full_e164.sub(/^\+1+/, '').length == 10
         patient[field] = phone.full_e164 || row[col_num]
         return
       end
