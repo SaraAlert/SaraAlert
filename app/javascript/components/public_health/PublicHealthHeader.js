@@ -39,7 +39,7 @@ class PublicHealthHeader extends React.Component {
         const config = { headers: { 'content-type': 'multipart/form-data' } };
         const formData = new FormData();
         formData.append('file', this.state.file);
-        const url = `${window.BASE_PATH}/import/${this.props.workflow}/${this.state.fileType === 'epix' ? 'epix' : 'sara_alert_format'}`;
+        const url = `${window.BASE_PATH}/import/${this.props.workflow}/${this.state.fileType}`;
         axios.post(url, formData, config).then(response => {
           this.setState({
             uploading: false,
@@ -92,14 +92,11 @@ class PublicHealthHeader extends React.Component {
         <Modal.Header closeButton>
           {this.state.importData && (
             <React.Fragment>
-              {this.state.importData.errors.length > 0 && (
-                <Modal.Title className="h5">{this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} (error)</Modal.Title>
-              )}
-              {this.state.importData.errors.length === 0 && (
-                <Modal.Title className="h5">
-                  {this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} ({this.props.workflow})
-                </Modal.Title>
-              )}
+              <Modal.Title className="h5">
+                {this.state.importType === 'saf' && 'Import Sara Alert Format'}
+                {this.state.importType === 'epix' && 'Import Epi-X'}
+                {this.state.importType === 'sdx' && 'Import SDX'} {this.state.importData.errors.length === 0 ? this.props.workflow : 'Error'}
+              </Modal.Title>
             </React.Fragment>
           )}
         </Modal.Header>
@@ -125,8 +122,11 @@ class PublicHealthHeader extends React.Component {
     return (
       <Modal size="md" show={this.state.showUploadModal} onHide={() => this.setState({ showUploadModal: false, file: null, importType: null })}>
         <Modal.Header closeButton>
-          {this.state.importType === 'epix' && <Modal.Title className="h5">{`Import Epi-X (${this.props.workflow})`}</Modal.Title>}
-          {this.state.importType === 'saf' && <Modal.Title className="h5">{`Import Sara Alert Format (${this.props.workflow})`}</Modal.Title>}
+          <Modal.Title>
+            {this.state.importType === 'epix' && 'Import Epi-X'}
+            {this.state.importType === 'saf' && 'Import Sara Alert Format'}
+            {this.state.importType === 'sdx' && 'Import SDX'}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {this.state.importType === 'saf' && (
@@ -237,23 +237,37 @@ class PublicHealthHeader extends React.Component {
                       <i className="fas fa-upload"></i> Import{' '}
                     </React.Fragment>
                   }>
-                  <Dropdown.Item onClick={() => this.setState({ importType: 'epix', showUploadModal: true })}>Epi-X ({this.props.workflow})</Dropdown.Item>
-                  <Dropdown.Item onClick={() => this.setState({ importType: 'saf', showUploadModal: true })}>
+                  <Dropdown.Item id="import-saf" onClick={() => this.setState({ importType: 'saf', showUploadModal: true })}>
                     Sara Alert Format ({this.props.workflow})
+                  </Dropdown.Item>
+                  <Dropdown.Item id="import-epix" onClick={() => this.setState({ importType: 'epix', showUploadModal: true })}>
+                    Epi-X ({this.props.workflow})
+                  </Dropdown.Item>
+                  <Dropdown.Item id="import-sdx" onClick={() => this.setState({ importType: 'sdx', showUploadModal: true })}>
+                    SDX ({this.props.workflow})
                   </Dropdown.Item>
                 </DropdownButton>
               )}
             </ButtonGroup>
             <ButtonGroup className="float-right mb-2">
-              <Button variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/exposure`}>
+              <Button
+                id="exposure-nav-btn"
+                variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'}
+                href={`${window.BASE_PATH}/public_health/exposure`}>
                 <i className="fas fa-people-arrows"></i> Exposure <span className="d-none d-xl-inline"> Monitoring</span>{' '}
                 {this.state.counts.exposure !== undefined && <span id="exposureCount">({this.state.counts.exposure})</span>}
               </Button>
-              <Button variant={this.props.workflow === 'isolation' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/isolation`}>
+              <Button
+                id="isolation-nav-btn"
+                variant={this.props.workflow === 'isolation' ? 'primary' : 'outline-primary'}
+                href={`${window.BASE_PATH}/public_health/isolation`}>
                 <i className="fas fa-street-view"></i> Isolation <span className="d-none d-xl-inline"> Monitoring</span>{' '}
                 {this.state.counts.isolation !== undefined && <span id="isolationCount">({this.state.counts.isolation})</span>}
               </Button>
-              <Button variant={this.props.workflow === 'global' ? 'primary' : 'outline-primary'} href={`${window.BASE_PATH}/public_health/global`}>
+              <Button
+                id="global-nav-btn"
+                variant={this.props.workflow === 'global' ? 'primary' : 'outline-primary'}
+                href={`${window.BASE_PATH}/public_health/global`}>
                 <i className="fas fa-globe"></i> Global<span className="d-none d-xl-inline"> Dashboard</span>{' '}
                 {this.state.counts.exposure !== undefined && <span id="globalCount">({this.state.counts.global})</span>}
               </Button>
