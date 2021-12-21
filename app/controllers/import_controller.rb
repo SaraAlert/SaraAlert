@@ -170,12 +170,12 @@ class ImportController < ApplicationController
       value = "#{SDX_HEADERS[col_num]}: #{import_field(field, row[col_num], row_ind)}"
       patient[field] = patient[field].blank? ? value : "#{patient[field]}; #{value}"
     elsif field == :exposure_notes # CreateDate
-      value = "#{SDX_HEADERS[col_num]}: #{import_field(field, Date.strptime(row[col_num], '%m%d%Y'), row_ind)}"
+      value = "#{SDX_HEADERS[col_num]}: #{import_field(field, Date.strptime(row[col_num], '%m/%d/%Y'), row_ind)}"
       patient[field] = patient[field].blank? ? value : "#{patient[field]}; #{value}"
     elsif field == :alternate_contact_name
       patient[field] = patient[field].blank? ? row[col_num] : "#{patient[field]} #{row[col_num]}"
     elsif %i[date_of_arrival date_of_departure date_of_birth].include?(field)
-      patient[field] = import_field(field, Date.strptime(row[col_num], '%m%d%Y'), row_ind)
+      patient[field] = import_field(field, Date.strptime(row[col_num], '%m/%d/%Y'), row_ind)
     elsif %i[primary_telephone secondary_telephone alternate_primary_telephone].include?(field)
       phone = Phonelib.parse(row[col_num], 'US')
       if phone.full_e164.present? && phone.full_e164.sub(/^\+1+/, '').length == 10

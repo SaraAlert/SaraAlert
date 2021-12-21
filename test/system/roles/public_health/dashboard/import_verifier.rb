@@ -364,10 +364,10 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       elsif %i[travel_related_notes flight_or_vessel_carrier flight_or_vessel_number].include?(field)
         assert_includes(patient[field].to_s, "#{SDX_HEADERS[index]}: #{row[index]}", err_msg)
       elsif field == :exposure_notes
-        assert_includes(patient[field].to_s, "#{SDX_HEADERS[index]}: #{Date.strptime(row[index], '%m%d%Y')}", err_msg)
+        assert_includes(patient[field].to_s, "#{SDX_HEADERS[index]}: #{Date.strptime(row[index], '%m/%d/%Y')}", err_msg)
       # format dates
       elsif %i[date_of_arrival date_of_departure date_of_birth].include?(field)
-        assert_equal(Date.strptime(row[index], '%m%d%Y').to_s, patient[field].to_s, err_msg)
+        assert_equal(Date.strptime(row[index], '%m/%d/%Y').to_s, patient[field].to_s, err_msg)
       elsif field == :gender_identity
         normalized_value = row[index]&.downcase&.gsub(/[ -.]/, '')&.to_sym
         if SDX_MAPPINGS[:gender_identity].key?(normalized_value)
@@ -521,7 +521,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     value = row[ImportExportConstants::SDX_FIELDS.index(field)]
     return nil if value.blank?
 
-    value = Date.strptime(value, '%m%d%Y') if %i[date_of_arrival date_of_departure date_of_birth].include?(field)
+    value = Date.strptime(value, '%m/%d/%Y') if %i[date_of_arrival date_of_departure date_of_birth].include?(field)
     value
   end
 
