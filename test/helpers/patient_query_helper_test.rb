@@ -226,7 +226,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user, primary_telephone: '+5555555555')
 
     patients = Patient.all
-    filters = [{ filterOption: { 'name' => 'telephone-number-partial' }, additionalFilterOption: {}, value: '234' }]
+    filters = [{ filterOption: { 'name' => 'telephone' }, additionalFilterOption: {}, value: [{ name: 'telephone-number-partial', value: '234' }] }]
     tz_offset = 300
 
     filtered_patients = advanced_filter(patients, filters, tz_offset)
@@ -241,7 +241,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user, primary_telephone: '+5555555555')
 
     patients = Patient.all
-    filters = [{ filterOption: { 'name' => 'telephone-number-partial' }, additionalFilterOption: {}, value: '(234)-111' }]
+    filters = [{ filterOption: { 'name' => 'telephone' }, additionalFilterOption: {}, value: [{ name: 'telephone-number-partial', value: '(234)-111' }] }]
     tz_offset = 300
 
     filtered_patients = advanced_filter(patients, filters, tz_offset)
@@ -256,7 +256,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user, primary_telephone: '+1111234445')
 
     patients = Patient.all
-    filters = [{ filterOption: { 'name' => 'telephone-number' }, additionalFilterOption: {}, value: '(111)-123-4444' }]
+    filters = [{ filterOption: { 'name' => 'telephone' }, additionalFilterOption: {}, value: [{ name: 'telephone-number', value: '(111)-123-4444' }] }]
     tz_offset = 300
 
     filtered_patients = advanced_filter(patients, filters, tz_offset)

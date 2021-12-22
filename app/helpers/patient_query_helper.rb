@@ -261,32 +261,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     filters.each do |filter|
       case filter[:filterOption]['name']
-      when 'address-foreign'
-        patients = patients.where('lower(patients.foreign_address_line_1) like ?', "%#{filter[:value]&.downcase}%").or(
-          patients.where('lower(patients.foreign_address_line_2) like ?', "%#{filter[:value]&.downcase}%").or(
-            patients.where('lower(patients.foreign_address_line_3) like ?', "%#{filter[:value]&.downcase}%").or(
-              patients.where('lower(patients.foreign_address_city) like ?', "%#{filter[:value]&.downcase}%").or(
-                patients.where('lower(patients.foreign_address_zip) like ?', "%#{filter[:value]&.downcase}%").or(
-                  patients.where('lower(patients.foreign_address_state) like ?', "%#{filter[:value]&.downcase}%").or(
-                    patients.where('lower(patients.foreign_address_country) like ?', "%#{filter[:value]&.downcase}%")
-                  )
-                )
-              )
-            )
-          )
-        )
-      when 'address-usa'
-        patients = patients.where('lower(patients.address_line_1) like ?', "%#{filter[:value]&.downcase}%").or(
-          patients.where('lower(patients.address_line_2) like ?', "%#{filter[:value]&.downcase}%").or(
-            patients.where('lower(patients.address_city) like ?', "%#{filter[:value]&.downcase}%").or(
-              patients.where('lower(patients.address_state) like ?', "%#{filter[:value]&.downcase}%").or(
-                patients.where('lower(patients.address_zip) like ?', "%#{filter[:value]&.downcase}%").or(
-                  patients.where('lower(patients.address_county) like ?', "%#{filter[:value]&.downcase}%")
-                )
-              )
-            )
-          )
-        )
+      when 'address'
+        patients = advanced_filter_address(patients, filter)
       when 'age'
         # specific case where value is a range not a single value
         if filter[:numberOption] == 'between'
@@ -361,18 +337,12 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = if filter[:value].blank?
                      patients.where(email: [nil, ''])
                    else
-                     patients.where('lower(patients.email) like ?', "%#{filter[:value]&.downcase}%")
+                     patients.where('patients.email like ?', "%#{filter[:value]&.downcase}%")
                    end
       when 'enrolled'
         patients = advanced_filter_date(patients, :created_at, filter, tz_diff, :time)
       when 'enrolled-relative'
         patients = advanced_filter_relative_date(patients, :created_at, filter, tz_diff, :time)
-      when 'first-name'
-        patients = if filter[:value].blank?
-                     patients.where(first_name: [nil, ''])
-                   else
-                     patients.where('lower(patients.first_name) like ?', "%#{filter[:value]&.downcase}%")
-                   end
       when 'flagged-for-follow-up'
         patients = if filter[:value] == 'Any Reason'
                      patients.where.not(follow_up_reason: [nil, ''])
@@ -424,12 +394,6 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = advanced_filter_date(patients, :last_date_of_exposure, filter, tz_diff, :date)
       when 'last-date-exposure-relative'
         patients = advanced_filter_relative_date(patients, :last_date_of_exposure, filter, tz_diff, :date)
-      when 'last-name'
-        patients = if filter[:value].blank?
-                     patients.where(last_name: [nil, ''])
-                   else
-                     patients.where('lower(patients.last_name) like ?', "%#{filter[:value]&.downcase}%")
-                   end
       when 'latest-report'
         patients = advanced_filter_date(patients, :latest_assessment_at, filter, tz_diff, :time)
       when 'latest-report-relative'
@@ -449,16 +413,12 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         when 'All'
           patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts)
         end
-      when 'middle-name'
-        patients = if filter[:value].blank?
-                     patients.where(middle_name: [nil, ''])
-                   else
-                     patients.where('lower(patients.middle_name) like ?', "%#{filter[:value]&.downcase}%")
-                   end
       when 'monitoring-plan'
         patients = patients.where(monitoring_plan: filter[:value].presence || [nil, ''])
       when 'monitoring-status'
         patients = patients.where(monitoring: filter[:value].present? ? true : [nil, false])
+      when 'name'
+        patients = advanced_filter_name(patients, filter)
       when 'never-responded'
         patients = if filter[:value]
                      patients.where(latest_assessment_at: nil)
@@ -510,18 +470,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         patients = advanced_filter_date(patients, :symptom_onset, filter, tz_diff, :date)
       when 'symptom-onset-relative'
         patients = advanced_filter_relative_date(patients, :symptom_onset, filter, tz_diff, :date)
-      when 'telephone-number'
-        patients = if filter[:value].blank?
-                     patients.where(primary_telephone: [nil, ''])
-                   else
-                     patients.where('patients.primary_telephone like ?', Phonelib.parse(filter[:value], 'US').full_e164)
-                   end
-      when 'telephone-number-partial'
-        patients = if filter[:value].blank?
-                     patients.where(primary_telephone: [nil, ''])
-                   else
-                     patients.where('patients.primary_telephone like ?', "%#{filter[:value].delete('^0-9')}%")
-                   end
+      when 'telephone'
+        patients = advanced_filter_telephone(patients, filter)
       when 'ten-day-quarantine'
         patients = advanced_filter_quarantine_option(patients, filter, :ten_day)
       when 'unenrolled-close-contact'
@@ -653,6 +603,89 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     end
 
     patients.where(id: common_exposure_cohorts)
+  end
+
+  def advanced_filter_address(patients, filter)
+    filter[:value].each do |field|
+      case field[:name]
+      when 'address-foreign'
+        patients = patients.where('patients.foreign_address_line_1 like ?', "%#{field[:value]&.downcase}%").or(
+          patients.where('patients.foreign_address_line_2 like ?', "%#{field[:value]&.downcase}%").or(
+            patients.where('patients.foreign_address_line_3 like ?', "%#{field[:value]&.downcase}%").or(
+              patients.where('patients.foreign_address_city like ?', "%#{field[:value]&.downcase}%").or(
+                patients.where('patients.foreign_address_zip like ?', "%#{field[:value]&.downcase}%").or(
+                  patients.where('patients.foreign_address_state like ?', "%#{field[:value]&.downcase}%").or(
+                    patients.where('patients.foreign_address_country like ?', "%#{field[:value]&.downcase}%")
+                  )
+                )
+              )
+            )
+          )
+        )
+      when 'address-usa'
+        patients = patients.where('patients.address_line_1 like ?', "%#{field[:value]&.downcase}%").or(
+          patients.where('patients.address_line_2 like ?', "%#{field[:value]&.downcase}%").or(
+            patients.where('patients.address_city like ?', "%#{field[:value]&.downcase}%").or(
+              patients.where('patients.address_state like ?', "%#{field[:value]&.downcase}%").or(
+                patients.where('patients.address_zip like ?', "%#{field[:value]&.downcase}%").or(
+                  patients.where('patients.address_county like ?', "%#{field[:value]&.downcase}%")
+                )
+              )
+            )
+          )
+        )
+      end
+    end
+
+    patients
+  end
+
+  def advanced_filter_name(patients, filter)
+    filter[:value].each do |field|
+      case field[:name]
+      when 'first-name'
+        patients = if field[:value].blank?
+                     patients.where(first_name: [nil, ''])
+                   else
+                     patients.where('patients.first_name like ?', "%#{field[:value]&.downcase}%")
+                   end
+      when 'middle-name'
+        patients = if field[:value].blank?
+                     patients.where(middle_name: [nil, ''])
+                   else
+                     patients.where('patients.middle_name like ?', "%#{field[:value]&.downcase}%")
+                   end
+      when 'last-name'
+        patients = if field[:value].blank?
+                     patients.where(last_name: [nil, ''])
+                   else
+                     patients.where('patients.last_name like ?', "%#{field[:value]&.downcase}%")
+                   end
+      end
+    end
+
+    patients
+  end
+
+  def advanced_filter_telephone(patients, filter)
+    filter[:value].each do |field|
+      case field[:name]
+      when 'telephone-number'
+        patients = if field[:value].blank?
+                     patients.where(primary_telephone: [nil, ''])
+                   else
+                     patients.where('patients.primary_telephone like ?', Phonelib.parse(field[:value], 'US').full_e164)
+                   end
+      when 'telephone-number-partial'
+        patients = if field[:value].blank?
+                     patients.where(primary_telephone: [nil, ''])
+                   else
+                     patients.where('patients.primary_telephone like ?', "%#{field[:value].delete('^0-9')}%")
+                   end
+      end
+    end
+
+    patients
   end
 
   # Filter patients by a set time range for the given field

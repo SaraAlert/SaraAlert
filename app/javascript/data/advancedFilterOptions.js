@@ -92,18 +92,6 @@ export const advancedFilterOptions = [
 
   /* SEARCH FILTER OPTIONS */
   {
-    name: 'address-foreign',
-    title: 'Address (outside USA) (Text)',
-    description: 'Monitoree Address 1, Town/City, Country, Address 2, Postal Code, Address 3 or State/Province (outside USA)',
-    type: 'search',
-  },
-  {
-    name: 'address-usa',
-    title: 'Address (within USA) (Text)',
-    description: 'Monitoree Address 1, Town/City, State, Address 2, Zip, or County within USA',
-    type: 'search',
-  },
-  {
     name: 'close-contact-with-known-case-id',
     title: 'Close Contact with a Known Case ID (Text)',
     description: 'Monitorees with a known exposure to a probable or confirmed case ID',
@@ -117,39 +105,9 @@ export const advancedFilterOptions = [
     type: 'search',
   },
   {
-    name: 'first-name',
-    title: 'Name (First) (Text)',
-    description: 'Monitoree first name',
-    type: 'search',
-  },
-  {
-    name: 'last-name',
-    title: 'Name (Last) (Text)',
-    description: 'Monitoree last name',
-    type: 'search',
-  },
-  {
-    name: 'middle-name',
-    title: 'Name (Middle) (Text)',
-    description: 'Monitoree middle name',
-    type: 'search',
-  },
-  {
     name: 'sara-id',
     title: 'Sara Alert ID (Text)',
     description: 'Monitoree Sara Alert ID',
-    type: 'search',
-  },
-  {
-    name: 'telephone-number',
-    title: 'Primary Contact Telephone Number (Exact Match) (Text)',
-    description: 'Monitorees with a specified 10 digit primary contact telephone number',
-    type: 'search',
-  },
-  {
-    name: 'telephone-number-partial',
-    title: 'Primary Contact Telephone Number (Contains) (Text)',
-    description: 'Monitorees with a primary contact telephone number that contains specified digits',
     type: 'search',
   },
 
@@ -451,6 +409,72 @@ export const advancedFilterOptions = [
         title: 'cohort location',
         type: 'multi',
         options: [], // Populated asynchronously in the AdvancedFilter component
+      },
+    ],
+  },
+  {
+    name: 'address',
+    title: 'Address (Combination)',
+    description: 'Monitorees with specified address',
+    type: 'combination',
+    fields: [
+      {
+        name: 'address-foreign',
+        title: 'outside USA',
+        description: 'Monitoree Address 1, Town/City, Country, Address 2, Postal Code, Address 3 or State/Province (outside USA)',
+        type: 'search',
+      },
+      {
+        name: 'address-usa',
+        title: 'within USA',
+        description: 'Monitoree Address 1, Town/City, State, Address 2, Zip, or County within USA',
+        type: 'search',
+      },
+    ],
+  },
+  {
+    name: 'name',
+    title: 'Name (Combination)',
+    description: 'Monitoree name',
+    type: 'combination',
+    fields: [
+      {
+        name: 'first-name',
+        title: 'first',
+        description: 'Monitoree first name',
+        type: 'search',
+      },
+      {
+        name: 'last-name',
+        title: 'last',
+        description: 'Monitoree last name',
+        type: 'search',
+      },
+      {
+        name: 'middle-name',
+        title: 'middle',
+        description: 'Monitoree middle name',
+        type: 'search',
+      },
+    ],
+  },
+  {
+    name: 'telephone',
+    title: 'Primary Contact Telephone Number (Combination)',
+    description: 'Monitorees with a primary contact telephone number',
+    type: 'combination',
+    fields: [
+      {
+        name: 'telephone-number',
+        title: 'exact match',
+        description: 'Monitorees with a specified 10 digit primary contact telephone number',
+        type: 'search',
+      },
+      {
+        name: 'telephone-number-partial',
+        title: 'partial match',
+        description: 'Monitorees with a primary contact telephone number that contains specified digits',
+        type: 'search',
       },
     ],
   },

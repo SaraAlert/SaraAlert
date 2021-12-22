@@ -217,7 +217,7 @@ class AdvancedFilter extends React.Component {
     if (savedFilters.length > 0) {
       _.forEach(savedFilters, (filter, filterIndex) => {
         _.forEach(filter.contents, (statement, statementIndex) => {
-          if (statement.filterOption.type == 'multi') {
+          if (statement.filterOption?.type == 'multi') {
             // Get the options for the multi-select types
             let multiIndex = advancedFilterOptions.findIndex(x => x.name === statement.filterOption.name);
             savedFilters[Number(filterIndex)].contents[Number(statementIndex)].filterOption.options = advancedFilterOptions[Number(multiIndex)].options;
@@ -667,6 +667,8 @@ class AdvancedFilter extends React.Component {
         name: name,
         value: { when: 'before', date: moment().format('YYYY-MM-DD') },
       };
+    } else if (combinationFilter.type === 'search') {
+      value = { name: name, value: '' };
     }
     return value;
   };
@@ -1267,6 +1269,15 @@ class AdvancedFilter extends React.Component {
                     return <option key={o_index}>{option}</option>;
                   })}
                 </Form.Control>
+              )}
+              {combinationFilter?.type === 'search' && (
+                <Form.Control
+                  value={combinationValue.value}
+                  className="advanced-filter-combination-multi-select-options advanced-filter-multi-select-options my-0 mx-3 py-0"
+                  aria-label="Advanced Filter Combination Search"
+                  onChange={event => {
+                    this.changeCombinationValue(statementIndex, combinationIndex, { name: combinationValue.name, value: event.target.value });
+                  }}></Form.Control>
               )}
               {combinationFilter?.type === 'multi' && (
                 <Select
