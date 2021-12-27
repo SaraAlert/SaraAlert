@@ -88,9 +88,9 @@ class CloseContactModal extends React.Component {
   render() {
     return (
       <Modal size="lg" show centered onHide={this.props.onClose}>
-        <h1 className="sr-only">{this.props.title}</h1>
+        <h1 className="sr-only">{this.props.editMode ? 'Edit' : 'Add New'} Close Contact</h1>
         <Modal.Header>
-          <Modal.Title>{this.props.title}</Modal.Title>
+          <Modal.Title>{this.props.editMode ? 'Edit' : 'Add New'} Close Contact</Modal.Title>
         </Modal.Header>
         <Modal.Body className="px-5">
           <Row className="mt-3">
@@ -207,7 +207,7 @@ class CloseContactModal extends React.Component {
           </Button>
           <Button variant="primary btn-square" disabled={!this.state.isValid} onClick={this.validateAndSubmit}>
             <span data-for="submit-tooltip" data-tip="" className="ml-1">
-              {this.props.isEditing ? 'Update' : 'Create'}
+              {this.props.editMode ? 'Update' : 'Create'}
             </span>
           </Button>
           {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
@@ -247,11 +247,10 @@ const schema = yup.object().shape({
 });
 
 CloseContactModal.propTypes = {
-  title: PropTypes.string,
   currentCloseContact: PropTypes.object,
   onClose: PropTypes.func,
   onSave: PropTypes.func,
-  isEditing: PropTypes.bool,
+  editMode: PropTypes.bool,
   assigned_users: PropTypes.array,
 };
 

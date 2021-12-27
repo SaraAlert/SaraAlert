@@ -1,20 +1,18 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Dropdown, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-
-import { formatDate } from '../../../utils/DateTime';
-import { formatPhoneNumberVisually, phoneNumberToE164Format } from '../../../utils/PatientFormatters';
-
 import axios from 'axios';
 import _ from 'lodash';
-
+import { formatDate } from '../../../utils/DateTime';
+import { formatPhoneNumberVisually, phoneNumberToE164Format } from '../../../utils/PatientFormatters';
 import { patientHref, navQueryParam } from '../../../utils/Navigation';
-import InfoTooltip from '../../util/InfoTooltip';
+
 import CloseContactModal from './CloseContactModal';
-import confirmDialog from '../../util/ConfirmDialog';
 import CustomTable from '../../layout/CustomTable';
-import reportError from '../../util/ReportError';
 import DeleteDialog from '../../util/DeleteDialog';
+import InfoTooltip from '../../util/InfoTooltip';
+import confirmDialog from '../../util/ConfirmDialog';
+import reportError from '../../util/ReportError';
 
 class CloseContactTable extends React.Component {
   constructor(props) {
@@ -49,7 +47,7 @@ class CloseContactTable extends React.Component {
       },
       entryOptions: [10, 15, 25],
       cancelToken: axios.CancelToken.source(),
-      isLoading: false,
+      loading: false,
       activeRow: null,
       showEditModal: false,
       showAddModal: false,
@@ -75,7 +73,7 @@ class CloseContactTable extends React.Component {
     // generate new cancel token for this request
     const cancelToken = axios.CancelToken.source();
 
-    this.setState({ query, cancelToken, isLoading: true }, () => {
+    this.setState({ query, cancelToken, loading: true }, () => {
       this.queryServer(query);
     });
   };
@@ -100,7 +98,7 @@ class CloseContactTable extends React.Component {
           this.setState(state => {
             return {
               table: { ...state.table, rowData: [], totalRows: 0 },
-              isLoading: false,
+              loading: false,
             };
           });
         } else {
@@ -108,7 +106,7 @@ class CloseContactTable extends React.Component {
         }
       })
       .then(response => {
-        if (response && response.data && response.data.table_data && response.data.total !== null && response.data.total !== undefined) {
+        if (response && response.data && response.data.table_data && !_.isNil(response.data.total)) {
           this.setState(state => {
             return {
               table: {
@@ -116,21 +114,14 @@ class CloseContactTable extends React.Component {
                 rowData: response.data.table_data,
                 totalRows: response.data.total,
               },
-              isLoading: false,
+              loading: false,
             };
           });
         } else {
-          this.setState({ isLoading: false });
+          this.setState({ loading: false });
         }
       });
   }, 500);
-
-  /**
-   * Gets the data for the current close contact if there is one selected/being edited.
-   */
-  getCurrentCloseContact = () => {
-    return this.state.activeRow !== null && !!this.state.table.rowData ? this.state.table.rowData[this.state.activeRow] : {};
-  };
 
   /**
    * Called when table is to be updated because of a query change.
@@ -195,7 +186,7 @@ class CloseContactTable extends React.Component {
           activeRow: null,
         },
         () => {
-          this.updateCloseContact(currentCC, true);
+          this.submitCloseContact(currentCC, true);
         }
       );
     }
@@ -220,6 +211,13 @@ class CloseContactTable extends React.Component {
   };
 
   /**
+   * Gets the data for the current close contact if there is one selected/being edited.
+   */
+  getCurrentCloseContact = () => {
+    return this.state.activeRow !== null && !!this.state.table.rowData ? this.state.table.rowData[this.state.activeRow] : {};
+  };
+
+  /**
    * Toggle the Add New Close Contact modal by updating state.
    */
   toggleAddModal = () => {
@@ -233,7 +231,7 @@ class CloseContactTable extends React.Component {
    * @param {*} newCloseContactData - State from close contact modal containing needed close contact data.
    */
   handleAddSubmit = newCloseContactData => {
-    this.updateCloseContact(newCloseContactData, false);
+    this.submitCloseContact(newCloseContactData, false);
   };
 
   /**
@@ -254,10 +252,48 @@ class CloseContactTable extends React.Component {
   handleEditSubmit = updatedCloseContactData => {
     const currentCloseContactId = this.state.table.rowData[this.state.activeRow]?.id;
     updatedCloseContactData['id'] = currentCloseContactId;
-    this.updateCloseContact(updatedCloseContactData, true);
+    this.submitCloseContact(updatedCloseContactData, true);
   };
 
-  // Toggles the delete modal and clears any reason or reason text
+  /**
+   * Makes a request to add or update an existing close contact record on the backend and reloads page once complete.
+   * @param {*} ccData - could be a new close contact or updates to an eisting close contact
+   * @param {*} isEdit - whether this is creating a new close contact or editing an existing close contact
+   */
+  submitCloseContact = (ccData, isEdit) => {
+    this.setState({ loading: true }, () => {
+      let url = `${window.BASE_PATH}/close_contacts`;
+      if (isEdit) {
+        url += `/${ccData.id}`;
+      }
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(url, {
+          patient_id: this.props.patient.id,
+          first_name: ccData.first_name || '',
+          last_name: ccData.last_name || '',
+          primary_telephone: ccData.primary_telephone ? phoneNumberToE164Format(ccData.primary_telephone) : '',
+          email: ccData.email || '',
+          last_date_of_exposure: ccData.last_date_of_exposure || null,
+          assigned_user: ccData.assigned_user || null,
+          notes: ccData.notes || '',
+          enrolled_id: ccData.enrolled_id || null,
+          contact_attempts: ccData.contact_attempts || 0,
+        })
+        .then(() => {
+          location.reload();
+        })
+        .catch(error => {
+          this.setState({ loading: false });
+          reportError(error);
+        });
+    });
+  };
+
+  /**
+   * Called when the delete close contact button is clicked or when the delete dialog is closed.
+   * Updates the state to show/hide the appropriate modal for deleting a close contact.
+   */
   toggleDeleteModal = row => {
     this.setState({
       activeRow: row,
@@ -267,6 +303,9 @@ class CloseContactTable extends React.Component {
     });
   };
 
+  /**
+   * Makes a request to delete an existing close contact record on the backend and reloads page once complete.
+   */
   handleDeleteSubmit = () => {
     let delete_reason = this.state.delete_reason;
     if (delete_reason === 'Other' && this.state.delete_reason_text) {
@@ -291,45 +330,13 @@ class CloseContactTable extends React.Component {
     });
   };
 
-  handleDeleteUpdate = event => {
+  /**
+   * onChange handler for necessary delete modal values
+   */
+  handleDeleteChange = event => {
     if (['delete_reason', 'delete_reason_text'].includes(event?.target?.id)) {
       this.setState({ [event.target.id]: event?.target?.value });
     }
-  };
-
-  /**
-   * Makes a request to update an existing close contact record on the backend and reloads page once complete.
-   * @param {*} newCloseContactData
-   * @param {*} isEdit - whether this is an edit or a new close contact
-   */
-  updateCloseContact = (ccData, isEdit) => {
-    this.setState({ isLoading: true }, () => {
-      let url = `${window.BASE_PATH}/close_contacts`;
-      if (isEdit) {
-        url += `/${ccData.id}`;
-      }
-      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-      axios
-        .post(url, {
-          patient_id: this.props.patient.id,
-          first_name: ccData.first_name || '',
-          last_name: ccData.last_name || '',
-          primary_telephone: ccData.primary_telephone ? phoneNumberToE164Format(ccData.primary_telephone) : '',
-          email: ccData.email || '',
-          last_date_of_exposure: ccData.last_date_of_exposure || null,
-          assigned_user: ccData.assigned_user || null,
-          notes: ccData.notes || '',
-          enrolled_id: ccData.enrolled_id || null,
-          contact_attempts: ccData.contact_attempts || 0,
-        })
-        .then(() => {
-          location.reload();
-        })
-        .catch(error => {
-          this.setState({ isLoading: false });
-          reportError(error);
-        });
-    });
   };
 
   /**
@@ -432,7 +439,7 @@ class CloseContactTable extends React.Component {
               totalRows={this.state.table.totalRows}
               handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
               handleEntriesChange={this.handleEntriesChange}
-              isLoading={this.state.isLoading}
+              loading={this.state.loading}
               page={this.state.query.page}
               handlePageUpdate={this.handlePageUpdate}
               entryOptions={this.state.entryOptions}
@@ -448,17 +455,16 @@ class CloseContactTable extends React.Component {
             type={'Close Contact'}
             delete={this.handleDeleteSubmit}
             toggle={this.toggleDeleteModal}
-            onChange={this.handleDeleteUpdate}
+            onChange={this.handleDeleteChange}
             show_text_input={true}
           />
         )}
         {(this.state.showAddModal || this.state.showEditModal) && (
           <CloseContactModal
-            title={this.state.showAddModal ? 'Add New Close Contact' : 'Edit Close Contact'}
             currentCloseContact={this.state.showAddModal ? {} : this.getCurrentCloseContact()}
             onClose={this.state.showAddModal ? this.toggleAddModal : this.toggleEditModal}
             onSave={this.state.showAddModal ? this.handleAddSubmit : this.handleEditSubmit}
-            isEditing={this.state.showEditModal}
+            editMode={this.state.showEditModal}
             assigned_users={this.props.assigned_users}
           />
         )}

@@ -4,14 +4,14 @@ import { shallow, mount } from 'enzyme';
 import { Button, Card, InputGroup } from 'react-bootstrap';
 import _ from 'lodash';
 
-import CloseContactTable from '../../components/patient/close_contacts/CloseContactTable';
-import CloseContactModal from '../../components/patient/close_contacts/CloseContactModal';
-import DeleteDialog from '../../components/util/DeleteDialog';
-import * as mockCloseContacts from '../mocks/mockCloseContact';
-import InfoTooltip from '../../components/util/InfoTooltip';
-import CustomTable from '../../components/layout/CustomTable';
-import { mockPatient1, mockPatient2 } from '../mocks/mockPatients';
-import { formatPhoneNumberVisually } from '../helpers';
+import CloseContactTable from '../../../components/patient/close_contacts/CloseContactTable';
+import CloseContactModal from '../../../components/patient/close_contacts/CloseContactModal';
+import CustomTable from '../../../components/layout/CustomTable';
+import DeleteDialog from '../../../components/util/DeleteDialog';
+import InfoTooltip from '../../../components/util/InfoTooltip';
+import * as mockCloseContacts from '../../mocks/mockCloseContact';
+import { mockPatient1, mockPatient2 } from '../../mocks/mockPatients';
+import { formatPhoneNumberVisually } from '../../helpers';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const ASSIGNED_USERS = [123234, 512678, 910132];

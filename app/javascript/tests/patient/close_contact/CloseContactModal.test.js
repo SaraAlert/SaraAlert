@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Modal } from 'react-bootstrap';
-import CloseContactModal from '../../components/patient/close_contacts/CloseContactModal';
-import { mockCloseContact1, mockCloseContact2, mockCloseContact3 } from '../mocks/mockCloseContact';
+import CloseContactModal from '../../../components/patient/close_contacts/CloseContactModal';
+import { mockCloseContact1, mockCloseContact2, mockCloseContact3 } from '../../mocks/mockCloseContact';
 
 const mockHandleAddCCModalSave = jest.fn();
 const mockHandleAddCCModalClose = jest.fn();
@@ -20,7 +20,7 @@ const testInputValues = [
 ];
 
 function getWrapper(showAddCCModal, mockCC, showEditCCModal, assigned_users) {
-  return shallow(<CloseContactModal title={showAddCCModal ? 'Add New Close Contact' : 'Edit Close Contact'} currentCloseContact={showAddCCModal ? {} : mockCC} onClose={showAddCCModal ? mockHandleAddCCModalClose : mockHandleEditCCModalClose} onSave={showAddCCModal ? mockHandleAddCCModalSave : mockHandleEditCCModalSave} isEditing={showEditCCModal} assigned_users={assigned_users} />);
+  return shallow(<CloseContactModal currentCloseContact={showAddCCModal ? {} : mockCC} onClose={showAddCCModal ? mockHandleAddCCModalClose : mockHandleEditCCModalClose} onSave={showAddCCModal ? mockHandleAddCCModalSave : mockHandleEditCCModalSave} editMode={showEditCCModal} assigned_users={assigned_users} />);
 }
 
 describe('CloseContactModal', () => {

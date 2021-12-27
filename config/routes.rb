@@ -88,6 +88,10 @@ Rails.application.routes.draw do
   post '/close_contacts/:id', to: 'close_contacts#update'
   delete '/close_contacts/:id', to: 'close_contacts#destroy'
 
+  post '/vaccines', to: 'vaccines#create'
+  post '/vaccines/:id', to: 'vaccines#update'
+  delete '/vaccines/:id', to: 'vaccines#destroy'
+
   get '/patients/:id/group', to: 'patients#new_group_member'
 
   get '/export/csv_linelist/:workflow', to: 'export#csv_linelist'

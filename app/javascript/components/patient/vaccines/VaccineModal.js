@@ -87,9 +87,9 @@ class VaccineModal extends React.Component {
 
     return (
       <Modal size="lg" show centered onHide={this.props.onClose}>
-        <h1 className="sr-only">{this.props.editMode ? 'Edit Vaccination' : 'Add New Vaccination'}</h1>
+        <h1 className="sr-only">{this.props.editMode ? 'Edit' : 'Add New'} Vaccination</h1>
         <Modal.Header>
-          <Modal.Title>{this.props.editMode ? 'Edit Vaccination' : 'Add New Vaccination'}</Modal.Title>
+          <Modal.Title>{this.props.editMode ? 'Edit' : 'Add New'} Vaccination</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>

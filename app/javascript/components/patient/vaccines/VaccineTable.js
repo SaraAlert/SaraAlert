@@ -1,11 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Dropdown, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-
-import { formatDate } from '../../../utils/DateTime';
-
 import axios from 'axios';
 import _ from 'lodash';
+import { formatDate } from '../../../utils/DateTime';
 
 import CustomTable from '../../layout/CustomTable';
 import DeleteDialog from '../../util/DeleteDialog';
@@ -97,7 +95,7 @@ class VaccineTable extends React.Component {
         }
       })
       .then(response => {
-        if (response && response.data && response.data.table_data && response.data.total !== null && response.data.total !== undefined) {
+        if (response && response.data && response.data.table_data && !_.isNil(response.data.total)) {
           this.setState(state => {
             return {
               table: {
@@ -190,13 +188,6 @@ class VaccineTable extends React.Component {
   };
 
   /**
-   * Event handler for when dropdown and text input values change
-   */
-  handleChange = event => {
-    this.setState({ [event.target.id]: event.target.value });
-  };
-
-  /**
    * Called when the Add New Vaccine button is clicked or when the add modal is closed
    * Updates the state to show/hide the appropriate modal for adding a vaccine.
    */
@@ -208,27 +199,11 @@ class VaccineTable extends React.Component {
   };
 
   /**
-   * Makes a request to create a new vaccine on the backend and reloads page once complete.
-   * @param {*} newVaccineData
+   * Closes the Add New Vaccine modal and makes a request to add a new vaccine to the db.
+   * @param {*} newVaccineData - State from vaccine modal containing needed vaccine data.
    */
-  handleAddSubmit = newVaccineData => {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(`${window.BASE_PATH}/vaccines`, {
-        group_name: newVaccineData.group_name,
-        product_name: newVaccineData.product_name,
-        administration_date: newVaccineData.administration_date,
-        dose_number: newVaccineData.dose_number,
-        notes: newVaccineData.notes,
-        patient_id: this.props.patient.id,
-      })
-      .then(() => {
-        // Refresh the page to see the updated table data
-        location.reload();
-      })
-      .catch(err => {
-        reportError(err?.response?.data?.error ? err.response.data.error : err, false);
-      });
+  handleAddSubmit = (newLabData, symptomOnset) => {
+    this.submitVaccine(newLabData, symptomOnset, false);
   };
 
   /**
@@ -244,28 +219,46 @@ class VaccineTable extends React.Component {
   };
 
   /**
-   * Makes a request to update an existing vaccine record on the backend and reloads page once complete.
-   * @param {*} newVaccineData
+   * Closes the Edit Vaccine modal and makes a request to update an existing vaccine record.
+   * @param {*} updatedVaccineData - State from vaccine modal containing updated vaccine data.
    */
   handleEditSubmit = updatedVaccineData => {
-    const currVaccineId = this.state.table.rowData[this.state.activeRow]?.id;
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .put(`${window.BASE_PATH}/vaccines/${currVaccineId}`, {
-        group_name: updatedVaccineData.group_name,
-        product_name: updatedVaccineData.product_name,
-        administration_date: updatedVaccineData.administration_date,
-        dose_number: updatedVaccineData.dose_number,
-        notes: updatedVaccineData.notes,
-        patient_id: this.props.patient.id,
-      })
-      .then(() => {
-        // Refresh the page to see the updated table data
-        location.reload();
-      })
-      .catch(err => {
-        reportError(err?.response?.data?.error ? err.response.data.error : err, false);
-      });
+    const currentVaccineId = this.state.table.rowData[this.state.activeRow]?.id;
+    updatedVaccineData['id'] = currentVaccineId;
+    this.submitVaccine(updatedVaccineData, true);
+  };
+
+  /**
+   * Makes a request to add or update an existing vaccine record on the backend and reloads page once complete.
+   * @param {*} vaccineData - could be a new vaccine or updates to an eisting vaccine
+   * @param {*} isEdit - whether this is creating a new vaccine or editing an existing vaccine
+   */
+  submitVaccine = (vaccineData, isEdit) => {
+    console.log(vaccineData);
+    this.setState({ loading: true }, () => {
+      let url = `${window.BASE_PATH}/vaccines`;
+      if (isEdit) {
+        url += `/${vaccineData.id}`;
+      }
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(url, {
+          group_name: vaccineData.group_name,
+          product_name: vaccineData.product_name,
+          administration_date: vaccineData.administration_date,
+          dose_number: vaccineData.dose_number,
+          notes: vaccineData.notes,
+          patient_id: this.props.patient.id,
+        })
+        .then(() => {
+          // Refresh the page to see the updated table data
+          location.reload();
+        })
+        .catch(err => {
+          this.setState({ loading: false });
+          reportError(err?.response?.data?.error ? err.response.data.error : err, false);
+        });
+    });
   };
 
   /**
@@ -307,6 +300,15 @@ class VaccineTable extends React.Component {
       .catch(error => {
         reportError(error);
       });
+  };
+
+  /**
+   * onChange handler for necessary delete modal values
+   */
+  handleDeleteChange = event => {
+    if (['delete_reason', 'delete_reason_text'].includes(event?.target?.id)) {
+      this.setState({ [event.target.id]: event?.target?.value });
+    }
   };
 
   /**
@@ -401,7 +403,7 @@ class VaccineTable extends React.Component {
           />
         )}
         {this.state.showDeleteModal && (
-          <DeleteDialog type={'Vaccination'} delete={this.handleDeleteSubmit} toggle={this.toggleDeleteModal} onChange={this.handleChange} />
+          <DeleteDialog type={'Vaccination'} delete={this.handleDeleteSubmit} toggle={this.toggleDeleteModal} onChange={this.handleDeleteChange} />
         )}
       </React.Fragment>
     );
