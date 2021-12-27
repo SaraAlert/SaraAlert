@@ -2,11 +2,32 @@
 
 # LaboratoriesController: lab results
 class LaboratoriesController < ApplicationController
+  include LaboratoryQueryHelper
+
   before_action :authenticate_user!
   before_action :check_can_create, only: %i[create]
   before_action :check_can_edit, only: %i[update destroy]
   before_action :check_patient
   before_action :check_lab, only: %i[update destroy]
+
+  def index
+    # Validate params and handle errors if invalid
+    begin
+      data = validate_laboratory_query(params)
+    rescue StandardError => e
+      render(json: { error: e.message }, status: :bad_request) && return
+    end
+
+    # @patient is set in the check_patient hook above
+    laboratories = @patient.laboratories
+
+    # Get labs table data
+    laboratories = search(laboratories, data[:search_text])
+    laboratories = sort(laboratories, data[:sort_order], data[:sort_direction])
+    laboratories = paginate(laboratories, data[:entries], data[:page])
+
+    render json: { table_data: laboratories, total: laboratories.total_entries }
+  end
 
   # Create a new lab result
   def create

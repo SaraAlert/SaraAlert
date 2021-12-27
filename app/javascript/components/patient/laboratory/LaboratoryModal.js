@@ -10,10 +10,10 @@ class LaboratoryModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      lab_type: this.props.lab?.lab_type || '',
-      specimen_collection: this.props.lab?.specimen_collection,
-      report: this.props.lab?.report,
-      result: this.props.lab?.result || (this.props.onlyPositiveResult ? 'positive' : ''),
+      lab_type: this.props.currentLabData?.lab_type || '',
+      specimen_collection: this.props.currentLabData?.specimen_collection,
+      report: this.props.currentLabData?.report,
+      result: this.props.currentLabData?.result || (this.props.onlyPositiveResult ? 'positive' : ''),
       reportInvalid: false,
     };
   }
@@ -40,7 +40,7 @@ class LaboratoryModal extends React.Component {
   };
 
   submit = () => {
-    this.props.submit(
+    this.props.onSave(
       {
         lab_type: this.state.lab_type,
         specimen_collection: this.state.specimen_collection,
@@ -57,7 +57,7 @@ class LaboratoryModal extends React.Component {
       ? this.state.result && this.state.specimen_collection
       : this.state.lab_type || this.state.specimen_collection || this.state.report || this.state.result;
     return (
-      <Modal size="lg" className="laboratory-modal-container" show centered onHide={this.props.cancel}>
+      <Modal size="lg" className="laboratory-modal-container" show centered onHide={this.props.onClose}>
         <h1 className="sr-only">{this.props.editMode ? 'Edit' : 'Add New'} Lab Result</h1>
         <Modal.Header>
           <Modal.Title>{this.props.editMode ? 'Edit' : 'Add New'} Lab Result</Modal.Title>
@@ -164,7 +164,7 @@ class LaboratoryModal extends React.Component {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={this.props.cancel}>
+          <Button variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
           <span data-for="submit-tooltip" data-tip="" className="ml-1">
@@ -187,11 +187,11 @@ class LaboratoryModal extends React.Component {
 }
 
 LaboratoryModal.propTypes = {
-  lab: PropTypes.object,
+  currentLabData: PropTypes.object,
   specimenCollectionRequired: PropTypes.bool,
   onlyPositiveResult: PropTypes.bool,
-  submit: PropTypes.func,
-  cancel: PropTypes.func,
+  onSave: PropTypes.func,
+  onClose: PropTypes.func,
   editMode: PropTypes.bool,
   loading: PropTypes.bool,
   only_positive_lab: PropTypes.bool,
