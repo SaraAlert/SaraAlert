@@ -68,7 +68,8 @@
   <%= react_component('patient/laboratory/LaboratoryTable', {
                         patient: @patient,
                         current_user: current_user,
-                        authenticity_token: form_authenticity_token
+                        authenticity_token: form_authenticity_token,
+                        num_pos_labs: @num_pos_labs
                       }) %>
 <% end %>
 

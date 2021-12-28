@@ -188,6 +188,14 @@ class LaboratoryTable extends React.Component {
   };
 
   /**
+   * Determines if the lab in the current active row is the only positive lab
+   */
+  isOnlyPosLab = () => {
+    const activeLab = this.getCurrLab();
+    return this.props.num_pos_labs === 1 && activeLab.result === 'positive' && !_.isNil(activeLab.specimen_collection);
+  };
+
+  /**
    * Called when the "Add New Laboratory" button is clicked or when the add lab modal is closed
    * Updates the state to show/hide the appropriate modal for adding a lab.
    */
@@ -403,7 +411,7 @@ class LaboratoryTable extends React.Component {
             onSave={this.state.showAddModal ? this.handleAddSubmit : this.handleEditSubmit}
             editMode={this.state.showEditModal}
             loading={this.state.loading}
-            // only_positive_lab={this.props.only_positive_lab}
+            only_positive_lab={this.isOnlyPosLab()}
             isolation={this.props.patient.isolation}
           />
         )}
@@ -413,7 +421,7 @@ class LaboratoryTable extends React.Component {
             delete={this.handleDeleteSubmit}
             toggle={this.toggleDeleteModal}
             onChange={this.handleDeleteChange}
-            showSymptomOnsetInput={this.props.patient.isolation && !this.props.patient.symptom_onset && this.props.only_positive_lab}
+            showSymptomOnsetInput={this.props.patient.isolation && !this.props.patient.symptom_onset && this.isOnlyPosLab()}
           />
         )}
       </React.Fragment>
@@ -425,6 +433,7 @@ LaboratoryTable.propTypes = {
   patient: PropTypes.object,
   current_user: PropTypes.object,
   authenticity_token: PropTypes.string,
+  num_pos_labs: PropTypes.number,
 };
 
 export default LaboratoryTable;
