@@ -123,9 +123,7 @@ class LaboratoriesController < ApplicationController
   def check_patient
     # Check if Patient ID is valid
     patient_id = params.require(:patient_id)&.to_i
-    unless Patient.exists?(patient_id)
-      render(json: { error: "Lab result cannot be modified for unknown monitoree with ID: #{patient_id}" }, status: :bad_request) && return
-    end
+    render(json: { error: "Unknown patient with ID: #{patient_id}" }, status: :bad_request) && return unless Patient.exists?(patient_id)
 
     # Check if user has access to patient
     @patient = current_user.viewable_patients.find_by(id: patient_id)

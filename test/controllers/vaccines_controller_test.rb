@@ -54,15 +54,15 @@ class VaccinesControllerTest < ActionController::TestCase
 
     post :create, params: { patient_id: 'test' }
     assert_response(:bad_request)
-    assert_equal("Unknown patient with ID #{'test'.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Unknown patient with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
 
     put :update, params: { id: 'test', patient_id: 'test' }
     assert_response(:bad_request)
-    assert_equal("Unknown patient with ID #{'test'.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Unknown patient with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
 
     put :destroy, params: { id: 'test', patient_id: 'test' }
     assert_response(:bad_request)
-    assert_equal("Unknown patient with ID #{'test'.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Unknown patient with ID: #{'test'.to_i}", JSON.parse(response.body)['error'])
 
     sign_out user
   end
@@ -170,7 +170,7 @@ class VaccinesControllerTest < ActionController::TestCase
     }
 
     assert_response(:bad_request)
-    assert_equal("Unknown patient with ID #{mock_invalid_id&.to_i}", JSON.parse(response.body)['error'])
+    assert_equal("Unknown patient with ID: #{mock_invalid_id&.to_i}", JSON.parse(response.body)['error'])
 
     sign_out user
   end
