@@ -33,13 +33,10 @@ class UpdateCombinedAdvancedFilters < ActiveRecord::Migration[6.1]
     },
     telephone: {
       name: 'telephone',
-      title: 'Primary Contact Telephone Number (Combination)',
+      title: 'Primary Contact Telephone Number (Text)',
       description: 'Monitorees with a primary contact telephone number',
-      type: 'combination',
-      fields: [
-        { name: 'telephone-number', title: 'exact match', type: 'search' },
-        { name: 'telephone-number-partial', title: 'partial match', type: 'search' }
-      ]
+      type: 'search',
+      options: ['Exact Match', 'Contains']
     }
   }
 
@@ -93,10 +90,13 @@ class UpdateCombinedAdvancedFilters < ActiveRecord::Migration[6.1]
       contents = JSON.parse(filter[:contents])
       contents.each do |content|
         filter_name = content['filterOption']['name'].to_sym
-        next if %i[address-foreign address-usa first-name last-name middle-name telephone-number telephone-number-partial].exclude?(filter_name)
-
-        content['filterOption'] = NEW_FILTER_OPTIONS[FILTER_MAPPINGS[filter_name].to_sym]
-        content['value'] = [{ name: filter_name, value: content['value']}]
+        if %i[address-foreign address-usa first-name last-name middle-name].include?(filter_name)
+          content['filterOption'] = NEW_FILTER_OPTIONS[FILTER_MAPPINGS[filter_name].to_sym]
+          content['value'] = [{ name: filter_name, value: content['value']}]
+        elsif %i[telephone-number telephone-number-partial].include?(filter_name)
+          content['filterOption'] = NEW_FILTER_OPTIONS[FILTER_MAPPINGS[filter_name].to_sym]
+          content['additionalFilterOption'] = filter_name == :'telephone-number-partial' ? 'Contains' : 'Exact Match'
+        end
       end
       filter.update!(contents: contents.to_json)
     end
@@ -106,11 +106,17 @@ class UpdateCombinedAdvancedFilters < ActiveRecord::Migration[6.1]
     relevant_filters.each do |filter|
       contents = JSON.parse(filter[:contents])
       contents.each do |content|
-        filter_name = content['filterOption']['name']
-        next if %w[address name telephone].exclude?(filter_name) || content['value'].empty? || content['value'].first['name'].blank?
+        filter_name = content['filterOption']['name'].to_sym
+        next if content['value'].empty?
 
-        content['filterOption'] = OLD_FILTER_OPTIONS[content['value'].first['name'].to_sym]
-        content['value'] = content['value'].first['value']
+        if %i[address name].include?(filter_name)
+          next if content['value'].first['name'].blank?
+
+          content['filterOption'] = OLD_FILTER_OPTIONS[content['value'].first['name'].to_sym]
+          content['value'] = content['value'].first['value']
+        elsif filter_name == :telephone
+          content['filterOption'] = OLD_FILTER_OPTIONS[content['additionalFilterOption'] == 'Contains' ? :'telephone-number-partial' : :'telephone-number']
+        end
       end
       filter.update!(contents: contents.to_json)
     end
@@ -123,9 +129,7 @@ class UpdateCombinedAdvancedFilters < ActiveRecord::Migration[6.1]
           UserFilter.where('contents LIKE "%last-name%"').or(
             UserFilter.where('contents LIKE "%middle-name%"').or(
               UserFilter.where('contents LIKE "%last-name%"').or(
-                UserFilter.where('contents LIKE "%telephone-number%"').or(
-                  UserFilter.where('contents LIKE "%telephone-number-partial%"')
-                )
+                UserFilter.where('contents LIKE "%telephone%"')
               )
             )
           )

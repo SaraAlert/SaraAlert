@@ -99,6 +99,13 @@ export const advancedFilterOptions = [
     options: ['Exact Match', 'Contains'],
   },
   {
+    name: 'telephone',
+    title: 'Primary Contact Telephone Number (Text)',
+    description: 'Monitorees with a primary contact telephone number',
+    type: 'search',
+    options: ['Exact Match', 'Contains'],
+  },
+  {
     name: 'email',
     title: 'Primary Contact Email (Text)',
     description: 'Monitoree primary contact email address',
@@ -454,26 +461,6 @@ export const advancedFilterOptions = [
         name: 'middle-name',
         title: 'middle',
         description: 'Monitoree middle name',
-        type: 'search',
-      },
-    ],
-  },
-  {
-    name: 'telephone',
-    title: 'Primary Contact Telephone Number (Combination)',
-    description: 'Monitorees with a primary contact telephone number',
-    type: 'combination',
-    fields: [
-      {
-        name: 'telephone-number',
-        title: 'exact match',
-        description: 'Monitorees with a specified 10 digit primary contact telephone number',
-        type: 'search',
-      },
-      {
-        name: 'telephone-number-partial',
-        title: 'partial match',
-        description: 'Monitorees with a primary contact telephone number that contains specified digits',
         type: 'search',
       },
     ],

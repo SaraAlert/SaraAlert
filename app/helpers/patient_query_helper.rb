@@ -471,7 +471,16 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'symptom-onset-relative'
         patients = advanced_filter_relative_date(patients, :symptom_onset, filter, tz_diff, :date)
       when 'telephone'
-        patients = advanced_filter_telephone(patients, filter)
+        if filter[:value].blank?
+          patients = patients.where(primary_telephone: [nil, ''])
+        else
+          case filter[:additionalFilterOption]
+          when 'Exact Match'
+            patients = patients.where('patients.primary_telephone like ?', Phonelib.parse(filter[:value], 'US').full_e164)
+          when 'Contains'
+            patients = patients.where('patients.primary_telephone like ?', "%#{filter[:value].delete('^0-9')}%")
+          end
+        end
       when 'ten-day-quarantine'
         patients = advanced_filter_quarantine_option(patients, filter, :ten_day)
       when 'unenrolled-close-contact'
@@ -660,27 +669,6 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                      patients.where(last_name: [nil, ''])
                    else
                      patients.where('patients.last_name like ?', "%#{field[:value]&.downcase}%")
-                   end
-      end
-    end
-
-    patients
-  end
-
-  def advanced_filter_telephone(patients, filter)
-    filter[:value].each do |field|
-      case field[:name]
-      when 'telephone-number'
-        patients = if field[:value].blank?
-                     patients.where(primary_telephone: [nil, ''])
-                   else
-                     patients.where('patients.primary_telephone like ?', Phonelib.parse(field[:value], 'US').full_e164)
-                   end
-      when 'telephone-number-partial'
-        patients = if field[:value].blank?
-                     patients.where(primary_telephone: [nil, ''])
-                   else
-                     patients.where('patients.primary_telephone like ?', "%#{field[:value].delete('^0-9')}%")
                    end
       end
     end
