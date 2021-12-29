@@ -362,7 +362,7 @@ class CloseContactTable extends React.Component {
         <Dropdown.Menu drop={direction}>
           <Dropdown.Item className="px-4" onClick={() => this.toggleEditModal(rowIndex)}>
             <i className="fas fa-edit fa-fw" />
-            <span className="ml-2"> Edit</span>
+            <span className="ml-2">Edit</span>
           </Dropdown.Item>
           <Dropdown.Item className="px-4" onClick={() => this.handleContactAttempt(rowIndex)}>
             <i className="fas fa-phone fa-flip-horizontal" />
@@ -379,12 +379,12 @@ class CloseContactTable extends React.Component {
               className="px-4"
               onClick={() => (location.href = `${window.BASE_PATH}/patients/new?cc=${rowData.id}${navQueryParam(this.props.workflow, false)}`)}>
               <i className="fas fa-plus" />
-              <span className="ml-2"> Enroll</span>
+              <span className="ml-2">Enroll</span>
             </Dropdown.Item>
           )}
           <Dropdown.Item className="px-4" onClick={() => this.toggleDeleteModal(rowIndex)}>
             <i className="fas fa-trash" />
-            <span className="ml-2"> Delete</span>
+            <span className="ml-2">Delete</span>
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>

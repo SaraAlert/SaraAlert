@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Button, Modal } from 'react-bootstrap';
 import CloseContactModal from '../../../components/patient/close_contacts/CloseContactModal';
-import { mockCloseContact1, mockCloseContact2, mockCloseContact3 } from '../../mocks/mockCloseContact';
+import { mockCloseContactBlank, mockCloseContact1, mockCloseContact2 } from '../../mocks/mockCloseContacts';
 
 const mockHandleAddCCModalSave = jest.fn();
 const mockHandleAddCCModalClose = jest.fn();
@@ -25,7 +25,7 @@ function getWrapper(showAddCCModal, mockCC, showEditCCModal, assigned_users) {
 
 describe('CloseContactModal', () => {
   it('Properly renders all main components for empty close contact', () => {
-    const wrapper = getWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
+    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
     expect(wrapper.find('Button').length).toEqual(2);
     expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
     expect(wrapper.find('Button').at(1).text()).toContain('Create');
@@ -41,35 +41,35 @@ describe('CloseContactModal', () => {
   });
 
   it('Properly renders all main components for already existing enrolled close contact', () => {
+    const wrapper = getWrapper(false, mockCloseContact1, true, ASSIGNED_USERS);
+    expect(wrapper.find('Button').length).toEqual(2);
+    expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
+    expect(wrapper.find('Button').at(1).text()).toContain('Update');
+    expect(wrapper.state('first_name')).toEqual(mockCloseContact1.first_name || '');
+    expect(wrapper.state('last_name')).toEqual(mockCloseContact1.last_name || '');
+    expect(wrapper.state('primary_telephone')).toEqual(mockCloseContact1.primary_telephone || '');
+    expect(wrapper.state('email')).toEqual(mockCloseContact1.email || null);
+    expect(wrapper.state('last_date_of_exposure')).toEqual(mockCloseContact1.last_date_of_exposure || null);
+    expect(wrapper.state('assigned_user')).toEqual(mockCloseContact1.assigned_user || null);
+    expect(wrapper.state('notes')).toEqual(mockCloseContact1.notes || '');
+  });
+
+  it('Properly renders all main components for already existing unenrolled close contact', () => {
     const wrapper = getWrapper(false, mockCloseContact2, true, ASSIGNED_USERS);
     expect(wrapper.find('Button').length).toEqual(2);
     expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
     expect(wrapper.find('Button').at(1).text()).toContain('Update');
-    expect(wrapper.state('first_name')).toEqual(mockCloseContact2.first_name || '');
-    expect(wrapper.state('last_name')).toEqual(mockCloseContact2.last_name || '');
-    expect(wrapper.state('primary_telephone')).toEqual(mockCloseContact2.primary_telephone || '');
+    expect(wrapper.state('first_name')).toEqual(mockCloseContact2.first_name || null);
+    expect(wrapper.state('last_name')).toEqual(mockCloseContact2.last_name || null);
+    expect(wrapper.state('primary_telephone')).toEqual(mockCloseContact2.primary_telephone || null);
     expect(wrapper.state('email')).toEqual(mockCloseContact2.email || null);
     expect(wrapper.state('last_date_of_exposure')).toEqual(mockCloseContact2.last_date_of_exposure || null);
     expect(wrapper.state('assigned_user')).toEqual(mockCloseContact2.assigned_user || null);
-    expect(wrapper.state('notes')).toEqual(mockCloseContact2.notes || '');
-  });
-
-  it('Properly renders all main components for already existing unenrolled close contact', () => {
-    const wrapper = getWrapper(false, mockCloseContact3, true, ASSIGNED_USERS);
-    expect(wrapper.find('Button').length).toEqual(2);
-    expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
-    expect(wrapper.find('Button').at(1).text()).toContain('Update');
-    expect(wrapper.state('first_name')).toEqual(mockCloseContact3.first_name || null);
-    expect(wrapper.state('last_name')).toEqual(mockCloseContact3.last_name || null);
-    expect(wrapper.state('primary_telephone')).toEqual(mockCloseContact3.primary_telephone || null);
-    expect(wrapper.state('email')).toEqual(mockCloseContact3.email || null);
-    expect(wrapper.state('last_date_of_exposure')).toEqual(mockCloseContact3.last_date_of_exposure || null);
-    expect(wrapper.state('assigned_user')).toEqual(mockCloseContact3.assigned_user || null);
-    expect(wrapper.state('notes')).toEqual(mockCloseContact3.notes || null);
+    expect(wrapper.state('notes')).toEqual(mockCloseContact2.notes || null);
   });
 
   it('Disables the Create Button when the correct fields are not present when making a new close contact', () => {
-    const wrapper = getWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
+    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
     const validateAndSubmit = jest.spyOn(wrapper.instance(), 'validateAndSubmit');
     expect(wrapper.find('Button').at(1).text()).toContain('Create');
     expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
@@ -78,14 +78,14 @@ describe('CloseContactModal', () => {
   });
 
   it('Properly calls the Cancel callback when closing the modal on an empty close contact', () => {
-    const wrapper = getWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
+    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
     expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
     wrapper.find(Button).at(0).simulate('click');
     expect(mockHandleAddCCModalClose).toHaveBeenCalled();
   });
 
   it('Enables the Update Button when the correct fields are present when editing an existing close contact', () => {
-    const wrapper = getWrapper(false, mockCloseContact2, true, ASSIGNED_USERS);
+    const wrapper = getWrapper(false, mockCloseContact1, true, ASSIGNED_USERS);
     const validateAndSubmitSpy = jest.spyOn(wrapper.instance(), 'validateAndSubmit');
     wrapper.instance().forceUpdate();
     expect(wrapper.find('Button').at(1).text()).toContain('Update');
@@ -95,14 +95,14 @@ describe('CloseContactModal', () => {
   });
 
   it('Properly calls the Cancel callback when closing the modal on an empty close contact', () => {
-    const wrapper = getWrapper(false, mockCloseContact2, true, ASSIGNED_USERS);
+    const wrapper = getWrapper(false, mockCloseContact1, true, ASSIGNED_USERS);
     expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
     wrapper.find(Button).at(0).simulate('click');
     expect(mockHandleEditCCModalClose).toHaveBeenCalled();
   });
 
   it('Can properly set fields when an empty close contact is used as a prop', () => {
-    const wrapper = getWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
+    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
     const handleNameChangeSpy = jest.spyOn(wrapper.instance(), 'handleNameChange');
     const handlePhoneNumberChangeSpy = jest.spyOn(wrapper.instance(), 'handlePhoneNumberChange');
     const handleEmailChangeSpy = jest.spyOn(wrapper.instance(), 'handleEmailChange');
@@ -188,14 +188,14 @@ describe('CloseContactModal', () => {
   });
 
   it('Properly creates the correct assigned user dropdown options', () => {
-    const wrapper = getWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
+    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
     ASSIGNED_USERS.forEach((user, userIndex) => {
       expect(wrapper.find(Modal.Body).find('option').at(userIndex).text()).toEqual(`${user}`);
     });
   });
 
   it('Properly renders accurate count of characters remaining for notes field', () => {
-    const wrapper = getWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
+    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
     const testNoteString = 'The Strongest Avenger';
 
     expect(wrapper.find(Modal.Body).find('Row').at(3).find('FormLabel').at(0).text()).toContain('Notes');
@@ -210,7 +210,7 @@ describe('CloseContactModal', () => {
   });
 
   it('Properly enables and disables the submit/create button when First Name and Phone is entered', () => {
-    const wrapper = getWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
+    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
 
     let value1, value2;
     value1 = testInputValues.find(x => x.field === 'first_name').value;
@@ -250,7 +250,7 @@ describe('CloseContactModal', () => {
   });
 
   it('Properly enables and disables the submit/create button when First Name and Email is entered', () => {
-    const wrapper = getWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
+    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
 
     let value1, value2;
     value1 = testInputValues.find(x => x.field === 'first_name').value;
@@ -290,7 +290,7 @@ describe('CloseContactModal', () => {
   });
 
   it('Properly enables and disables the submit/create button when Last Name and Phone is entered', () => {
-    const wrapper = getWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
+    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
 
     let value1, value2;
     value1 = testInputValues.find(x => x.field === 'last_name').value;
@@ -330,7 +330,7 @@ describe('CloseContactModal', () => {
   });
 
   it('Properly enables and disables the submit/create button when Last Name and Email is entered', () => {
-    const wrapper = getWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
+    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
 
     let value1, value2;
     value1 = testInputValues.find(x => x.field === 'last_name').value;
@@ -370,7 +370,7 @@ describe('CloseContactModal', () => {
   });
 
   it('Properly keeps the buttons disabled when all the required fields are not added', () => {
-    const wrapper = getWrapper(true, mockCloseContact1, false, ASSIGNED_USERS);
+    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
 
     let value;
     value = testInputValues.find(x => x.field === 'first_name').value;
