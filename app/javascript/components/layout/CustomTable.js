@@ -160,7 +160,7 @@ class CustomTable extends React.Component {
     return (
       <th
         key={field}
-        id={field}
+        id={`${this.props.dataType}-th-${field}`}
         width={colWidth}
         onClick={() => {
           if (sortable) {

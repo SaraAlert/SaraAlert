@@ -162,22 +162,22 @@ describe('CustomTable', () => {
     expect(wrapper.state('tableQuery').orderBy).toEqual(orderBy);
     expect(wrapper.state('tableQuery').sortDirection).toEqual(sortDirection);
     columnData.forEach(colData => {
-      expect(wrapper.find(Table).find('thead').find(`#${colData.field}`).find('i.fa-sort-up').exists()).toBe(false);
-      expect(wrapper.find(Table).find('thead').find(`#${colData.field}`).find('i.fa-sort-down').exists()).toBe(colData.field === orderBy);
+      expect(wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).find('i.fa-sort-up').exists()).toBe(false);
+      expect(wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).find('i.fa-sort-down').exists()).toBe(colData.field === orderBy);
     });
   });
 
   it('Clicking table headers properly renders sort icon', () => {
     const wrapper = getWrapper();
     _.shuffle(columnData).forEach(colData => {
-      expect(wrapper.find(Table).find('thead').find(`#${colData.field}`).find('i.fa-sort-up').exists()).toBe(false);
-      expect(wrapper.find(Table).find('thead').find(`#${colData.field}`).find('i.fa-sort-down').exists()).toBe(false);
-      wrapper.find(Table).find('thead').find(`#${colData.field}`).simulate('click');
-      expect(wrapper.find(Table).find('thead').find(`#${colData.field}`).find('i.fa-sort-up').exists()).toBe(colData.isSortable);
-      expect(wrapper.find(Table).find('thead').find(`#${colData.field}`).find('i.fa-sort-down').exists()).toBe(false);
-      wrapper.find(Table).find('thead').find(`#${colData.field}`).simulate('click');
-      expect(wrapper.find(Table).find('thead').find(`#${colData.field}`).find('i.fa-sort-up').exists()).toBe(false);
-      expect(wrapper.find(Table).find('thead').find(`#${colData.field}`).find('i.fa-sort-down').exists()).toBe(colData.isSortable);
+      expect(wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).find('i.fa-sort-up').exists()).toBe(false);
+      expect(wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).find('i.fa-sort-down').exists()).toBe(false);
+      wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).simulate('click');
+      expect(wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).find('i.fa-sort-up').exists()).toBe(colData.isSortable);
+      expect(wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).find('i.fa-sort-down').exists()).toBe(false);
+      wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).simulate('click');
+      expect(wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).find('i.fa-sort-up').exists()).toBe(false);
+      expect(wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).find('i.fa-sort-down').exists()).toBe(colData.isSortable);
     });
   });
 
@@ -191,7 +191,7 @@ describe('CustomTable', () => {
     // Sort Ascending
     _.shuffle(columnData).forEach(colData => {
       if (colData.isSortable) {
-        wrapper.find(Table).find('thead').find(`#${colData.field}`).simulate('click');
+        wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).simulate('click');
         callCount++;
         expect(wrapper.state('tableQuery').orderBy).toEqual(colData.field);
         expect(wrapper.state('tableQuery').sortDirection).toEqual('asc');
@@ -206,7 +206,7 @@ describe('CustomTable', () => {
     _.shuffle(columnData).forEach(colData => {
       if (colData.isSortable) {
         _.times(2, () => {
-          wrapper.find(Table).find('thead').find(`#${colData.field}`).simulate('click');
+          wrapper.find(Table).find('thead').find(`#test-th-${colData.field}`).simulate('click');
           callCount++;
         });
         expect(wrapper.state('tableQuery').orderBy).toEqual(colData.field);
