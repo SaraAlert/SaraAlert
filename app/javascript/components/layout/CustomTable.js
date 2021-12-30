@@ -55,7 +55,7 @@ class CustomTable extends React.Component {
    */
   handleCheckboxChange = (e, row) => {
     const checked = e.target.checked;
-    let selectedRows;
+    let selectedRows = [];
 
     if (checked && !this.props.selectedRows.includes(row)) {
       // If row is selected and wasn't previously, add it to the selected rows.
