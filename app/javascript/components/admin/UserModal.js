@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes, { bool } from 'prop-types';
-import { Button, Modal, InputGroup, Form } from 'react-bootstrap';
+import { Alert, Button, Modal, InputGroup, Form, Col } from 'react-bootstrap';
 import Select from 'react-select';
 import _ from 'lodash';
 import { cursorPointerStyle, bootstrapSelectTheme } from '../../packs/stylesheets/ReactSelectStyling';
+import { lockReasonOptions } from '../../data/lockReasonOptions';
 
 const MAX_NOTES_LENGTH = 5000;
 
@@ -17,7 +18,15 @@ class UserModal extends React.Component {
       roleTitle: this.props.initialUserData.role_title || this.props.roles[0],
       isAPIEnabled: this.props.initialUserData.is_api_enabled || false,
       isLocked: this.props.initialUserData.is_locked || false,
+      lockReason: this.props.initialUserData.lock_reason || '',
+      autoLockReason: this.props.initialUserData.auto_lock_reason || '',
+      activeState: this.props.initialUserData.active_state,
+      status: this.props.initialUserData.status,
       notes: this.props.initialUserData.notes || '',
+      lockReasonOptions:
+        this.props.initialUserData.lock_reason === 'Auto-locked by the System'
+          ? lockReasonOptions.concat(['Auto-locked by the System']).sort()
+          : lockReasonOptions,
     };
   }
 
@@ -33,9 +42,13 @@ class UserModal extends React.Component {
     this.setState({ roleTitle: data.value });
   };
 
-  handleLockedStatusChange = event => {
+  handleLockedSystemAccessChange = event => {
     const val = event.target.checked;
     this.setState({ isLocked: val });
+  };
+
+  handleStatusChange = data => {
+    this.setState({ lockReason: data.value });
   };
 
   handleAPIAccessChange = event => {
@@ -109,16 +122,59 @@ class UserModal extends React.Component {
               />
             </Form.Group>
             {this.props.type === 'edit' && (
+              <Form.Row className="pt-4">
+                <Form.Group as={Col} md={8}>
+                  <Form.Label>System Access</Form.Label>
+                  <Form.Check
+                    id="system-access-input"
+                    name="system-access"
+                    type="switch"
+                    checked={this.state.isLocked}
+                    label={this.state.isLocked ? 'Locked' : 'Unlocked'}
+                    onChange={this.handleLockedSystemAccessChange}
+                  />
+                </Form.Group>
+                <Form.Group as={Col}>
+                  {this.state.lockReason === 'Auto-locked by the System' && this.state.isLocked && (
+                    <Form.Text as={Alert} id="system-access-auto-lock-reason" variant="danger">
+                      <i className="fas fa-exclamation-circle"></i>
+                      <span> {this.state.autoLockReason}</span>
+                    </Form.Text>
+                  )}
+                </Form.Group>
+              </Form.Row>
+            )}
+            {this.props.type === 'edit' && this.state.isLocked && (
+              <Form.Group>
+                <Form.Label htmlFor="lock-reason-select">Status</Form.Label>
+                <Select
+                  inputId="lock-reason-select"
+                  name="lock-reason"
+                  defaultValue={
+                    this.state.lockReason ? { label: this.state.lockReason, value: this.state.lockReason } : { label: 'Not specified', value: 'Not specified' }
+                  }
+                  options={this.state.lockReasonOptions.map(lockReason => {
+                    return { label: lockReason, value: lockReason };
+                  })}
+                  onChange={this.handleStatusChange}
+                  styles={cursorPointerStyle}
+                  theme={bootstrapSelectTheme}
+                />
+              </Form.Group>
+            )}
+            {this.props.type === 'edit' && !this.state.isLocked && (
               <Form.Group>
                 <Form.Label>Status</Form.Label>
-                <Form.Check
-                  id="status-input"
-                  name="status"
-                  type="switch"
-                  checked={this.state.isLocked}
-                  label={this.state.isLocked ? 'Locked' : 'Unlocked'}
-                  onChange={this.handleLockedStatusChange}
-                />
+                <InputGroup>
+                  <Form.Control
+                    id="status-read-only-input"
+                    name="status-read-only"
+                    defaultValue={this.state.activeState ? this.state.activeState : ''}
+                    aria-label="Status"
+                    aria-describedby="status-addon"
+                    readOnly
+                  />
+                </InputGroup>
               </Form.Group>
             )}
             <Form.Group>

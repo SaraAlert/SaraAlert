@@ -761,4 +761,52 @@ class UserTest < ActiveSupport::TestCase
     assert usa_admin.can_send_admin_emails?
     assert usa_super_user.can_send_admin_emails?
   end
+
+  test 'user status, lock_reason, auto_lock_reason with both manual and automatic lock' do
+    user = create(:user, locked_at: 2.days.ago, failed_attempts: 5, manual_lock_reason: LockReasons::NO_LONGER_AN_EMPLOYEE)
+
+    assert_equal(user.status, LockReasons::NO_LONGER_AN_EMPLOYEE)
+    assert_equal(user.lock_reason, LockReasons::NO_LONGER_AN_EMPLOYEE)
+    assert_equal(user.auto_lock_reason, "#{user.failed_attempts} failed login attempts")
+  end
+
+  test 'user status with automatic lock only' do
+    user = create(:user, locked_at: 2.days.ago, failed_attempts: 5, manual_lock_reason: nil)
+
+    assert_equal(user.status, LockReasons::AUTO_LOCKED_BY_SYSTEM)
+    assert_equal(user.lock_reason, LockReasons::AUTO_LOCKED_BY_SYSTEM)
+    assert_equal(user.auto_lock_reason, "#{user.failed_attempts} failed login attempts")
+  end
+
+  test 'user status with manual lock of Not specified' do
+    user = create(:user, locked_at: 2.days.ago, force_password_change: 1, manual_lock_reason: LockReasons::NOT_SPECIFIED)
+
+    assert_equal(user.status, '')
+    assert_equal(user.lock_reason, LockReasons::NOT_SPECIFIED)
+    assert_equal(user.auto_lock_reason, 'Temporary password expired')
+  end
+
+  test 'user active status has no lock and current_sign_in_at <= 30 days ago' do
+    user = create(:user, current_sign_in_at: 29.days.ago)
+
+    assert_equal(user.status, 'Active')
+    assert_nil(user.lock_reason)
+    assert_nil(user.auto_lock_reason)
+  end
+
+  test 'user inactive status has no lock and current_sign_in_at > 30 days ago' do
+    user = create(:user, current_sign_in_at: 31.days.ago)
+
+    assert_equal(user.status, 'Inactive')
+    assert_nil(user.lock_reason)
+    assert_nil(user.auto_lock_reason)
+  end
+
+  test 'user inactive status has no current_sign_in_at' do
+    user = create(:user, current_sign_in_at: nil)
+
+    assert_equal(user.status, 'Inactive')
+    assert_nil(user.lock_reason)
+    assert_nil(user.auto_lock_reason)
+  end
 end

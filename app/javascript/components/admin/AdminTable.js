@@ -23,7 +23,8 @@ class AdminTable extends React.Component {
           { label: 'Email', field: 'email', className: 'wrap-words', isSortable: true },
           { label: 'Jurisdiction', field: 'jurisdiction_path', isSortable: true },
           { label: 'Role', field: 'role_title', isSortable: false },
-          { label: 'Status', field: 'is_locked', isSortable: false, options: { true: 'Locked', false: 'Unlocked' } },
+          { label: 'System Access', field: 'is_locked', isSortable: false, options: { true: 'Locked', false: 'Unlocked' } },
+          { label: 'Status', field: 'status', isSortable: true },
           { label: 'API Enabled', field: 'is_api_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: '2FA Enabled', field: 'is_2fa_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: 'Failed Login Attempts', field: 'num_failed_logins', isSortable: true },
@@ -374,6 +375,7 @@ class AdminTable extends React.Component {
       is_api_enabled: data.isAPIEnabled,
       is_locked: data.isLocked,
       notes: data.notes,
+      status: data.isLocked ? data.lockReason : '',
     };
 
     const handleSuccess = () => {
@@ -521,18 +523,29 @@ class AdminTable extends React.Component {
 
     const handleSuccess = response => {
       if (response && response.data && response.data.user_rows) {
+        const keysToSkip = ['active_state', 'lock_reason', 'auto_lock_reason'];
         // NOTE: react-csv has a bug where false values don't show up in the downloaded CSV
         // This has been addressed and recently merged: https://github.com/react-csv/react-csv/pull/193
         // Once this gets released and we update our version this code won't be necessary.
-        const csvData = response.data.user_rows.map(userData => {
-          return {
-            ...userData,
-            notes: removeFormulaStart(userData.notes).toString(),
-            is_api_enabled: userData.is_api_enabled.toString(),
-            is_2fa_enabled: userData.is_2fa_enabled.toString(),
-            is_locked: userData.is_locked.toString(),
-          };
+        const keysWithBoolValues = ['is_api_enabled', 'is_2fa_enabled', 'is_locked'];
+
+        let csvData = [];
+        response.data.user_rows.forEach(row => {
+          let csvObj = {};
+          for (const [key, value] of Object.entries(row)) {
+            if (!keysToSkip.includes(key)) {
+              if (keysWithBoolValues.includes(key)) {
+                csvObj[key] = value.toString();
+              } else if (key === 'notes') {
+                csvObj[key] = removeFormulaStart(value).toString();
+              } else {
+                csvObj[key] = value;
+              }
+            }
+          }
+          csvData.push(csvObj);
         });
+
         // If there's a valid response, update state accordingly
         this.setState({ csvData });
       } else {

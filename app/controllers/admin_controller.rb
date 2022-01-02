@@ -42,7 +42,8 @@ class AdminController < ApplicationController
     users = User.where(is_api_proxy: false, jurisdiction_id: current_user.jurisdiction.subtree_ids)
                 .joins(:jurisdiction)
                 .select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id,
-                        users.failed_attempts, users.role, users.notes, jurisdictions.path')
+                        users.failed_attempts, users.role, users.notes, jurisdictions.path, users.manual_lock_reason,
+                        users.current_sign_in_at, users.force_password_change')
 
     # Filter by search text
     users = filter(users, search)
@@ -67,6 +68,10 @@ class AdminController < ApplicationController
         jurisdiction_path: user.path || '',
         role_title: user.role.titleize,
         is_locked: !user.locked_at.nil? || false,
+        lock_reason: user.lock_reason || '',
+        auto_lock_reason: user.auto_lock_reason || '',
+        active_state: user.active_state,
+        status: user.locked_at.nil? ? user.active_state : user.lock_reason,
         is_api_enabled: user[:api_enabled] || false,
         is_2fa_enabled: !user.authy_id.nil? || false,
         num_failed_logins: user.failed_attempts,
@@ -163,7 +168,8 @@ class AdminController < ApplicationController
   def edit_user
     redirect_to(root_url) && return unless current_user.can_access_admin_panel?
 
-    permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role_title, :is_api_enabled, :is_locked, :notes)
+    permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role_title, :is_api_enabled, :is_locked,
+                                             :status, :notes)
 
     id = permitted_params[:id]
     user_ids = User.pluck(:id)
@@ -195,6 +201,9 @@ class AdminController < ApplicationController
     is_locked = permitted_params[:is_locked]
     return head :bad_request unless [true, false].include? is_locked
 
+    status = permitted_params[:status]
+    return head :bad_request unless (LockReasons.all_reasons.include? status) || (status == '')
+
     # Find user
     user = User.find_by(id: id)
     return head :bad_request unless user
@@ -214,6 +223,11 @@ class AdminController < ApplicationController
 
     # Update API access
     user.update!(api_enabled: is_api_enabled, role: role)
+
+    # Update manual_lock_reason if one is present; else the user is unlocked and manual_lock_reason is nil
+    user.manual_lock_reason = '' if status == 'Not specified'
+    user.manual_lock_reason = status if status != 'Not specified'
+    user.manual_lock_reason = nil if status == ''
 
     # Update locked status
     if user.locked_at.nil? && is_locked

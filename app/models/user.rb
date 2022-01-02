@@ -40,6 +40,35 @@ class User < ApplicationRecord
       (65 + SecureRandom.random_number(26)).chr(Encoding::ASCII)
   end
 
+  def status
+    return active_state if locked_at.nil?
+    return '' if lock_reason == LockReasons::NOT_SPECIFIED
+
+    lock_reason
+  end
+
+  def active_state
+    !current_sign_in_at.nil? && current_sign_in_at >= 30.days.ago ? 'Active' : 'Inactive'
+  end
+
+  def auto_lock_reason
+    if locked_at.present?
+      return "#{failed_attempts} failed login attempts" if failed_attempts >= 5
+      return 'Temporary password expired' if force_password_change
+    end
+
+    nil
+  end
+
+  def lock_reason
+    if locked_at.present?
+      return manual_lock_reason unless manual_lock_reason.nil?
+      return LockReasons::AUTO_LOCKED_BY_SYSTEM if auto_lock_reason.present?
+    end
+
+    nil
+  end
+
   # Patients this user can view through their jurisdiction access
   def viewable_patients
     jurisdiction.all_patients_excluding_purged
