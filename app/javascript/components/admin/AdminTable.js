@@ -535,11 +535,11 @@ class AdminTable extends React.Component {
           for (const [key, value] of Object.entries(row)) {
             if (!keysToSkip.includes(key)) {
               if (keysWithBoolValues.includes(key)) {
-                csvObj[key] = value.toString();
+                csvObj[key.toString()] = value.toString();
               } else if (key === 'notes') {
-                csvObj[key] = removeFormulaStart(value).toString();
+                csvObj[key.toString()] = removeFormulaStart(value).toString();
               } else {
-                csvObj[key] = value;
+                csvObj[key.toString()] = value;
               }
             }
           }
