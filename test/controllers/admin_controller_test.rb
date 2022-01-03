@@ -284,54 +284,67 @@ class AdminControllerTest < ActionController::TestCase
 
     # Test id param
     post :edit_user, params: { id: 'test', email: 'bad format', jurisdiction: new_jur.id,
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test email param
     post :edit_user, params: { id: 17, email: 'bad format', jurisdiction: new_jur.id,
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     post :edit_user, params: { id: 17, jurisdiction: new_jur.id, role_title: 'analyst', is_api_enabled: false,
-                               is_locked: false, notes: '' }, as: :json
+                               is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test bad jurisdiction param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: '',
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test invalid jurisdiction param (out of scope jurisdiction)
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: Jurisdiction.find_by(path: 'USA, State 2').id,
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test role param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'test',
-                               is_api_enabled: false, is_locked: false, notes: '' }, as: :json
+                               is_api_enabled: false, is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test is_api_enabled param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
-                               is_api_enabled: 'test', is_locked: false, notes: '' }, as: :json
+                               is_api_enabled: 'test', is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test is_locked param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
-                               is_api_enabled: false, is_locked: 'test', notes: '' }, as: :json
+                               is_api_enabled: false, is_locked: 'test', notes: '', status: '' }, as: :json
+    assert_response :bad_request
+
+    # Test invalid status param
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
+                               is_api_enabled: false, is_locked: true, notes: '', status: 'a fake status' }, as: :json
+    assert_response :bad_request
+
+    # Test valid lock reason with unlocked user
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
+                               is_api_enabled: false, is_locked: false, notes: '',
+                               status: LockReasons::NO_LONGER_NEEDS_ACCESS }, as: :json
     assert_response :bad_request
 
     # Test notes value too long
     error = assert_raises(ActiveRecord::RecordInvalid) do
       post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
-                                 role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true, notes: random_note }, as: :json
+                                 role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
+                                 notes: random_note, status: '' }, as: :json
     end
     assert_equal('Validation failed: Notes is too long (maximum is 5000 characters)', error.message)
 
     # Test User is edited correctly after updating all fields
     assert_no_difference 'User.count' do
       post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
-                                 role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true, notes: 'test note edit' }, as: :json
+                                 role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
+                                 notes: 'test note edit', status: LockReasons::NO_LONGER_AN_EMPLOYEE }, as: :json
     end
     assert_response :success
 
@@ -342,8 +355,44 @@ class AdminControllerTest < ActionController::TestCase
     assert_equal(user.role, 'public_health_enroller')
     assert user.locked_at?
     assert_equal(user.notes, 'test note edit')
+    assert_equal(user.manual_lock_reason, LockReasons::NO_LONGER_AN_EMPLOYEE)
 
     sign_out user
+  end
+
+  test 'edit user status' do
+    current_user_jur = Jurisdiction.find_by(path: 'USA, State 1')
+    new_jur = Jurisdiction.find_by(path: 'USA, State 1, County 1')
+    user = create(:admin_user, jurisdiction: current_user_jur)
+    sign_in user
+
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
+                               role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
+                               notes: 'test note edit', status: LockReasons::AUTO_LOCKED_BY_SYSTEM }, as: :json
+
+    user = User.find_by(id: 17)
+    assert_nil(user.manual_lock_reason)
+
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
+                               role_title: 'public_health_enroller', is_api_enabled: false, is_locked: false,
+                               notes: 'test note edit', status: '' }, as: :json
+
+    user = User.find_by(id: 17)
+    assert_nil(user.manual_lock_reason)
+
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
+                               role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
+                               notes: 'test note edit', status: LockReasons::NOT_SPECIFIED }, as: :json
+
+    user = User.find_by(id: 17)
+    assert_equal(user.manual_lock_reason, '')
+
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
+                               role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
+                               notes: 'test note edit', status: LockReasons::NO_LONGER_NEEDS_ACCESS }, as: :json
+
+    user = User.find_by(id: 17)
+    assert_equal(user.manual_lock_reason, LockReasons::NO_LONGER_NEEDS_ACCESS)
   end
 
   test 'reset 2fa' do
