@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'will_paginate/array'
+
 # AdminController: for administration actions
 class AdminController < ApplicationController
   before_action :authenticate_user!
@@ -31,7 +33,7 @@ class AdminController < ApplicationController
 
     # Validate sort params
     order_by = permitted_params[:orderBy]
-    return head :bad_request unless order_by.nil? || order_by.blank? || %w[id email jurisdiction_path num_failed_logins].include?(order_by)
+    return head :bad_request unless order_by.nil? || order_by.blank? || %w[id email jurisdiction_path num_failed_logins status].include?(order_by)
 
     sort_direction = permitted_params[:sortDirection]
     return head :bad_request unless sort_direction.nil? || sort_direction.blank? || %w[asc desc].include?(sort_direction)
@@ -100,6 +102,9 @@ class AdminController < ApplicationController
       users = users.order(path: dir)
     when 'num_failed_logins'
       users = users.order(failed_attempts: dir)
+    when 'status'
+      users = users.sort_by(&:status) if dir == 'asc'
+      users = users.sort_by(&:status).reverse if dir == 'desc'
     end
 
     users
@@ -203,6 +208,7 @@ class AdminController < ApplicationController
 
     status = permitted_params[:status]
     return head :bad_request unless (LockReasons.all_reasons.include? status) || (status == '')
+    return head :bad_request if (LockReasons.all_reasons.include? status) && !is_locked
 
     # Find user
     user = User.find_by(id: id)
@@ -224,10 +230,13 @@ class AdminController < ApplicationController
     # Update API access
     user.update!(api_enabled: is_api_enabled, role: role)
 
-    # Update manual_lock_reason if one is present; else the user is unlocked and manual_lock_reason is nil
-    user.manual_lock_reason = '' if status == 'Not specified'
-    user.manual_lock_reason = status if status != 'Not specified'
-    user.manual_lock_reason = nil if status == ''
+    # Update manual_lock_reason if one is present based on the following:
+    # Persistable lock reasons exclude 'Not specified' and 'Auto-locked by the System'
+    #   Users with 'Not specified' as lock reason have a blank lock reason saved
+    # Manual lock reasons exclude 'Auto-locked by the System'
+    user.manual_lock_reason = status if LockReasons.persistable_lock_reasons.include?(status)
+    user.manual_lock_reason = '' if status == LockReasons::NOT_SPECIFIED
+    user.manual_lock_reason = nil if status == '' || LockReasons.manual_lock_reasons.exclude?(status)
 
     # Update locked status
     if user.locked_at.nil? && is_locked
