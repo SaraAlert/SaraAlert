@@ -129,7 +129,7 @@ class AdminControllerTest < ActionController::TestCase
     order_by = 'id'
 
     sort_direction = 'asc'
-    get :users, params: { orderBy: order_by, sortDirection: sort_direction, entries: 50  }
+    get :users, params: { orderBy: order_by, sortDirection: sort_direction, entries: 50 }
     ordered_ids = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids).order(id: sort_direction).pluck(:id)
     assert_equal(ordered_ids, (JSON.parse(response.body)['user_rows'].map { |u| u['id'] }))
 
