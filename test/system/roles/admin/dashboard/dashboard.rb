@@ -46,7 +46,7 @@ class AdminDashboard < ApplicationSystemTestCase
     # Unlock the user with email 'manual_locked_user@example.com'
     find(:xpath, "//label[@for='system-access-input']").click
     assert page.has_no_field? 'status', type: :hidden, with: 'No longer an employee'
-    assert page.has_field? 'status-read-only', with: 'Inactive'
+    assert page.has_selector?('div', text: 'Inactive')
 
     find('.modal-footer').click_on('Cancel')
 
@@ -64,7 +64,7 @@ class AdminDashboard < ApplicationSystemTestCase
     find(:xpath, "//label[@for='system-access-input']").click
     assert page.has_no_field? 'status', type: :hidden, with: 'Auto-locked by the System'
     assert page.has_no_text? 'failed login attempts'
-    assert page.has_field? 'status-read-only', with: 'Active'
+    assert page.has_selector?('div', text: 'Active')
 
     # Save the user with email 'auto_locked_user@example.com' after unlocking
     find('.modal-footer').click_on('Save')
