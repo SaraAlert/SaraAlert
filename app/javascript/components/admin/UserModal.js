@@ -146,10 +146,11 @@ class UserModal extends React.Component {
             )}
             {this.props.type === 'edit' && this.state.isLocked && (
               <Form.Group>
-                <Form.Label htmlFor="lock-reason-select">Status</Form.Label>
+                <Form.Label htmlFor="status-select">Status</Form.Label>
                 <Select
-                  inputId="lock-reason-select"
-                  name="lock-reason"
+                  inputId="status-select"
+                  id="status"
+                  name="status"
                   defaultValue={
                     this.state.lockReason ? { label: this.state.lockReason, value: this.state.lockReason } : { label: 'Not specified', value: 'Not specified' }
                   }
