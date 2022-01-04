@@ -6,9 +6,13 @@ require_relative '../../../lib/system_test_utils'
 
 class AdminDashboardVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
+  # 'Adjust number of records' (below) is an aria-label. Enabling for this test only
+  Capybara.enable_aria_label = true
 
   def verify_user(user, should_exist: true)
     Capybara.using_wait_time(8) do
+      assert page.has_content? 'Email'
+      select '50', from: 'Adjust number of records'
       if should_exist
         assert page.has_content?(user.email), @@system_test_utils.get_err_msg('User info', 'email', user.email)
         verify_lock_status(user.email, !user.locked_at.nil?)
