@@ -37,7 +37,7 @@ class AdminTest < ApplicationSystemTestCase
   #     { label: 'usa_admin', email: 'locals2c3_epi_enroller2@example.com', jurisdiction: 'USA, State 2, County 3',
   #       role: 'Public Health Enroller', is_api_enabled: true }
   #   ]
-  #
+
   #   users.each do |user_data|
   #     @@admin_test_helper.add_user(user_data)
   #   end
