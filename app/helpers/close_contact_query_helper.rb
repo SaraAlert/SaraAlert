@@ -76,23 +76,23 @@ module CloseContactQueryHelper
 
     case order
     when 'first_name'
-      close_contacts = close_contacts.order(Arel.sql('CASE WHEN first_name IS NULL THEN 1 ELSE 0 END, first_name ' + dir))
+      close_contacts = close_contacts.order(Arel.sql('first_name IS NULL OR first_name = "", first_name ' + dir))
     when 'last_name'
-      close_contacts = close_contacts.order(Arel.sql('CASE WHEN last_name IS NULL THEN 1 ELSE 0 END, last_name ' + dir))
+      close_contacts = close_contacts.order(Arel.sql('last_name IS NULL OR last_name = "", last_name ' + dir))
     when 'primary_telephone'
-      close_contacts = close_contacts.order(Arel.sql('CASE WHEN primary_telephone IS NULL THEN 1 ELSE 0 END, primary_telephone ' + dir))
+      close_contacts = close_contacts.order(Arel.sql('primary_telephone IS NULL OR primary_telephone = "", primary_telephone ' + dir))
     when 'email'
-      close_contacts = close_contacts.order(Arel.sql('CASE WHEN email IS NULL THEN 1 ELSE 0 END, email ' + dir))
+      close_contacts = close_contacts.order(Arel.sql('email IS NULL OR email = "", email ' + dir))
     when 'enrolled_id'
-      close_contacts = close_contacts.order(Arel.sql('CASE WHEN enrolled_id IS NULL THEN "no" ELSE "yes" END ' + dir))
+      close_contacts = close_contacts.order(Arel.sql('enrolled_id IS NOT NULL ' + dir))
     when 'last_date_of_exposure'
-      close_contacts = close_contacts.order(Arel.sql('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir))
+      close_contacts = close_contacts.order(Arel.sql('last_date_of_exposure IS NULL, last_date_of_exposure ' + dir))
     when 'assigned_user'
-      close_contacts = close_contacts.order(Arel.sql('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + dir))
+      close_contacts = close_contacts.order(Arel.sql('assigned_user IS NULL, assigned_user ' + dir))
     when 'contact_attempts'
-      close_contacts = close_contacts.order(Arel.sql('CASE WHEN contact_attempts IS NULL THEN 1 ELSE 0 END, contact_attempts ' + dir))
+      close_contacts = close_contacts.order(Arel.sql('contact_attempts IS NULL, contact_attempts ' + dir))
     when 'notes'
-      close_contacts = close_contacts.order(Arel.sql("CASE WHEN notes IS NULL THEN 2 WHEN notes = '' THEN 1 ELSE 0 END, notes " + dir))
+      close_contacts = close_contacts.order(Arel.sql('CASE WHEN notes IS NULL THEN 2 WHEN notes = "" THEN 1 ELSE 0 END, notes ' + dir))
     end
     close_contacts
   end

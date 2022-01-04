@@ -888,13 +888,13 @@ class Patient < ApplicationRecord
       WHEN exposure_risk_assessment='Medium' THEN 1
       WHEN exposure_risk_assessment='Low' THEN 2
       WHEN exposure_risk_assessment='No Identified Risk' THEN 3
-      WHEN exposure_risk_assessment IS NULL THEN 4
+      WHEN exposure_risk_assessment IS NULL OR exposure_risk_assessment = '' THEN 4
       END
     SQL
 
     order_by_rev = <<~SQL.squish
       CASE
-      WHEN exposure_risk_assessment IS NULL THEN 4
+      WHEN exposure_risk_assessment IS NULL OR exposure_risk_assessment = '' THEN 4
       WHEN exposure_risk_assessment='High' THEN 3
       WHEN exposure_risk_assessment='Medium' THEN 2
       WHEN exposure_risk_assessment='Low' THEN 1

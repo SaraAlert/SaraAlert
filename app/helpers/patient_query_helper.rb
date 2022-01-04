@@ -208,43 +208,43 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     when 'transferred_to'
       patients = patients.includes(:jurisdiction).order('jurisdictions.path ' + dir, id: dir)
     when 'assigned_user'
-      patients = patients.order(Arel.sql('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + dir), id: dir)
+      patients = patients.order(Arel.sql('assigned_user IS NULL, assigned_user ' + dir), id: dir)
     when 'state_local_id'
-      patients = patients.order(Arel.sql('CASE WHEN user_defined_id_statelocal IS NULL THEN 1 ELSE 0 END, user_defined_id_statelocal ' + dir), id: dir)
+      patients = patients.order(Arel.sql('user_defined_id_statelocal IS NULL OR user_defined_id_statelocal = "", user_defined_id_statelocal ' + dir), id: dir)
     when 'dob'
-      patients = patients.order(Arel.sql('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + dir), id: dir)
+      patients = patients.order(Arel.sql('date_of_birth IS NULL, date_of_birth ' + dir), id: dir)
     when 'end_of_monitoring'
-      patients = patients.order(Arel.sql('CASE WHEN continuous_exposure = 1 THEN 1 ELSE 0 END,
+      patients = patients.order(Arel.sql('continuous_exposure,
                                  CASE WHEN last_date_of_exposure IS NULL THEN patients.created_at ELSE last_date_of_exposure END ' + dir), id: dir)
     when 'extended_isolation'
-      patients = patients.order(Arel.sql('CASE WHEN extended_isolation IS NULL THEN 1 ELSE 0 END, extended_isolation ' + dir), id: dir)
+      patients = patients.order(Arel.sql('extended_isolation IS NULL, extended_isolation ' + dir), id: dir)
     when 'first_positive_lab_at'
-      patients = patients.order(Arel.sql('CASE WHEN first_positive_lab_at IS NULL THEN 1 ELSE 0 END, first_positive_lab_at ' + dir), id: dir)
+      patients = patients.order(Arel.sql('first_positive_lab_at IS NULL, first_positive_lab_at ' + dir), id: dir)
     when 'symptom_onset'
-      patients = patients.order(Arel.sql('CASE WHEN symptom_onset IS NULL THEN 1 ELSE 0 END, symptom_onset ' + dir), id: dir)
+      patients = patients.order(Arel.sql('symptom_onset IS NULL, symptom_onset ' + dir), id: dir)
     when 'risk_level'
       patients = patients.order_by_risk(asc: dir == 'asc').order(id: dir)
     when 'monitoring_plan'
-      patients = patients.order(Arel.sql('monitoring_plan IS NULL, monitoring_plan ' + dir), id: dir)
+      patients = patients.order(Arel.sql('monitoring_plan IS NULL OR monitoring_plan = "", monitoring_plan ' + dir), id: dir)
     when 'reporter'
       patients = patients.order('responder_id ' + dir, id: dir)
     when 'public_health_action'
-      patients = patients.order(Arel.sql('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + dir), id: dir)
+      patients = patients.order(Arel.sql('public_health_action IS NULL, public_health_action ' + dir), id: dir)
     when 'expected_purge_date'
-      patients = patients.order(Arel.sql('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, updated_at ' + dir), id: dir)
+      patients = patients.order(Arel.sql('closed_at IS NULL, updated_at ' + dir), id: dir)
       # Eligible purge date is a derivative field from `updated_at`
     when 'reason_for_closure'
-      patients = patients.order(Arel.sql('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + dir), id: dir)
+      patients = patients.order(Arel.sql('monitoring_reason IS NULL, monitoring_reason ' + dir), id: dir)
     when 'closed_at'
-      patients = patients.order(Arel.sql('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, closed_at ' + dir), id: dir)
+      patients = patients.order(Arel.sql('closed_at IS NULL, closed_at ' + dir), id: dir)
     when 'transferred_at'
-      patients = patients.order(Arel.sql('CASE WHEN latest_transfer_at IS NULL THEN 1 ELSE 0 END, latest_transfer_at ' + dir), id: dir)
+      patients = patients.order(Arel.sql('latest_transfer_at IS NULL, latest_transfer_at ' + dir), id: dir)
     when 'latest_report'
-      patients = patients.order(Arel.sql('CASE WHEN latest_assessment_at IS NULL THEN 1 ELSE 0 END, latest_assessment_at ' + dir), id: dir)
+      patients = patients.order(Arel.sql('latest_assessment_at IS NULL, latest_assessment_at ' + dir), id: dir)
     when 'workflow'
-      patients = patients.order(Arel.sql('CASE WHEN isolation THEN 1 ELSE 0 END ' + dir), id: dir)
+      patients = patients.order(isolation: dir, id: dir)
     when 'primary_telephone'
-      patients = patients.order(Arel.sql('CASE WHEN primary_telephone IS NULL THEN 1 ELSE 0 END, primary_telephone ' + dir), id: dir)
+      patients = patients.order(Arel.sql('primary_telephone IS NULL OR primary_telephone = "", primary_telephone ' + dir), id: dir)
     end
 
     patients
