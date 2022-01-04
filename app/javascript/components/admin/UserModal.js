@@ -136,7 +136,7 @@ class UserModal extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col}>
                   {this.state.lockReason === 'Auto-locked by the System' && this.state.isLocked && (
-                    <Form.Text as={Alert} id="system-access-auto-lock-reason" variant="danger">
+                    <Form.Text as={Alert} id="system-access-auto-lock-reason" variant="light" className="admin-lock-alert">
                       <i className="fas fa-exclamation-circle"></i>
                       <span> {this.state.autoLockReason}</span>
                     </Form.Text>
