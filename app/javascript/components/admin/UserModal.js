@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes, { bool } from 'prop-types';
-import { Alert, Button, Modal, InputGroup, Form, Col } from 'react-bootstrap';
+import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import Select from 'react-select';
 import _ from 'lodash';
 import { cursorPointerStyle, bootstrapSelectTheme } from '../../packs/stylesheets/ReactSelectStyling';
 import { lockReasonOptions } from '../../data/lockReasonOptions';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 const MAX_NOTES_LENGTH = 5000;
 
@@ -73,7 +75,7 @@ class UserModal extends React.Component {
         <Modal.Body>
           <Form>
             <Form.Group>
-              <Form.Label>Email Address</Form.Label>
+              <Form.Label className="input-label">Email Address</Form.Label>
               <InputGroup>
                 <InputGroup.Prepend>
                   <InputGroup.Text id="email-addon">
@@ -92,7 +94,9 @@ class UserModal extends React.Component {
               </InputGroup>
             </Form.Group>
             <Form.Group>
-              <Form.Label htmlFor="jurisdiction-select">Jurisdiction</Form.Label>
+              <Form.Label className="input-label" htmlFor="jurisdiction-select">
+                Jurisdiction
+              </Form.Label>
               <Select
                 inputId="jurisdiction-select"
                 name="jurisdiction"
@@ -111,7 +115,9 @@ class UserModal extends React.Component {
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label htmlFor="role-select">Role</Form.Label>
+              <Form.Label className="input-label" htmlFor="role-select">
+                Role
+              </Form.Label>
               <Select
                 inputId="role-select"
                 name="role"
@@ -130,9 +136,9 @@ class UserModal extends React.Component {
               />
             </Form.Group>
             {this.props.type === 'edit' && (
-              <Form.Row className="pt-4">
-                <Form.Group as={Col} md={8}>
-                  <Form.Label>System Access</Form.Label>
+              <Form.Group>
+                <Form.Label className="input-label">System Access</Form.Label>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <Form.Check
                     id="system-access-input"
                     name="system-access"
@@ -141,20 +147,20 @@ class UserModal extends React.Component {
                     label={this.state.isLocked ? 'Locked' : 'Unlocked'}
                     onChange={this.handleLockedSystemAccessChange}
                   />
-                </Form.Group>
-                <Form.Group as={Col}>
                   {this.state.lockReason === 'Auto-locked by the System' && this.state.isLocked && (
-                    <Form.Text as={Alert} id="system-access-auto-lock-reason" variant="light" className="admin-lock-alert">
-                      <i className="fas fa-exclamation-circle"></i>
-                      <span> {this.state.autoLockReason}</span>
-                    </Form.Text>
+                    <div className="locked-warning-text ml-2">
+                      <FontAwesomeIcon className="mr-1" icon={faExclamationCircle} />
+                      <span>{this.state.autoLockReason}</span>
+                    </div>
                   )}
-                </Form.Group>
-              </Form.Row>
+                </div>
+              </Form.Group>
             )}
             {this.props.type === 'edit' && (
               <Form.Group>
-                <Form.Label htmlFor="status-select">Status</Form.Label>
+                <Form.Label className="input-label" htmlFor="status-select">
+                  Status
+                </Form.Label>
                 <Select
                   inputId="status-select"
                   id="status"
@@ -171,7 +177,7 @@ class UserModal extends React.Component {
               </Form.Group>
             )}
             <Form.Group>
-              <Form.Label>API Access</Form.Label>
+              <Form.Label className="input-label">API Access</Form.Label>
               <Form.Check
                 id="access-input"
                 name="access"
@@ -182,7 +188,7 @@ class UserModal extends React.Component {
               />
             </Form.Group>
             <Form.Group controlId="notes">
-              <Form.Label>Notes</Form.Label>
+              <Form.Label className="input-label">Notes</Form.Label>
               <InputGroup>
                 <Form.Control
                   name="notes"
