@@ -56,6 +56,14 @@ class UserModal extends React.Component {
     this.setState({ isAPIEnabled: val });
   };
 
+  getStatusValue = () => {
+    if (this.state.isLocked) {
+      return this.state.lockReason ? { label: this.state.lockReason, value: this.state.lockReason } : { label: 'Not specified', value: 'Not specified' };
+    } else {
+      return { label: this.state.activeState, value: this.state.activeState };
+    }
+  };
+
   render() {
     return (
       <Modal id="user-modal" show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
@@ -75,7 +83,7 @@ class UserModal extends React.Component {
                 <Form.Control
                   id="email-input"
                   name="email"
-                  defaultValue={this.props.initialUserData.email ? this.props.initialUserData.email : ''}
+                  value={this.props.initialUserData.email ? this.props.initialUserData.email : ''}
                   placeholder="Enter email address"
                   aria-label="Enter email address"
                   aria-describedby="email-addon"
@@ -88,7 +96,7 @@ class UserModal extends React.Component {
               <Select
                 inputId="jurisdiction-select"
                 name="jurisdiction"
-                defaultValue={
+                value={
                   this.props.initialUserData.jurisdiction_path
                     ? { label: this.props.initialUserData.jurisdiction_path, value: this.props.initialUserData.jurisdiction_path }
                     : { label: this.props.jurisdiction_paths[0], value: this.props.jurisdiction_paths[0] }
@@ -107,7 +115,7 @@ class UserModal extends React.Component {
               <Select
                 inputId="role-select"
                 name="role"
-                defaultValue={
+                value={
                   this.props.initialUserData.role_title
                     ? { label: this.props.initialUserData.role_title, value: this.props.initialUserData.jurisdiction_path }
                     : { label: this.props.roles[0], value: this.props.roles[0] }
@@ -144,38 +152,22 @@ class UserModal extends React.Component {
                 </Form.Group>
               </Form.Row>
             )}
-            {this.props.type === 'edit' && this.state.isLocked && (
+            {this.props.type === 'edit' && (
               <Form.Group>
                 <Form.Label htmlFor="status-select">Status</Form.Label>
                 <Select
                   inputId="status-select"
                   id="status"
                   name="status"
-                  defaultValue={
-                    this.state.lockReason ? { label: this.state.lockReason, value: this.state.lockReason } : { label: 'Not specified', value: 'Not specified' }
-                  }
+                  value={this.getStatusValue()}
                   options={this.state.lockReasonOptions.map(lockReason => {
                     return { label: lockReason, value: lockReason };
                   })}
                   onChange={this.handleStatusChange}
                   styles={cursorPointerStyle}
                   theme={bootstrapSelectTheme}
+                  isDisabled={!this.state.isLocked}
                 />
-              </Form.Group>
-            )}
-            {this.props.type === 'edit' && !this.state.isLocked && (
-              <Form.Group>
-                <Form.Label>Status</Form.Label>
-                <InputGroup>
-                  <Form.Control
-                    id="status-read-only-input"
-                    name="status-read-only"
-                    defaultValue={this.state.activeState ? this.state.activeState : ''}
-                    aria-label="Status"
-                    aria-describedby="status-addon"
-                    readOnly
-                  />
-                </InputGroup>
               </Form.Group>
             )}
             <Form.Group>
