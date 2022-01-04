@@ -347,102 +347,102 @@ ActiveRecord::Schema.define(version: 2021_12_30_184033) do
     t.bigint "responder_id"
     t.bigint "creator_id"
     t.bigint "jurisdiction_id"
-    t.binary "submission_token", limit: 200
+    t.binary "submission_token", limit: 255
     t.boolean "monitoring", default: true
-    t.string "monitoring_reason", limit: 200
+    t.string "monitoring_reason"
     t.boolean "purged", default: false
-    t.string "exposure_risk_assessment", limit: 200
-    t.string "monitoring_plan", limit: 200, default: "None"
-    t.string "public_health_action", limit: 200, default: "None"
+    t.string "exposure_risk_assessment"
+    t.string "monitoring_plan", default: "None"
+    t.string "public_health_action", default: "None"
     t.datetime "last_assessment_reminder_sent"
-    t.string "user_defined_id_statelocal", limit: 200
-    t.string "user_defined_id_cdc", limit: 200
-    t.string "user_defined_id_nndss", limit: 200
-    t.string "first_name", limit: 200
-    t.string "middle_name", limit: 200
-    t.string "last_name", limit: 200
+    t.string "user_defined_id_statelocal"
+    t.string "user_defined_id_cdc"
+    t.string "user_defined_id_nndss"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
     t.date "date_of_birth"
     t.integer "age"
-    t.string "sex", limit: 200
+    t.string "sex"
     t.boolean "white"
     t.boolean "black_or_african_american"
     t.boolean "american_indian_or_alaska_native"
     t.boolean "asian"
     t.boolean "native_hawaiian_or_other_pacific_islander"
-    t.string "ethnicity", limit: 200
-    t.string "primary_language", limit: 200
-    t.string "secondary_language", limit: 200
+    t.string "ethnicity"
+    t.string "primary_language"
+    t.string "secondary_language"
     t.boolean "interpretation_required"
-    t.string "nationality", limit: 200
-    t.string "address_line_1", limit: 200
-    t.string "foreign_address_line_1", limit: 200
-    t.string "address_city", limit: 200
-    t.string "address_state", limit: 200
-    t.string "address_line_2", limit: 200
-    t.string "address_zip", limit: 200
-    t.string "address_county", limit: 200
-    t.string "monitored_address_line_1", limit: 200
-    t.string "monitored_address_city", limit: 200
-    t.string "monitored_address_state", limit: 200
-    t.string "monitored_address_line_2", limit: 200
-    t.string "monitored_address_zip", limit: 200
-    t.string "monitored_address_county", limit: 200
-    t.string "foreign_address_city", limit: 200
-    t.string "foreign_address_country", limit: 200
-    t.string "foreign_address_line_2", limit: 200
-    t.string "foreign_address_zip", limit: 200
-    t.string "foreign_address_line_3", limit: 200
-    t.string "foreign_address_state", limit: 200
-    t.string "foreign_monitored_address_line_1", limit: 200
-    t.string "foreign_monitored_address_city", limit: 200
-    t.string "foreign_monitored_address_state", limit: 200
-    t.string "foreign_monitored_address_line_2", limit: 200
-    t.string "foreign_monitored_address_zip", limit: 200
-    t.string "foreign_monitored_address_county", limit: 200
-    t.string "primary_telephone", limit: 200
-    t.string "primary_telephone_type", limit: 200
-    t.string "secondary_telephone", limit: 200
-    t.string "secondary_telephone_type", limit: 200
-    t.string "email", limit: 200
-    t.string "preferred_contact_method", limit: 200
-    t.string "preferred_contact_time", limit: 200
-    t.string "port_of_origin", limit: 200
-    t.string "source_of_report", limit: 200
-    t.string "flight_or_vessel_number", limit: 200
-    t.string "flight_or_vessel_carrier", limit: 200
-    t.string "port_of_entry_into_usa", limit: 200
+    t.string "nationality"
+    t.string "address_line_1"
+    t.string "foreign_address_line_1"
+    t.string "address_city"
+    t.string "address_state"
+    t.string "address_line_2"
+    t.string "address_zip"
+    t.string "address_county"
+    t.string "monitored_address_line_1"
+    t.string "monitored_address_city"
+    t.string "monitored_address_state"
+    t.string "monitored_address_line_2"
+    t.string "monitored_address_zip"
+    t.string "monitored_address_county"
+    t.string "foreign_address_city"
+    t.string "foreign_address_country"
+    t.string "foreign_address_line_2"
+    t.string "foreign_address_zip"
+    t.string "foreign_address_line_3"
+    t.string "foreign_address_state"
+    t.string "foreign_monitored_address_line_1"
+    t.string "foreign_monitored_address_city"
+    t.string "foreign_monitored_address_state"
+    t.string "foreign_monitored_address_line_2"
+    t.string "foreign_monitored_address_zip"
+    t.string "foreign_monitored_address_county"
+    t.string "primary_telephone"
+    t.string "primary_telephone_type"
+    t.string "secondary_telephone"
+    t.string "secondary_telephone_type"
+    t.string "email"
+    t.string "preferred_contact_method"
+    t.string "preferred_contact_time"
+    t.string "port_of_origin"
+    t.string "source_of_report"
+    t.string "flight_or_vessel_number"
+    t.string "flight_or_vessel_carrier"
+    t.string "port_of_entry_into_usa"
     t.text "travel_related_notes"
-    t.string "additional_planned_travel_type", limit: 200
-    t.string "additional_planned_travel_destination", limit: 200
-    t.string "additional_planned_travel_destination_state", limit: 200
-    t.string "additional_planned_travel_destination_country", limit: 200
-    t.string "additional_planned_travel_port_of_departure", limit: 200
+    t.string "additional_planned_travel_type"
+    t.string "additional_planned_travel_destination"
+    t.string "additional_planned_travel_destination_state"
+    t.string "additional_planned_travel_destination_country"
+    t.string "additional_planned_travel_port_of_departure"
     t.date "date_of_departure"
     t.date "date_of_arrival"
     t.date "additional_planned_travel_start_date"
     t.date "additional_planned_travel_end_date"
     t.text "additional_planned_travel_related_notes"
     t.date "last_date_of_exposure"
-    t.string "potential_exposure_location", limit: 200
-    t.string "potential_exposure_country", limit: 200
+    t.string "potential_exposure_location"
+    t.string "potential_exposure_country"
     t.boolean "contact_of_known_case"
-    t.string "contact_of_known_case_id", limit: 200
+    t.string "contact_of_known_case_id"
     t.boolean "member_of_a_common_exposure_cohort"
     t.boolean "travel_to_affected_country_or_area"
     t.boolean "laboratory_personnel"
-    t.string "laboratory_personnel_facility_name", limit: 200
+    t.string "laboratory_personnel_facility_name"
     t.boolean "healthcare_personnel"
-    t.string "healthcare_personnel_facility_name", limit: 200
+    t.string "healthcare_personnel_facility_name"
     t.boolean "crew_on_passenger_or_cargo_flight"
     t.boolean "was_in_health_care_facility_with_known_cases"
-    t.string "was_in_health_care_facility_with_known_cases_facility_name", limit: 200
+    t.string "was_in_health_care_facility_with_known_cases_facility_name"
     t.text "exposure_notes"
     t.boolean "isolation", default: false
     t.datetime "closed_at"
-    t.string "source_of_report_specify", limit: 200
+    t.string "source_of_report_specify"
     t.boolean "pause_notifications", default: false
     t.date "symptom_onset"
-    t.string "case_status", limit: 200
+    t.string "case_status"
     t.integer "assigned_user"
     t.boolean "continuous_exposure", default: false
     t.datetime "latest_assessment_at"
@@ -450,22 +450,22 @@ ActiveRecord::Schema.define(version: 2021_12_30_184033) do
     t.integer "negative_lab_count", default: 0
     t.datetime "latest_transfer_at"
     t.bigint "latest_transfer_from"
-    t.string "gender_identity", limit: 200
-    t.string "sexual_orientation", limit: 200
+    t.string "gender_identity"
+    t.string "sexual_orientation"
     t.boolean "user_defined_symptom_onset"
     t.date "extended_isolation"
     t.boolean "head_of_household"
-    t.string "time_zone", limit: 200, default: "America/New_York"
+    t.string "time_zone", default: "America/New_York"
     t.boolean "race_other"
     t.boolean "race_unknown"
     t.boolean "race_refused_to_answer"
     t.boolean "latest_assessment_symptomatic", default: false
     t.date "first_positive_lab_at"
-    t.string "legacy_primary_language", limit: 200
-    t.string "legacy_secondary_language", limit: 200
-    t.string "follow_up_reason", limit: 200
+    t.string "legacy_primary_language"
+    t.string "legacy_secondary_language"
+    t.string "follow_up_reason"
     t.text "follow_up_note"
-    t.string "international_telephone", limit: 200
+    t.string "international_telephone"
     t.boolean "enrolled_isolation"
     t.datetime "isolation_to_exposure_at", precision: 6
     t.datetime "exposure_to_isolation_at", precision: 6
@@ -576,14 +576,6 @@ ActiveRecord::Schema.define(version: 2021_12_30_184033) do
     t.index ["user_id"], name: "index_user_filters_on_user_id"
   end
 
-  create_table "user_last_activities", charset: "utf8", force: :cascade do |t|
-    t.datetime "last_activity_at"
-    t.bigint "user_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_user_last_activities_on_user_id"
-  end
-
   create_table "users", charset: "utf8", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -626,6 +618,7 @@ ActiveRecord::Schema.define(version: 2021_12_30_184033) do
     t.index ["patient_id"], name: "index_vaccines_on_patient_id"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_downloads", "oauth_applications", column: "application_id"
   add_foreign_key "jwt_identifiers", "oauth_applications", column: "application_id"
