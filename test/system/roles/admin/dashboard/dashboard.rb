@@ -28,6 +28,54 @@ class AdminDashboard < ApplicationSystemTestCase
     end
   end
 
+  def edit_user
+    # Edit Row Button (below) is an aria-label. Enabling for this test only
+    Capybara.enable_aria_label = true
+    page.execute_script("$('user-modal').css('transition','none')")
+
+    # The users we are interested in adjusting are on the second page when viewing 25 users/page
+    select '50', from: 'Adjust number of records'
+
+    # Edit user with email 'manual_locked_user@example.com'
+    tr = find('tr', text: 'manual_locked_user@example.com')
+    tr.click_button 'Edit Row Button'
+
+    find("input[name='status']", visible: false)
+    assert page.has_field? 'status', type: :hidden, with: 'No longer an employee'
+
+    # Unlock the user with email 'manual_locked_user@example.com'
+    find(:xpath, "//label[@for='system-access-input']").click
+    assert page.has_no_field? 'status', type: :hidden, with: 'No longer an employee'
+    assert page.has_field? 'status-read-only', with: 'Inactive'
+
+    find('.modal-footer').click_on('Cancel')
+
+    assert page.has_text? 'auto_locked_user@example.com'
+
+    # Edit user with email 'auto_locked_user@example.com'
+    tr = find('tr', text: 'auto_locked_user@example.com')
+    tr.click_button 'Edit Row Button'
+
+    find("input[name='status']", visible: false)
+    assert page.has_field? 'status', type: :hidden, with: 'Auto-locked by the System'
+    assert page.has_text? 'failed login attempts'
+
+    # Unlock the user with email 'auto_locked_user@example.com'
+    find(:xpath, "//label[@for='system-access-input']").click
+    assert page.has_no_field? 'status', type: :hidden, with: 'Auto-locked by the System'
+    assert page.has_no_text? 'failed login attempts'
+    assert page.has_field? 'status-read-only', with: 'Active'
+
+    # Save the user with email 'auto_locked_user@example.com' after unlocking
+    find('.modal-footer').click_on('Save')
+
+    tr = find('tr', text: 'auto_locked_user@example.com')
+
+    # Confirm that the user is Unlocked and status is Active
+    assert tr.has_text? 'Unlocked'
+    assert tr.has_text? 'Active'
+  end
+
   def search_for_user(query)
     page.execute_script %{ $("#search-input").val("#{query}") }
   end

@@ -14,6 +14,10 @@ class AdminTest < ApplicationSystemTestCase
     @@admin_test_helper.view_users('state1_admin')
   end
 
+  test 'edit user' do
+    @@admin_test_helper.edit_user('usa_admin')
+  end
+
   # test 'add users with different jurisdictions and roles' do
   #   users = [
   #     { label: 'usa_admin', email: 'locals1c1_enroller2@example.com', jurisdiction: 'USA, State 1, County 1', role: 'Enroller', is_api_enabled: true },
@@ -33,7 +37,7 @@ class AdminTest < ApplicationSystemTestCase
   #     { label: 'usa_admin', email: 'locals2c3_epi_enroller2@example.com', jurisdiction: 'USA, State 2, County 3',
   #       role: 'Public Health Enroller', is_api_enabled: true }
   #   ]
-
+  #
   #   users.each do |user_data|
   #     @@admin_test_helper.add_user(user_data)
   #   end

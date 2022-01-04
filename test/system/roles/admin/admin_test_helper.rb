@@ -47,8 +47,10 @@ class AdminTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def edit_user(user_label, id)
-    # TODO: implement
+  def edit_user(user_label)
+    @@system_test_utils.login(user_label)
+    @@admin_dashboard.edit_user
+    @@system_test_utils.logout
   end
 
   def select_user(user_label, id)
