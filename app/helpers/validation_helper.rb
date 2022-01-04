@@ -88,6 +88,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     'Fully Vaccinated',
     'Deceased',
     'Duplicate',
+    'Refused Monitoring',
     'Other'
   ].freeze
 
