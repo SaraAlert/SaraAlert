@@ -87,8 +87,7 @@ class FirstPositiveLaboratory extends React.Component {
         {this.state.showModal && (
           <LaboratoryModal
             currentLabData={this.props.lab}
-            specimenCollectionRequired={true}
-            onlyPositiveResult={true}
+            firstPositiveLab={true}
             onSave={lab => {
               this.setState({ showModal: false }, () => {
                 this.props.onChange(lab);

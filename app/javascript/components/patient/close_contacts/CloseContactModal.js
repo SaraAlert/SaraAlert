@@ -1,9 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
-
-import { phoneSchemaValidator } from '../../../utils/PatientFormatters';
-
 import _ from 'lodash';
 import moment from 'moment';
 import * as yup from 'yup';
@@ -12,6 +9,7 @@ import DateInput from '../../util/DateInput';
 import ReactTooltip from 'react-tooltip';
 import PhoneInput from '../../util/PhoneInput';
 import InfoTooltip from '../../util/InfoTooltip';
+import { phoneSchemaValidator } from '../../../utils/PatientFormatters';
 
 const MAX_NOTES_LENGTH = 2000;
 
@@ -27,18 +25,51 @@ class CloseContactModal extends React.Component {
       assigned_user: props.currentCloseContact.assigned_user,
       contact_attempts: props.currentCloseContact.contact_attempts,
       notes: props.currentCloseContact.notes || '',
+      loading: false,
       errors: {},
-      isValid:
-        (props.currentCloseContact.first_name || props.currentCloseContact.last_name) &&
-        (props.currentCloseContact.primary_telephone || props.currentCloseContact.email),
     };
   }
 
-  validateAndSubmit = () => {
+  handleChange = event => {
+    let field = _.trim(event.target.id, 'cc_');
+    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    this.setState({ [field]: value });
+  };
+
+  handleNameChange = event => {
+    if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.match(/^\s*$/) !== null) {
+      // Empty spaces are allowed to be typed (for example, a first name may be 'Mary Beth')
+      // But empty starting first spaces should not be allowed
+      event.target.value = '';
+    }
+    this.setState({ [_.trim(event.target.id, 'cc_')]: event.target.value });
+  };
+
+  handlePhoneChange = event => {
+    this.setState({ [_.trim(event.target.id, 'cc_')]: event.target.value.replace(/-/g, '') });
+  };
+
+  handleLDEChange = date => {
+    this.setState({ last_date_of_exposure: date });
+  };
+
+  handleAssignedUserChange = event => {
+    if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
+    // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
+    const value = _.trim(event.target.value) === '' ? null : parseInt(event.target.value);
+    this.setState({ assigned_user: value });
+  };
+
+  /**
+   * Validates close contact data and submits if valid, otherwise displays errors in modal
+   */
+  submit = () => {
     schema
       .validate({ ...this.state }, { abortEarly: false })
       .then(() => {
-        this.props.onSave(this.state);
+        this.setState({ loading: true }, () => {
+          this.props.onSave(this.state);
+        });
       })
       .catch(err => {
         // Validation errors, update state to display to user
@@ -52,80 +83,68 @@ class CloseContactModal extends React.Component {
       });
   };
 
-  handleNameChange = event => {
-    if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.match(/^\s*$/) !== null) {
-      // Empty spaces are allowed to be typed (for example, a first name may be 'Mary Beth')
-      // But empty starting first spaces should not be allowed
-      event.target.value = '';
-    }
-    this.updateState(_.trim(event.target.id, 'cc_'), event.target.value);
-  };
-
-  handlePhoneNumberChange = event => this.updateState('primary_telephone', event.target.value.replace(/-/g, ''));
-
-  handleEmailChange = event => this.updateState('email', event.target.value);
-
-  handleDateChange = event => this.updateState('last_date_of_exposure', event);
-
-  handleNotesChange = event => this.updateState('notes', event.target.value);
-
-  handleAssignedUserChange = event => {
-    if (isNaN(event.target.value) || parseInt(event.target.value) > 999999) return;
-    // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
-    const value = _.trim(event.target.value) === '' ? null : parseInt(event.target.value);
-    this.updateState('assigned_user', value);
-  };
-
-  updateState(key, value) {
-    this.setState({ [key]: value }, () => {
-      let isValid = (this.state.first_name || this.state.last_name) && (this.state.primary_telephone || this.state.email);
-      this.setState({
-        isValid,
-      });
-    });
-  }
-
   render() {
+    // Data is valid as long as at least one field has a value
+    const isValid = (this.state.first_name || this.state.last_name) && (this.state.primary_telephone || this.state.email);
+
     return (
       <Modal size="lg" show centered onHide={this.props.onClose}>
         <h1 className="sr-only">{this.props.editMode ? 'Edit' : 'Add New'} Close Contact</h1>
         <Modal.Header>
           <Modal.Title>{this.props.editMode ? 'Edit' : 'Add New'} Close Contact</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="px-5">
-          <Row className="mt-3">
-            <Form.Group as={Col} lg="12" controlId="cc_first_name">
-              <Form.Label className="input-label">First Name {schema?.fields?.first_name?._exclusive?.required && '*'} </Form.Label>
-              <Form.Control size="lg" className="form-square" value={this.state.first_name || ''} onChange={this.handleNameChange} />
+        <Modal.Body>
+          <Row>
+            <Form.Group as={Col} lg="12" className="pr-2" controlId="cc_first_name">
+              <Form.Label className="input-label">First Name{schema?.fields?.first_name?._exclusive?.required && '*'} </Form.Label>
+              <Form.Control
+                size="lg"
+                className="form-square"
+                value={this.state.first_name || ''}
+                onChange={this.handleNameChange}
+                isInvalid={!!this.state.errors['first_name']}
+              />
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['first_name']}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} lg="12" controlId="cc_last_name">
-              <Form.Label className="input-label">Last Name {schema?.fields?.last_name?._exclusive?.required && '*'} </Form.Label>
-              <Form.Control size="lg" className="form-square" value={this.state.last_name || ''} onChange={this.handleNameChange} />
+            <Form.Group as={Col} lg="12" className="pl-2" controlId="cc_last_name">
+              <Form.Label className="input-label">Last Name{schema?.fields?.last_name?._exclusive?.required && '*'} </Form.Label>
+              <Form.Control
+                size="lg"
+                className="form-square"
+                value={this.state.last_name || ''}
+                onChange={this.handleNameChange}
+                isInvalid={!!this.state.errors['last_name']}
+              />
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['last_name']}
               </Form.Control.Feedback>
             </Form.Group>
           </Row>
           <Row>
-            <Form.Group as={Col} lg="12" controlId="cc_primary_telephone">
-              <Form.Label className="input-label">Phone Number {schema?.fields?.primary_telephone?._exclusive?.required && '*'}</Form.Label>
+            <Form.Group as={Col} lg="12" className="pr-2" controlId="cc_primary_telephone">
+              <Form.Label className="input-label">Phone Number{schema?.fields?.primary_telephone?._exclusive?.required && '*'}</Form.Label>
               <PhoneInput
                 id="cc_primary_telephone"
                 className="form-square"
                 value={this.state.primary_telephone}
-                onChange={this.handlePhoneNumberChange}
+                onChange={this.handlePhoneChange}
                 isInvalid={!!this.state.errors['primary_telephone']}
               />
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['primary_telephone']}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} lg="12" controlId="cc_email">
-              <Form.Label className="input-label">Email {schema?.fields?.email?._exclusive?.required && '*'} </Form.Label>
-              <Form.Control size="lg" className="form-square" value={this.state.email || ''} onChange={this.handleEmailChange} />
+            <Form.Group as={Col} lg="12" className="pl-2" controlId="cc_email">
+              <Form.Label className="input-label">Email{schema?.fields?.email?._exclusive?.required && '*'} </Form.Label>
+              <Form.Control
+                size="lg"
+                className="form-square"
+                value={this.state.email || ''}
+                onChange={this.handleChange}
+                isInvalid={!!this.state.errors['email']}
+              />
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['email']}
               </Form.Control.Feedback>
@@ -134,13 +153,13 @@ class CloseContactModal extends React.Component {
           <hr></hr>
           <Row>
             <Form.Group as={Col} lg="12" controlId="cc_last_date_of_exposure">
-              <Form.Label className="input-label">Last Date of Exposure {schema?.fields?.last_date_of_exposure?._exclusive?.required && '*'}</Form.Label>
+              <Form.Label className="input-label">Last Date of Exposure{schema?.fields?.last_date_of_exposure?._exclusive?.required && '*'}</Form.Label>
               <DateInput
                 id="cc_last_date_of_exposure"
                 date={this.state.last_date_of_exposure}
                 minDate={'2020-01-01'}
                 maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
-                onChange={date => this.handleDateChange(date)}
+                onChange={date => this.handleLDEChange(date)}
                 placement="top"
                 isInvalid={!!this.state.errors['last_date_of_exposure']}
                 customClass="form-control-lg"
@@ -151,11 +170,11 @@ class CloseContactModal extends React.Component {
             </Form.Group>
             <Form.Group as={Col} lg="12" controlId="cc_assigned_user">
               <Form.Label className="input-label">
-                Assigned User {schema?.fields?.assigned_user?._exclusive?.required && '*'}
+                Assigned User{schema?.fields?.assigned_user?._exclusive?.required && '*'}
                 <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
               </Form.Label>
               <Form.Control
-                isInvalid={this.state.errors['assigned_user']}
+                isInvalid={!!this.state.errors['assigned_user']}
                 as="input"
                 list="cc_assigned_users"
                 autoComplete="off"
@@ -179,12 +198,12 @@ class CloseContactModal extends React.Component {
             </Form.Group>
           </Row>
           <Row>
-            <Form.Group as={Col}>
+            <Form.Group as={Col} className="mb-0">
               <Form.Label htmlFor="notes" className="input-label">
-                Notes
-                {schema?.fields?.notes?._exclusive?.required && '*'}
+                Notes{schema?.fields?.notes?._exclusive?.required && '*'}
               </Form.Label>
               <Form.Control
+                isInvalid={!!this.state.errors['notes']}
                 id="notes"
                 as="textarea"
                 rows="5"
@@ -192,7 +211,7 @@ class CloseContactModal extends React.Component {
                 value={this.state.notes || ''}
                 placeholder="enter additional information about contact"
                 maxLength={MAX_NOTES_LENGTH}
-                onChange={this.handleNotesChange}
+                onChange={this.handleChange}
               />
               <div className="character-limit-text">{MAX_NOTES_LENGTH - this.state.notes.length} characters remaining</div>
               <Form.Control.Feedback className="d-block" type="invalid">
@@ -205,7 +224,12 @@ class CloseContactModal extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" disabled={!this.state.isValid} onClick={this.validateAndSubmit}>
+          <Button variant="primary btn-square" disabled={this.state.loading || !isValid} onClick={this.submit}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
             <span data-for="submit-tooltip" data-tip="" className="ml-1">
               {this.props.editMode ? 'Update' : 'Create'}
             </span>
@@ -213,7 +237,7 @@ class CloseContactModal extends React.Component {
           {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
           {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
           {/* This does not impact component functionality at all. */}
-          {!this.state.isValid && (
+          {!isValid && !this.state.loading && (
             <ReactTooltip id="submit-tooltip" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container text-left">
               Please enter at least one name (First Name or Last Name) and at least one contact method (Phone Number or Email).
             </ReactTooltip>

@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Alert, Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
-
+import * as yup from 'yup';
 import DateInput from '../../util/DateInput';
 
 class LaboratoryModal extends React.Component {
@@ -13,49 +13,116 @@ class LaboratoryModal extends React.Component {
       lab_type: this.props.currentLabData?.lab_type || '',
       specimen_collection: this.props.currentLabData?.specimen_collection,
       report: this.props.currentLabData?.report,
-      result: this.props.currentLabData?.result || (this.props.onlyPositiveResult ? 'positive' : ''),
-      reportInvalid: false,
+      result: this.props.currentLabData?.result || (this.props.firstPositiveLab ? 'positive' : ''),
+      loading: false,
+      errors: {},
     };
+    this.updateValidations();
+  }
+
+  updateValidations() {
+    let reportDate = '2020-01-01';
+    let reportMessage = 'Report Date must fall after January 1, 2020.';
+    if (this.state.report && this.state.specimen_collection) {
+      // if both dates are set, ensure the report date falls after the specimen collection date
+      reportDate = this.state.specimen_collection;
+      reportMessage = 'Report Date cannot be before Specimen Collection Date.';
+    }
+
+    if (this.props.firstPositiveLab) {
+      schema = yup.object().shape({
+        lab_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+        specimen_collection: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .required('Please enter Specimen Collection Date.')
+          .min(moment('2020-01-01'), 'Specimen Collection Date must fall after January 1, 2020.')
+          .max(moment(), 'Specimen Collection Date can not be in the future.')
+          .nullable(),
+        report: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .min(moment(reportDate), reportMessage)
+          .max(moment(), 'Report Date can not be in the future.')
+          .nullable(),
+        result: yup.string().required('Please select a lab result.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+      });
+    } else {
+      schema = yup.object().shape({
+        lab_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+        specimen_collection: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .min(moment('2020-01-01'), 'Specimen Collection Date must fall after January 1, 2020.')
+          .max(moment(), 'Specimen Collection Date can not be in the future.')
+          .nullable(),
+        report: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .min(moment(reportDate), reportMessage)
+          .max(moment(), 'Report Date can not be in the future.')
+          .nullable(),
+        result: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+      });
+    }
   }
 
   handleChange = event => {
-    this.setState({ [event.target.id]: event.target.value }, this.clearSymptomOnset);
+    this.setState({ [event.target.id]: event.target.value }, () => {
+      this.updateValidations();
+      this.clearSymptomOnset();
+    });
   };
 
   handleDateChange = (field, date) => {
     this.setState({ [field]: date }, () => {
-      this.setState(state => {
-        return {
-          reportInvalid: state.report && state.specimen_collection && moment(state.report).isBefore(state.specimen_collection, 'day'),
-        };
-      }, this.clearSymptomOnset);
+      this.updateValidations();
+      this.clearSymptomOnset();
     });
   };
 
-  // Clear symptom onset if user decides to undo changes
+  /**
+   * Clear symptom onset if user decides to undo changes
+   */
   clearSymptomOnset = () => {
     if (this.state.result == 'positive' && this.state.specimen_collection != null) {
       this.setState({ symptom_onset: null });
     }
   };
 
+  /**
+   * Validates close contact data and submits if valid, otherwise displays errors in modal
+   */
   submit = () => {
-    this.props.onSave(
-      {
-        lab_type: this.state.lab_type,
-        specimen_collection: this.state.specimen_collection,
-        report: this.state.report,
-        result: this.state.result,
-      },
-      this.state.symptom_onset
-    );
+    schema
+      .validate({ ...this.state }, { abortEarly: false })
+      .then(() => {
+        this.setState({ loading: true }, () => {
+          this.props.onSave(
+            {
+              lab_type: this.state.lab_type,
+              specimen_collection: this.state.specimen_collection,
+              report: this.state.report,
+              result: this.state.result,
+            },
+            this.state.symptom_onset
+          );
+        });
+      })
+      .catch(err => {
+        // Validation errors, update state to display to user
+        if (err && err.inner) {
+          let issues = {};
+          for (const issue of err.inner) {
+            issues[issue['path']] = issue['errors'];
+          }
+          this.setState({ errors: issues });
+        }
+      });
   };
 
   render() {
     // Data is valid as long as at least one field has a value
-    const isValid = this.props.onlyPositiveResult
+    const isValid = this.props.firstPositiveLab
       ? this.state.result && this.state.specimen_collection
       : this.state.lab_type || this.state.specimen_collection || this.state.report || this.state.result;
+
     return (
       <Modal size="lg" className="laboratory-modal-container" show centered onHide={this.props.onClose}>
         <h1 className="sr-only">{this.props.editMode ? 'Edit' : 'Add New'} Lab Result</h1>
@@ -66,8 +133,13 @@ class LaboratoryModal extends React.Component {
           <Form>
             <Row>
               <Form.Group as={Col} controlId="lab_type">
-                <Form.Label className="input-label">Lab Test Type</Form.Label>
-                <Form.Control as="select" className="form-control-lg" onChange={this.handleChange} value={this.state.lab_type}>
+                <Form.Label className="input-label">Lab Test Type{schema?.fields?.lab_type?._exclusive?.required && '*'}</Form.Label>
+                <Form.Control
+                  as="select"
+                  className="form-control-lg"
+                  onChange={this.handleChange}
+                  value={this.state.lab_type}
+                  isInvalid={!!this.state.errors['lab_type']}>
                   <option></option>
                   <option>PCR</option>
                   <option>Antigen</option>
@@ -77,12 +149,15 @@ class LaboratoryModal extends React.Component {
                   <option>IgA Antibody</option>
                   <option>Other</option>
                 </Form.Control>
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['lab_type']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
               <Form.Group as={Col}>
                 <Form.Label htmlFor="specimen_collection" className="input-label">
-                  Specimen Collection Date {this.props.specimenCollectionRequired && '*'}
+                  Specimen Collection Date{schema?.fields?.specimen_collection?._exclusive?.required && '*'}
                 </Form.Label>
                 <DateInput
                   id="specimen_collection"
@@ -94,13 +169,17 @@ class LaboratoryModal extends React.Component {
                   placement="bottom"
                   customClass="form-control-lg"
                   ariaLabel="Specimen Collection Date Input"
+                  isInvalid={!!this.state.errors['specimen_collection']}
                 />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['specimen_collection']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
               <Form.Group as={Col}>
                 <Form.Label htmlFor="report" className="input-label">
-                  Report Date
+                  Report Date{schema?.fields?.report?._exclusive?.required && '*'}
                 </Form.Label>
                 <DateInput
                   id="report"
@@ -110,20 +189,25 @@ class LaboratoryModal extends React.Component {
                   onChange={date => this.handleDateChange('report', date)}
                   isClearable
                   placement="bottom"
-                  isInvalid={this.state.reportInvalid}
                   customClass="form-control-lg"
                   ariaLabel="Report Date Input"
+                  isInvalid={!!this.state.errors['report']}
                 />
                 <Form.Control.Feedback className="d-block" type="invalid">
-                  {this.state.reportInvalid && <span>Report Date cannot be before Specimen Collection Date.</span>}
+                  {this.state.errors['report']}
                 </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
               <Form.Group as={Col} controlId="result">
-                <Form.Label className="input-label">Result {this.props.onlyPositiveResult && '*'}</Form.Label>
-                <Form.Control as="select" className="form-control-lg" onChange={this.handleChange} value={this.state.result}>
-                  {this.props.onlyPositiveResult ? (
+                <Form.Label className="input-label">Result{schema?.fields?.result?._exclusive?.required && '*'}</Form.Label>
+                <Form.Control
+                  as="select"
+                  className="form-control-lg"
+                  onChange={this.handleChange}
+                  value={this.state.result}
+                  isInvalid={!!this.state.errors['result']}>
+                  {this.props.firstPositiveLab ? (
                     <option>positive</option>
                   ) : (
                     <React.Fragment>
@@ -135,6 +219,9 @@ class LaboratoryModal extends React.Component {
                     </React.Fragment>
                   )}
                 </Form.Control>
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['result']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             {this.props.editMode &&
@@ -168,16 +255,16 @@ class LaboratoryModal extends React.Component {
             Cancel
           </Button>
           <span data-for="submit-tooltip" data-tip="" className="ml-1">
-            <Button variant="primary btn-square" disabled={this.props.loading || this.state.reportInvalid || !isValid} onClick={this.submit}>
+            <Button variant="primary btn-square" disabled={this.props.loading || !isValid} onClick={this.submit}>
               {this.props.editMode ? 'Update' : 'Create'}
             </Button>
           </span>
           {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
           {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
           {/* This does not impact component functionality at all. */}
-          {!isValid && (
-            <ReactTooltip id="submit-tooltip" place="top" type="dark" effect="solid" multiline={this.props.onlyPositiveResult}>
-              {this.props.onlyPositiveResult ? 'Please enter specimen collection date.' : 'Please enter at least one field.'}
+          {!isValid && !this.props.loading && (
+            <ReactTooltip id="submit-tooltip" place="top" type="dark" effect="solid" multiline={this.props.firstPositiveLab}>
+              {this.props.firstPositiveLab ? 'Please enter Specimen Collection Date.' : 'Please enter at least one field.'}
             </ReactTooltip>
           )}
         </Modal.Footer>
@@ -186,10 +273,24 @@ class LaboratoryModal extends React.Component {
   }
 }
 
+var schema = yup.object().shape({
+  lab_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  specimen_collection: yup
+    .date('Date must correspond to the "mm/dd/yyyy" format.')
+    .min(moment('2020-01-01'), 'Specimen Collection Date must fall after January 1, 2020.')
+    .max(moment(), 'Specimen Collection Date can not be in the future.')
+    .nullable(),
+  report: yup
+    .date('Date must correspond to the "mm/dd/yyyy" format.')
+    .min(moment('2020-01-01'), 'Report Date must fall after January 1, 2020.')
+    .max(moment(), 'Report Date can not be in the future.')
+    .nullable(),
+  result: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+});
+
 LaboratoryModal.propTypes = {
   currentLabData: PropTypes.object,
-  specimenCollectionRequired: PropTypes.bool,
-  onlyPositiveResult: PropTypes.bool,
+  firstPositiveLab: PropTypes.bool,
   onSave: PropTypes.func,
   onClose: PropTypes.func,
   editMode: PropTypes.bool,
