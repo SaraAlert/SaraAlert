@@ -580,11 +580,11 @@ namespace :stats do
       }
       results[title]['Age - Flagged for possible missing age'] = {
         exposure: active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 110').or(active_exp.where(date_of_birth: ['', nil])).count,
-        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 110').or(active_exp.where(date_of_birth: ['', nil])).count
+        isolation: active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) >= 110').or(active_iso.where(date_of_birth: ['', nil])).count
       }
       begin
         dates_exp = active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 110').pluck(:date_of_birth).reject(&:nil?).collect{|dob| dob.to_datetime.to_f}
-        dates_iso = active_exp.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 110').pluck(:date_of_birth).reject(&:nil?).collect{|dob| dob.to_datetime.to_f}
+        dates_iso = active_iso.where('TIMESTAMPDIFF(YEAR, date_of_birth, created_at) < 110').pluck(:date_of_birth).reject(&:nil?).collect{|dob| dob.to_datetime.to_f}
         results[title]['Age - Continuous mean'] = {
           exposure: dates_exp.empty? ? 'NULL' : (DateTime.now.year - Date.strptime((dates_exp.sum / dates_exp.count).to_i.to_s, "%s").year),
           isolation: dates_iso.empty? ? 'NULL' : (DateTime.now.year - Date.strptime((dates_iso.sum / dates_iso.count).to_i.to_s, "%s").year)
