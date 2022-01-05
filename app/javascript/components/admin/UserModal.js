@@ -18,7 +18,6 @@ class UserModal extends React.Component {
       sorted_jurisdiction_paths: _.values(this.props.jurisdiction_paths).sort((a, b) => a.localeCompare(b)),
       jurisdiction_path: this.props.initialUserData.jurisdiction_path || this.props.jurisdiction_paths[0],
       roleTitle: this.props.initialUserData.role_title || this.props.roles[0],
-      roles: this.props.roles,
       isAPIEnabled: this.props.initialUserData.is_api_enabled || false,
       isLocked: this.props.initialUserData.is_locked || false,
       lockReason: this.props.initialUserData.lock_reason || '',
@@ -86,7 +85,7 @@ class UserModal extends React.Component {
                 <Form.Control
                   id="email-input"
                   name="email"
-                  value={this.state.email ? this.state.email : ''}
+                  value={this.state.email || ''}
                   placeholder="Enter email address"
                   aria-label="Enter email address"
                   aria-describedby="email-addon"
@@ -104,7 +103,7 @@ class UserModal extends React.Component {
                 value={
                   this.state.jurisdiction_path
                     ? { label: this.state.jurisdiction_path, value: this.state.jurisdiction_path }
-                    : { label: this.state.jurisdiction_paths[0], value: this.state.jurisdiction_paths[0] }
+                    : { label: this.props.jurisdiction_paths[0], value: this.props.jurisdiction_paths[0] }
                 }
                 options={this.state.sorted_jurisdiction_paths.map(path => {
                   return { label: path, value: path };
@@ -125,9 +124,9 @@ class UserModal extends React.Component {
                 value={
                   this.state.roleTitle
                     ? { label: this.state.roleTitle, value: this.state.roleTitle }
-                    : { label: this.state.roles[0], value: this.state.roles[0] }
+                    : { label: this.props.roles[0], value: this.props.roles[0] }
                 }
-                options={this.state.roles.map(role => {
+                options={this.props.roles.map(role => {
                   return { label: role, value: role };
                 })}
                 onChange={this.handleRoleChange}
