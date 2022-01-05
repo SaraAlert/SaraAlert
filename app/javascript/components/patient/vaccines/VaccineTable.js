@@ -383,8 +383,8 @@ class VaccineTable extends React.Component {
               entryOptions={this.state.entryOptions}
               entries={this.state.query.entries}
               tableCustomClass="table-has-dropdown"
-              orderBy={!_.isNil(this.state.query.order) ? this.state.query.order : ''}
-              sortDirection={!_.isNil(this.state.query.direction) ? this.state.query.direction : ''}
+              orderBy={this.state.query.order}
+              sortDirection={this.state.query.direction}
             />
           </Card.Body>
         </Card>

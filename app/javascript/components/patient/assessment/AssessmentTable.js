@@ -373,8 +373,8 @@ class AssessmentTable extends React.Component {
               entries={this.state.query.entries}
               tableCustomClass="table-has-dropdown"
               getRowClassName={this.getRowClassName}
-              orderBy={!_.isNil(this.state.query.order) ? this.state.query.order : ''}
-              sortDirection={!_.isNil(this.state.query.direction) ? this.state.query.direction : ''}
+              orderBy={this.state.query.order}
+              sortDirection={this.state.query.direction}
             />
             <MonitoringPeriod
               authenticity_token={this.props.authenticity_token}
