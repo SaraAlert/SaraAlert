@@ -71,13 +71,13 @@ module LaboratoryQueryHelper
     when 'id'
       laboratories = laboratories.order(id: dir)
     when 'lab_type'
-      laboratories = laboratories.order(Arel.sql('CASE WHEN lab_type IS NULL THEN 1 ELSE 0 END, lab_type ' + dir))
+      laboratories = laboratories.order(Arel.sql('lab_type IS NULL OR lab_type = "", lab_type ' + dir))
     when 'specimen_collection'
-      laboratories = laboratories.order(Arel.sql('CASE WHEN specimen_collection IS NULL THEN 1 ELSE 0 END, specimen_collection ' + dir))
+      laboratories = laboratories.order(Arel.sql('specimen_collection IS NULL OR specimen_collection = "", specimen_collection ' + dir))
     when 'report'
-      laboratories = laboratories.order(Arel.sql('CASE WHEN report IS NULL THEN 1 ELSE 0 END, report ' + dir))
+      laboratories = laboratories.order(Arel.sql('report IS NULL OR report = "", report ' + dir))
     when 'result'
-      laboratories = laboratories.order(Arel.sql('CASE WHEN result IS NULL THEN 1 ELSE 0 END, result ' + dir))
+      laboratories = laboratories.order(Arel.sql('result IS NULL OR result = "", result ' + dir))
     end
     laboratories
   end
