@@ -99,13 +99,6 @@ export const advancedFilterOptions = [
     options: ['Exact Match', 'Contains'],
   },
   {
-    name: 'telephone',
-    title: 'Primary Contact Telephone Number (Text)',
-    description: 'Monitorees with a primary contact telephone number',
-    type: 'search',
-    options: ['Exact Match', 'Contains'],
-  },
-  {
     name: 'email',
     title: 'Primary Contact Email (Text)',
     description: 'Monitoree primary contact email address',
@@ -116,6 +109,13 @@ export const advancedFilterOptions = [
     title: 'Sara Alert ID (Text)',
     description: 'Monitoree Sara Alert ID',
     type: 'search',
+  },
+  {
+    name: 'telephone',
+    title: 'Primary Contact Telephone Number (Text)',
+    description: 'Monitorees with a primary contact telephone number',
+    type: 'search',
+    options: ['Exact Match', 'Contains'],
   },
 
   /* SELECT FILTER OPTIONS */
@@ -306,75 +306,22 @@ export const advancedFilterOptions = [
 
   /* COMBINATION OPTIONS */
   {
-    name: 'lab-result',
-    title: 'Lab Result (Combination)',
-    description: 'Monitorees with specified Lab Result criteria',
+    name: 'address',
+    title: 'Address (Combination)',
+    description: 'Monitorees with specified address',
     type: 'combination',
-    tooltip:
-      'Returns records that contain at least one Lab Result entry that meets all user-specified criteria (e.g., searching for a specific Lab Test Type and Report Date will only return records containing at least one Lab Result entry with matching values in both fields).',
     fields: [
       {
-        name: 'result',
-        title: 'result',
-        type: 'select',
-        options: ['positive', 'negative', 'indeterminate', 'other', ''],
+        name: 'address-foreign',
+        title: 'outside USA',
+        description: 'Monitoree Address 1, Town/City, Country, Address 2, Postal Code, Address 3 or State/Province (outside USA)',
+        type: 'search',
       },
       {
-        name: 'lab-type',
-        title: 'test type',
-        type: 'select',
-        options: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other', ''],
-      },
-      {
-        name: 'specimen-collection',
-        title: 'specimen collection date',
-        type: 'date',
-      },
-      {
-        name: 'report',
-        title: 'report date',
-        type: 'date',
-      },
-    ],
-  },
-  {
-    name: 'vaccination',
-    title: 'Vaccination (Combination)',
-    description: 'Monitorees with specified Vaccination criteria',
-    type: 'combination',
-    tooltip:
-      'Returns records that contain at least one Vaccination entry that meets all user-specified criteria (e.g., searching for a specific Vaccination Product Name and Administration Date will only return records containing at least one Vaccination entry with matching values in both fields).',
-    fields: [
-      {
-        name: 'vaccine-group',
-        title: 'vaccine group',
-        type: 'select',
-        options: ['COVID-19'],
-      },
-      {
-        name: 'product-name',
-        title: 'product name',
-        type: 'select',
-        options: [
-          'Moderna COVID-19 Vaccine (non-US Spikevax)',
-          'Pfizer-BioNTech COVID-19 Vaccine (COMIRNATY)',
-          'Janssen (J&J) COVID-19 Vaccine',
-          'AstraZeneca COVID-19 Vaccine (Non-US tradenames include VAXZEVRIA, COVISHIELD)',
-          'Coronavac (Sinovac) COVID-19 Vaccine',
-          'Sinopharm (BIBP) COVID-19 Vaccine',
-          'Unknown',
-        ],
-      },
-      {
-        name: 'administration-date',
-        title: 'administration date',
-        type: 'date',
-      },
-      {
-        name: 'dose-number',
-        title: 'dose number',
-        type: 'select',
-        options: ['', '1', '2', '3', 'Unknown'],
+        name: 'address-usa',
+        title: 'within USA',
+        description: 'Monitoree Address 1, Town/City, State, Address 2, Zip, or County within USA',
+        type: 'search',
       },
     ],
   },
@@ -420,22 +367,34 @@ export const advancedFilterOptions = [
     ],
   },
   {
-    name: 'address',
-    title: 'Address (Combination)',
-    description: 'Monitorees with specified address',
+    name: 'lab-result',
+    title: 'Lab Result (Combination)',
+    description: 'Monitorees with specified Lab Result criteria',
     type: 'combination',
+    tooltip:
+      'Returns records that contain at least one Lab Result entry that meets all user-specified criteria (e.g., searching for a specific Lab Test Type and Report Date will only return records containing at least one Lab Result entry with matching values in both fields).',
     fields: [
       {
-        name: 'address-foreign',
-        title: 'outside USA',
-        description: 'Monitoree Address 1, Town/City, Country, Address 2, Postal Code, Address 3 or State/Province (outside USA)',
-        type: 'search',
+        name: 'result',
+        title: 'result',
+        type: 'select',
+        options: ['positive', 'negative', 'indeterminate', 'other', ''],
       },
       {
-        name: 'address-usa',
-        title: 'within USA',
-        description: 'Monitoree Address 1, Town/City, State, Address 2, Zip, or County within USA',
-        type: 'search',
+        name: 'lab-type',
+        title: 'test type',
+        type: 'select',
+        options: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other', ''],
+      },
+      {
+        name: 'specimen-collection',
+        title: 'specimen collection date',
+        type: 'date',
+      },
+      {
+        name: 'report',
+        title: 'report date',
+        type: 'date',
       },
     ],
   },
@@ -462,6 +421,47 @@ export const advancedFilterOptions = [
         title: 'middle',
         description: 'Monitoree middle name',
         type: 'search',
+      },
+    ],
+  },
+  {
+    name: 'vaccination',
+    title: 'Vaccination (Combination)',
+    description: 'Monitorees with specified Vaccination criteria',
+    type: 'combination',
+    tooltip:
+      'Returns records that contain at least one Vaccination entry that meets all user-specified criteria (e.g., searching for a specific Vaccination Product Name and Administration Date will only return records containing at least one Vaccination entry with matching values in both fields).',
+    fields: [
+      {
+        name: 'vaccine-group',
+        title: 'vaccine group',
+        type: 'select',
+        options: ['COVID-19'],
+      },
+      {
+        name: 'product-name',
+        title: 'product name',
+        type: 'select',
+        options: [
+          'Moderna COVID-19 Vaccine (non-US Spikevax)',
+          'Pfizer-BioNTech COVID-19 Vaccine (COMIRNATY)',
+          'Janssen (J&J) COVID-19 Vaccine',
+          'AstraZeneca COVID-19 Vaccine (Non-US tradenames include VAXZEVRIA, COVISHIELD)',
+          'Coronavac (Sinovac) COVID-19 Vaccine',
+          'Sinopharm (BIBP) COVID-19 Vaccine',
+          'Unknown',
+        ],
+      },
+      {
+        name: 'administration-date',
+        title: 'administration date',
+        type: 'date',
+      },
+      {
+        name: 'dose-number',
+        title: 'dose number',
+        type: 'select',
+        options: ['', '1', '2', '3', 'Unknown'],
       },
     ],
   },
