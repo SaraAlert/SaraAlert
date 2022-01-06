@@ -2,6 +2,8 @@ import _ from 'lodash';
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Navbar, Nav, Form } from 'react-bootstrap';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 class Header extends React.Component {
   constructor(props) {
@@ -9,6 +11,27 @@ class Header extends React.Component {
     this.state = {
       activeKey: this.getActiveTabKey(),
     };
+    // The following axios configuration is to ensure our XHR request are responded to with an appropriate 401,
+    // and to handle that response by navigating to the log-in page.
+    axios.defaults.headers.common['Accept'] = 'application/json';
+    axios.interceptors.response.use(
+      response => {
+        return response;
+      },
+      error => {
+        if (error?.response?.status === 401) {
+          toast.error('User must log in.', {
+            autoClose: 1500,
+            position: toast.POSITION.TOP_CENTER,
+            onClose: () => {
+              location.reload();
+            },
+          });
+        } else {
+          return Promise.reject(error);
+        }
+      }
+    );
   }
 
   /**
