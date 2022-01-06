@@ -20,7 +20,7 @@ class Header extends React.Component {
       },
       error => {
         if (error?.response?.status === 401) {
-          toast.error('User must log in.', {
+          toast.error('Your session expired. Please sign in again to continue.', {
             autoClose: 1500,
             position: toast.POSITION.TOP_CENTER,
             onClose: () => {
