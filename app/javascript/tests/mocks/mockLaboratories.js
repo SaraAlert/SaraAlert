@@ -1,3 +1,14 @@
+const mockLaboratoryBlank = {
+  id: null,
+  patient_id: null,
+  lab_type: null,
+  specimen_collection: null,
+  report: null,
+  result: null,
+  created_at: null,
+  updated_at: null,
+};
+
 const mockLaboratory1 = {
   id: 1,
   patient_id: 17,
@@ -31,4 +42,4 @@ const mockLaboratory3 = {
   updated_at: '2021-12-23T17:34:25.108Z',
 };
 
-export { mockLaboratory1, mockLaboratory2, mockLaboratory3 };
+export { mockLaboratoryBlank, mockLaboratory1, mockLaboratory2, mockLaboratory3 };

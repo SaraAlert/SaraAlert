@@ -1,452 +1,516 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
+import ReactTooltip from 'react-tooltip';
+import _ from 'lodash';
+
 import CloseContactModal from '../../../components/patient/close_contacts/CloseContactModal';
-import { mockCloseContactBlank, mockCloseContact1, mockCloseContact2 } from '../../mocks/mockCloseContacts';
+import DateInput from '../../../components/util/DateInput';
+import PhoneInput from '../../../components/util/PhoneInput';
+import { mockCloseContactBlank, mockCloseContact2 } from '../../mocks/mockCloseContacts';
 
-const mockHandleAddCCModalSave = jest.fn();
-const mockHandleAddCCModalClose = jest.fn();
-const mockHandleEditCCModalSave = jest.fn();
-const mockHandleEditCCModalClose = jest.fn();
+const onSaveMock = jest.fn();
+const onCloseMock = jest.fn();
 const ASSIGNED_USERS = [123234, 512678, 910132];
-const testInputValues = [
-  { field: 'first_name', value: 'Anthony' },
-  { field: 'last_name', value: 'Stark' },
-  { field: 'primary_telephone', value: '1234567890' },
-  { field: 'email', value: 'tinman@example.com' },
-  { field: 'last_date_of_exposure', value: '2020-05-16' },
-  { field: 'assigned_user', value: ASSIGNED_USERS[0] },
-  { field: 'notes', value: 'Inevitable' },
+const INPUT_FIELDS = [
+  { name: 'first_name', label: 'First Name', type: 'text' },
+  { name: 'last_name', label: 'Last Name', type: 'text' },
+  { name: 'primary_telephone', label: 'Phone Number', type: 'phone' },
+  { name: 'email', label: 'Email', type: 'text' },
+  { name: 'last_date_of_exposure', label: 'Last Date of Exposure', type: 'date' },
+  { name: 'assigned_user', label: 'Assigned User', type: 'datalist', options: ASSIGNED_USERS },
+  { name: 'notes', label: 'Notes', type: 'text' },
 ];
+let activeCC;
 
-function getWrapper(showAddCCModal, mockCC, showEditCCModal, assigned_users) {
-  return shallow(<CloseContactModal currentCloseContact={showAddCCModal ? {} : mockCC} onClose={showAddCCModal ? mockHandleAddCCModalClose : mockHandleEditCCModalClose} onSave={showAddCCModal ? mockHandleAddCCModalSave : mockHandleEditCCModalSave} editMode={showEditCCModal} assigned_users={assigned_users} />);
+function getWrapper(editMode) {
+  activeCC = editMode ? mockCloseContact2 : mockCloseContactBlank;
+  return shallow(<CloseContactModal currentCloseContact={activeCC} editMode={editMode} onClose={onCloseMock} onSave={onSaveMock} assigned_users={ASSIGNED_USERS} />);
 }
 
 describe('CloseContactModal', () => {
-  it('Properly renders all main components for empty close contact', () => {
-    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
-    expect(wrapper.find('Button').length).toEqual(2);
-    expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
-    expect(wrapper.find('Button').at(1).text()).toContain('Create');
-    expect(wrapper.state('first_name')).toBeUndefined();
-    expect(wrapper.state('last_name')).toBeUndefined();
-    expect(wrapper.state('primary_telephone')).toBeUndefined();
-    expect(wrapper.state('email')).toBeUndefined();
-    expect(wrapper.state('last_date_of_exposure')).toBeUndefined();
-    expect(wrapper.state('assigned_user')).toBeUndefined();
+  it('Properly renders main components when adding new close contact', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.find(Modal).exists()).toBe(true);
+    expect(wrapper.find(Modal).find('h1').text()).toEqual('Add New Close Contact');
+    expect(wrapper.find(Modal.Header).exists()).toBe(true);
+    expect(wrapper.find(Modal.Title).text()).toEqual('Add New Close Contact');
+    expect(wrapper.find(Modal.Body).exists()).toBe(true);
+    expect(wrapper.find(Modal.Body).find(Form.Group).length).toEqual(INPUT_FIELDS.length);
+    INPUT_FIELDS.forEach((field, fieldIndex) => {
+      const input = wrapper.find(Modal.Body).find(Form.Group).at(fieldIndex);
+      if (field.type === 'text') {
+        expect(input.find(Form.Label).exists()).toBe(true);
+        expect(input.find(Form.Label).text()).toContain(field.label);
+        expect(input.find(Form.Control).exists()).toBe(true);
+        expect(input.find(Form.Control).prop('value')).toEqual('');
+        expect(wrapper.state(field.name)).toBeNull();
+      } else if (field.type === 'date') {
+        expect(input.find(Form.Label).exists()).toBe(true);
+        expect(input.find(Form.Label).text()).toContain(field.label);
+        expect(input.find(DateInput).exists()).toBe(true);
+        expect(input.find(DateInput).prop('date')).toBeNull();
+        expect(wrapper.state(field.name)).toBeNull();
+      } else if (field.type === 'phone') {
+        expect(input.find(Form.Label).exists()).toBe(true);
+        expect(input.find(Form.Label).text()).toContain(field.label);
+        expect(input.find(PhoneInput).exists()).toBe(true);
+        expect(input.find(PhoneInput).prop('value')).toBeNull();
+        expect(wrapper.state(field.name)).toBeNull();
+      } else if (field.type === 'datalist') {
+        expect(input.find(Form.Label).exists()).toBe(true);
+        expect(input.find(Form.Label).text()).toContain(field.label);
+        expect(input.find(Form.Control).exists()).toBe(true);
+        expect(input.find('datalist').exists()).toBe(true);
+        field.options.forEach((option, optionIndex) => {
+          expect(input.find('datalist').find('option').at(optionIndex).text()).toEqual(String(option));
+        });
+        expect(input.find(Form.Control).prop('value')).toEqual('');
+        expect(wrapper.state(field.name)).toBeNull();
+      }
+    });
+    expect(wrapper.find(Modal.Footer).exists()).toBe(true);
+    expect(wrapper.find(Button).length).toEqual(2);
+    expect(wrapper.find(Button).first().text()).toContain('Cancel');
+    expect(wrapper.find(Button).last().text()).toContain('Create');
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('Please enter at least one name (First Name or Last Name) and at least one contact method (Phone Number or Email).');
+  });
+
+  it('Properly renders main components when editing an existing close contact', () => {
+    const wrapper = getWrapper(true);
+    expect(wrapper.find(Modal).exists()).toBe(true);
+    expect(wrapper.find(Modal).find('h1').text()).toEqual('Edit Close Contact');
+    expect(wrapper.find(Modal.Header).exists()).toBe(true);
+    expect(wrapper.find(Modal.Title).text()).toEqual('Edit Close Contact');
+    expect(wrapper.find(Modal.Body).exists()).toBe(true);
+    expect(wrapper.find(Modal.Body).find(Form.Group).length).toEqual(INPUT_FIELDS.length);
+    INPUT_FIELDS.forEach((field, fieldIndex) => {
+      const input = wrapper.find(Modal.Body).find(Form.Group).at(fieldIndex);
+      if (field.type === 'text') {
+        expect(input.find(Form.Label).exists()).toBe(true);
+        expect(input.find(Form.Label).text()).toContain(field.label);
+        expect(input.find(Form.Control).exists()).toBe(true);
+        expect(input.find(Form.Control).prop('value')).toEqual(activeCC[field.name]);
+        expect(wrapper.state(field.name)).toEqual(activeCC[field.name]);
+      } else if (field.type === 'date') {
+        expect(input.find(Form.Label).exists()).toBe(true);
+        expect(input.find(Form.Label).text()).toContain(field.label);
+        expect(input.find(DateInput).exists()).toBe(true);
+        expect(input.find(DateInput).prop('date')).toEqual(activeCC[field.name]);
+        expect(wrapper.state(field.name)).toEqual(activeCC[field.name]);
+      } else if (field.type === 'phone') {
+        expect(input.find(Form.Label).exists()).toBe(true);
+        expect(input.find(Form.Label).text()).toContain(field.label);
+        expect(input.find(PhoneInput).exists()).toBe(true);
+        expect(input.find(PhoneInput).prop('value')).toEqual(activeCC[field.name]);
+        expect(wrapper.state(field.name)).toEqual(activeCC[field.name]);
+      } else if (field.type === 'datalist') {
+        expect(input.find(Form.Label).exists()).toBe(true);
+        expect(input.find(Form.Label).text()).toContain(field.label);
+        expect(input.find(Form.Control).exists()).toBe(true);
+        expect(input.find('datalist').exists()).toBe(true);
+        field.options.forEach((option, optionIndex) => {
+          expect(input.find('datalist').find('option').at(optionIndex).text()).toEqual(String(option));
+        });
+        expect(input.find(Form.Control).prop('value')).toEqual(activeCC[field.name]);
+        expect(wrapper.state(field.name)).toEqual(activeCC[field.name]);
+      }
+    });
+    expect(wrapper.find(Modal.Footer).exists()).toBe(true);
+    expect(wrapper.find(Button).length).toEqual(2);
+    expect(wrapper.find(Button).first().text()).toContain('Cancel');
+    expect(wrapper.find(Button).last().text()).toContain('Update');
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(false);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
+  });
+
+  it('Changing "First Name" properly updates state', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.state('first_name')).toBeNull();
+    expect(wrapper.find({ controlId: 'cc_first_name' }).find(Form.Control).prop('value')).toEqual('');
+
+    wrapper
+      .find({ controlId: 'cc_first_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_first_name', value: mockCloseContact2.first_name } });
+    expect(wrapper.state('first_name')).toEqual(mockCloseContact2.first_name);
+    expect(wrapper.find({ controlId: 'cc_first_name' }).find(Form.Control).prop('value')).toEqual(mockCloseContact2.first_name);
+
+    wrapper
+      .find({ controlId: 'cc_first_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_first_name', value: '' } });
+    expect(wrapper.state('first_name')).toEqual('');
+    expect(wrapper.find({ controlId: 'cc_first_name' }).find(Form.Control).prop('value')).toEqual('');
+  });
+
+  it('Changing "Last Name" properly updates state', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.state('last_name')).toBeNull();
+    expect(wrapper.find({ controlId: 'cc_last_name' }).find(Form.Control).prop('value')).toEqual('');
+
+    wrapper
+      .find({ controlId: 'cc_last_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_last_name', value: mockCloseContact2.last_name } });
+    expect(wrapper.state('last_name')).toEqual(mockCloseContact2.last_name);
+    expect(wrapper.find({ controlId: 'cc_last_name' }).find(Form.Control).prop('value')).toEqual(mockCloseContact2.last_name);
+
+    wrapper
+      .find({ controlId: 'cc_last_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_last_name', value: '' } });
+    expect(wrapper.state('last_name')).toEqual('');
+    expect(wrapper.find({ controlId: 'cc_last_name' }).find(Form.Control).prop('value')).toEqual('');
+  });
+
+  it('Changing "Phone Number" properly updates state', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.state('primary_telephone')).toBeNull();
+    expect(wrapper.find('#cc_primary_telephone').prop('value')).toBeNull();
+
+    wrapper.find('#cc_primary_telephone').simulate('change', { target: { id: 'cc_primary_telephone', value: mockCloseContact2.primary_telephone } });
+    expect(wrapper.state('primary_telephone')).toEqual(mockCloseContact2.primary_telephone);
+    expect(wrapper.find('#cc_primary_telephone').prop('value')).toEqual(mockCloseContact2.primary_telephone);
+
+    wrapper.find('#cc_primary_telephone').simulate('change', { target: { id: 'cc_primary_telephone', value: null } });
+    expect(wrapper.state('primary_telephone')).toBeNull();
+    expect(wrapper.find('#cc_primary_telephone').prop('value')).toBeNull();
+  });
+
+  it('Changing "Email" properly updates state', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.state('email')).toBeNull();
+    expect(wrapper.find({ controlId: 'cc_email' }).find(Form.Control).prop('value')).toEqual('');
+
+    wrapper
+      .find({ controlId: 'cc_email' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_email', value: mockCloseContact2.email } });
+    expect(wrapper.state('email')).toEqual(mockCloseContact2.email);
+    expect(wrapper.find({ controlId: 'cc_email' }).find(Form.Control).prop('value')).toEqual(mockCloseContact2.email);
+
+    wrapper
+      .find({ controlId: 'cc_email' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_email', value: '' } });
+    expect(wrapper.state('email')).toEqual('');
+    expect(wrapper.find({ controlId: 'cc_email' }).find(Form.Control).prop('value')).toEqual('');
+  });
+
+  it('Changing "Last Date of Exposure" properly updates state', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.state('last_date_of_exposure')).toBeNull();
+    expect(wrapper.find('#cc_last_date_of_exposure').prop('date')).toBeNull();
+
+    wrapper.find('#cc_last_date_of_exposure').simulate('change', mockCloseContact2.last_date_of_exposure);
+    expect(wrapper.state('last_date_of_exposure')).toEqual(mockCloseContact2.last_date_of_exposure);
+    expect(wrapper.find('#cc_last_date_of_exposure').prop('date')).toEqual(mockCloseContact2.last_date_of_exposure);
+
+    wrapper.find('#cc_last_date_of_exposure').simulate('change', null);
+    expect(wrapper.state('last_date_of_exposure')).toBeNull();
+    expect(wrapper.find('#cc_last_date_of_exposure').prop('date')).toBeNull();
+  });
+
+  it('Changing "Assigned User" properly updates state and character count', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.state('assigned_user')).toBeNull();
+    expect(wrapper.find({ controlId: 'cc_assigned_user' }).find(Form.Control).prop('value')).toEqual('');
+
+    // change to an assigned user NOT in the assigned user list
+    wrapper
+      .find({ controlId: 'cc_assigned_user' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_assigned_user', value: 999 } });
+    expect(wrapper.state('assigned_user')).toEqual(999);
+    expect(wrapper.find({ controlId: 'cc_assigned_user' }).find(Form.Control).prop('value')).toEqual(999);
+
+    // change to each possible assigned user
+    _.shuffle(ASSIGNED_USERS).forEach(user => {
+      wrapper
+        .find({ controlId: 'cc_assigned_user' })
+        .find(Form.Control)
+        .simulate('change', { target: { id: 'cc_assigned_user', value: user } });
+      expect(wrapper.state('assigned_user')).toEqual(user);
+      expect(wrapper.find({ controlId: 'cc_assigned_user' }).find(Form.Control).prop('value')).toEqual(user);
+    });
+
+    // change back to blank assigned user
+    wrapper
+      .find({ controlId: 'cc_assigned_user' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_assigned_user', value: '' } });
+    expect(wrapper.state('assigned_user')).toBeNull();
+    expect(wrapper.find({ controlId: 'cc_assigned_user' }).find(Form.Control).prop('value')).toEqual('');
+  });
+
+  it('Changing "Notes" properly updates state and character count', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.state('notes')).toBeNull();
+    expect(wrapper.find({ controlId: 'cc_notes' }).find(Form.Control).prop('value')).toEqual('');
+    expect(wrapper.find('.character-limit-text').first().text()).toContain('2000 characters remaining');
+
+    wrapper
+      .find({ controlId: 'cc_notes' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_notes', value: mockCloseContact2.notes } });
+    expect(wrapper.state('notes')).toEqual(mockCloseContact2.notes);
+    expect(wrapper.find({ controlId: 'cc_notes' }).find(Form.Control).prop('value')).toEqual(mockCloseContact2.notes);
+    expect(wrapper.find('.character-limit-text').first().text()).toContain(`${2000 - mockCloseContact2.notes.length} characters remaining`);
+
+    wrapper
+      .find({ controlId: 'cc_notes' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_notes', value: '' } });
     expect(wrapper.state('notes')).toEqual('');
-    expect(wrapper.state('enrolled_id')).toBeUndefined();
-    expect(wrapper.state('contact_attempts')).toBeUndefined();
+    expect(wrapper.find({ controlId: 'cc_notes' }).find(Form.Control).prop('value')).toEqual('');
+    expect(wrapper.find('.character-limit-text').first().text()).toContain('2000 characters remaining');
   });
 
-  it('Properly renders all main components for already existing enrolled close contact', () => {
-    const wrapper = getWrapper(false, mockCloseContact1, true, ASSIGNED_USERS);
-    expect(wrapper.find('Button').length).toEqual(2);
-    expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
-    expect(wrapper.find('Button').at(1).text()).toContain('Update');
-    expect(wrapper.state('first_name')).toEqual(mockCloseContact1.first_name || '');
-    expect(wrapper.state('last_name')).toEqual(mockCloseContact1.last_name || '');
-    expect(wrapper.state('primary_telephone')).toEqual(mockCloseContact1.primary_telephone || '');
-    expect(wrapper.state('email')).toEqual(mockCloseContact1.email || null);
-    expect(wrapper.state('last_date_of_exposure')).toEqual(mockCloseContact1.last_date_of_exposure || null);
-    expect(wrapper.state('assigned_user')).toEqual(mockCloseContact1.assigned_user || null);
-    expect(wrapper.state('notes')).toEqual(mockCloseContact1.notes || '');
-  });
+  it('Entering "First Name" and "Phone" fields enable/disable the submit button', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
 
-  it('Properly renders all main components for already existing unenrolled close contact', () => {
-    const wrapper = getWrapper(false, mockCloseContact2, true, ASSIGNED_USERS);
-    expect(wrapper.find('Button').length).toEqual(2);
-    expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
-    expect(wrapper.find('Button').at(1).text()).toContain('Update');
-    expect(wrapper.state('first_name')).toEqual(mockCloseContact2.first_name || null);
-    expect(wrapper.state('last_name')).toEqual(mockCloseContact2.last_name || null);
-    expect(wrapper.state('primary_telephone')).toEqual(mockCloseContact2.primary_telephone || null);
-    expect(wrapper.state('email')).toEqual(mockCloseContact2.email || null);
-    expect(wrapper.state('last_date_of_exposure')).toEqual(mockCloseContact2.last_date_of_exposure || null);
-    expect(wrapper.state('assigned_user')).toEqual(mockCloseContact2.assigned_user || null);
-    expect(wrapper.state('notes')).toEqual(mockCloseContact2.notes || null);
-  });
-
-  it('Disables the Create Button when the correct fields are not present when making a new close contact', () => {
-    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
-    const validateAndSubmit = jest.spyOn(wrapper.instance(), 'validateAndSubmit');
-    expect(wrapper.find('Button').at(1).text()).toContain('Create');
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    wrapper.find(Button).at(1).simulate('click');
-    expect(validateAndSubmit).not.toHaveBeenCalled();
-  });
-
-  it('Properly calls the Cancel callback when closing the modal on an empty close contact', () => {
-    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
-    expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
-    wrapper.find(Button).at(0).simulate('click');
-    expect(mockHandleAddCCModalClose).toHaveBeenCalled();
-  });
-
-  it('Enables the Update Button when the correct fields are present when editing an existing close contact', () => {
-    const wrapper = getWrapper(false, mockCloseContact1, true, ASSIGNED_USERS);
-    const validateAndSubmitSpy = jest.spyOn(wrapper.instance(), 'validateAndSubmit');
-    wrapper.instance().forceUpdate();
-    expect(wrapper.find('Button').at(1).text()).toContain('Update');
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(false);
-    wrapper.find(Button).at(1).simulate('click');
-    expect(validateAndSubmitSpy).toHaveBeenCalled();
-  });
-
-  it('Properly calls the Cancel callback when closing the modal on an empty close contact', () => {
-    const wrapper = getWrapper(false, mockCloseContact1, true, ASSIGNED_USERS);
-    expect(wrapper.find('Button').at(0).text()).toContain('Cancel');
-    wrapper.find(Button).at(0).simulate('click');
-    expect(mockHandleEditCCModalClose).toHaveBeenCalled();
-  });
-
-  it('Can properly set fields when an empty close contact is used as a prop', () => {
-    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
-    const handleNameChangeSpy = jest.spyOn(wrapper.instance(), 'handleNameChange');
-    const handlePhoneNumberChangeSpy = jest.spyOn(wrapper.instance(), 'handlePhoneNumberChange');
-    const handleEmailChangeSpy = jest.spyOn(wrapper.instance(), 'handleEmailChange');
-    const handleDateChangeSpy = jest.spyOn(wrapper.instance(), 'handleDateChange');
-    const handleNotesChangeSpy = jest.spyOn(wrapper.instance(), 'handleNotesChange');
-    const handleAssignedUserChangeSpy = jest.spyOn(wrapper.instance(), 'handleAssignedUserChange');
-    wrapper.instance().forceUpdate();
-
-    let value;
-    value = testInputValues.find(x => x.field === 'first_name').value;
-    expect(wrapper.state('first_name')).toBeUndefined();
     wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(0)
-      .simulate('change', { target: { id: 'first_name', value: value } });
-    expect(handleNameChangeSpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.state('first_name')).toEqual(value);
+      .find({ controlId: 'cc_first_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_first_name', value: mockCloseContact2.first_name } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
 
-    value = testInputValues.find(x => x.field === 'last_name').value;
-    expect(wrapper.state('last_name')).toBeUndefined();
+    wrapper.find('#cc_primary_telephone').simulate('change', { target: { id: 'cc_primary_telephone', value: mockCloseContact2.primary_telephone } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(false);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
+
+    wrapper.find('#cc_primary_telephone').simulate('change', { target: { id: 'cc_primary_telephone', value: null } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
     wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(1)
-      .simulate('change', { target: { id: 'last_name', value: value } });
-    expect(handleNameChangeSpy).toHaveBeenCalledTimes(2);
-    expect(wrapper.state('last_name')).toEqual(value);
+      .find({ controlId: 'cc_first_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_first_name', value: '' } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
 
-    value = testInputValues.find(x => x.field === 'primary_telephone').value;
-    expect(wrapper.state('primary_telephone')).toBeUndefined();
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('PhoneInput')
-      .simulate('change', { target: { id: 'primary_telephone', value: value } });
-    expect(handlePhoneNumberChangeSpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.state('primary_telephone')).toEqual(value);
+    wrapper.find('#cc_primary_telephone').simulate('change', { target: { id: 'cc_primary_telephone', value: mockCloseContact2.primary_telephone } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
 
-    value = testInputValues.find(x => x.field === 'email').value;
-    expect(wrapper.state('email')).toBeUndefined();
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('FormControl')
-      .simulate('change', { target: { id: 'email', value: value } });
-    expect(handleEmailChangeSpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.state('email')).toEqual(value);
-
-    value = testInputValues.find(x => x.field === 'last_date_of_exposure').value;
-    expect(wrapper.state('last_date_of_exposure')).toBeUndefined();
-    wrapper.find(Modal.Body).find('Row').at(2).find('DateInput').simulate('change', value);
-    expect(handleDateChangeSpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.state('last_date_of_exposure')).toEqual(value);
-
-    value = testInputValues.find(x => x.field === 'assigned_user').value;
-    expect(wrapper.state('assigned_user')).toBeUndefined();
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(2)
-      .find('FormControl')
-      .simulate('change', { target: { id: 'assigned_user', value: value } });
-    expect(handleAssignedUserChangeSpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.state('assigned_user')).toEqual(value);
-
-    value = testInputValues.find(x => x.field === 'notes').value;
-    expect(wrapper.state('notes')).toEqual('');
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(3)
-      .find('FormControl')
-      .simulate('change', { target: { id: 'notes', value: value } });
-    expect(handleNotesChangeSpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.state('notes')).toEqual(value);
+    wrapper.find('#cc_primary_telephone').simulate('change', { target: { id: 'cc_primary_telephone', value: null } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
   });
 
-  it('Properly creates the correct assigned user dropdown options', () => {
-    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
-    ASSIGNED_USERS.forEach((user, userIndex) => {
-      expect(wrapper.find(Modal.Body).find('option').at(userIndex).text()).toEqual(`${user}`);
+  it('Entering "First Name" and "Email" fields enable/disable the submit button', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_first_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_first_name', value: mockCloseContact2.first_name } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_email' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_email', value: mockCloseContact2.email } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(false);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
+
+    wrapper
+      .find({ controlId: 'cc_email' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_email', value: '' } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_first_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_first_name', value: '' } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_email' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_email', value: mockCloseContact2.email } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_email' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_email', value: '' } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+  });
+
+  it('Entering "Last Name" and "Phone" fields enable/disable the submit button', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_last_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_last_name', value: mockCloseContact2.last_name } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper.find('#cc_primary_telephone').simulate('change', { target: { id: 'cc_primary_telephone', value: mockCloseContact2.primary_telephone } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(false);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
+
+    wrapper.find('#cc_primary_telephone').simulate('change', { target: { id: 'cc_primary_telephone', value: null } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_last_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_last_name', value: '' } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper.find('#cc_primary_telephone').simulate('change', { target: { id: 'cc_primary_telephone', value: mockCloseContact2.primary_telephone } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper.find('#cc_primary_telephone').simulate('change', { target: { id: 'cc_primary_telephone', value: null } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+  });
+
+  it('Entering "Last Name" and "Email" fields enable/disable the submit button', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_last_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_last_name', value: mockCloseContact2.last_name } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_email' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_email', value: mockCloseContact2.email } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(false);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
+
+    wrapper
+      .find({ controlId: 'cc_email' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_email', value: '' } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_last_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_last_name', value: '' } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_email' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_email', value: mockCloseContact2.email } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    wrapper
+      .find({ controlId: 'cc_email' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_email', value: '' } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+  });
+
+  it('Disables submit button when all the required fields are not entered', () => {
+    const wrapper = getWrapper(false);
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+
+    _.shuffle(INPUT_FIELDS).forEach(field => {
+      if (field.type === 'text' || field.type === 'datalist') {
+        wrapper
+          .find({ controlId: `cc_${field.name}` })
+          .find(Form.Control)
+          .simulate('change', { target: { id: `cc_${field.name}`, value: mockCloseContact2[field.name] } });
+        expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+        expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+        wrapper
+          .find({ controlId: `cc_${field.name}` })
+          .find(Form.Control)
+          .simulate('change', { target: { id: `cc_${field.name}`, value: '' } });
+        expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+        expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+      } else if (field.type === 'date') {
+        wrapper.find(`#cc_${field.name}`).simulate('change', mockCloseContact2[field.name]);
+        expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+        expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+        wrapper.find(`#cc_${field.name}`).simulate('change', null);
+        expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+        expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+      } else if (field.type === 'phone') {
+        wrapper.find(`#cc_${field.name}`).simulate('change', { target: { id: `cc_${field.name}`, value: mockCloseContact2[field.name] } });
+        expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+        expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+        wrapper.find(`#cc_${field.name}`).simulate('change', { target: { id: `cc_${field.name}`, value: null } });
+        expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+        expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+      }
     });
   });
 
-  it('Properly renders accurate count of characters remaining for notes field', () => {
-    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
-    const testNoteString = 'The Strongest Avenger';
-
-    expect(wrapper.find(Modal.Body).find('Row').at(3).find('FormLabel').at(0).text()).toContain('Notes');
-    expect(wrapper.find('.character-limit-text').at(0).text()).toContain('2000 characters remaining');
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(3)
-      .find('FormControl')
-      .simulate('change', { target: { id: 'notes', value: testNoteString } });
-    expect(wrapper.find('.character-limit-text').at(0).text()).toContain(`${2000 - testNoteString.length} characters remaining`);
+  it('Clicking the cancel button calls props.onClose', () => {
+    const wrapper = getWrapper(false);
+    expect(onCloseMock).not.toHaveBeenCalled();
+    wrapper.find(Button).first().simulate('click');
+    expect(onCloseMock).toHaveBeenCalled();
   });
 
-  it('Properly enables and disables the submit/create button when First Name and Phone is entered', () => {
-    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
+  it('Clicking the submit button calls props.onSave and disables the button', done => {
+    const wrapper = getWrapper(false);
+    const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
+    wrapper.instance().forceUpdate();
+    expect(submitSpy).not.toHaveBeenCalled();
+    expect(onSaveMock).not.toHaveBeenCalled();
+    expect(wrapper.state('loading')).toBe(false);
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
 
-    let value1, value2;
-    value1 = testInputValues.find(x => x.field === 'first_name').value;
-    value2 = testInputValues.find(x => x.field === 'primary_telephone').value;
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
     wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(0)
-      .simulate('change', { target: { id: 'first_name', value: value1 } });
+      .find({ controlId: 'cc_first_name' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_first_name', value: mockCloseContact2.first_name } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
     wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('PhoneInput')
-      .simulate('change', { target: { id: 'primary_telephone', value: value2 } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(false);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(false);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(0)
-      .simulate('change', { target: { id: 'first_name', value: '' } });
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('PhoneInput')
-      .simulate('change', { target: { id: 'primary_telephone', value: '' } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-  });
+      .find({ controlId: 'cc_email' })
+      .find(Form.Control)
+      .simulate('change', { target: { id: 'cc_email', value: mockCloseContact2.email } });
+    expect(wrapper.find(Button).last().prop('disabled')).toBe(false);
 
-  it('Properly enables and disables the submit/create button when First Name and Email is entered', () => {
-    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
-
-    let value1, value2;
-    value1 = testInputValues.find(x => x.field === 'first_name').value;
-    value2 = testInputValues.find(x => x.field === 'email').value;
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(0)
-      .simulate('change', { target: { id: 'first_name', value: value1 } });
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('FormControl')
-      .simulate('change', { target: { id: 'email', value: value2 } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(false);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(false);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(0)
-      .simulate('change', { target: { id: 'first_name', value: '' } });
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('FormControl')
-      .simulate('change', { target: { id: 'email', value: '' } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-  });
-
-  it('Properly enables and disables the submit/create button when Last Name and Phone is entered', () => {
-    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
-
-    let value1, value2;
-    value1 = testInputValues.find(x => x.field === 'last_name').value;
-    value2 = testInputValues.find(x => x.field === 'primary_telephone').value;
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(0)
-      .simulate('change', { target: { id: 'last_name', value: value1 } });
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('PhoneInput')
-      .simulate('change', { target: { id: 'primary_telephone', value: value2 } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(false);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(false);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(0)
-      .simulate('change', { target: { id: 'last_name', value: '' } });
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('PhoneInput')
-      .simulate('change', { target: { id: 'primary_telephone', value: '' } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-  });
-
-  it('Properly enables and disables the submit/create button when Last Name and Email is entered', () => {
-    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
-
-    let value1, value2;
-    value1 = testInputValues.find(x => x.field === 'last_name').value;
-    value2 = testInputValues.find(x => x.field === 'email').value;
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(0)
-      .simulate('change', { target: { id: 'last_name', value: value1 } });
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('FormControl')
-      .simulate('change', { target: { id: 'email', value: value2 } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(false);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(false);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(0)
-      .simulate('change', { target: { id: 'last_name', value: '' } });
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('FormControl')
-      .simulate('change', { target: { id: 'email', value: '' } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-  });
-
-  it('Properly keeps the buttons disabled when all the required fields are not added', () => {
-    const wrapper = getWrapper(true, mockCloseContactBlank, false, ASSIGNED_USERS);
-
-    let value;
-    value = testInputValues.find(x => x.field === 'first_name').value;
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(0)
-      .simulate('change', { target: { id: 'first_name', value: value } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(0)
-      .simulate('change', { target: { id: 'first_name', value: '' } });
-
-    value = testInputValues.find(x => x.field === 'last_name').value;
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(1)
-      .simulate('change', { target: { id: 'last_name', value: value } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(0)
-      .find('FormControl')
-      .at(1)
-      .simulate('change', { target: { id: 'last_name', value: '' } });
-
-    value = testInputValues.find(x => x.field === 'primary_telephone').value;
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('PhoneInput')
-      .simulate('change', { target: { id: 'primary_telephone', value: value } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('PhoneInput')
-      .simulate('change', { target: { id: 'primary_telephone', value: '' } });
-
-    value = testInputValues.find(x => x.field === 'email').value;
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('FormControl')
-      .simulate('change', { target: { id: 'email', value: value } });
-    expect(wrapper.find(Button).at(1).prop('disabled')).toBe(true);
-    expect(wrapper.find('#submit-tooltip').exists()).toBe(true);
-    wrapper
-      .find(Modal.Body)
-      .find('Row')
-      .at(1)
-      .find('FormControl')
-      .simulate('change', { target: { id: 'email', value: '' } });
+    wrapper.find(Button).last().simulate('click');
+    expect(submitSpy).toHaveBeenCalled();
+    setTimeout(() => {
+      // the submit method calls the schema.validate which is an async method
+      // as a result, a timeout is necessary for validate to finish and the callback to be hit
+      let cc = { assigned_user: null, contact_attempts: null, email: mockCloseContact2.email, first_name: mockCloseContact2.first_name, last_date_of_exposure: null, last_name: null, notes: null, primary_telephone: null };
+      expect(onSaveMock).toHaveBeenCalledWith(cc);
+      expect(wrapper.state('loading')).toBe(true);
+      expect(wrapper.find(Button).last().prop('disabled')).toBe(true);
+      done();
+    }, 500);
   });
 });

@@ -4,6 +4,7 @@ import { Alert, Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import * as yup from 'yup';
+import _ from 'lodash';
 import DateInput from '../../util/DateInput';
 
 class LaboratoryModal extends React.Component {
@@ -14,6 +15,7 @@ class LaboratoryModal extends React.Component {
       specimen_collection: this.props.currentLabData?.specimen_collection,
       report: this.props.currentLabData?.report,
       result: this.props.currentLabData?.result || (this.props.firstPositiveLab ? 'positive' : ''),
+      symptom_onset: null,
       loading: false,
       errors: {},
     };
@@ -81,7 +83,7 @@ class LaboratoryModal extends React.Component {
    * Clear symptom onset if user decides to undo changes
    */
   clearSymptomOnset = () => {
-    if (this.state.result == 'positive' && this.state.specimen_collection != null) {
+    if (this.state.result === 'positive' && !_.isNil(this.state.specimen_collection)) {
       this.setState({ symptom_onset: null });
     }
   };
@@ -206,18 +208,13 @@ class LaboratoryModal extends React.Component {
                   className="form-control-lg"
                   onChange={this.handleChange}
                   value={this.state.result}
+                  disabled={this.props.firstPositiveLab}
                   isInvalid={!!this.state.errors['result']}>
-                  {this.props.firstPositiveLab ? (
-                    <option>positive</option>
-                  ) : (
-                    <React.Fragment>
-                      <option></option>
-                      <option>positive</option>
-                      <option>negative</option>
-                      <option>indeterminate</option>
-                      <option>other</option>
-                    </React.Fragment>
-                  )}
+                  <option></option>
+                  <option>positive</option>
+                  <option>negative</option>
+                  <option>indeterminate</option>
+                  <option>other</option>
                 </Form.Control>
                 <Form.Control.Feedback className="d-block" type="invalid">
                   {this.state.errors['result']}
@@ -227,14 +224,16 @@ class LaboratoryModal extends React.Component {
             {this.props.editMode &&
               this.props.isolation &&
               this.props.only_positive_lab &&
-              (this.state.result !== 'positive' || this.state.specimen_collection == null) && (
-                <div>
-                  <Alert variant="warning" className="mt-2 mb-3 alert-warning-text">
-                    Warning: Since this record does not have a Symptom Onset Date, updating this lab from a positive result or clearing the Specimen Collection
-                    Date may result in the record not ever being eligible to appear on the Records Requiring Review line list. Please consider undoing these
-                    changes or entering a Symptom Onset Date:
+              (this.state.result !== 'positive' || this.state.specimen_collection === null) && (
+                <div className="symptom-onset-warning">
+                  <Alert variant="warning" className="alert-warning-textmt-2 mb-3">
+                    <b>Warning:</b> Since this record does not have a Symptom Onset Date, updating this lab from a positive result or clearing the Specimen
+                    Collection Date may result in the record not ever being eligible to appear on the Records Requiring Review line list. Please consider
+                    undoing these changes or entering a Symptom Onset Date:
                   </Alert>
-                  <Form.Label className="input-label">SYMPTOM ONSET</Form.Label>
+                  <Form.Label htmlFor="symptom_onset_lab" className="input-label">
+                    Symptom Onset
+                  </Form.Label>
                   <DateInput
                     id="symptom_onset_lab"
                     date={this.state.symptom_onset}
@@ -255,16 +254,16 @@ class LaboratoryModal extends React.Component {
             Cancel
           </Button>
           <span data-for="submit-tooltip" data-tip="" className="ml-1">
-            <Button variant="primary btn-square" disabled={this.props.loading || !isValid} onClick={this.submit}>
+            <Button variant="primary btn-square" disabled={this.state.loading || !isValid} onClick={this.submit}>
               {this.props.editMode ? 'Update' : 'Create'}
             </Button>
           </span>
           {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
           {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
           {/* This does not impact component functionality at all. */}
-          {!isValid && !this.props.loading && (
+          {!isValid && (
             <ReactTooltip id="submit-tooltip" place="top" type="dark" effect="solid" multiline={this.props.firstPositiveLab}>
-              {this.props.firstPositiveLab ? 'Please enter Specimen Collection Date.' : 'Please enter at least one field.'}
+              <span>{this.props.firstPositiveLab ? 'Please enter Specimen Collection Date.' : 'Please enter at least one field.'}</span>
             </ReactTooltip>
           )}
         </Modal.Footer>

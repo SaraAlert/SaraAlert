@@ -24,7 +24,7 @@ class CloseContactModal extends React.Component {
       last_date_of_exposure: props.currentCloseContact.last_date_of_exposure,
       assigned_user: props.currentCloseContact.assigned_user,
       contact_attempts: props.currentCloseContact.contact_attempts,
-      notes: props.currentCloseContact.notes || '',
+      notes: props.currentCloseContact.notes,
       loading: false,
       errors: {},
     };
@@ -46,7 +46,8 @@ class CloseContactModal extends React.Component {
   };
 
   handlePhoneChange = event => {
-    this.setState({ [_.trim(event.target.id, 'cc_')]: event.target.value.replace(/-/g, '') });
+    let value = _.isNil(event.target.value) ? event.target.value : event.target.value.replace(/-/g, '');
+    this.setState({ [_.trim(event.target.id, 'cc_')]: value });
   };
 
   handleLDEChange = date => {
@@ -68,7 +69,7 @@ class CloseContactModal extends React.Component {
       .validate({ ...this.state }, { abortEarly: false })
       .then(() => {
         this.setState({ loading: true }, () => {
-          this.props.onSave(this.state);
+          this.props.onSave(_.omit(this.state, 'errors', 'loading'));
         });
       })
       .catch(err => {
@@ -152,8 +153,10 @@ class CloseContactModal extends React.Component {
           </Row>
           <hr></hr>
           <Row>
-            <Form.Group as={Col} lg="12" controlId="cc_last_date_of_exposure">
-              <Form.Label className="input-label">Last Date of Exposure{schema?.fields?.last_date_of_exposure?._exclusive?.required && '*'}</Form.Label>
+            <Form.Group as={Col} lg="12">
+              <Form.Label htmlFor="cc_last_date_of_exposure" className="input-label">
+                Last Date of Exposure{schema?.fields?.last_date_of_exposure?._exclusive?.required && '*'}
+              </Form.Label>
               <DateInput
                 id="cc_last_date_of_exposure"
                 date={this.state.last_date_of_exposure}
@@ -198,13 +201,10 @@ class CloseContactModal extends React.Component {
             </Form.Group>
           </Row>
           <Row>
-            <Form.Group as={Col} className="mb-0">
-              <Form.Label htmlFor="notes" className="input-label">
-                Notes{schema?.fields?.notes?._exclusive?.required && '*'}
-              </Form.Label>
+            <Form.Group as={Col} className="mb-0" controlId="cc_notes">
+              <Form.Label className="input-label">Notes{schema?.fields?.notes?._exclusive?.required && '*'}</Form.Label>
               <Form.Control
                 isInvalid={!!this.state.errors['notes']}
-                id="notes"
                 as="textarea"
                 rows="5"
                 className="form-square"
@@ -213,7 +213,7 @@ class CloseContactModal extends React.Component {
                 maxLength={MAX_NOTES_LENGTH}
                 onChange={this.handleChange}
               />
-              <div className="character-limit-text">{MAX_NOTES_LENGTH - this.state.notes.length} characters remaining</div>
+              <div className="character-limit-text">{MAX_NOTES_LENGTH - (this.state.notes || '').length} characters remaining</div>
               <Form.Control.Feedback className="d-block" type="invalid">
                 {this.state.errors['notes']}
               </Form.Control.Feedback>
@@ -224,22 +224,22 @@ class CloseContactModal extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" disabled={this.state.loading || !isValid} onClick={this.submit}>
-            {this.state.loading && (
-              <React.Fragment>
-                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-              </React.Fragment>
-            )}
-            <span data-for="submit-tooltip" data-tip="" className="ml-1">
+          <span data-for="submit-tooltip" data-tip="" className="ml-1">
+            <Button variant="primary btn-square" disabled={this.state.loading || !isValid} onClick={this.submit}>
+              {this.state.loading && (
+                <React.Fragment>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                </React.Fragment>
+              )}
               {this.props.editMode ? 'Update' : 'Create'}
-            </span>
-          </Button>
+            </Button>
+          </span>
           {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
           {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
           {/* This does not impact component functionality at all. */}
-          {!isValid && !this.state.loading && (
+          {!isValid && (
             <ReactTooltip id="submit-tooltip" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container text-left">
-              Please enter at least one name (First Name or Last Name) and at least one contact method (Phone Number or Email).
+              <span>Please enter at least one name (First Name or Last Name) and at least one contact method (Phone Number or Email).</span>
             </ReactTooltip>
           )}
         </Modal.Footer>

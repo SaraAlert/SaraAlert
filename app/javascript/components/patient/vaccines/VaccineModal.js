@@ -231,20 +231,20 @@ class VaccineModal extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" disabled={this.state.loading || !isValid} onClick={this.submit}>
-            {this.state.loading && (
-              <React.Fragment>
-                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-              </React.Fragment>
-            )}
-            <span data-for="submit-tooltip" data-tip="" className="ml-1">
+          <span data-for="submit-tooltip" data-tip="" className="ml-1">
+            <Button variant="primary btn-square" disabled={this.state.loading || !isValid} onClick={this.submit}>
+              {this.state.loading && (
+                <React.Fragment>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                </React.Fragment>
+              )}
               {this.props.editMode ? 'Update' : 'Create'}
-            </span>
-          </Button>
+            </Button>
+          </span>
           {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
           {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
           {/* This does not impact component functionality at all. */}
-          {!isValid && !this.state.loading && (
+          {!isValid && (
             <ReactTooltip id="submit-tooltip" multiline={true} place="top" type="dark" effect="solid" className="tooltip-container text-left">
               Please select at least a Vaccine Group and a Product Name.
             </ReactTooltip>

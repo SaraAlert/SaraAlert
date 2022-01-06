@@ -25,7 +25,7 @@ function getMountedWrapper(labs, additionalProps) {
   let wrapper = mount(<LaboratoryTable patient={mockPatient1} current_user={mockUser1} authenticity_token={AUTHY_TOKEN} num_pos_labs={1} {...additionalProps} />);
 
   // The Table Data is loaded asynchronously, so we have to mock it
-  wrapper.setState({ table: { ...wrapper.state().table, rowData: labs || [] } });
+  wrapper.setState({ table: { ...wrapper.state('table'), rowData: labs || [] } });
   return wrapper;
 }
 

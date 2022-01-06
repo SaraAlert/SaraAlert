@@ -27,7 +27,7 @@ function getMountedWrapper(closeContacts, additionalProps) {
   let wrapper = mount(<CloseContactTable patient={mockPatient2} authenticity_token={AUTHY_TOKEN} can_enroll_close_contacts={true} assigned_users={ASSIGNED_USERS} workflow={'exposure'} {...additionalProps} />);
 
   // The Table Data is loaded asynchronously, so we have to mock it
-  wrapper.setState({ table: { ...wrapper.state().table, rowData: closeContacts } });
+  wrapper.setState({ table: { ...wrapper.state('table'), rowData: closeContacts } });
   return wrapper;
 }
 

@@ -226,7 +226,7 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('modified').patient.last_date_of_exposure).toBeNull();
     expect(wrapper.state('current').patient.continuous_exposure).toBe(false);
     expect(wrapper.find(DateInput).prop('date')).toBeNull();
-    // expect(wrapper.find('#continuous_exposure').prop('checked')).toBe(false);
+    expect(wrapper.find('#continuous_exposure').prop('checked')).toBe(false);
   });
 
   it('Changing Exposure Location properly updates state and calls props.setEnrollmentState', () => {
