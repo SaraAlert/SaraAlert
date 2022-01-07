@@ -386,7 +386,7 @@ class AdminControllerTest < ActionController::TestCase
                                notes: 'test note edit', status: LockReasons::NOT_SPECIFIED }, as: :json
 
     user = User.find_by(id: 17)
-    assert_equal(user.manual_lock_reason, '')
+    assert_equal(user.manual_lock_reason, LockReasons::NOT_SPECIFIED)
 
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
                                role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
