@@ -763,8 +763,8 @@ class PatientsTable extends React.Component {
                   selectAll={this.state.selectAll}
                   entryOptions={this.state.entryOptions}
                   entries={parseInt(this.state.query.entries)}
-                  orderBy={this.state.query.order !== undefined ? this.state.query.order : ''}
-                  sortDirection={this.state.query.direction !== undefined ? this.state.query.direction : ''}
+                  orderBy={this.state.query.order}
+                  sortDirection={this.state.query.direction}
                 />
               </div>
             </Card.Body>

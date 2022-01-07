@@ -10,8 +10,8 @@ class CustomTable extends React.Component {
     super(props);
     this.state = {
       tableQuery: {
-        orderBy: props.orderBy,
-        sortDirection: props.sortDirection,
+        orderBy: props.orderBy || null,
+        sortDirection: props.sortDirection || null,
       },
     };
   }
@@ -35,7 +35,10 @@ class CustomTable extends React.Component {
   handleSortClick = field => {
     this.setState(
       state => {
-        const sortDirection = state.tableQuery.sortDirection === 'asc' ? 'desc' : 'asc';
+        let sortDirection = 'asc';
+        if (state.tableQuery.orderBy === field) {
+          sortDirection = state.tableQuery.sortDirection === 'asc' ? 'desc' : 'asc';
+        }
         const tableQuery = { ...state.tableQuery, sortDirection, orderBy: field, page: 0 };
         return { tableQuery };
       },
@@ -52,22 +55,20 @@ class CustomTable extends React.Component {
    */
   handleCheckboxChange = (e, row) => {
     const checked = e.target.checked;
+    let selectedRows = [];
 
-    // If row is selected and wasn't previously, add it to the selected rows.
     if (checked && !this.props.selectedRows.includes(row)) {
-      const selectedRows = [...this.props.selectedRows, row];
-
-      // Call parent handler
-      this.props.handleSelect(selectedRows);
+      // If row is selected and wasn't previously, add it to the selected rows.
+      selectedRows = [...this.props.selectedRows, row];
     } else {
       // Otherwise if it was unchecked, remove it from the selected rows and toggle off select all if applicable.
-      const selectedRows = [...this.props.selectedRows];
+      selectedRows = [...this.props.selectedRows];
       const index = selectedRows.indexOf(row);
       selectedRows.splice(index, 1);
-
-      // Call parent handler
-      this.props.handleSelect(selectedRows);
     }
+
+    // Call parent handler
+    this.props.handleSelect(selectedRows);
   };
 
   /**
@@ -137,7 +138,7 @@ class CustomTable extends React.Component {
             type="dark"
             effect="solid"
             className="tooltip-container">
-            {this.props.disabledTooltipText}
+            <span>{this.props.disabledTooltipText}</span>
           </ReactTooltip>
         )}
       </td>
@@ -159,6 +160,7 @@ class CustomTable extends React.Component {
     return (
       <th
         key={field}
+        id={`${this.props.dataType}-th-${field}`}
         width={colWidth}
         onClick={() => {
           if (sortable) {
@@ -358,7 +360,6 @@ CustomTable.propTypes = {
   handleSelect: PropTypes.func,
   handlePageUpdate: PropTypes.func,
   handleEntriesChange: PropTypes.func,
-  actions: PropTypes.object,
   isLoading: PropTypes.bool,
   page: PropTypes.number,
   entries: PropTypes.number,

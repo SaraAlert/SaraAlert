@@ -34,6 +34,8 @@ class VaccineTable extends React.Component {
       query: {
         page: 0,
         entries: 10,
+        order: 'id',
+        direction: 'desc',
       },
       entryOptions: [10, 15, 25],
       cancelToken: axios.CancelToken.source(),
@@ -381,6 +383,8 @@ class VaccineTable extends React.Component {
               entryOptions={this.state.entryOptions}
               entries={this.state.query.entries}
               tableCustomClass="table-has-dropdown"
+              orderBy={this.state.query.order}
+              sortDirection={this.state.query.direction}
             />
           </Card.Body>
         </Card>

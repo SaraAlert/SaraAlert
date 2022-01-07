@@ -303,6 +303,8 @@ class HouseholdMemberTable extends React.Component {
         selectAll={this.state.table.selectAll}
         disabledRows={this.state.table.disabledRows}
         disabledTooltipText={'You cannot update this record since it is not within your assigned jurisdiction'}
+        orderBy={'name'}
+        sortDirection={'asc'}
       />
     );
   }
