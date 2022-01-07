@@ -103,8 +103,8 @@ class AdminController < ApplicationController
     when 'num_failed_logins'
       users = users.order(failed_attempts: dir)
     when 'status'
-      users = users.sort_by { |u| [u.status.empty? || u.status.nil? ? 1 : 0, u.status] } if dir == 'asc'
-      users = users.sort_by { |u| [u.status.empty? || u.status.nil? ? 0 : 1, u.status] }.reverse if dir == 'desc'
+      users = users.sort_by { |u| [u.status.nil? || u.status.empty? ? 1 : 0, u.status] } if dir == 'asc'
+      users = users.sort_by { |u| [u.status.nil? || u.status.empty? ? 0 : 1, u.status] }.reverse if dir == 'desc'
     end
 
     users
