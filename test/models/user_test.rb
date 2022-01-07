@@ -778,12 +778,20 @@ class UserTest < ActiveSupport::TestCase
     assert_equal(user.auto_lock_reason, "#{user.failed_attempts} failed login attempts")
   end
 
-  test 'user status with manual lock of Not specified' do
+  test 'user status with manual lock of Not specified and auto_lock_reason' do
     user = create(:user, locked_at: 2.days.ago, force_password_change: 1, manual_lock_reason: LockReasons::NOT_SPECIFIED)
 
     assert_equal(user.status, '')
     assert_equal(user.lock_reason, LockReasons::NOT_SPECIFIED)
     assert_equal(user.auto_lock_reason, 'Temporary password expired')
+  end
+
+  test 'user status with locked_at timestamp, no auto_lock_reason and no manual_lock_reason' do
+    user = create(:user, locked_at: 2.days.ago, force_password_change: 0, failed_attempts: 0, manual_lock_reason: nil)
+
+    assert_equal(user.status, '')
+    assert_equal(user.lock_reason, LockReasons::NOT_SPECIFIED)
+    assert_nil(user.auto_lock_reason)
   end
 
   test 'user active status has no lock and current_sign_in_at <= 30 days ago' do

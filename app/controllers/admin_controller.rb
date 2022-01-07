@@ -73,7 +73,7 @@ class AdminController < ApplicationController
         lock_reason: user.lock_reason || '',
         auto_lock_reason: user.auto_lock_reason || '',
         active_state: user.active_state,
-        status: user.locked_at.nil? ? user.active_state : user.lock_reason,
+        status: user.status,
         is_api_enabled: user[:api_enabled] || false,
         is_2fa_enabled: !user.authy_id.nil? || false,
         num_failed_logins: user.failed_attempts,
@@ -230,12 +230,9 @@ class AdminController < ApplicationController
     # Update API access
     user.update!(api_enabled: is_api_enabled, role: role)
 
-    # Update manual_lock_reason if one is present based on the following:
-    # Persistable lock reasons exclude 'Not specified' and 'Auto-locked by the System'
-    #   Users with 'Not specified' as lock reason have a blank lock reason saved
+    # Update manual_lock_reason if one is present
     # Manual lock reasons exclude 'Auto-locked by the System'
-    user.manual_lock_reason = status if LockReasons.persistable_lock_reasons.include?(status)
-    user.manual_lock_reason = '' if status == LockReasons::NOT_SPECIFIED
+    user.manual_lock_reason = status if LockReasons.manual_lock_reasons.include?(status)
     user.manual_lock_reason = nil if status == '' || LockReasons.manual_lock_reasons.exclude?(status)
 
     # Update locked status
