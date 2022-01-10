@@ -1002,12 +1002,13 @@ namespace :demo do
     printf('  Generating close contacts...')
     close_contacts = []
     histories = []
-    patient_ids = data[:existing_patients].limit(data[:existing_patients].count * rand(15..25) / 100).order('RAND()').pluck(:id)
-    enrolled_close_contacts_ids = data[:existing_patients].where.not(id: patient_ids)
+    patient_and_jur_ids = data[:existing_patients].limit(data[:existing_patients].count * rand(15..25) / 100).order('RAND()').pluck(:id, :jurisdiction_id)
+    enrolled_close_contacts_ids = data[:existing_patients].where.not(id: patient_and_jur_ids.map(&:first)).where(isolation: false)
                                                           .limit(data[:existing_patients].count * rand(5..15) / 100).order('RAND()').pluck(:id)
-    enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
-    patient_ids.each_with_index do |patient_id, index|
-      printf("\r  Generating close contact #{index + 1} of #{patient_ids.length}...") unless ENV['APP_IN_CI']
+    enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids)
+                                     .pluck(:id, :first_name, :last_name, :primary_telephone, :email, :assigned_user, :last_date_of_exposure)
+    patient_and_jur_ids.each_with_index do |(patient_id, jur_id), index|
+      printf("\r  Generating close contact #{index + 1} of #{patient_and_jur_ids.length}...") unless ENV['APP_IN_CI']
       close_contact_ts = create_fake_timestamp(data[:beginning_of_day])
       close_contact = {
         patient_id: patient_id,
@@ -1022,12 +1023,16 @@ namespace :demo do
         close_contact[:last_name] = enrolled_close_contacts[index][2]
         close_contact[:primary_telephone] = enrolled_close_contacts[index][3]
         close_contact[:email] = enrolled_close_contacts[index][4]
+        close_contact[:assigned_user] = enrolled_close_contacts[index][5]
+        close_contact[:last_date_of_exposure] = enrolled_close_contacts[index][6]
       else
         close_contact[:enrolled_id] = nil
         close_contact[:first_name] = "#{rand < 0.5 ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}"
         close_contact[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
         close_contact[:primary_telephone] = rand < 0.85 ? "+155555501#{rand(99).to_s.rjust(2, '0')}" : nil
         close_contact[:email] = rand < 0.75 ? "#{rand(1_000_000_000..9_999_999_999)}fake@example.com" : nil
+        close_contact[:assigned_user] = rand < 0.8 ? data[:assigned_users][jur_id].sample : nil
+        close_contact[:last_date_of_exposure] = rand < 0.6 ? data[:beginning_of_day] - rand(5).days : nil
       end
       close_contacts << close_contact
       histories << History.new(

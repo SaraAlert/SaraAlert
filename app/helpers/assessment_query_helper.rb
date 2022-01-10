@@ -53,6 +53,9 @@ module AssessmentQueryHelper
       # Reverse if in descending order
       ordered_values = ordered_values.reverse if dir == 'desc'
 
+      # Blank and null values always belong at the end
+      ordered_values = ordered_values.filter { |v| v[:val].present? } + ordered_values.filter { |v| v[:val].blank? }
+
       # Collect just the assessment IDs
       ordered_assessment_ids = ordered_values.pluck(:id)
 
