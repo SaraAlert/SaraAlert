@@ -13,6 +13,7 @@ const mockMonitoringReasons = [
   'Fully Vaccinated',
   'Deceased',
   'Duplicate',
+  'Refused Monitoring',
   'Other',
 ];
 
