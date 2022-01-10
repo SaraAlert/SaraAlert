@@ -48,11 +48,15 @@ spa:
           info2: 'Si tiene alguna pregunta, por favor pónganse en contacto con el proveedor de atención médica que le ayudó a inscribirse.'
     twilio:
       shared:
-        experiencing_symptoms_s: '¿Esta usted sintiendo uno o mas de los siguientes sintomas hoy?: %{symptom_names}.'
-        experiencing_symptoms_p: '¿Esta alguna de estas personas sintiendo uno o mas de los siguientes sintomas hoy?: %{symptom_names}.'
-        max_retries_message: 'Lo siento, ha alcanzado el numero maximo de intentos de respuesta. Si tiene una emergencia medica, llame al 911.'
+        experiencing_symptoms_s: '¿Está usted sintiendo uno o más de los siguientes síntomas hoy?: %{symptom_names}.'
+        experiencing_symptoms_s_gsm_7: '¿Esta usted sintiendo uno o mas de los siguientes sintomas hoy?: %{symptom_names}.'
+        experiencing_symptoms_p: '¿Esta alguna de estas personas sintiendo uno o más de los siguientes síntomas hoy?: %{symptom_names}.'
+        experiencing_symptoms_p_gsm_7: '¿Esta alguna de estas personas sintiendo uno o mas de los siguientes sintomas hoy?: %{symptom_names}.'
+        max_retries_message: 'Lo siento, ha alcanzado el número máximo de intentos de respuesta. Si tiene una emergencia médica, llame al 911.'
+        max_retries_message_gsm_7: 'Lo siento, ha alcanzado el numero maximo de intentos de respuesta. Si tiene una emergencia medica, llame al 911.'
       sms:
-        # strings used for sms messages are intentionally simplified in that they do not contain special characters
+        # strings used for sms messages intentionally do not contain special characters so that they get encoded as GSM-7 rather than UCS-2 which results in
+        # double the number of SMS segments
         prompt:
           intro: >-
             Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para %{name} a este numero de telefono. Para privacidad y mas informacion,
@@ -75,10 +79,10 @@ spa:
     symptoms:
       chills:
         name: 'Escalofrío'
-        name-simplified: 'Escalofrio'
+        name_gsm_7: 'Escalofrio'
       congestion-or-runny-nose:
         name: 'Congestión nasal o un exceso de moco en la nariz'
-        name-simplified: 'Congestion nasal o un exceso de moco en la nariz'
+        name_gsm_7: 'Congestion nasal o un exceso de moco en la nariz'
       cough:
         name: 'Tos'
       diarrhea:
@@ -96,19 +100,19 @@ spa:
         name: 'Dolor muscular'
       nausea-or-vomiting:
         name: 'Náuseas o vómitos'
-        name-simplified: 'Nauseas o vomitos'
+        name_gsm_7: 'Nauseas o vomitos'
       new-loss-of-smell:
         name: 'Pérdida reciente el olfato'
-        name-simplified: 'Perdida reciente el olfato'
+        name_gsm_7: 'Perdida reciente el olfato'
       new-loss-of-taste:
         name: 'Pérdida reciente del gusto'
-        name-simplified: 'Perdida reciente del gusto'
+        name_gsm_7: 'Perdida reciente del gusto'
       pulse-ox:
         name: 'oximetro de pulso'
         notes: 'Ingrese la lectura más baja del oximetro de pulso en las últimas 24 horas'
       repeated-shaking-with-chills:
         name: 'Tiembla repetidamente y tiene escalofríos'
-        name-simplified: 'Tiembla repetidamente y tiene escalofrios'
+        name_gsm_7: 'Tiembla repetidamente y tiene escalofrios'
       shortness-of-breath:
         name: 'Falta de aire'
       sore-throat:
@@ -118,7 +122,7 @@ spa:
         notes: 'Por favor ingrese su temperatura actual en grados Fahrenheit'
       used-a-fever-reducer:
         name: 'Tomó medicina para reducir la fiebre'
-        name-simplified: 'Tomo medicina para reducir la fiebre'
+        name_gsm_7: 'Tomo medicina para reducir la fiebre'
         notes: 'En las últimas 24 horas, ¿ha tomado algún medicamento para reducir la fiebre?'
       other:
         name: 'Otro'
