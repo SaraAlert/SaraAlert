@@ -4,11 +4,12 @@ import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import Select from 'react-select';
 import _ from 'lodash';
 import { cursorPointerStyle, bootstrapSelectTheme } from '../../packs/stylesheets/ReactSelectStyling';
-import { lockReasonOptions } from '../../data/lockReasonOptions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 const MAX_NOTES_LENGTH = 5000;
+
+const LOCK_REASON_OPTIONS = ['Not specified', 'No longer an employee', 'No longer needs access', 'Other'];
 
 class UserModal extends React.Component {
   constructor(props) {
@@ -27,8 +28,8 @@ class UserModal extends React.Component {
       notes: this.props.initialUserData.notes || '',
       lockReasonOptions:
         this.props.initialUserData.lock_reason === 'Auto-locked by the System'
-          ? lockReasonOptions.concat(['Auto-locked by the System']).sort()
-          : lockReasonOptions,
+          ? LOCK_REASON_OPTIONS.concat(['Auto-locked by the System']).sort()
+          : LOCK_REASON_OPTIONS,
     };
   }
 
