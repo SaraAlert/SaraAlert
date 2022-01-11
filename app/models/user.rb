@@ -49,7 +49,7 @@ class User < ApplicationRecord
   end
 
   def active_state
-    !current_sign_in_at.nil? && current_sign_in_at >= 30.days.ago ? 'Active' : 'Inactive'
+    current_sign_in_at.present? && current_sign_in_at >= 30.days.ago ? 'Active' : 'Inactive'
   end
 
   def auto_lock_reason
