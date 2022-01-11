@@ -312,15 +312,15 @@ export const advancedFilterOptions = [
     type: 'combination',
     fields: [
       {
-        name: 'address-foreign',
-        title: 'outside USA',
-        description: 'Monitoree Address 1, Town/City, Country, Address 2, Postal Code, Address 3 or State/Province (outside USA)',
-        type: 'search',
-      },
-      {
         name: 'address-usa',
         title: 'within USA',
         description: 'Monitoree Address 1, Town/City, State, Address 2, Zip, or County within USA',
+        type: 'search',
+      },
+      {
+        name: 'address-foreign',
+        title: 'outside USA',
+        description: 'Monitoree Address 1, Town/City, Country, Address 2, Postal Code, Address 3 or State/Province (outside USA)',
         type: 'search',
       },
     ],

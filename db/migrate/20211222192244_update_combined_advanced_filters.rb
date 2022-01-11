@@ -16,8 +16,8 @@ class UpdateCombinedAdvancedFilters < ActiveRecord::Migration[6.1]
       description: 'Monitorees with specified address',
       type: 'combination',
       fields: [
-        { name: 'address-foreign', title: 'outside USA', type: 'search' },
-        { name: 'address-usa', title: 'within USA', type: 'search' }
+        { name: 'address-usa', title: 'within USA', type: 'search' },
+        { name: 'address-foreign', title: 'outside USA', type: 'search' }
       ]
     },
     name: {
