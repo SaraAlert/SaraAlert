@@ -523,29 +523,20 @@ class AdminTable extends React.Component {
 
     const handleSuccess = response => {
       if (response && response.data && response.data.user_rows) {
-        const keysToSkip = ['active_state', 'lock_reason', 'auto_lock_reason'];
         // NOTE: react-csv has a bug where false values don't show up in the downloaded CSV
         // This has been addressed and recently merged: https://github.com/react-csv/react-csv/pull/193
         // Once this gets released and we update our version this code won't be necessary.
-        const keysWithBoolValues = ['is_api_enabled', 'is_2fa_enabled', 'is_locked'];
-
-        let csvData = [];
-        response.data.user_rows.forEach(row => {
-          let csvObj = {};
-          for (const [key, value] of Object.entries(row)) {
-            if (!keysToSkip.includes(key)) {
-              if (keysWithBoolValues.includes(key)) {
-                csvObj[key.toString()] = value.toString();
-              } else if (key === 'notes') {
-                csvObj[key.toString()] = removeFormulaStart(value).toString();
-              } else {
-                csvObj[key.toString()] = value;
-              }
-            }
-          }
-          csvData.push(csvObj);
+        const csvData = response.data.user_rows.map(userData => {
+          // eslint-disable-next-line no-unused-vars
+          const { active_state, lock_reason, auto_lock_reason, ...dataToExport } = userData;
+          return {
+            ...dataToExport,
+            notes: removeFormulaStart(dataToExport.notes).toString(),
+            is_api_enabled: dataToExport.is_api_enabled.toString(),
+            is_2fa_enabled: dataToExport.is_2fa_enabled.toString(),
+            is_locked: dataToExport.is_locked.toString(),
+          };
         });
-
         // If there's a valid response, update state accordingly
         this.setState({ csvData });
       } else {
