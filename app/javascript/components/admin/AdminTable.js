@@ -27,7 +27,7 @@ class AdminTable extends React.Component {
           { label: 'Status', field: 'status', isSortable: true },
           { label: 'API Enabled', field: 'is_api_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: '2FA Enabled', field: 'is_2fa_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
-          { label: 'Failed Login Attempts', field: 'num_failed_logins', isSortable: true },
+          { label: 'Failed Logins', field: 'num_failed_logins', isSortable: true },
           { label: 'Notes', field: 'notes', isSortable: false, filter: this.renderNotes, className: 'col-long-text-field' },
           { label: 'Audit', field: 'Audit', isSortable: false, tooltip: null, filter: this.createAuditButton, onClick: this.handleAuditClick },
         ],
