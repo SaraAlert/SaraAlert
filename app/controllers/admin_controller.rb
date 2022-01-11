@@ -99,12 +99,12 @@ class AdminController < ApplicationController
     when 'email'
       users = users.order(email: dir)
     when 'jurisdiction_path'
-      users = users.order(path: dir)
+      users = users.order(path: dir, id: dir)
     when 'num_failed_logins'
-      users = users.order(failed_attempts: dir)
+      users = users.order(failed_attempts: dir, id: dir)
     when 'status'
-      users = users.sort_by { |u| [u.status.blank? ? 1 : 0, u.status] } if dir == 'asc'
-      users = users.sort_by { |u| [u.status.blank? ? 0 : 1, u.status] }.reverse if dir == 'desc'
+      users = users.sort_by { |u| [u.status.blank? ? 1 : 0, u.status, u.id] } if dir == 'asc'
+      users = users.sort_by { |u| [u.status.blank? ? 0 : 1, u.status, u.id] }.reverse if dir == 'desc'
     when 'is_locked'
       users = users.order(locked_at: dir == 'asc' ? 'desc' : 'asc', id: dir)
     end
