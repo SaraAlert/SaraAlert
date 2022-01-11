@@ -15,14 +15,14 @@ class AdminTest < ApplicationSystemTestCase
   end
 
   test 'edit user' do
-    @@admin_test_helper.edit_user('usa_admin', "manual_locked_user@example.com", is_locked: true,
-                                  auto_locked: false, is_active: false, status: "No longer an employee",
-                                  auto_lock_message: '')
-    @@admin_test_helper.edit_user('usa_admin', "auto_locked_user@example.com", is_locked: true,
-                                  auto_locked: true, is_active: true, status: "Auto-locked by the System",
-                                  auto_lock_message: 'failed login attempts')
-    @@admin_test_helper.edit_user('usa_admin', "state5_epi@example.com", is_locked: false,
-                                  auto_locked: false, is_active: true, status: "Other", auto_lock_message: '')
+    @@admin_test_helper.edit_user('usa_admin', 'manual_locked_user@example.com', is_locked: true,
+                                                                                 auto_locked: false, is_active: false, status: 'No longer an employee',
+                                                                                 auto_lock_message: '')
+    @@admin_test_helper.edit_user('usa_admin', 'auto_locked_user@example.com', is_locked: true,
+                                                                               auto_locked: true, is_active: true, status: 'Auto-locked by the System',
+                                                                               auto_lock_message: 'failed login attempts')
+    @@admin_test_helper.edit_user('usa_admin', 'state5_epi@example.com', is_locked: false,
+                                                                         auto_locked: false, is_active: true, status: 'Other', auto_lock_message: '')
   end
 
   # test 'add users with different jurisdictions and roles' do
