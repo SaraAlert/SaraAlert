@@ -28,52 +28,24 @@ class AdminDashboard < ApplicationSystemTestCase
     end
   end
 
-  def edit_user
+  def edit_user(email, is_locked, auto_locked, is_active, status, auto_lock_message)
     # Edit Row Button (below) is an aria-label. Enabling for this test only
     Capybara.enable_aria_label = true
     page.execute_script("$('user-modal').css('transition','none')")
 
     # The users we are interested in adjusting are on the second page when viewing 25 users/page
     select '50', from: 'Adjust number of records'
+    assert page.has_text? email
 
-    # Edit user with email 'manual_locked_user@example.com'
-    tr = find('tr', text: 'manual_locked_user@example.com')
+    # Edit user by email
+    tr = find('tr', text: email)
     tr.click_button 'Edit Row Button'
 
-    find("input[name='status']", visible: false)
-    assert page.has_field? 'status', type: :hidden, with: 'No longer an employee'
-
-    # Unlock the user with email 'manual_locked_user@example.com'
-    find(:xpath, "//label[@for='system-access-input']").click
-    assert page.has_no_field? 'status', type: :hidden, with: 'No longer an employee'
-    assert page.has_selector?('div', text: 'Inactive')
-
-    find('.modal-footer').click_on('Cancel')
-
-    assert page.has_text? 'auto_locked_user@example.com'
-
-    # Edit user with email 'auto_locked_user@example.com'
-    tr = find('tr', text: 'auto_locked_user@example.com')
-    tr.click_button 'Edit Row Button'
-
-    find("input[name='status']", visible: false)
-    assert page.has_field? 'status', type: :hidden, with: 'Auto-locked by the System'
-    assert page.has_text? 'failed login attempts'
-
-    # Unlock the user with email 'auto_locked_user@example.com'
-    find(:xpath, "//label[@for='system-access-input']").click
-    assert page.has_no_field? 'status', type: :hidden, with: 'Auto-locked by the System'
-    assert page.has_no_text? 'failed login attempts'
-    assert page.has_selector?('div', text: 'Active')
-
-    # Save the user with email 'auto_locked_user@example.com' after unlocking
-    find('.modal-footer').click_on('Save')
-
-    tr = find('tr', text: 'auto_locked_user@example.com')
-
-    # Confirm that the user is Unlocked and status is Active
-    assert tr.has_text? 'Unlocked'
-    assert tr.has_text? 'Active'
+    if is_locked
+      @@admin_dashboard_verifier.verify_unlock_locked_user(email, auto_locked, is_active, status, auto_lock_message)
+    else
+      @@admin_dashboard_verifier.verify_lock_unlocked_user(email, is_active)
+    end
   end
 
   def search_for_user(query)

@@ -47,9 +47,9 @@ class AdminTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def edit_user(user_label)
+  def edit_user(user_label, email, is_locked:, auto_locked:, is_active:, status:, auto_lock_message:)
     @@system_test_utils.login(user_label)
-    @@admin_dashboard.edit_user
+    @@admin_dashboard.edit_user(email, is_locked, auto_locked, is_active, status, auto_lock_message)
     @@system_test_utils.logout
   end
 
