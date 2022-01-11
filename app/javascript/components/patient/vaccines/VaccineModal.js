@@ -81,7 +81,13 @@ class VaccineModal extends React.Component {
       .validate({ ...this.state }, { abortEarly: false })
       .then(() => {
         this.setState({ loading: true }, () => {
-          this.props.onSave(this.state);
+          this.props.onSave({
+            product_name: this.state.product_name,
+            group_name: this.state.group_name,
+            administration_date: this.state.administration_date,
+            dose_number: this.state.dose_number,
+            notes: this.state.notes,
+          });
         });
       })
       .catch(err => {

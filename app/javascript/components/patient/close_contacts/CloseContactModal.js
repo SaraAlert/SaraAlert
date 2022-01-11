@@ -69,7 +69,16 @@ class CloseContactModal extends React.Component {
       .validate({ ...this.state }, { abortEarly: false })
       .then(() => {
         this.setState({ loading: true }, () => {
-          this.props.onSave(_.omit(this.state, 'errors', 'loading'));
+          this.props.onSave({
+            assigned_user: this.state.assigned_user,
+            contact_attempts: this.state.contact_attempts,
+            email: this.state.email,
+            first_name: this.state.first_name,
+            last_date_of_exposure: this.state.last_date_of_exposure,
+            last_name: this.state.last_name,
+            notes: this.state.notes,
+            primary_telephone: this.state.primary_telephone,
+          });
         });
       })
       .catch(err => {
