@@ -33,7 +33,7 @@ class AdminController < ApplicationController
 
     # Validate sort params
     order_by = permitted_params[:orderBy]
-    return head :bad_request unless order_by.nil? || order_by.blank? || %w[id email jurisdiction_path num_failed_logins status].include?(order_by)
+    return head :bad_request unless order_by.nil? || order_by.blank? || %w[id email jurisdiction_path num_failed_logins status is_locked].include?(order_by)
 
     sort_direction = permitted_params[:sortDirection]
     return head :bad_request unless sort_direction.nil? || sort_direction.blank? || %w[asc desc].include?(sort_direction)
@@ -105,6 +105,8 @@ class AdminController < ApplicationController
     when 'status'
       users = users.sort_by { |u| [u.status.blank? ? 1 : 0, u.status] } if dir == 'asc'
       users = users.sort_by { |u| [u.status.blank? ? 0 : 1, u.status] }.reverse if dir == 'desc'
+    when 'is_locked'
+      users = users.order(locked_at: dir == 'asc' ? 'desc' : 'asc', id: dir)
     end
 
     users

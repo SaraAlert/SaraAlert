@@ -23,7 +23,7 @@ class AdminTable extends React.Component {
           { label: 'Email', field: 'email', className: 'wrap-words', isSortable: true },
           { label: 'Jurisdiction', field: 'jurisdiction_path', isSortable: true },
           { label: 'Role', field: 'role_title', isSortable: false },
-          { label: 'System Access', field: 'is_locked', isSortable: false, options: { true: 'Locked', false: 'Unlocked' } },
+          { label: 'System Access', field: 'is_locked', isSortable: true, options: { true: 'Locked', false: 'Unlocked' } },
           { label: 'Status', field: 'status', isSortable: true },
           { label: 'API Enabled', field: 'is_api_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: '2FA Enabled', field: 'is_2fa_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
