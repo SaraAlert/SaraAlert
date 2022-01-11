@@ -16,8 +16,4 @@ module LockReasons
   def self.manual_lock_reasons
     constants.filter_map { |c| const_get(c) if c != :AUTO_LOCKED_BY_SYSTEM }
   end
-
-  def self.persistable_lock_reasons
-    constants.filter_map { |c| const_get(c) if c != :AUTO_LOCKED_BY_SYSTEM && c != :NOT_SPECIFIED }
-  end
 end
