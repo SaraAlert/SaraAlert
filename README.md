@@ -337,9 +337,13 @@ See [System tests documentation](test/system/README.md) for more information.
 
 All jurisdictions, jurisdictional hierarchies, jurisdictional symptoms-to-be-monitored, and symptom thresholds are defined in the configuration file located at `config/sara/jurisdictions.yml`. See this file for more details about the structure and definition required by Sara Alert.
 
+All jurisdiction custom messages are defined in the configuration file located at `config/sara/jurisdiction_messages.yml`. The structure of this file mimics both the `juristictions.yml` file and the locale files in `config/locales`. Only the email `info1` and SMS `intro` messages are customizable, and translations are accepted.
+
 #### Applying Changes
 
 You must run `bundle exec rake admin:import_or_update_jurisdictions` in order for changes made in the `config/sara/jurisdictions.yml` configuration to take effect.
+
+You must run `bundle exec rake admin:import_or_update_jurisdiction_messages` in order for changes made in the `config/sara/jurisdiction_messages.yml` configuration to take effect.
 
 ## Reporting Issues
 
