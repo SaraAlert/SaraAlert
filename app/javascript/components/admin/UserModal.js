@@ -38,29 +38,8 @@ class UserModal extends React.Component {
   }
 
   handleChange = event => {
-    this.setState({ [event.target.name]: event?.target?.value || '' });
-  };
-
-  handleJurisdictionChange = data => {
-    this.setState({ jurisdiction_path: data.value });
-  };
-
-  handleRoleChange = data => {
-    this.setState({ roleTitle: data.value });
-  };
-
-  handleLockedSystemAccessChange = event => {
-    const val = event.target.checked;
-    this.setState({ isLocked: val });
-  };
-
-  handleStatusChange = data => {
-    this.setState({ lockReason: data.value });
-  };
-
-  handleAPIAccessChange = event => {
-    const val = event.target.checked;
-    this.setState({ isAPIEnabled: val });
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    this.setState({ [event.target.name]: value });
   };
 
   getStatusValue = () => {
@@ -130,7 +109,7 @@ class UserModal extends React.Component {
                 options={this.state.sorted_jurisdiction_paths.map(path => {
                   return { label: path, value: path };
                 })}
-                onChange={this.handleJurisdictionChange}
+                onChange={data => this.setState({ jurisdiction_path: data.value })}
                 placeholder=""
                 styles={cursorPointerStyle}
                 theme={bootstrapSelectTheme}
@@ -151,7 +130,7 @@ class UserModal extends React.Component {
                 options={this.props.roles.map(role => {
                   return { label: role, value: role };
                 })}
-                onChange={this.handleRoleChange}
+                onChange={data => this.setState({ roleTitle: data.value })}
                 placeholder=""
                 styles={cursorPointerStyle}
                 theme={bootstrapSelectTheme}
@@ -163,11 +142,11 @@ class UserModal extends React.Component {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <Form.Check
                     id="system-access-input"
-                    name="system-access"
+                    name="isLocked"
                     type="switch"
                     checked={this.state.isLocked}
                     label={this.state.isLocked ? 'Locked' : 'Unlocked'}
-                    onChange={this.handleLockedSystemAccessChange}
+                    onChange={this.handleChange}
                   />
                   {this.state.lockReason === 'Auto-locked by the System' && this.state.isLocked && (
                     <div className="locked-warning-text ml-2">
@@ -191,7 +170,7 @@ class UserModal extends React.Component {
                   options={this.state.lockReasonOptions.map(lockReason => {
                     return { label: lockReason, value: lockReason };
                   })}
-                  onChange={this.handleStatusChange}
+                  onChange={data => this.setState({ lockReason: data.value })}
                   styles={cursorPointerStyle}
                   theme={bootstrapSelectTheme}
                   isDisabled={!this.state.isLocked}
@@ -202,11 +181,11 @@ class UserModal extends React.Component {
               <Form.Label className="input-label">API Access</Form.Label>
               <Form.Check
                 id="access-input"
-                name="access"
+                name="isAPIEnabled"
                 type="switch"
                 checked={this.state.isAPIEnabled}
                 label={this.state.isAPIEnabled ? 'Enabled' : 'Disabled'}
-                onChange={this.handleAPIAccessChange}
+                onChange={this.handleChange}
               />
             </Form.Group>
             <Form.Group controlId="notes">
