@@ -267,7 +267,7 @@ const schema = yup.object().shape({
   last_date_of_exposure: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .min(moment('2020-01-01'), 'Last Date of Exposure must fall after January 1, 2020.')
-    .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
+    .max(moment().add(30, 'days').toDate(), 'Date cannot be more than 30 days in the future.')
     .nullable(),
   assigned_user: yup
     .number()

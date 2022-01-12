@@ -267,7 +267,7 @@ const schema = yup.object().shape({
   administration_date: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .min(moment('1900-01-01'), 'Specimen Collection Date must fall after January 1, 2020.')
-    .max(moment(), 'Specimen Collection Date can not be in the future.')
+    .max(moment(), 'Specimen Collection Date cannot be in the future.')
     .nullable(),
   dose_number: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   notes: yup.string().max(2000, 'Max length exceeded, please limit to 2000 characters.').nullable(),

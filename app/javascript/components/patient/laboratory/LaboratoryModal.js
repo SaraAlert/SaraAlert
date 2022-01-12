@@ -38,12 +38,12 @@ class LaboratoryModal extends React.Component {
           .date('Date must correspond to the "mm/dd/yyyy" format.')
           .required('Please enter Specimen Collection Date.')
           .min(moment('2020-01-01'), 'Specimen Collection Date must fall after January 1, 2020.')
-          .max(moment(), 'Specimen Collection Date can not be in the future.')
+          .max(moment(), 'Specimen Collection Date cannot be in the future.')
           .nullable(),
         report: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
           .min(moment(reportDate), reportMessage)
-          .max(moment(), 'Report Date can not be in the future.')
+          .max(moment(), 'Report Date cannot be in the future.')
           .nullable(),
         result: yup.string().required('Please select a lab result.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
       });
@@ -53,12 +53,12 @@ class LaboratoryModal extends React.Component {
         specimen_collection: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
           .min(moment('2020-01-01'), 'Specimen Collection Date must fall after January 1, 2020.')
-          .max(moment(), 'Specimen Collection Date can not be in the future.')
+          .max(moment(), 'Specimen Collection Date cannot be in the future.')
           .nullable(),
         report: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
           .min(moment(reportDate), reportMessage)
-          .max(moment(), 'Report Date can not be in the future.')
+          .max(moment(), 'Report Date cannot be in the future.')
           .nullable(),
         result: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
       });
@@ -282,12 +282,12 @@ var schema = yup.object().shape({
   specimen_collection: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .min(moment('2020-01-01'), 'Specimen Collection Date must fall after January 1, 2020.')
-    .max(moment(), 'Specimen Collection Date can not be in the future.')
+    .max(moment(), 'Specimen Collection Date cannot be in the future.')
     .nullable(),
   report: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .min(moment('2020-01-01'), 'Report Date must fall after January 1, 2020.')
-    .max(moment(), 'Report Date can not be in the future.')
+    .max(moment(), 'Report Date cannot be in the future.')
     .nullable(),
   result: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
 });

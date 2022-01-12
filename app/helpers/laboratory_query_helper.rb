@@ -52,7 +52,7 @@ module LaboratoryQueryHelper
   def search(laboratories, search)
     return laboratories if search.blank?
 
-    laboratories.where('id like ?', "#{search&.downcase}%").or(
+    laboratories.where('id like ?', "#{search}%").or(
       laboratories.where('lab_type like ?', "%#{search&.downcase}%").or(
         laboratories.where('result like ?', "%#{search&.downcase}%")
       )

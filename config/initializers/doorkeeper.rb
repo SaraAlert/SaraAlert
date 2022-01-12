@@ -130,7 +130,7 @@ Doorkeeper.configure do
   # doesn't updates existing token expiration time, it will create a new token instead.
   # Rationale: https://github.com/doorkeeper-gem/doorkeeper/issues/383
   #
-  # You can not enable this option together with +hash_token_secrets+.
+  # You cannot enable this option together with +hash_token_secrets+.
   #
   # reuse_access_token
 
