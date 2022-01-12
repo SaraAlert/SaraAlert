@@ -192,7 +192,7 @@ class LaboratoryTable extends React.Component {
    */
   isOnlyPosLab = () => {
     const activeLab = this.getCurrLab();
-    return this.props.num_pos_labs === 1 && activeLab.result === 'positive' && !_.isNil(activeLab.specimen_collection);
+    return _.isEmpty(activeLab) ? false : this.props.num_pos_labs === 1 && activeLab.result === 'positive' && !_.isNil(activeLab.specimen_collection);
   };
 
   /**
@@ -362,8 +362,8 @@ class LaboratoryTable extends React.Component {
                   <span className="ml-2">Add New Lab Result</span>
                 </Button>
               </Col>
-              <Col lg={5}>
-                <InputGroup size="md">
+              <Col xl={6} lg={10} md={12}>
+                <InputGroup size="md" className="mt-3 mt-md-0">
                   <InputGroup.Prepend>
                     <OverlayTrigger overlay={<Tooltip>Search by ID, Lab Type, or Result.</Tooltip>}>
                       <InputGroup.Text className="rounded-0">
@@ -397,8 +397,8 @@ class LaboratoryTable extends React.Component {
               handlePageUpdate={this.handlePageUpdate}
               entryOptions={this.state.entryOptions}
               entries={this.state.query.entries}
-              orderBy={!_.isNil(this.state.query.order) ? this.state.query.order : ''}
-              sortDirection={!_.isNil(this.state.query.direction) ? this.state.query.direction : ''}
+              orderBy={this.state.query.order}
+              sortDirection={this.state.query.direction}
               tableCustomClass="table-has-dropdown"
             />
           </Card.Body>

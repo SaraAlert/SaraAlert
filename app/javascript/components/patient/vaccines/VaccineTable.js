@@ -354,8 +354,8 @@ class VaccineTable extends React.Component {
                   <span className="ml-2">Add New Vaccination</span>
                 </Button>
               </Col>
-              <Col lg={5}>
-                <InputGroup size="md">
+              <Col xl={6} lg={10} md={12}>
+                <InputGroup size="md" className="mt-3 mt-md-0">
                   <InputGroup.Prepend>
                     <OverlayTrigger overlay={<Tooltip>Search by ID, Group Name, or Product Name.</Tooltip>}>
                       <InputGroup.Text className="rounded-0">

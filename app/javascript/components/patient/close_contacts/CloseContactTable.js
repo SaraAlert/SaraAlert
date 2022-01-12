@@ -406,7 +406,7 @@ class CloseContactTable extends React.Component {
                 </Button>
               </Col>
               <Col xl={6} lg={10} md={12}>
-                <InputGroup size="md" className="mt-3 mt-md-0 ">
+                <InputGroup size="md" className="mt-3 mt-md-0">
                   <InputGroup.Prepend>
                     <OverlayTrigger overlay={<Tooltip>Search by First Name, Last Name, Phone Number, Email, Assigned User, or Contact Attempts.</Tooltip>}>
                       <InputGroup.Text className="rounded-0">

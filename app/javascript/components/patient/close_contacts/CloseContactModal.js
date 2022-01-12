@@ -105,7 +105,7 @@ class CloseContactModal extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <Row>
-            <Form.Group as={Col} lg="12" className="pr-2" controlId="cc_first_name">
+            <Form.Group as={Col} lg="12" className="pr-lg-2" controlId="cc_first_name">
               <Form.Label className="input-label">First Name{schema?.fields?.first_name?._exclusive?.required && '*'} </Form.Label>
               <Form.Control
                 size="lg"
@@ -118,7 +118,7 @@ class CloseContactModal extends React.Component {
                 {this.state.errors['first_name']}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} lg="12" className="pl-2" controlId="cc_last_name">
+            <Form.Group as={Col} lg="12" className="pl-lg-2" controlId="cc_last_name">
               <Form.Label className="input-label">Last Name{schema?.fields?.last_name?._exclusive?.required && '*'} </Form.Label>
               <Form.Control
                 size="lg"
@@ -133,7 +133,7 @@ class CloseContactModal extends React.Component {
             </Form.Group>
           </Row>
           <Row>
-            <Form.Group as={Col} lg="12" className="pr-2" controlId="cc_primary_telephone">
+            <Form.Group as={Col} lg="12" className="pr-lg-2" controlId="cc_primary_telephone">
               <Form.Label className="input-label">Phone Number{schema?.fields?.primary_telephone?._exclusive?.required && '*'}</Form.Label>
               <PhoneInput
                 id="cc_primary_telephone"
@@ -146,7 +146,7 @@ class CloseContactModal extends React.Component {
                 {this.state.errors['primary_telephone']}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} lg="12" className="pl-2" controlId="cc_email">
+            <Form.Group as={Col} lg="12" className="pl-lg-2" controlId="cc_email">
               <Form.Label className="input-label">Email{schema?.fields?.email?._exclusive?.required && '*'} </Form.Label>
               <Form.Control
                 size="lg"
@@ -162,7 +162,7 @@ class CloseContactModal extends React.Component {
           </Row>
           <hr></hr>
           <Row>
-            <Form.Group as={Col} lg="12">
+            <Form.Group as={Col} lg="12" className="pr-lg-2">
               <Form.Label htmlFor="cc_last_date_of_exposure" className="input-label">
                 Last Date of Exposure{schema?.fields?.last_date_of_exposure?._exclusive?.required && '*'}
               </Form.Label>
@@ -180,7 +180,7 @@ class CloseContactModal extends React.Component {
                 {this.state.errors['last_date_of_exposure']}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} lg="12" controlId="cc_assigned_user">
+            <Form.Group as={Col} lg="12" className="pl-lg-2" controlId="cc_assigned_user">
               <Form.Label className="input-label">
                 Assigned User{schema?.fields?.assigned_user?._exclusive?.required && '*'}
                 <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
