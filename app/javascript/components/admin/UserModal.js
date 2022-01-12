@@ -50,23 +50,6 @@ class UserModal extends React.Component {
     }
   };
 
-  statusTooltip = () => {
-    const tooltipText = this.state.activeState === 'Active' ? ACTIVE_STATUS_TOOLTIP_TEXT : INACTIVE_STATUS_TOOLTIP_TEXT;
-    return (
-      <div style={{ display: 'inline' }}>
-        <span data-for={this.customID} data-tip="" className="ml-1">
-          <i className="fas fa-question-circle px-0"></i>
-        </span>
-        <div className="sr-only">
-          <span>Tooltip: {tooltipText}</span>
-        </div>
-        <ReactTooltip id={this.customID} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
-          <span>{tooltipText}</span>
-        </ReactTooltip>
-      </div>
-    );
-  };
-
   render() {
     return (
       <Modal id="user-modal" show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
@@ -160,21 +143,28 @@ class UserModal extends React.Component {
             {this.props.type === 'edit' && (
               <Form.Group>
                 <Form.Label className="input-label" htmlFor="status-select">
-                  Status {!this.state.isLocked && this.statusTooltip()}
+                  Status
                 </Form.Label>
-                <Select
-                  inputId="status-select"
-                  id="status"
-                  name="status"
-                  value={this.getStatusValue()}
-                  options={this.state.lockReasonOptions.map(lockReason => {
-                    return { label: lockReason, value: lockReason };
-                  })}
-                  onChange={data => this.setState({ lockReason: data.value })}
-                  styles={cursorPointerStyle}
-                  theme={bootstrapSelectTheme}
-                  isDisabled={!this.state.isLocked}
-                />
+                <span data-for="disabled-status-select" data-tip="">
+                  <Select
+                    inputId="status-select"
+                    id="status"
+                    name="status"
+                    value={this.getStatusValue()}
+                    options={this.state.lockReasonOptions.map(lockReason => {
+                      return { label: lockReason, value: lockReason };
+                    })}
+                    onChange={data => this.setState({ lockReason: data.value })}
+                    styles={cursorPointerStyle}
+                    theme={bootstrapSelectTheme}
+                    isDisabled={!this.state.isLocked}
+                  />
+                </span>
+                {!this.state.isLocked && (
+                  <ReactTooltip id="disabled-status-select" multiline={true} type="dark" effect="solid" place="top" className="tooltip-container">
+                    <div>{this.state.activeState === 'Active' ? ACTIVE_STATUS_TOOLTIP_TEXT : INACTIVE_STATUS_TOOLTIP_TEXT}</div>
+                  </ReactTooltip>
+                )}
               </Form.Group>
             )}
             <Form.Group>
