@@ -6,10 +6,14 @@ import _ from 'lodash';
 import { cursorPointerStyle, bootstrapSelectTheme } from '../../packs/stylesheets/ReactSelectStyling';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import ReactTooltip from 'react-tooltip';
 
 const MAX_NOTES_LENGTH = 5000;
 
 const LOCK_REASON_OPTIONS = ['Not specified', 'No longer an employee', 'No longer needs access', 'Other'];
+
+const ACTIVE_STATUS_TOOLTIP_TEXT = 'Logged into the system within the last 30 days';
+const INACTIVE_STATUS_TOOLTIP_TEXT = 'Has not logged into the system for at least 30 days';
 
 class UserModal extends React.Component {
   constructor(props) {
@@ -65,6 +69,23 @@ class UserModal extends React.Component {
     } else {
       return { label: this.state.activeState, value: this.state.activeState };
     }
+  };
+
+  statusTooltip = () => {
+    const tooltipText = this.state.activeState === 'Active' ? ACTIVE_STATUS_TOOLTIP_TEXT : INACTIVE_STATUS_TOOLTIP_TEXT;
+    return (
+      <div style={{ display: 'inline' }}>
+        <span data-for={this.customID} data-tip="" className="ml-1">
+          <i className="fas fa-question-circle px-0"></i>
+        </span>
+        <div className="sr-only">
+          <span>Tooltip: {tooltipText}</span>
+        </div>
+        <ReactTooltip id={this.customID} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+          <span>{tooltipText}</span>
+        </ReactTooltip>
+      </div>
+    );
   };
 
   render() {
@@ -160,7 +181,7 @@ class UserModal extends React.Component {
             {this.props.type === 'edit' && (
               <Form.Group>
                 <Form.Label className="input-label" htmlFor="status-select">
-                  Status
+                  Status {!this.state.isLocked && this.statusTooltip()}
                 </Form.Label>
                 <Select
                   inputId="status-select"
