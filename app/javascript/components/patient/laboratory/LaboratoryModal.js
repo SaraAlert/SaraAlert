@@ -255,6 +255,11 @@ class LaboratoryModal extends React.Component {
           </Button>
           <span data-for="submit-tooltip" data-tip="" className="ml-1">
             <Button variant="primary btn-square" disabled={this.state.loading || !isValid} onClick={this.submit}>
+              {this.state.loading && (
+                <React.Fragment>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                </React.Fragment>
+              )}
               {this.props.editMode ? 'Update' : 'Create'}
             </Button>
           </span>

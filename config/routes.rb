@@ -80,18 +80,6 @@ Rails.application.routes.draw do
   post '/jurisdictions/assigned_users', to: 'jurisdictions#assigned_users_for_viewable_patients', as: :assigned_users_for_viewable_patients
   post '/jurisdictions/common_exposure_cohorts', to: 'jurisdictions#common_exposure_cohorts', as: :common_exposure_cohorts
 
-  post '/close_contacts', to: 'close_contacts#create'
-  post '/close_contacts/:id', to: 'close_contacts#update'
-  delete '/close_contacts/:id', to: 'close_contacts#destroy'
-
-  post '/laboratories', to: 'laboratories#create'
-  post '/laboratories/:id', to: 'laboratories#update'
-  delete '/laboratories/:id', to: 'laboratories#destroy'
-
-  post '/vaccines', to: 'vaccines#create'
-  post '/vaccines/:id', to: 'vaccines#update'
-  delete '/vaccines/:id', to: 'vaccines#destroy'
-
   get '/patients/:id/group', to: 'patients#new_group_member'
 
   get '/export/csv_linelist/:workflow', to: 'export#csv_linelist'

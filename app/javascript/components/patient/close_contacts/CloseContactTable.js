@@ -262,13 +262,11 @@ class CloseContactTable extends React.Component {
    */
   submitCloseContact = (ccData, isEdit) => {
     this.setState({ loading: true }, () => {
-      let url = `${window.BASE_PATH}/close_contacts`;
-      if (isEdit) {
-        url += `/${ccData.id}`;
-      }
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-      axios
-        .post(url, {
+      axios({
+        method: isEdit ? 'patch' : 'post',
+        url: window.BASE_PATH + (isEdit ? '/close_contacts/' + ccData.id : '/close_contacts'),
+        data: {
           patient_id: this.props.patient.id,
           first_name: ccData.first_name || '',
           last_name: ccData.last_name || '',
@@ -279,7 +277,8 @@ class CloseContactTable extends React.Component {
           notes: ccData.notes || '',
           enrolled_id: ccData.enrolled_id || null,
           contact_attempts: ccData.contact_attempts || 0,
-        })
+        },
+      })
         .then(() => {
           location.reload();
         })

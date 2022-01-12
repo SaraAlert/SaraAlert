@@ -234,22 +234,20 @@ class VaccineTable extends React.Component {
    * @param {*} isEdit - whether this is creating a new vaccine or editing an existing vaccine
    */
   submitVaccine = (vaccineData, isEdit) => {
-    console.log(vaccineData);
     this.setState({ loading: true }, () => {
-      let url = `${window.BASE_PATH}/vaccines`;
-      if (isEdit) {
-        url += `/${vaccineData.id}`;
-      }
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-      axios
-        .post(url, {
+      axios({
+        method: isEdit ? 'patch' : 'post',
+        url: window.BASE_PATH + (isEdit ? '/vaccines/' + vaccineData.id : '/vaccines'),
+        data: {
           group_name: vaccineData.group_name,
           product_name: vaccineData.product_name,
           administration_date: vaccineData.administration_date,
           dose_number: vaccineData.dose_number,
           notes: vaccineData.notes,
           patient_id: this.props.patient.id,
-        })
+        },
+      })
         .then(() => {
           // Refresh the page to see the updated table data
           location.reload();

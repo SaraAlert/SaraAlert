@@ -243,20 +243,19 @@ class LaboratoryTable extends React.Component {
    */
   submitLaboratory = (labData, symptom_onset, isEdit) => {
     this.setState({ loading: true }, () => {
-      let url = `${window.BASE_PATH}/laboratories`;
-      if (isEdit) {
-        url += `/${labData.id}`;
-      }
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-      axios
-        .post(url, {
+      axios({
+        method: isEdit ? 'patch' : 'post',
+        url: window.BASE_PATH + (isEdit ? '/laboratories/' + labData.id : '/laboratories'),
+        data: {
           patient_id: this.props.patient.id,
           lab_type: labData.lab_type,
           specimen_collection: labData.specimen_collection,
           report: labData.report,
           result: labData.result,
           symptom_onset,
-        })
+        },
+      })
         .then(() => {
           location.reload();
         })
