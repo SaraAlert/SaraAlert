@@ -232,10 +232,12 @@ class AdminController < ApplicationController
     # Update API access
     user.update!(api_enabled: is_api_enabled, role: role)
 
-    # Update manual_lock_reason if one is present
     # Manual lock reasons exclude 'Auto-locked by the System'
-    user.manual_lock_reason = status if LockReasons.manual_lock_reasons.include?(status)
-    user.manual_lock_reason = nil if status == '' || LockReasons.manual_lock_reasons.exclude?(status)
+    # Locked users with a '' status will be saved with a manual_lock_reason of ''. This covers the corner case of a user
+    # who is auto-locked by the system but has been manually locked to '' in the Edit User Modal
+    # When both a manual_lock and an auto_lock exist on a user, we currently prioritize showing the manual_lock in the UI
+    user.manual_lock_reason = status if LockReasons.manual_lock_reasons.include?(status) || (is_locked && status == '')
+    user.manual_lock_reason = nil if !is_locked || status == LockReasons::AUTO_LOCKED_BY_SYSTEM
 
     # Update locked status
     if user.locked_at.nil? && is_locked

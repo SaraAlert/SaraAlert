@@ -2,7 +2,6 @@
 
 # Contains all user account lock reasons
 module LockReasons
-  NOT_SPECIFIED = 'Not specified'
   NO_LONGER_AN_EMPLOYEE = 'No longer an employee'
   NO_LONGER_NEEDS_ACCESS = 'No longer needs access'
   OTHER = 'Other'

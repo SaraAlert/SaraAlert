@@ -10,7 +10,7 @@ import ReactTooltip from 'react-tooltip';
 
 const MAX_NOTES_LENGTH = 5000;
 
-const LOCK_REASON_OPTIONS = ['Not specified', 'No longer an employee', 'No longer needs access', 'Other'];
+const LOCK_REASON_OPTIONS = ['', 'No longer an employee', 'No longer needs access', 'Other'];
 
 const ACTIVE_STATUS_TOOLTIP_TEXT = 'Logged into the system within the last 30 days';
 const INACTIVE_STATUS_TOOLTIP_TEXT = 'Has not logged into the system for at least 30 days';
@@ -65,7 +65,7 @@ class UserModal extends React.Component {
 
   getStatusValue = () => {
     if (this.state.isLocked) {
-      return this.state.lockReason ? { label: this.state.lockReason, value: this.state.lockReason } : { label: 'Not specified', value: 'Not specified' };
+      return this.state.lockReason ? { label: this.state.lockReason, value: this.state.lockReason } : { label: '', value: '' };
     } else {
       return { label: this.state.activeState, value: this.state.activeState };
     }

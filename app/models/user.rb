@@ -43,7 +43,6 @@ class User < ApplicationRecord
 
   def status
     return active_state if lock_reason.nil?
-    return '' if lock_reason == LockReasons::NOT_SPECIFIED
 
     lock_reason
   end
@@ -64,8 +63,8 @@ class User < ApplicationRecord
   def lock_reason
     if locked_at.present?
       return manual_lock_reason unless manual_lock_reason.nil?
-      return LockReasons::AUTO_LOCKED_BY_SYSTEM if auto_lock_reason.present?
-      return LockReasons::NOT_SPECIFIED if manual_lock_reason.nil?
+
+      return auto_lock_reason.present? ? LockReasons::AUTO_LOCKED_BY_SYSTEM : ''
     end
 
     nil

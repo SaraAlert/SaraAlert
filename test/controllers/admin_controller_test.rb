@@ -367,6 +367,7 @@ class AdminControllerTest < ActionController::TestCase
     user = create(:admin_user, jurisdiction: current_user_jur)
     sign_in user
 
+    # Users with a status of auto-lock will have a manual_lock_reason of nil persisted to the db
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
                                role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
                                notes: 'test note edit', status: LockReasons::AUTO_LOCKED_BY_SYSTEM }, as: :json
@@ -374,6 +375,7 @@ class AdminControllerTest < ActionController::TestCase
     user = User.find_by(id: 17)
     assert_nil(user.manual_lock_reason)
 
+    # Unlocked users with a status of '' will have a manual_lock_reason of nil persisted to the db
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
                                role_title: 'public_health_enroller', is_api_enabled: false, is_locked: false,
                                notes: 'test note edit', status: '' }, as: :json
@@ -381,13 +383,15 @@ class AdminControllerTest < ActionController::TestCase
     user = User.find_by(id: 17)
     assert_nil(user.manual_lock_reason)
 
+    # Locked users with a status of '' will have a manual_lock_reason of '' persisted to the db
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
                                role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
-                               notes: 'test note edit', status: LockReasons::NOT_SPECIFIED }, as: :json
+                               notes: 'test note edit', status: '' }, as: :json
 
     user = User.find_by(id: 17)
-    assert_equal(user.manual_lock_reason, LockReasons::NOT_SPECIFIED)
+    assert_equal(user.manual_lock_reason, '')
 
+    # Locked users with a valid LockReason status will have a manual_lock_reason equal to the LockReason persisted to the db
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
                                role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
                                notes: 'test note edit', status: LockReasons::NO_LONGER_NEEDS_ACCESS }, as: :json
