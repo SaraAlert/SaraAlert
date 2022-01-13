@@ -14,7 +14,6 @@
     "@rails/ujs": "^6.0.0",
     "@rails/webpacker": "^5.2.0",
     "@sentry/browser": "^5.15.5",
-    "@webpack-cli/serve": "^1.6.0",
     "authy-form-helpers": "^2.4.4",
     "axios": "^0.21.2",
     "babel-loader": "^8.1.0",
