@@ -526,13 +526,13 @@ namespace :demo do
     end
 
     # Potential Exposure/Case information
-    patient[:isolation] = rand < (data[:days_ago] > 10 ? 0.9 : 0.4)
+    patient[:isolation] = rand < (data[:days_ago] > ADMIN_OPTIONS['recovery_period_days'] ? 0.9 : 0.4)
     if patient[:isolation]
       if rand < 0.7
-        patient[:symptom_onset] = data[:beginning_of_day] - rand(10).days
+        patient[:symptom_onset] = data[:beginning_of_day] - rand(ADMIN_OPTIONS['recovery_period_days']).days
         patient[:user_defined_symptom_onset] = true
       end
-      patient[:extended_isolation] = data[:beginning_of_day] + rand(10).days if rand < 0.3
+      patient[:extended_isolation] = data[:beginning_of_day] + rand(ADMIN_OPTIONS['recovery_period_days']).days if rand < 0.3
       patient[:case_status] = %w[Confirmed Probable].sample
     else
       patient[:continuous_exposure] = rand < 0.3
@@ -576,10 +576,10 @@ namespace :demo do
       if patient[:isolation]
         patient[:exposure_to_isolation_at] = data[:beginning_of_day] - rand(21).days
         if rand < 0.7
-          patient[:symptom_onset] = data[:beginning_of_day] - rand(10).days
+          patient[:symptom_onset] = data[:beginning_of_day] - rand(ADMIN_OPTIONS['recovery_period_days']).days
           patient[:user_defined_symptom_onset] = true
         end
-        patient[:extended_isolation] = data[:beginning_of_day] + rand(10).days if rand < 0.3
+        patient[:extended_isolation] = data[:beginning_of_day] + rand(ADMIN_OPTIONS['recovery_period_days']).days if rand < 0.3
         patient[:case_status] = %w[Confirmed Probable].sample
       else
         patient[:isolation_to_exposure_at] = data[:beginning_of_day] - rand(21).days
@@ -819,12 +819,13 @@ namespace :demo do
     puts 'done!'
 
     # Create earlier symptom onset dates to meet isolation symptomatic non test based requirement
+    num_symptomatic_assessments = new_assessments.count * (data[:days_ago] > ADMIN_OPTIONS['recovery_period_days'] ? rand(75..80) : rand(20..25)) / 100
     symptomatic_assessments = new_assessments.where('patients.symptom_onset IS NOT NULL')
                                              .or(
                                                new_assessments.where('patients.isolation = ?', false)
                                              )
                                              .where('patient_id % 4 <> 0')
-                                             .limit(new_assessments.count * (data[:days_ago] > 10 ? rand(75..80) : rand(20..25)) / 100)
+                                             .limit(num_symptomatic_assessments)
                                              .order('RAND()')
 
     printf('  - Generating symptoms for assessments...')
@@ -881,7 +882,7 @@ namespace :demo do
     laboratories = []
     histories = []
     isolation_patients = data[:existing_patients].where(isolation: true)
-    patient_ids_lab = if data[:days_ago] > 10
+    patient_ids_lab = if data[:days_ago] > ADMIN_OPTIONS['recovery_period_days']
                         isolation_patients.limit(isolation_patients.count * rand(90..95) / 100).order('RAND()').pluck(:id)
                       else
                         isolation_patients.limit(isolation_patients.count * rand(20..30) / 100).order('RAND()').pluck(:id)
@@ -889,7 +890,7 @@ namespace :demo do
     patient_ids_lab.each_with_index do |patient_id, index|
       printf("\r  Generating laboratory #{index + 1} of #{patient_ids_lab.length}...") unless ENV['APP_IN_CI']
       lab_ts = create_fake_timestamp(data[:beginning_of_day])
-      result = if data[:days_ago] > 10
+      result = if data[:days_ago] > ADMIN_OPTIONS['recovery_period_days']
                  (Array.new(12, 'positive') + %w[negative indeterminate other]).sample
                elsif (patient_id % 4).zero?
                  %w[negative indeterminate other].sample
