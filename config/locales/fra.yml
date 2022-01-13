@@ -89,47 +89,47 @@ fra:
         name: 'Toux'
       diarrhea:
         name: 'Diarrhée'
-        name_gsm_7: 'Diarrhee'
+        name-gsm-7: 'Diarrhee'
       difficulty-breathing:
         name: 'Difficultés respiratoires'
-        name_gsm_7: 'Difficultes respiratoires'
+        name-gsm-7: 'Difficultes respiratoires'
       fatigue:
         name: 'Fatigue'
       fever:
         name: 'Fièvre'
-        name_gsm_7: 'Fievre'
+        name-gsm-7: 'Fievre'
         notes: 'Sensation de fébrilité ou température mesurée supérieure ou égale à 38 °C (100,4 °F)'
       headache:
         name: 'Maux de tête'
-        name_gsm_7: 'Maux de tete'
+        name-gsm-7: 'Maux de tete'
       muscle-pain:
         name: 'Douleurs musculaires'
       nausea-or-vomiting:
         name: 'Nausées ou vomissements'
-        name_gsm_7: 'Nausees ou vomissements'
+        name-gsm-7: 'Nausees ou vomissements'
       new-loss-of-smell:
         name: "Nouvelle perte de l'odorat"
       new-loss-of-taste:
         name: 'Nouvelle perte de goût'
-        name_gsm_7: 'Nouvelle perte de gout'
+        name-gsm-7: 'Nouvelle perte de gout'
       pulse-ox:
         name: "d'oxymétrie de pouls"
-        name_gsm_7: "d'oxymetrie de pouls"
+        name-gsm-7: "d'oxymetrie de pouls"
         notes: "Saisissez votre mesure d'oxymétrie de pouls la plus faible au cours des dernières 24 heures"
       repeated-shaking-with-chills:
         name: 'Tremblements répétés accompagnés de frissons'
-        name_gsm_7: 'Tremblements repetes accompagnes de frissons'
+        name-gsm-7: 'Tremblements repetes accompagnes de frissons'
       shortness-of-breath:
         name: 'Essoufflement'
       sore-throat:
         name: 'Maux de gorge'
       temperature:
         name: 'Température'
-        name_gsm_7: 'Temperature'
+        name-gsm-7: 'Temperature'
         notes: 'Veuillez entrer votre température actuelle en degrés Fahrenheit'
       used-a-fever-reducer:
         name: "Utilisation d'un agent pour diminuer la fièvre"
-        name_gsm_7: "Utilisation d'un agent pour diminuer la fievre"
+        name-gsm-7: "Utilisation d'un agent pour diminuer la fievre"
         notes: 'Avez-vous utilisé un médicament pour diminuer la fièvre au cours des dernières 24 heures?'
       other:
         name: 'Other'
@@ -140,8 +140,8 @@ fra:
       less-than-or-equal: 'inferieur ou egal a'
       greater-than: 'plus grand que'
       greater-than-or-equal: 'Plus grand ou égal à'
-      greater-than-or-equal_gsm_7: 'Plus grand ou egal a'
+      greater-than-or-equal-gsm-7: 'Plus grand ou egal a'
       equal: 'égal à'
-      equal_gsm_7: 'egal a'
+      equal-gsm-7: 'egal a'
       not-equal: 'pas égal à'
-      not-equal_gsm_7: 'pas egal a'
+      not-equal-gsm-7: 'pas egal a'

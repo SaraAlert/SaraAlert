@@ -79,10 +79,10 @@ spa:
     symptoms:
       chills:
         name: 'Escalofrío'
-        name_gsm_7: 'Escalofrio'
+        name-gsm-7: 'Escalofrio'
       congestion-or-runny-nose:
         name: 'Congestión nasal o un exceso de moco en la nariz'
-        name_gsm_7: 'Congestion nasal o un exceso de moco en la nariz'
+        name-gsm-7: 'Congestion nasal o un exceso de moco en la nariz'
       cough:
         name: 'Tos'
       diarrhea:
@@ -100,19 +100,19 @@ spa:
         name: 'Dolor muscular'
       nausea-or-vomiting:
         name: 'Náuseas o vómitos'
-        name_gsm_7: 'Nauseas o vomitos'
+        name-gsm-7: 'Nauseas o vomitos'
       new-loss-of-smell:
         name: 'Pérdida reciente el olfato'
-        name_gsm_7: 'Perdida reciente el olfato'
+        name-gsm-7: 'Perdida reciente el olfato'
       new-loss-of-taste:
         name: 'Pérdida reciente del gusto'
-        name_gsm_7: 'Perdida reciente del gusto'
+        name-gsm-7: 'Perdida reciente del gusto'
       pulse-ox:
         name: 'oximetro de pulso'
         notes: 'Ingrese la lectura más baja del oximetro de pulso en las últimas 24 horas'
       repeated-shaking-with-chills:
         name: 'Tiembla repetidamente y tiene escalofríos'
-        name_gsm_7: 'Tiembla repetidamente y tiene escalofrios'
+        name-gsm-7: 'Tiembla repetidamente y tiene escalofrios'
       shortness-of-breath:
         name: 'Falta de aire'
       sore-throat:
@@ -122,7 +122,7 @@ spa:
         notes: 'Por favor ingrese su temperatura actual en grados Fahrenheit'
       used-a-fever-reducer:
         name: 'Tomó medicina para reducir la fiebre'
-        name_gsm_7: 'Tomo medicina para reducir la fiebre'
+        name-gsm-7: 'Tomo medicina para reducir la fiebre'
         notes: 'En las últimas 24 horas, ¿ha tomado algún medicamento para reducir la fiebre?'
       other:
         name: 'Otro'
