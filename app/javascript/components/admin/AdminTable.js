@@ -527,6 +527,8 @@ class AdminTable extends React.Component {
         // This has been addressed and recently merged: https://github.com/react-csv/react-csv/pull/193
         // Once this gets released and we update our version this code won't be necessary.
         const csvData = response.data.user_rows.map(userData => {
+          // _.omit is being removed from lodash in v5.0.0 due to performance issues: lodash/lodash#2930.
+          // instead, use destructuring to omit the keys we do not want to include in the csv export
           // eslint-disable-next-line no-unused-vars
           const { active_state, lock_reason, auto_lock_reason, ...dataToExport } = userData;
           return {
