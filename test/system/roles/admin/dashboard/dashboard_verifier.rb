@@ -9,6 +9,16 @@ class AdminDashboardVerifier < ApplicationSystemTestCase
   # 'Adjust number of records' (below) is an aria-label. Enabling for this test only
   Capybara.enable_aria_label = true
 
+  def verify_timeout_user(user)
+    user.last_sign_in_at = 1.day.ago
+    user.save!
+
+    Timecop.travel(30.days.from_now) do
+      click_link 'Monitoring Dashboards'
+      page.assert_current_path '/users/sign_in'
+    end
+  end
+
   def verify_user(user, should_exist: true)
     Capybara.using_wait_time(8) do
       assert page.has_content? 'Email'

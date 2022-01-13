@@ -9,6 +9,10 @@ require_relative 'admin_test_helper'
 class AdminTest < ApplicationSystemTestCase
   @@admin_test_helper = AdminTestHelper.new(nil)
 
+  test 'timeout login' do
+    @@admin_test_helper.timeout_user
+  end
+
   test 'view users' do
     @@admin_test_helper.view_users('usa_admin')
     @@admin_test_helper.view_users('state1_admin')
