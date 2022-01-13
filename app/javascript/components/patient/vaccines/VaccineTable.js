@@ -230,7 +230,7 @@ class VaccineTable extends React.Component {
 
   /**
    * Makes a request to add or update an existing vaccine record on the backend and reloads page once complete.
-   * @param {*} vaccineData - could be a new vaccine or updates to an eisting vaccine
+   * @param {*} vaccineData - could be a new vaccine or updates to an existing vaccine
    * @param {*} isEdit - whether this is creating a new vaccine or editing an existing vaccine
    */
   submitVaccine = (vaccineData, isEdit) => {

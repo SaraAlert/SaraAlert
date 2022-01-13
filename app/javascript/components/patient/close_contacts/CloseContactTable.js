@@ -257,7 +257,7 @@ class CloseContactTable extends React.Component {
 
   /**
    * Makes a request to add or update an existing close contact record on the backend and reloads page once complete.
-   * @param {*} ccData - could be a new close contact or updates to an eisting close contact
+   * @param {*} ccData - could be a new close contact or updates to an existing close contact
    * @param {*} isEdit - whether this is creating a new close contact or editing an existing close contact
    */
   submitCloseContact = (ccData, isEdit) => {

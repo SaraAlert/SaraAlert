@@ -238,7 +238,7 @@ class LaboratoryTable extends React.Component {
 
   /**
    * Makes a request to add or update an lab record on the backend and reloads page once complete.
-   * @param {*} labData - could be a new lab or updates to an eisting lab
+   * @param {*} labData - could be a new lab or updates to an existing lab
    * @param {*} isEdit - whether this is creating a new lab or editing an existing lab
    */
   submitLaboratory = (labData, symptom_onset, isEdit) => {
