@@ -148,7 +148,6 @@ class UserModal extends React.Component {
                 <span data-for="disabled-status-select" data-tip="">
                   <Select
                     inputId="status-select"
-                    id="status"
                     name="status"
                     value={this.getStatusValue()}
                     options={this.state.lockReasonOptions.map(lockReason => {
@@ -161,7 +160,7 @@ class UserModal extends React.Component {
                   />
                 </span>
                 {!this.state.isLocked && (
-                  <ReactTooltip id="disabled-status-select" multiline={true} type="dark" effect="solid" place="top" className="tooltip-container">
+                  <ReactTooltip id="disabled-status-select" multiline={true} type="dark" effect="solid" place="bottom" className="tooltip-container">
                     <div>{this.state.activeState === 'Active' ? ACTIVE_STATUS_TOOLTIP_TEXT : INACTIVE_STATUS_TOOLTIP_TEXT}</div>
                   </ReactTooltip>
                 )}
