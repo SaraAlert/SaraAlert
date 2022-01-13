@@ -70,14 +70,8 @@ module LaboratoryQueryHelper
     case order
     when 'id'
       laboratories = laboratories.order(id: dir)
-    when 'lab_type'
-      laboratories = laboratories.order(Arel.sql('lab_type IS NULL OR lab_type = "", lab_type ' + dir))
-    when 'specimen_collection'
-      laboratories = laboratories.order(Arel.sql('specimen_collection IS NULL OR specimen_collection = "", specimen_collection ' + dir))
-    when 'report'
-      laboratories = laboratories.order(Arel.sql('report IS NULL OR report = "", report ' + dir))
-    when 'result'
-      laboratories = laboratories.order(Arel.sql('result IS NULL OR result = "", result ' + dir))
+    when 'lab_type', 'specimen_collection', 'report', 'result'
+      laboratories = laboratories.order(Arel.sql("#{order} IS NULL OR #{order} = '', #{order} " + dir))
     end
     laboratories
   end
