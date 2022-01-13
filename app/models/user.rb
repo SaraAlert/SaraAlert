@@ -42,32 +42,24 @@ class User < ApplicationRecord
   end
 
   def status
-    return active_state if lock_reason.nil?
-
-    lock_reason
+    lock_reason || active_state
   end
 
   def active_state
-    current_sign_in_at.present? && current_sign_in_at >= 30.days.ago ? 'Active' : 'Inactive'
+    current_sign_in_at.present? && current_sign_in_at >= Time.zone.today - ADMIN_OPTIONS['days_since_last_login_for_inactivity'].to_i ? 'Active' : 'Inactive'
   end
 
   def auto_lock_reason
-    if locked_at.present?
-      return "#{failed_attempts} failed login attempts" if failed_attempts >= 5
-      return 'Temporary password expired' if force_password_change
-    end
-
-    nil
+    return if locked_at.nil?
+    return "#{failed_attempts} failed login attempts" if failed_attempts >= User.maximum_attempts
+    return 'Temporary password expired' if force_password_change
   end
 
   def lock_reason
-    if locked_at.present?
-      return manual_lock_reason unless manual_lock_reason.nil?
+    return if locked_at.nil?
+    return manual_lock_reason unless manual_lock_reason.nil?
 
-      return auto_lock_reason.present? ? LockReasons::AUTO_LOCKED_BY_SYSTEM : ''
-    end
-
-    nil
+    auto_lock_reason.present? ? LockReasons::AUTO_LOCKED_BY_SYSTEM : ''
   end
 
   # Patients this user can view through their jurisdiction access

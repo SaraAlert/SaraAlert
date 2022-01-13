@@ -7,13 +7,10 @@ import { cursorPointerStyle, bootstrapSelectTheme } from '../../packs/stylesheet
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import ReactTooltip from 'react-tooltip';
+import axios from 'axios';
 
 const MAX_NOTES_LENGTH = 5000;
-
 const LOCK_REASON_OPTIONS = ['', 'No longer an employee', 'No longer needs access', 'Other'];
-
-const ACTIVE_STATUS_TOOLTIP_TEXT = 'Logged into the system within the last 30 days';
-const INACTIVE_STATUS_TOOLTIP_TEXT = 'Has not logged into the system for at least 30 days';
 
 class UserModal extends React.Component {
   constructor(props) {
@@ -34,7 +31,17 @@ class UserModal extends React.Component {
         this.props.initialUserData.lock_reason === 'Auto-locked by the System'
           ? LOCK_REASON_OPTIONS.concat(['Auto-locked by the System']).sort()
           : LOCK_REASON_OPTIONS,
+      days_since_last_login_for_inactivity: '',
     };
+  }
+
+  /**
+   * Gets the days_since_last_login_for_inactivity value for display in tooltip via an axios GET request.
+   */
+  getDaysSinceLastLoginForInactivity() {
+    axios.get(window.BASE_PATH + '/admin/days_since_last_login_for_inactivity').then(response => {
+      this.setState({ days_since_last_login_for_inactivity: response.data.days_since_last_login_for_inactivity });
+    });
   }
 
   handleChange = event => {
@@ -49,6 +56,17 @@ class UserModal extends React.Component {
       return { label: this.state.activeState, value: this.state.activeState };
     }
   };
+
+  getTooltipText = () => {
+    const activeStatusText = `Logged into the system within the last ${this.state.days_since_last_login_for_inactivity} days`;
+    const inactiveStatusText = `Has not logged into the system for at least ${this.state.days_since_last_login_for_inactivity} days`;
+    return this.state.activeState === 'Active' ? activeStatusText : inactiveStatusText;
+  };
+
+  componentDidMount() {
+    // Gets getdaysSinceLastLoginForInactivity on initial mount.
+    this.getDaysSinceLastLoginForInactivity();
+  }
 
   render() {
     return (
@@ -161,7 +179,7 @@ class UserModal extends React.Component {
                 </span>
                 {!this.state.isLocked && (
                   <ReactTooltip id="disabled-status-select" multiline={true} type="dark" effect="solid" place="bottom" className="tooltip-container">
-                    <div>{this.state.activeState === 'Active' ? ACTIVE_STATUS_TOOLTIP_TEXT : INACTIVE_STATUS_TOOLTIP_TEXT}</div>
+                    <div>{this.getTooltipText()}</div>
                   </ReactTooltip>
                 )}
               </Form.Group>
@@ -216,6 +234,7 @@ UserModal.propTypes = {
   onSave: PropTypes.func,
   jurisdiction_paths: PropTypes.array,
   roles: PropTypes.array,
+  days_since_last_login_for_inactivity: PropTypes.string,
 };
 
 export default UserModal;

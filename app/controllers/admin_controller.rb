@@ -334,4 +334,8 @@ class AdminController < ApplicationController
     # Therefore, Time.zone.today makes UTC explicit and is consistient with previous behavior.
     send_data counts, filename: "counts-#{Time.zone.today}.csv"
   end
+
+  def days_since_last_login_for_inactivity
+    render json: { days_since_last_login_for_inactivity: ADMIN_OPTIONS['days_since_last_login_for_inactivity'] }
+  end
 end

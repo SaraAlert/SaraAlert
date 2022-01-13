@@ -60,6 +60,7 @@ Rails.application.routes.draw do
   resources :admin, only: [:index]
   get 'admin/users', to: 'admin#users'
   get 'admin/counts', to: 'admin#counts'
+  get 'admin/days_since_last_login_for_inactivity', to: 'admin#days_since_last_login_for_inactivity', as: :days_since_last_login_for_inactivity
 
   post 'users/audits/:id', to: 'users#audits'
 
