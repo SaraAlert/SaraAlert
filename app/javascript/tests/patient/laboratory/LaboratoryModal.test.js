@@ -40,9 +40,9 @@ describe('LaboratoryModal', () => {
     expect(wrapper.find(Modal.Body).find(Form.Group).length).toEqual(INPUT_FIELDS.length);
     INPUT_FIELDS.forEach((field, fieldIndex) => {
       const input = wrapper.find(Modal.Body).find(Form.Group).at(fieldIndex);
+      expect(input.find(Form.Label).exists()).toBe(true);
+      expect(input.find(Form.Label).text()).toContain(field.label);
       if (field.type === 'select') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(Form.Control).exists()).toBe(true);
         field.options.forEach((option, optionIndex) => {
           expect(
@@ -56,8 +56,6 @@ describe('LaboratoryModal', () => {
         expect(input.find(Form.Control).prop('value')).toEqual('');
         expect(wrapper.state(field.name)).toEqual('');
       } else if (field.type === 'date') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(DateInput).exists()).toBe(true);
         expect(input.find(DateInput).prop('date')).toBeNull();
         expect(wrapper.state(field.name)).toBeNull();
@@ -83,9 +81,9 @@ describe('LaboratoryModal', () => {
     expect(wrapper.find(Modal.Body).find(Form.Group).length).toEqual(INPUT_FIELDS.length);
     INPUT_FIELDS.forEach((field, fieldIndex) => {
       const input = wrapper.find(Modal.Body).find(Form.Group).at(fieldIndex);
+      expect(input.find(Form.Label).exists()).toBe(true);
+      expect(input.find(Form.Label).text()).toContain(field.label);
       if (field.type === 'select') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(Form.Control).exists()).toBe(true);
         field.options.forEach((option, optionIndex) => {
           expect(
@@ -99,8 +97,6 @@ describe('LaboratoryModal', () => {
         expect(input.find(Form.Control).prop('value')).toEqual(activeLab[field.name]);
         expect(wrapper.state(field.name)).toEqual(activeLab[field.name]);
       } else if (field.type === 'date') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(DateInput).exists()).toBe(true);
         expect(input.find(DateInput).prop('date')).toEqual(activeLab[field.name]);
         expect(wrapper.state(field.name)).toEqual(activeLab[field.name]);

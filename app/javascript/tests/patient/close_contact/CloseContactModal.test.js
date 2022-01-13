@@ -39,27 +39,21 @@ describe('CloseContactModal', () => {
     expect(wrapper.find(Modal.Body).find(Form.Group).length).toEqual(INPUT_FIELDS.length);
     INPUT_FIELDS.forEach((field, fieldIndex) => {
       const input = wrapper.find(Modal.Body).find(Form.Group).at(fieldIndex);
+      expect(input.find(Form.Label).exists()).toBe(true);
+      expect(input.find(Form.Label).text()).toContain(field.label);
       if (field.type === 'text') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(Form.Control).exists()).toBe(true);
         expect(input.find(Form.Control).prop('value')).toEqual('');
         expect(wrapper.state(field.name)).toBeNull();
       } else if (field.type === 'date') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(DateInput).exists()).toBe(true);
         expect(input.find(DateInput).prop('date')).toBeNull();
         expect(wrapper.state(field.name)).toBeNull();
       } else if (field.type === 'phone') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(PhoneInput).exists()).toBe(true);
         expect(input.find(PhoneInput).prop('value')).toBeNull();
         expect(wrapper.state(field.name)).toBeNull();
       } else if (field.type === 'datalist') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(Form.Control).exists()).toBe(true);
         expect(input.find('datalist').exists()).toBe(true);
         field.options.forEach((option, optionIndex) => {
@@ -88,27 +82,21 @@ describe('CloseContactModal', () => {
     expect(wrapper.find(Modal.Body).find(Form.Group).length).toEqual(INPUT_FIELDS.length);
     INPUT_FIELDS.forEach((field, fieldIndex) => {
       const input = wrapper.find(Modal.Body).find(Form.Group).at(fieldIndex);
+      expect(input.find(Form.Label).exists()).toBe(true);
+      expect(input.find(Form.Label).text()).toContain(field.label);
       if (field.type === 'text') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(Form.Control).exists()).toBe(true);
         expect(input.find(Form.Control).prop('value')).toEqual(activeCC[field.name]);
         expect(wrapper.state(field.name)).toEqual(activeCC[field.name]);
       } else if (field.type === 'date') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(DateInput).exists()).toBe(true);
         expect(input.find(DateInput).prop('date')).toEqual(activeCC[field.name]);
         expect(wrapper.state(field.name)).toEqual(activeCC[field.name]);
       } else if (field.type === 'phone') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(PhoneInput).exists()).toBe(true);
         expect(input.find(PhoneInput).prop('value')).toEqual(activeCC[field.name]);
         expect(wrapper.state(field.name)).toEqual(activeCC[field.name]);
       } else if (field.type === 'datalist') {
-        expect(input.find(Form.Label).exists()).toBe(true);
-        expect(input.find(Form.Label).text()).toContain(field.label);
         expect(input.find(Form.Control).exists()).toBe(true);
         expect(input.find('datalist').exists()).toBe(true);
         field.options.forEach((option, optionIndex) => {
