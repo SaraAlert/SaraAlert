@@ -633,7 +633,7 @@ const schema = yup.object().shape({
   date_of_birth: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .required('Please enter a Date of Birth.')
-    .max(new Date(), 'Date can not be in the future.')
+    .max(new Date(), 'Date cannot be in the future.')
     .nullable(),
   age: yup.number().nullable(),
   sex: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),

@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
-
 import moment from 'moment';
+import * as yup from 'yup';
 import ReactTooltip from 'react-tooltip';
 import Select from 'react-select';
 import { bootstrapSelectTheme, vaccineModalSelectStyling } from '../../../packs/stylesheets/ReactSelectStyling';
-
 import DateInput from '../../util/DateInput';
 
 const MAX_NOTES_LENGTH = 2000;
@@ -15,7 +14,6 @@ class VaccineModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
       product_name: this.props.currentVaccineData?.product_name,
       // If there is not already a group name, default to the first option
       group_name: this.props.currentVaccineData?.group_name
@@ -28,6 +26,8 @@ class VaccineModal extends React.Component {
       notes: this.props.currentVaccineData?.notes || '',
       // Sorting so that the blank option shows up at the top
       sorted_dose_number_options: this.props.dose_number_options ? this.props.dose_number_options.sort() : [],
+      loading: false,
+      errors: {},
     };
   }
 
@@ -73,10 +73,33 @@ class VaccineModal extends React.Component {
     return formattedOptions;
   };
 
+  /**
+   * Validates vaccine data and submits if valid, otherwise displays errors in modal
+   */
   submit = () => {
-    this.setState({ loading: true }, () => {
-      this.props.onSave(this.state);
-    });
+    schema
+      .validate({ ...this.state }, { abortEarly: false })
+      .then(() => {
+        this.setState({ loading: true }, () => {
+          this.props.onSave({
+            product_name: this.state.product_name,
+            group_name: this.state.group_name,
+            administration_date: this.state.administration_date,
+            dose_number: this.state.dose_number,
+            notes: this.state.notes,
+          });
+        });
+      })
+      .catch(err => {
+        // Validation errors, update state to display to user
+        if (err && err.inner) {
+          let issues = {};
+          for (const issue of err.inner) {
+            issues[issue['path']] = issue['errors'];
+          }
+          this.setState({ errors: issues });
+        }
+      });
   };
 
   render() {
@@ -87,16 +110,16 @@ class VaccineModal extends React.Component {
 
     return (
       <Modal size="lg" show centered onHide={this.props.onClose}>
-        <h1 className="sr-only">{this.props.editMode ? 'Edit Vaccination' : 'Add New Vaccination'}</h1>
+        <h1 className="sr-only">{this.props.editMode ? 'Edit' : 'Add New'} Vaccination</h1>
         <Modal.Header>
-          <Modal.Title>{this.props.editMode ? 'Edit Vaccination' : 'Add New Vaccination'}</Modal.Title>
+          <Modal.Title>{this.props.editMode ? 'Edit' : 'Add New'} Vaccination</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Row>
               <Form.Group as={Col}>
                 <Form.Label htmlFor="group-name-select" className="input-label">
-                  Vaccine Group*
+                  Vaccine Group{schema?.fields?.group_name?._exclusive?.required && '*'}
                 </Form.Label>
                 <Select
                   inputId="group-name-select"
@@ -113,12 +136,15 @@ class VaccineModal extends React.Component {
                   theme={bootstrapSelectTheme}
                   styles={vaccineModalSelectStyling}
                 />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['group_name']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
               <Form.Group as={Col}>
                 <Form.Label htmlFor="product-name-select" className="input-label">
-                  Product Name*
+                  Product Name{schema?.fields?.product_name?._exclusive?.required && '*'}
                 </Form.Label>
                 <Select
                   inputId="product-name-select"
@@ -135,14 +161,18 @@ class VaccineModal extends React.Component {
                   theme={bootstrapSelectTheme}
                   styles={vaccineModalSelectStyling}
                 />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['product_name']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
               <Form.Group as={Col}>
                 <Form.Label htmlFor="administration-date" className="input-label">
-                  Administration Date
+                  Administration Date{schema?.fields?.administration_date?._exclusive?.required && '*'}
                 </Form.Label>
                 <DateInput
+                  isInvalid={!!this.state.errors['adminstration_date']}
                   id="administration-date"
                   date={this.state.administration_date}
                   minDate={'1900-01-01'}
@@ -152,12 +182,15 @@ class VaccineModal extends React.Component {
                   customClass="form-control-lg"
                   ariaLabel="Administration Date Input"
                 />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['adminstration_date']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
               <Form.Group as={Col}>
                 <Form.Label htmlFor="dose-number-select" className="input-label">
-                  Dose Number
+                  Dose Number{schema?.fields?.dose_number?._exclusive?.required && '*'}
                 </Form.Label>
                 <Select
                   inputId="dose-number-select"
@@ -174,15 +207,15 @@ class VaccineModal extends React.Component {
                   styles={vaccineModalSelectStyling}
                   theme={bootstrapSelectTheme}
                 />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['dose_number']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
-              <Form.Group as={Col}>
-                <Form.Label htmlFor="notes" className="input-label">
-                  Notes
-                </Form.Label>
+              <Form.Group as={Col} controlId="notes">
+                <Form.Label className="input-label">Notes{schema?.fields?.notes?._exclusive?.required && '*'}</Form.Label>
                 <Form.Control
-                  id="notes"
                   as="textarea"
                   rows="5"
                   className="form-square"
@@ -190,7 +223,11 @@ class VaccineModal extends React.Component {
                   placeholder={'Enter any additional information about this vaccination...'}
                   maxLength={MAX_NOTES_LENGTH}
                   onChange={this.handleNotesChange}
+                  isInvalid={!!this.state.errors['notes']}
                 />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['notes']}
+                </Form.Control.Feedback>
                 <div className="character-limit-text">{this.state.notes ? MAX_NOTES_LENGTH - this.state.notes.length : 2000} characters remaining</div>
               </Form.Group>
             </Row>
@@ -200,16 +237,16 @@ class VaccineModal extends React.Component {
           <Button variant="secondary btn-square" onClick={this.props.onClose}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" disabled={this.state.loading || !isValid} onClick={this.submit}>
-            {this.state.loading && (
-              <React.Fragment>
-                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-              </React.Fragment>
-            )}
-            <span data-for="submit-tooltip" data-tip="" className="ml-1">
+          <span data-for="submit-tooltip" data-tip="" className="ml-1">
+            <Button variant="primary btn-square" disabled={this.state.loading || !isValid} onClick={this.submit}>
+              {this.state.loading && (
+                <React.Fragment>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                </React.Fragment>
+              )}
               {this.props.editMode ? 'Update' : 'Create'}
-            </span>
-          </Button>
+            </Button>
+          </span>
           {/* Typically we pair the ReactTooltip up directly next to the mount point. However, due to the disabled attribute on the button */}
           {/* above, this Tooltip should be placed outside the parent component (to prevent unwanted parent opacity settings from being inherited) */}
           {/* This does not impact component functionality at all. */}
@@ -223,6 +260,18 @@ class VaccineModal extends React.Component {
     );
   }
 }
+
+const schema = yup.object().shape({
+  group_name: yup.string().required('Please select a vaccine group.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  product_name: yup.string().required('Please select a product name.').max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  administration_date: yup
+    .date('Date must correspond to the "mm/dd/yyyy" format.')
+    .min(moment('1900-01-01'), 'Specimen Collection Date must fall after January 1, 2020.')
+    .max(moment(), 'Specimen Collection Date cannot be in the future.')
+    .nullable(),
+  dose_number: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
+  notes: yup.string().max(2000, 'Max length exceeded, please limit to 2000 characters.').nullable(),
+});
 
 VaccineModal.propTypes = {
   currentVaccineData: PropTypes.object,

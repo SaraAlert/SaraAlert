@@ -65,52 +65,12 @@
 <% end %>
 
 <% if current_user.can_view_patient_laboratories? %>
-<div id="labs-table" class="card mx-2 my-4 card-square">
-  <h1 class="card-header patient-card-header">
-    Lab Results
-    <%= react_component('util/InfoTooltip', { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
-  </h1>
-  <div class="m-4">
-    <div class="pb-1 mb-3">
-      <div class="btn-group" role="group">
-        <%= react_component('patient/laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new }) %>
-      </div>
-    </div>
-    <table class="lab_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
-      <thead>
-        <tr>
-          <th class="DataTable-table-header">Actions</th>
-          <th class="DataTable-table-header">ID</th>
-          <th class="DataTable-table-header">Type</th>
-          <th class="DataTable-table-header">Specimen Collected</th>
-          <th class="DataTable-table-header">Report</th>
-          <th class="DataTable-table-header">Result</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @laboratories.each do |lab| -%>
-        <tr>
-          <td>
-            <div class="btn-group btn-group-sm" role="group">
-              <%= react_component('patient/laboratory/Laboratory', {
-                                    authenticity_token: form_authenticity_token,
-                                    patient: @patient,
-                                    lab: lab,
-                                    only_positive_lab: @patient[:symptom_onset].nil? && lab[:result] == 'positive' && lab[:specimen_collection].present? && @num_pos_labs == 1
-                                  }) %>
-            </div>
-          </td>
-          <td><%= lab.id %></td>
-          <td><%= lab.lab_type %></td>
-          <td><%= lab.specimen_collection&.strftime('%m/%d/%Y') %></td>
-          <td><%= lab.report&.strftime('%m/%d/%Y') %></td>
-          <td><%= lab.result %></td>
-        </tr>
-        <% end -%>
-      </tbody>
-    </table>
-  </div>
-</div>
+  <%= react_component('patient/laboratory/LaboratoryTable', {
+                        patient: @patient,
+                        current_user: current_user,
+                        authenticity_token: form_authenticity_token,
+                        num_pos_labs: @num_pos_labs
+                      }) %>
 <% end %>
 
 <% if current_user.can_view_patient_vaccines? %>
@@ -144,18 +104,3 @@
                       authenticity_token: form_authenticity_token
                     }) %>
 <% end %>
-
-<script>
-  $(document).ready(function() {
-    $('.lab_table').DataTable({
-      "search": false,
-      "info": false,
-      "lengthMenu": [10, 15, 25, 50],
-      "pageLength": 15,
-      "oLanguage": {
-        "sSearch": "Search Lab Results:"
-      },
-      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
-    });
-  });
-</script>

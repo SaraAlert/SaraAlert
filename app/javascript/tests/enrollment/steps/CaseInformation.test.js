@@ -50,13 +50,13 @@ describe('CaseInformation', () => {
   it('Properly renders case information inputs when creating a new patient', () => {
     const wrapper = getWrapper(blankIsolationMockPatient);
     const symptomOnsetFormGroup = wrapper.find(Form.Group).at(1);
-    const firstPostiveLabFormGroup = wrapper.find(Form.Group).at(2);
+    const firstPositiveLabFormGroup = wrapper.find(Form.Group).at(2);
     const caseStatusFormGroup = wrapper.find(Form.Group).at(3);
     const notesFormGroup = wrapper.find(Form.Group).at(4);
 
     expect(symptomOnsetFormGroup.find(Form.Label).text()).toEqual('SYMPTOM ONSET DATE');
     expect(symptomOnsetFormGroup.find(DateInput).prop('date')).toBeNull();
-    expect(firstPostiveLabFormGroup.find(FirstPositiveLaboratory).exists()).toBe(true);
+    expect(firstPositiveLabFormGroup.find(FirstPositiveLaboratory).exists()).toBe(true);
     expect(caseStatusFormGroup.find(Form.Label).text()).toEqual('CASE STATUS');
     caseStatusFormGroup
       .find(Form.Control)
@@ -75,7 +75,7 @@ describe('CaseInformation', () => {
   it('Properly renders case information inputs when editing an existing patient', () => {
     const wrapper = getWrapper(mockPatient1);
     const symptomOnsetFormGroup = wrapper.find(Form.Group).at(1);
-    const firstPostiveLabFormGroup = wrapper.find(Form.Group).at(2);
+    const firstPositiveLabFormGroup = wrapper.find(Form.Group).at(2);
     const caseStatusFormGroup = wrapper.find(Form.Group).at(3);
     const notesFormGroup = wrapper.find(Form.Group).at(4);
 
@@ -83,7 +83,7 @@ describe('CaseInformation', () => {
     expect(symptomOnsetFormGroup.find(Form.Label).find(ReactTooltip).exists()).toBe(true);
     expect(symptomOnsetFormGroup.find(Form.Label).find(ReactTooltip).find('span').text()).toEqual('This date is auto-populated by the system as the date of the earliest report flagged as symptomatic (red highlight) in the reports table. Field is blank when there are no symptomatic reports.');
     expect(symptomOnsetFormGroup.find(DateInput).prop('date')).toEqual(mockPatient1.symptom_onset);
-    expect(firstPostiveLabFormGroup.find(FirstPositiveLaboratory).exists()).toBe(true);
+    expect(firstPositiveLabFormGroup.find(FirstPositiveLaboratory).exists()).toBe(true);
     expect(caseStatusFormGroup.find(Form.Label).text()).toEqual('CASE STATUS');
     caseStatusFormGroup
       .find(Form.Control)

@@ -10,8 +10,8 @@ const toggleMock = jest.fn();
 const onChangeMock = jest.fn();
 const deleteReasons = ['Duplicate entry', 'Entered in error', 'Other'];
 
-function getWrapper() {
-  return shallow(<DeleteDialog type={mockType} delete={deleteMock} toggle={toggleMock} onChange={onChangeMock} />);
+function getWrapper(additionalProps) {
+  return shallow(<DeleteDialog type={mockType} delete={deleteMock} toggle={toggleMock} onChange={onChangeMock} {...additionalProps} />);
 }
 
 afterEach(() => {
@@ -133,14 +133,14 @@ describe('DeleteDialog', () => {
   });
 
   it('Prompts the user for symptom onset if necessary', () => {
-    const wrapper = shallow(<DeleteDialog type={mockType} delete={deleteMock} toggle={toggleMock} onChange={onChangeMock} showSymptomOnsetInput={true} />);
+    const wrapper = getWrapper({ showSymptomOnsetInput: true });
     expect(wrapper.find(Alert).text()).toEqual('Warning: Since this record does not have a Symptom Onset Date, deleting this positive lab result may result in the record not ever being eligible to appear on the Records Requiring Review line list. Please consider entering a Symptom Onset Date to prevent this from happening:');
     expect(wrapper.find(Form.Label).text()).toEqual('SYMPTOM ONSET');
     expect(wrapper.find('#symptom_onset_delete_dialog').exists()).toBe(true);
   });
 
   it('Does not prompt the user for symptom onset if not necessary', () => {
-    const wrapper = shallow(<DeleteDialog type={mockType} delete={deleteMock} toggle={toggleMock} onChange={onChangeMock} showSymptomOnsetInput={false} />);
+    const wrapper = getWrapper({ showSymptomOnsetInput: false });
     expect(wrapper.find('#symptom_onset_delete_dialog').exists()).toBe(false);
   });
 });
