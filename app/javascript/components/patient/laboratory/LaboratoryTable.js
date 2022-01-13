@@ -4,35 +4,25 @@ import { Button, Card, Col, Dropdown, Form, InputGroup, OverlayTrigger, Row, Too
 import axios from 'axios';
 import _ from 'lodash';
 import { formatDate } from '../../../utils/DateTime';
-import { formatPhoneNumberVisually, phoneNumberToE164Format } from '../../../utils/PatientFormatters';
-import { patientHref, navQueryParam } from '../../../utils/Navigation';
 
-import CloseContactModal from './CloseContactModal';
+import LaboratoryModal from './LaboratoryModal';
 import CustomTable from '../../layout/CustomTable';
 import DeleteDialog from '../../util/DeleteDialog';
 import InfoTooltip from '../../util/InfoTooltip';
-import confirmDialog from '../../util/ConfirmDialog';
 import reportError from '../../util/ReportError';
 
-class CloseContactTable extends React.Component {
+class LaboratoryTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       table: {
         colData: [
           { label: 'Actions', field: '', isSortable: false, className: 'text-center', filter: this.renderActionsDropdown },
-          { label: 'First Name', field: 'first_name', isSortable: true },
-          { label: 'Last Name', field: 'last_name', isSortable: true },
-          { label: 'Phone Number', field: 'primary_telephone', isSortable: true, filter: d => formatPhoneNumberVisually(d.value) },
-          { label: 'Email', field: 'email', isSortable: true },
-          { label: 'Last Date of Exposure', field: 'last_date_of_exposure', isSortable: true, filter: formatDate },
-          { label: 'Assigned User', field: 'assigned_user', isSortable: true },
-          { label: 'Contact Attempts', field: 'contact_attempts', isSortable: true, filter: v => (v.value ? v.value : '0') },
-          { label: 'Enrolled?', field: 'enrolled_id', isSortable: true, filter: v => (v.value ? 'Yes' : 'No') },
-          // Lodash's `truncate` includes an ellipses, and will only fire when the length is greater than `length`
-          // However, it throws a false-positive for our linter (which thinks we're calling fs.truncate)
-          /* eslint-disable security/detect-non-literal-fs-filename */
-          { label: 'Notes', field: 'notes', isSortable: true, filter: v => _.truncate(v.value, { length: 503 }) },
+          { label: 'ID', field: 'id', isSortable: true },
+          { label: 'Type', field: 'lab_type', isSortable: true },
+          { label: 'Specimen Collected', field: 'specimen_collection', isSortable: true, filter: formatDate },
+          { label: 'Report', field: 'report', isSortable: true, filter: formatDate },
+          { label: 'Result', field: 'result', isSortable: true },
         ],
         rowData: [],
         totalRows: 0,
@@ -42,18 +32,16 @@ class CloseContactTable extends React.Component {
       query: {
         page: 0,
         entries: 10,
-        order: 'last_name',
-        direction: 'asc',
+        order: 'id',
+        direction: 'desc',
       },
       entryOptions: [10, 15, 25],
       cancelToken: axios.CancelToken.source(),
       loading: false,
       activeRow: null,
-      showEditModal: false,
       showAddModal: false,
+      showEditModal: false,
       showDeleteModal: false,
-      delete_reason: null,
-      delete_reason_text: null,
     };
   }
 
@@ -86,7 +74,7 @@ class CloseContactTable extends React.Component {
   queryServer = _.debounce(query => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .get('/close_contacts', {
+      .get(`${window.BASE_PATH}/laboratories`, {
         params: {
           patient_id: this.props.patient.id,
           ...query,
@@ -103,6 +91,7 @@ class CloseContactTable extends React.Component {
           });
         } else {
           reportError(error);
+          this.setState({ loading: false });
         }
       })
       .then(response => {
@@ -174,25 +163,6 @@ class CloseContactTable extends React.Component {
   };
 
   /**
-   * Called when the user clicks on the Contact Attempt for a Close Contact
-   */
-  handleContactAttempt = async data => {
-    if (await confirmDialog('Are you sure you want to log an additional contact attempt?', { title: 'New Contact Attempt' })) {
-      let currentCC = _.cloneDeep(this.state.table.rowData[`${data}`]);
-      currentCC['contact_attempts'] = currentCC['contact_attempts'] + 1;
-      this.setState(
-        {
-          showEditModal: false,
-          activeRow: null,
-        },
-        () => {
-          this.submitCloseContact(currentCC, true);
-        }
-      );
-    }
-  };
-
-  /**
    * Called when a page is clicked in the pagination component.
    * Updates the table based on the selected page.
    * @param {Object} page - Page object from react-paginate
@@ -211,72 +181,79 @@ class CloseContactTable extends React.Component {
   };
 
   /**
-   * Gets the data for the current close contact if there is one selected/being edited.
+   * Gets the data for the current laboratory if there is one selected/being edited.
    */
-  getCurrentCloseContact = () => {
+  getCurrLab = () => {
     return this.state.activeRow !== null && !!this.state.table.rowData ? this.state.table.rowData[this.state.activeRow] : {};
   };
 
   /**
-   * Toggle the Add New Close Contact modal by updating state.
+   * Determines if the lab in the current active row is the only positive lab
+   */
+  isOnlyPosLab = () => {
+    const activeLab = this.getCurrLab();
+    return _.isEmpty(activeLab) ? false : this.props.num_pos_labs === 1 && activeLab.result === 'positive' && !_.isNil(activeLab.specimen_collection);
+  };
+
+  /**
+   * Called when the "Add New Laboratory" button is clicked or when the add lab modal is closed
+   * Updates the state to show/hide the appropriate modal for adding a lab.
    */
   toggleAddModal = () => {
+    let current = this.state.showAddModal;
     this.setState({
-      showAddModal: !this.state.showAddModal,
+      showAddModal: !current,
     });
   };
 
   /**
-   * Closes the Add New Close Contact modal and makes a request to add a new close contact to the db.
-   * @param {*} newCloseContactData - State from close contact modal containing needed close contact data.
+   * Closes the Add New Laboratory modal and makes a request to add a new lab to the db.
+   * @param {*} newLabData - State from lab modal containing needed lab data.
    */
-  handleAddSubmit = newCloseContactData => {
-    this.submitCloseContact(newCloseContactData, false);
+  handleAddSubmit = (newLabData, symptomOnset) => {
+    this.submitLaboratory(newLabData, symptomOnset, false);
   };
 
   /**
-   * Called when the edit close contact button is clicked.
-   * Updates the state to show the appropriate modal for editing a close contact.
+   * Called when the edit lab button is clicked or when the edit lab modal is closed.
+   * Updates the state to show/hide the appropriate modal for editing a lab.
    */
   toggleEditModal = row => {
+    let current = this.state.showEditModal;
     this.setState({
-      showEditModal: !this.state.showEditModal,
+      showEditModal: !current,
       activeRow: row,
     });
   };
 
   /**
-   * Closes the Edit Close Contact modal and makes a request to update an existing close contact record.
-   * @param {*} updatedCloseContactData - State from close contact modal containing updated close contact data.
+   * Closes the Edit Lab modal and makes a request to update an existing lab record.
+   * @param {*} updatedLabData - State from lab modal containing updated lab data.
    */
-  handleEditSubmit = updatedCloseContactData => {
+  handleEditSubmit = (updatedLabData, symptomOnset) => {
     const currentCloseContactId = this.state.table.rowData[this.state.activeRow]?.id;
-    updatedCloseContactData['id'] = currentCloseContactId;
-    this.submitCloseContact(updatedCloseContactData, true);
+    updatedLabData['id'] = currentCloseContactId;
+    this.submitLaboratory(updatedLabData, symptomOnset, true);
   };
 
   /**
-   * Makes a request to add or update an existing close contact record on the backend and reloads page once complete.
-   * @param {*} ccData - could be a new close contact or updates to an existing close contact
-   * @param {*} isEdit - whether this is creating a new close contact or editing an existing close contact
+   * Makes a request to add or update an lab record on the backend and reloads page once complete.
+   * @param {*} labData - could be a new lab or updates to an existing lab
+   * @param {*} isEdit - whether this is creating a new lab or editing an existing lab
    */
-  submitCloseContact = (ccData, isEdit) => {
+  submitLaboratory = (labData, symptom_onset, isEdit) => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios({
         method: isEdit ? 'patch' : 'post',
-        url: window.BASE_PATH + (isEdit ? '/close_contacts/' + ccData.id : '/close_contacts'),
+        url: window.BASE_PATH + (isEdit ? '/laboratories/' + labData.id : '/laboratories'),
         data: {
           patient_id: this.props.patient.id,
-          first_name: ccData.first_name || '',
-          last_name: ccData.last_name || '',
-          primary_telephone: ccData.primary_telephone ? phoneNumberToE164Format(ccData.primary_telephone) : '',
-          email: ccData.email || '',
-          last_date_of_exposure: ccData.last_date_of_exposure || null,
-          assigned_user: ccData.assigned_user || null,
-          notes: ccData.notes || '',
-          enrolled_id: ccData.enrolled_id || null,
-          contact_attempts: ccData.contact_attempts || 0,
+          lab_type: labData.lab_type,
+          specimen_collection: labData.specimen_collection,
+          report: labData.report,
+          result: labData.result,
+          symptom_onset,
         },
       })
         .then(() => {
@@ -290,43 +267,44 @@ class CloseContactTable extends React.Component {
   };
 
   /**
-   * Called when the delete close contact button is clicked or when the delete dialog is closed.
-   * Updates the state to show/hide the appropriate modal for deleting a close contact.
+   * Called when the delete laboratory button is clicked or when the delete dialog is closed.
+   * Updates the state to show/hide the appropriate modal for deleting a laboratory.
    */
   toggleDeleteModal = row => {
+    let current = this.state.showDeleteModal;
     this.setState({
+      showDeleteModal: !current,
       activeRow: row,
-      showDeleteModal: !this.state.showDeleteModal,
       delete_reason: null,
       delete_reason_text: null,
     });
   };
 
   /**
-   * Makes a request to delete an existing close contact record on the backend and reloads page once complete.
+   * Makes a request to delete an existing laboratory record on the backend and reloads page once complete.
    */
-  handleDeleteSubmit = () => {
-    let delete_reason = this.state.delete_reason;
-    if (delete_reason === 'Other' && this.state.delete_reason_text) {
-      delete_reason += ', ' + this.state.delete_reason_text;
+  handleDeleteSubmit = patientUpdates => {
+    const currLabId = this.state.table.rowData[this.state.activeRow]?.id;
+    let deleteReason = this.state.delete_reason;
+    if (deleteReason === 'Other' && this.state.delete_reason_text) {
+      deleteReason += ', ' + this.state.delete_reason_text;
     }
-    const currentCloseContactId = this.state.table.rowData[this.state.activeRow]?.id;
-    this.setState({ loading: true }, () => {
-      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-      axios
-        .delete(`${window.BASE_PATH}/close_contacts/${currentCloseContactId}`, {
-          data: {
-            patient_id: this.props.patient.id,
-            delete_reason,
-          },
-        })
-        .then(() => {
-          location.reload();
-        })
-        .catch(error => {
-          reportError(error);
-        });
-    });
+    const updates = {
+      patient_id: this.props.patient.id,
+      delete_reason: deleteReason,
+    };
+    if (patientUpdates.symptom_onset) {
+      updates['symptom_onset'] = patientUpdates.symptom_onset;
+    }
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios
+      .delete(`${window.BASE_PATH}/laboratories/${currLabId}`, { data: updates })
+      .then(() => {
+        location.reload();
+      })
+      .catch(error => {
+        reportError(error);
+      });
   };
 
   /**
@@ -348,41 +326,19 @@ class CloseContactTable extends React.Component {
     // Set the direction to be "up" when there are not enough rows in the table to have space for the dropdown.
     // The table custom class handles the rest.
     // NOTE: If this dropdown increases in height, the custom table class passed to CustomTable will need to be updated.
-    const direction = this.state.table.rowData && this.state.table.rowData.length > 4 ? null : 'up';
+    const direction = this.state.table.rowData && this.state.table.rowData.length > 2 ? null : 'up';
     return (
       <Dropdown drop={direction}>
-        <Dropdown.Toggle
-          id={`close-contact-action-button-${rowData.id}`}
-          size="sm"
-          variant="primary"
-          aria-label={`Close Contact Action Button for Close Contact ${rowData.id}`}>
-          <i className="fas fa-cogs fw" />
+        <Dropdown.Toggle id={`laboratory-action-button-${rowData.id}`} size="sm" variant="primary" aria-label="Lab Result Action Dropdown">
+          <i className="fas fa-cogs fw"></i>
         </Dropdown.Toggle>
-        <Dropdown.Menu drop={direction}>
+        <Dropdown.Menu>
           <Dropdown.Item className="px-4" onClick={() => this.toggleEditModal(rowIndex)}>
-            <i className="fas fa-edit fa-fw" />
+            <i className="fas fa-edit fa-fw"></i>
             <span className="ml-2">Edit</span>
           </Dropdown.Item>
-          <Dropdown.Item className="px-4" onClick={() => this.handleContactAttempt(rowIndex)}>
-            <i className="fas fa-phone fa-flip-horizontal" />
-            <span className="ml-2">Contact Attempt</span>
-          </Dropdown.Item>
-          {rowData.enrolled_id && (
-            <Dropdown.Item className="px-4" onClick={() => (location.href = patientHref(rowData.enrolled_id, this.props.workflow))}>
-              <i className="fas fa-search" />
-              <span className="ml-2">View Record</span>
-            </Dropdown.Item>
-          )}
-          {!rowData.enrolled_id && this.props.can_enroll_close_contacts && (
-            <Dropdown.Item
-              className="px-4"
-              onClick={() => (location.href = `${window.BASE_PATH}/patients/new?cc=${rowData.id}${navQueryParam(this.props.workflow, false)}`)}>
-              <i className="fas fa-plus" />
-              <span className="ml-2">Enroll</span>
-            </Dropdown.Item>
-          )}
           <Dropdown.Item className="px-4" onClick={() => this.toggleDeleteModal(rowIndex)}>
-            <i className="fas fa-trash" />
+            <i className="fas fa-trash fa-fw"></i>
             <span className="ml-2">Delete</span>
           </Dropdown.Item>
         </Dropdown.Menu>
@@ -393,35 +349,33 @@ class CloseContactTable extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Card className="mx-2 my-4 card-square">
+        <Card id="labs-table" className="mx-2 my-4 card-square">
           <Card.Header as="h1" className="patient-card-header">
-            Close Contacts <InfoTooltip tooltipTextKey="closeContacts" location="right" />
+            Lab Results
+            <InfoTooltip tooltipTextKey="labResults" location="right" className="pl-1" />
           </Card.Header>
           <Card.Body className="my-1">
             <Row className="mb-4">
               <Col>
-                <Button variant="primary" className="mr-2" onClick={() => this.toggleAddModal()}>
+                <Button onClick={this.toggleAddModal}>
                   <i className="fas fa-plus fa-fw"></i>
-                  <span className="ml-2">Add New Close Contact</span>
+                  <span className="ml-2">Add New Lab Result</span>
                 </Button>
               </Col>
               <Col xl={6} lg={10} md={12}>
                 <InputGroup size="md" className="mt-3 mt-md-0">
                   <InputGroup.Prepend>
-                    <OverlayTrigger overlay={<Tooltip>Search by First Name, Last Name, Phone Number, Email, Assigned User, or Contact Attempts.</Tooltip>}>
+                    <OverlayTrigger overlay={<Tooltip>Search by ID, Lab Type, or Result.</Tooltip>}>
                       <InputGroup.Text className="rounded-0">
                         <i className="fas fa-search"></i>
-                        <label
-                          htmlFor="close-contact-search-input"
-                          className="ml-2 mb-0"
-                          aria-label="Search Close Contact Table by First Name, Last Name, Phone Number, Email, Assigned User, or Contact Attempts.">
+                        <label htmlFor="laboratories-search-input" className="ml-1 mb-0" aria-label="Search Laboratories Table by ID, Lab Type, or Result.">
                           Search
                         </label>
                       </InputGroup.Text>
                     </OverlayTrigger>
                   </InputGroup.Prepend>
                   <Form.Control
-                    id="close-contact-search-input"
+                    id="laboratories-search-input"
                     autoComplete="off"
                     size="md"
                     name="search"
@@ -432,7 +386,7 @@ class CloseContactTable extends React.Component {
               </Col>
             </Row>
             <CustomTable
-              dataType="close-contacts"
+              dataType="laboratories"
               columnData={this.state.table.colData}
               rowData={this.state.table.rowData}
               totalRows={this.state.table.totalRows}
@@ -443,28 +397,30 @@ class CloseContactTable extends React.Component {
               handlePageUpdate={this.handlePageUpdate}
               entryOptions={this.state.entryOptions}
               entries={this.state.query.entries}
-              tableCustomClass="table-has-dropdown-large"
               orderBy={this.state.query.order}
               sortDirection={this.state.query.direction}
+              tableCustomClass="table-has-dropdown"
             />
           </Card.Body>
         </Card>
-        {this.state.showDeleteModal && (
-          <DeleteDialog
-            type={'Close Contact'}
-            delete={this.handleDeleteSubmit}
-            toggle={this.toggleDeleteModal}
-            onChange={this.handleDeleteChange}
-            show_text_input={true}
-          />
-        )}
         {(this.state.showAddModal || this.state.showEditModal) && (
-          <CloseContactModal
-            currentCloseContact={this.state.showAddModal ? {} : this.getCurrentCloseContact()}
+          <LaboratoryModal
+            currentLabData={this.state.showAddModal ? {} : this.getCurrLab()}
             onClose={this.state.showAddModal ? this.toggleAddModal : this.toggleEditModal}
             onSave={this.state.showAddModal ? this.handleAddSubmit : this.handleEditSubmit}
             editMode={this.state.showEditModal}
-            assigned_users={this.props.assigned_users}
+            loading={this.state.loading}
+            only_positive_lab={this.isOnlyPosLab()}
+            isolation={this.props.patient.isolation}
+          />
+        )}
+        {this.state.showDeleteModal && (
+          <DeleteDialog
+            type={'Lab Result'}
+            delete={this.handleDeleteSubmit}
+            toggle={this.toggleDeleteModal}
+            onChange={this.handleDeleteChange}
+            showSymptomOnsetInput={this.props.patient.isolation && !this.props.patient.symptom_onset && this.isOnlyPosLab()}
           />
         )}
       </React.Fragment>
@@ -472,12 +428,11 @@ class CloseContactTable extends React.Component {
   }
 }
 
-CloseContactTable.propTypes = {
+LaboratoryTable.propTypes = {
   patient: PropTypes.object,
+  current_user: PropTypes.object,
   authenticity_token: PropTypes.string,
-  assigned_users: PropTypes.array,
-  can_enroll_close_contacts: PropTypes.bool,
-  workflow: PropTypes.string,
+  num_pos_labs: PropTypes.number,
 };
 
-export default CloseContactTable;
+export default LaboratoryTable;

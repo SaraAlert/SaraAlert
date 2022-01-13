@@ -227,7 +227,7 @@ class ExposureInformation extends React.Component {
         ...staticValidations,
         last_date_of_exposure: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
+          .max(moment().add(30, 'days').toDate(), 'Date cannot be more than 30 days in the future.')
           .required('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
           .nullable(),
         continuous_exposure: yup.bool().nullable(),
@@ -243,7 +243,7 @@ class ExposureInformation extends React.Component {
         ...staticValidations,
         last_date_of_exposure: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(moment().add(30, 'days').toDate(), 'Date can not be more than 30 days in the future.')
+          .max(moment().add(30, 'days').toDate(), 'Date cannot be more than 30 days in the future.')
           .required('Please enter a Last Date of Exposure')
           .nullable(),
         continuous_exposure: yup.bool().oneOf([null, undefined, false]).nullable(),

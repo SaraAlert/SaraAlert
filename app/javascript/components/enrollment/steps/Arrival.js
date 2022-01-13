@@ -251,7 +251,7 @@ class Arrival extends React.Component {
 
 const schema = yup.object().shape({
   port_of_origin: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
-  date_of_departure: yup.date('Date must correspond to the "mm/dd/yyyy" format.').max(new Date(), 'Date can not be in the future.').nullable(),
+  date_of_departure: yup.date('Date must correspond to the "mm/dd/yyyy" format.').max(new Date(), 'Date cannot be in the future.').nullable(),
   source_of_report: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   flight_or_vessel_number: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),
   source_of_report_specify: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.').nullable(),

@@ -53,7 +53,7 @@ module VaccineQueryHelper
   def search(vaccines, search)
     return vaccines if search.blank?
 
-    vaccines.where('id like ?', "#{search&.downcase}%").or(
+    vaccines.where('id like ?', "#{search}%").or(
       vaccines.where('product_name like ?', "%#{search&.downcase}%").or(
         vaccines.where('group_name like ?', "%#{search&.downcase}%")
       )

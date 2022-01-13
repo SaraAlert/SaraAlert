@@ -1497,7 +1497,7 @@ class Patient < ApplicationRecord
 
     self.isolation_to_exposure_at = DateTime.now
     self.extended_isolation = nil
-    # NOTE: The below will overwrite any new value they may set for symptom onset as they can not be set in the exposure workflow.
+    # NOTE: The below will overwrite any new value they may set for symptom onset as they cannot be set in the exposure workflow.
     self.user_defined_symptom_onset = false
     self.symptom_onset = calculated_symptom_onset(self)
   end

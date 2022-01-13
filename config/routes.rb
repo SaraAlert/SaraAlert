@@ -75,18 +75,10 @@ Rails.application.routes.draw do
 
   resources :contact_attempts, only: [:create]
 
-  post '/laboratories', to: 'laboratories#create'
-  post '/laboratories/:id', to: 'laboratories#update'
-  delete '/laboratories/:id', to: 'laboratories#destroy'
-
   get '/jurisdictions/paths', to: 'jurisdictions#jurisdiction_paths', as: :jurisdiction_paths
   get '/jurisdictions/allpaths', to: 'jurisdictions#all_jurisdiction_paths', as: :all_jurisdiction_paths
   post '/jurisdictions/assigned_users', to: 'jurisdictions#assigned_users_for_viewable_patients', as: :assigned_users_for_viewable_patients
   post '/jurisdictions/common_exposure_cohorts', to: 'jurisdictions#common_exposure_cohorts', as: :common_exposure_cohorts
-
-  post '/close_contacts', to: 'close_contacts#create'
-  post '/close_contacts/:id', to: 'close_contacts#update'
-  delete '/close_contacts/:id', to: 'close_contacts#destroy'
 
   get '/patients/:id/group', to: 'patients#new_group_member'
 
@@ -117,9 +109,11 @@ Rails.application.routes.draw do
     resources :assessments, only: [:create, :new, :index]
   end
 
-  resources :vaccines, only: [:index, :create, :update, :destroy]
-
   resources :close_contacts, only: [:index, :create, :update, :destroy]
+
+  resources :laboratories, only: [:index, :create, :update, :destroy]
+
+  resources :vaccines, only: [:index, :create, :update, :destroy]
 
   resources :user_filters, only: [:index, :create, :update, :destroy]
 
