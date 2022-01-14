@@ -15,10 +15,10 @@ fra:
           Si vous signalez des symptômes, votre autorité de santé publique locale vous contactera bientôt. Si vous avez des inquiétudes immédiates, veuillez
           contacter votre fournisseur médical ou votre autorité de santé publique locale. Évitez vos contacts avec les autres et vous devez vous isoler à la
           maison.
-        instruction3: 'En cas d''urgence médicale, appelez le 911, et faites-leur savoir que vous êtes surveillé par le autorité de santé publique.'
+        instruction3: "En cas d'urgence médicale, appelez le 911, et faites-leur savoir que vous êtes surveillé par le autorité de santé publique."
         instruction4: 'Veuillez utiliser les coordonnées ci-dessous si vous souhaitez nous contacter au sujet de votre cas.'
         submit: 'Envoyer'
-        thank_you: 'Merci d''avoir complété votre rapport quotidien !'
+        thank_you: "Merci d'avoir complété votre rapport quotidien !"
       email:
         shared:
           greeting: 'Cher/Chère %{name},'
@@ -29,19 +29,19 @@ fra:
             s'agit d'une erreur, veuillez contacter les autorités sanitaires locales. Pour la confidentialité et plus d'informations, visitez saraalert.org.
         enrollment:
           subject: 'Recrutement pour alerte Sara'
-          header: 'Bienvenue sur le système d''Alerte Sara'
+          header: "Bienvenue sur le système d'Alerte Sara"
           info1: >-
             Vous avez été recruté(e) dans le système de surveillance d'Alerte Sara. Nous vous demandons de fournir des rapports quotidiens sur votre état.
             Veuillez cliquer sur le bouton ci-dessous et suivre les instructions qui s'affichent à l'écran.
-          info2: 'Vous recevrez un rappel similaire tous les jours jusqu''à ce que votre période de surveillance soit terminée.'
+          info2: "Vous recevrez un rappel similaire tous les jours jusqu'à ce que votre période de surveillance soit terminée."
         reminder:
-          subject: 'Rappel de rapport d''Alerte Sara'
-          header: 'Rappel de rapport d''Alerte Sara'
+          subject: "Rappel de rapport d'Alerte Sara"
+          header: "Rappel de rapport d'Alerte Sara"
           thank_you: >-
             Merci de participer au programme de surveillance d'Alerte Sara. Veuillez remplir votre rapport quotidien en utilisant le lien ci-dessous.
         closed:
-          subject: 'Rapport d''Alerte Sara complété'
-          header: 'Rapport d''Alerte Sara complété'
+          subject: "Rapport d'Alerte Sara complété"
+          header: "Rapport d'Alerte Sara complété"
           thank_you: 'La période de surveillance de Sara Alert pour %{initials_age} a été terminée le %{completed_date} ! Merci de votre participation'
         contact:
           info1: >-
@@ -50,30 +50,36 @@ fra:
           info2: 'Si vous avez des questions, veuillez contacter le professionnel de santé qui vous a recruté(e).'
     twilio:
       shared:
-        experiencing_symptoms_s: 'Cette personne est-elle y en a-t-il qui presentent un des symptomes suivants: %{symptom_names}.'
-        experiencing_symptoms_p: 'Parmi ces personnes y en a-t-il qui presentent un des symptomes suivants: %{symptom_names}.'
+        experiencing_symptoms_s: 'Cette personne est-elle y en a-t-il qui présentent un des symptômes suivants: %{symptom_names}.'
+        experiencing_symptoms_s_gsm_7: 'Cette personne est-elle y en a-t-il qui presentent un des symptomes suivants: %{symptom_names}.'
+        experiencing_symptoms_p: 'Parmi ces personnes y en a-t-il qui présentent un des symptômes suivants: %{symptom_names}.'
+        experiencing_symptoms_p_gsm_7: 'Parmi ces personnes y en a-t-il qui presentent un des symptomes suivants: %{symptom_names}.'
         max_retries_message: >-
+          Je suis désolé, vous avez atteint le nombre maximum de tentatives de réponse. Si vous rencontrez une urgence médicale, veuillez appeler le 911.
+        max_retries_message_gsm_7: >-
           Je suis desole, vous avez atteint le nombre maximum de tentatives de reponse. Si vous rencontrez une urgence medicale, veuillez appeler le 911.
       sms:
+        # strings used for sms messages intentionally do not contain special characters so that they get encoded as GSM-7 rather than UCS-2 which results in
+        # double the number of SMS segments
         prompt:
           intro: >-
             Bienvenue sur le systeme d'Alerte Sara, nous vous enverrons vos rapports quotidiens pour %{name} a ce numero de telephone. Pour la confidentialite
             et plus d'informations, visitez saraalert.org.
-          reminder: 'Ceci est un rappel du systeme d''Alerte Sara vous rappelant que vous devez repondre a nos messages de rapport quotidien.'
+          reminder: "Ceci est un rappel du systeme d'Alerte Sara vous rappelant que vous devez repondre a nos messages de rapport quotidien."
           name: '%{name}'
           daily: 'Il s''agit d''un rapport d''alerte Sara quotidien destine aux: %{names}. %{experiencing_symptoms} Veuillez repondre par "Oui" ou par "Non"'
           try_again: 'Je suis desole, je n''ai pas compris. Veuillez repondre par "Oui" ou par "Non"'
-          thanks: 'Merci d''avoir rempli votre rapport quotidien!'
+          thanks: "Merci d'avoir rempli votre rapport quotidien!"
         weblink:
           intro: 'Veuillez remplir le rapport quotidien de Sara Alert pour %{initials_age}: %{url}'
         closed:
           thank_you: 'La periode de surveillance de Sara Alert pour %{initials_age} a ete terminee le %{completed_date} ! Merci de votre participation'
       voice:
-        intro: 'Bonjour, voici Sara, l''assistante de santé publique automatisée qui demande votre rapport quotidien.'
+        intro: "Bonjour, voici Sara, l'assistante de santé publique automatisée qui demande votre rapport quotidien."
         initials_age: '%{initials}, âge %{age}'
-        daily: ' Il s''agit d''un rapport d''alerte Sara quotidien destiné aux: %{names}. %{experiencing_symptoms} Veuillez répondre par "Oui" ou par "Non"'
-        try_again: 'Je suis désolé, je n''ai pas compris. Essayons encore.'
-        thanks: 'Merci d''avoir rempli votre rapport quotidien! Au revoir.'
+        daily: 'Il s''agit d''un rapport d''alerte Sara quotidien destiné aux: %{names}. %{experiencing_symptoms} Veuillez répondre par "Oui" ou par "Non"'
+        try_again: "Je suis désolé, je n'ai pas compris. Essayons encore."
+        thanks: "Merci d'avoir rempli votre rapport quotidien! Au revoir."
     symptoms:
       chills:
         name: 'Frissons'
@@ -82,47 +88,60 @@ fra:
       cough:
         name: 'Toux'
       diarrhea:
-        name: 'Diarrhee'
+        name: 'Diarrhée'
+        name-gsm-7: 'Diarrhee'
       difficulty-breathing:
-        name: 'Difficultes respiratoires'
+        name: 'Difficultés respiratoires'
+        name-gsm-7: 'Difficultes respiratoires'
       fatigue:
         name: 'Fatigue'
       fever:
-        name: 'Fievre'
-        notes: 'Sensation de febrilite ou temperature mesuree superieure ou egale a 38 °C (100,4 °F)'
+        name: 'Fièvre'
+        name-gsm-7: 'Fievre'
+        notes: 'Sensation de fébrilité ou température mesurée supérieure ou égale à 38 °C (100,4 °F)'
       headache:
-        name: 'Maux de tete'
+        name: 'Maux de tête'
+        name-gsm-7: 'Maux de tete'
       muscle-pain:
         name: 'Douleurs musculaires'
       nausea-or-vomiting:
-        name: 'Nausees ou vomissements'
+        name: 'Nausées ou vomissements'
+        name-gsm-7: 'Nausees ou vomissements'
       new-loss-of-smell:
-        name: 'Nouvelle perte de l''odorat'
+        name: "Nouvelle perte de l'odorat"
       new-loss-of-taste:
-        name: 'Nouvelle perte de gout'
+        name: 'Nouvelle perte de goût'
+        name-gsm-7: 'Nouvelle perte de gout'
       pulse-ox:
-        name: 'd''oxymetrie de pouls'
-        notes: 'Saisissez votre mesure d''oxymetrie de pouls la plus faible au cours des dernieres 24 heures'
+        name: "d'oxymétrie de pouls"
+        name-gsm-7: "d'oxymetrie de pouls"
+        notes: "Saisissez votre mesure d'oxymétrie de pouls la plus faible au cours des dernières 24 heures"
       repeated-shaking-with-chills:
-        name: 'Tremblements repetes accompagnes de frissons'
+        name: 'Tremblements répétés accompagnés de frissons'
+        name-gsm-7: 'Tremblements repetes accompagnes de frissons'
       shortness-of-breath:
         name: 'Essoufflement'
       sore-throat:
         name: 'Maux de gorge'
       temperature:
-        name: 'Temperature'
-        notes: 'Veuillez entrer votre temperature actuelle en degres Fahrenheit'
+        name: 'Température'
+        name-gsm-7: 'Temperature'
+        notes: 'Veuillez entrer votre température actuelle en degrés Fahrenheit'
       used-a-fever-reducer:
-        name: 'Utilisation d''un agent pour diminuer la fievre'
-        notes: 'Avez-vous utilise un medicament pour diminuer la fievre au cours des dernieres 24 heures?'
+        name: "Utilisation d'un agent pour diminuer la fièvre"
+        name-gsm-7: "Utilisation d'un agent pour diminuer la fievre"
+        notes: 'Avez-vous utilisé un médicament pour diminuer la fièvre au cours des dernières 24 heures?'
       other:
         name: 'Other'
-        notes: 'J''aimerais que quelqu''un m''appelle pour faire le suivi d''autres symptomes ou d''autre chose'
-      no-symptoms: 'Aucun symptome'
+        notes: "J'aimerais que quelqu'un m'appelle pour faire le suivi d'autres symptômes ou d'autre chose"
+      no-symptoms: 'Aucun symptôme'
     threshold-op:
       less-than: 'moins que'
       less-than-or-equal: 'inferieur ou egal a'
       greater-than: 'plus grand que'
-      greater-than-or-equal: 'Plus grand ou egal a'
-      equal: 'egal a'
-      not-equal: 'pas egal a'
+      greater-than-or-equal: 'Plus grand ou égal à'
+      greater-than-or-equal-gsm-7: 'Plus grand ou egal a'
+      equal: 'égal à'
+      equal-gsm-7: 'egal a'
+      not-equal: 'pas égal à'
+      not-equal-gsm-7: 'pas egal a'

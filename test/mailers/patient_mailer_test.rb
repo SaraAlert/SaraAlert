@@ -478,9 +478,14 @@ class PatientMailerTest < ActionMailer::TestCase
         I18n.t('assessments.twilio.sms.prompt.name', locale: lang, name: dep&.initials_age('-'))
       end
 
-      symptom_names = @patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang)
-      experiencing_symptoms = I18n.t('assessments.twilio.shared.experiencing_symptoms_p', locale: lang, name: @patient.initials,
-                                                                                          symptom_names: symptom_names)
+      symptom_names = @patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang, gsm_7: true)
+      experiencing_symptoms = I18n.t(
+        'assessments.twilio.shared.experiencing_symptoms_p_gsm_7',
+        locale: lang,
+        name: @patient.initials,
+        symptom_names: symptom_names,
+        default: I18n.t('assessments.twilio.shared.experiencing_symptoms_p', locale: lang, name: @patient.initials, symptom_names: symptom_names)
+      )
       contents = I18n.t('assessments.twilio.sms.prompt.daily', locale: lang, names: patient_names.join(', '),
                                                                experiencing_symptoms: experiencing_symptoms)
 
@@ -525,9 +530,14 @@ class PatientMailerTest < ActionMailer::TestCase
         I18n.t('assessments.twilio.sms.prompt.name', locale: lang, name: dep&.initials_age('-'))
       end
 
-      symptom_names = @patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang)
-      experiencing_symptoms = I18n.t('assessments.twilio.shared.experiencing_symptoms_p', locale: lang, name: @patient.initials,
-                                                                                          symptom_names: symptom_names)
+      symptom_names = @patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang, gsm_7: true)
+      experiencing_symptoms = I18n.t(
+        'assessments.twilio.shared.experiencing_symptoms_p_gsm_7',
+        locale: lang,
+        name: @patient.initials,
+        symptom_names: symptom_names,
+        default: I18n.t('assessments.twilio.shared.experiencing_symptoms_p', locale: lang, name: @patient.initials, symptom_names: symptom_names)
+      )
       contents = I18n.t('assessments.twilio.sms.prompt.daily', locale: lang, names: patient_names.join(', '),
                                                                experiencing_symptoms: experiencing_symptoms)
 

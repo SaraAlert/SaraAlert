@@ -22,9 +22,9 @@ vie:
           greeting: 'Kính gửi %{name},'
           report: 'Báo cáo hàng ngày'
           footer: >-
-            Xin đừng trả lời email này, chuyển tiếp email này hoặc chia sẻ liên kết này. Thông báo này được tạo tự động bởi hệ thống Sara Alert và là duy nhất và
-            chỉ dành cho bạn. Nếu bạn muốn ngừng nhận những thông báo này hoặc tin rằng đó là do nhầm lẫn, vui lòng liên hệ với sở y tế công cộng địa phương của
-            bạn. Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập saraalert.org.
+            Xin đừng trả lời email này, chuyển tiếp email này hoặc chia sẻ liên kết này. Thông báo này được tạo tự động bởi hệ thống Sara Alert và là duy nhất
+            và chỉ dành cho bạn. Nếu bạn muốn ngừng nhận những thông báo này hoặc tin rằng đó là do nhầm lẫn, vui lòng liên hệ với sở y tế công cộng địa phương
+            của bạn. Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập saraalert.org.
         enrollment:
           subject: 'Đăng ký Sara Alert'
           header: 'Chào mừng bạn đến với Hệ thống Cảnh báo Sara'

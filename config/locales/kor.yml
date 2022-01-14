@@ -56,7 +56,7 @@ kor:
         weblink:
           intro: '이것은 님의 Sara Alert 일일 보고서입니다 %{initials_age}: %{url}'
         closed:
-          thank_you: "%{initials_age}에 대한 Sara Alert 모니터링이 %{completed_date}일에 완료되었습니다.참여해 주셔서 감사합니다."
+          thank_you: '%{initials_age}에 대한 Sara Alert 모니터링이 %{completed_date}일에 완료되었습니다.참여해 주셔서 감사합니다.'
       voice:
         intro: '안녕하십니까? 자동화된 공중 보건 보조원 Sara가 일일 보고서를 요청합니다.'
         initials_age: '%{age} 세 %{initials} 님'
