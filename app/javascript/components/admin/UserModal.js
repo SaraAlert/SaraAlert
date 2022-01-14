@@ -47,9 +47,6 @@ class UserModal extends React.Component {
   };
 
   render() {
-    const activeStatusTooltipText = `Logged into the system within the last ${this.props.inactive_user_threshold} days`;
-    const inactiveStatusTooltipText = `Has not logged into the system for at least ${this.props.inactive_user_threshold} days`;
-
     return (
       <Modal id="user-modal" show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
         <Modal.Header closeButton>
@@ -160,7 +157,11 @@ class UserModal extends React.Component {
                 </span>
                 {!this.state.isLocked && (
                   <ReactTooltip id="disabled-status-select" multiline={true} type="dark" effect="solid" place="bottom" className="tooltip-container">
-                    <div>{this.state.activeState === 'Active' ? activeStatusTooltipText : inactiveStatusTooltipText}</div>
+                    <div>
+                      {this.state.activeState === 'Active'
+                        ? `Logged into the system within the last ${this.props.inactive_user_threshold} days`
+                        : `Has not logged into the system for at least ${this.props.inactive_user_threshold} days`}
+                    </div>
                   </ReactTooltip>
                 )}
               </Form.Group>
