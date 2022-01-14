@@ -814,6 +814,7 @@ class AdminTable extends React.Component {
             jurisdiction_paths={Object.keys(this.state.jurisdiction_paths)}
             roles={this.props.role_types}
             initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
+            inactive_user_threshold={this.props.inactive_user_threshold}
           />
         )}
         {this.state.showAuditModal && (
@@ -843,6 +844,7 @@ AdminTable.propTypes = {
   authenticity_token: PropTypes.string,
   role_types: PropTypes.array,
   is_usa_admin: PropTypes.bool,
+  inactive_user_threshold: PropTypes.number,
 };
 
 export default AdminTable;
