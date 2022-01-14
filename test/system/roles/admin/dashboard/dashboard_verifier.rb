@@ -6,9 +6,23 @@ require_relative '../../../lib/system_test_utils'
 
 class AdminDashboardVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
+  # 'Adjust number of records' (below) is an aria-label. Enabling for this test only
+  Capybara.enable_aria_label = true
+
+  def verify_timeout_user(user)
+    user.last_sign_in_at = 1.day.ago
+    user.save!
+
+    Timecop.travel(30.days.from_now) do
+      click_link 'Monitoring Dashboards'
+      page.assert_current_path '/users/sign_in'
+    end
+  end
 
   def verify_user(user, should_exist: true)
     Capybara.using_wait_time(8) do
+      assert page.has_content? 'Email'
+      select '50', from: 'Adjust number of records'
       if should_exist
         assert page.has_content?(user.email), @@system_test_utils.get_err_msg('User info', 'email', user.email)
         verify_lock_status(user.email, !user.locked_at.nil?)
@@ -52,5 +66,53 @@ class AdminDashboardVerifier < ApplicationSystemTestCase
 
     err_msg = @@system_test_utils.get_err_msg('Enable API', 'value in db', User.where(email: email).first.api_enabled)
     assert_equal enable, User.where(email: email).first.api_enabled, err_msg
+  end
+
+  def verify_unlock_locked_user(email, auto_locked, is_active, status, auto_lock_message)
+    find("input[name='status']", visible: false)
+
+    assert page.has_field? 'status', type: :hidden, with: status
+    assert page.has_text? auto_lock_message if auto_locked
+
+    # Unlock the user
+    find(:xpath, "//label[@for='system-access-input']").click
+
+    assert page.has_no_field? 'status', type: :hidden, with: status
+    assert page.has_no_text? auto_lock_message if auto_locked
+
+    assert page.has_selector? 'div', text: 'Active' if is_active
+    assert page.has_selector? 'div', text: 'Inactive' unless is_active
+
+    # Save the user after unlocking
+    find('.modal-footer').click_on('Save')
+
+    tr = find('tr', text: email)
+
+    # Confirm that the user is Unlocked and status is correct
+    assert tr.has_text? 'Unlocked'
+    assert tr.has_text? 'Active' if is_active
+    assert tr.has_text? 'Inactive' unless is_active
+  end
+
+  def verify_lock_unlocked_user(email, is_active)
+    assert page.has_no_field? 'status', type: :hidden
+    assert page.has_selector? 'div', text: 'Active' if is_active
+    assert page.has_selector? 'div', text: 'Inactive' unless is_active
+
+    # Lock the user
+    find(:xpath, "//label[@for='system-access-input']").click
+
+    # NOTE: This doesn't seem to work and may not even be a worthwhile endeavor.
+    # There is no way to 'select' with Capybara when using React
+    # page.execute_script("(document.getElementsByName('status')[0]).value = '#{status}'")
+    # assert page.has_field? 'status', type: :hidden, with: status
+
+    # Save the user with after locking
+    find('.modal-footer').click_on('Save')
+
+    tr = find('tr', text: email)
+
+    # Confirm that the user is Locked
+    assert tr.has_text? 'Locked'
   end
 end

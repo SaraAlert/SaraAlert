@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_10_160736) do
+ActiveRecord::Schema.define(version: 2021_12_30_184033) do
 
   create_table "active_storage_attachments", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -599,6 +599,7 @@ ActiveRecord::Schema.define(version: 2021_11_10_160736) do
     t.string "role", default: "none", null: false
     t.boolean "is_api_proxy", default: false
     t.text "notes"
+    t.string "manual_lock_reason"
     t.index ["authy_id"], name: "index_users_on_authy_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jurisdiction_id"], name: "index_users_on_jurisdiction_id"
