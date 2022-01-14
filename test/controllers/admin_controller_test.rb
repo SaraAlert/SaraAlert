@@ -120,6 +120,7 @@ class AdminControllerTest < ActionController::TestCase
     sign_out user
   end
 
+  # We have > 25 user fixtures in the data, so we need to increase the entries param to 50 in each request
   test 'user sorting' do
     user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
     sign_in user
@@ -128,12 +129,12 @@ class AdminControllerTest < ActionController::TestCase
     order_by = 'id'
 
     sort_direction = 'asc'
-    get :users, params: { orderBy: order_by, sortDirection: sort_direction }
+    get :users, params: { orderBy: order_by, sortDirection: sort_direction, entries: 50 }
     ordered_ids = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids).order(id: sort_direction).pluck(:id)
     assert_equal(ordered_ids, (JSON.parse(response.body)['user_rows'].map { |u| u['id'] }))
 
     sort_direction = 'desc'
-    get :users, params: { orderBy: order_by, sortDirection: sort_direction }
+    get :users, params: { orderBy: order_by, sortDirection: sort_direction, entries: 50 }
     ordered_ids = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids).order(id: sort_direction).pluck(:id)
     assert_equal(ordered_ids, (JSON.parse(response.body)['user_rows'].map { |u| u['id'] }))
 
@@ -141,12 +142,12 @@ class AdminControllerTest < ActionController::TestCase
     order_by = 'email'
 
     sort_direction = 'asc'
-    get :users, params: { orderBy: order_by, sortDirection: sort_direction }
+    get :users, params: { orderBy: order_by, sortDirection: sort_direction, entries: 50 }
     ordered_emails = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids).order(email: sort_direction).pluck(:email)
     assert_equal(ordered_emails, (JSON.parse(response.body)['user_rows'].map { |u| u['email'] }))
 
     sort_direction = 'desc'
-    get :users, params: { orderBy: order_by, sortDirection: sort_direction }
+    get :users, params: { orderBy: order_by, sortDirection: sort_direction, entries: 50 }
     ordered_emails = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids).order(email: sort_direction).pluck(:email)
     assert_equal(ordered_emails, (JSON.parse(response.body)['user_rows'].map { |u| u['email'] }))
 
@@ -154,14 +155,14 @@ class AdminControllerTest < ActionController::TestCase
     order_by = 'jurisdiction_path'
 
     sort_direction = 'asc'
-    get :users, params: { orderBy: order_by, sortDirection: sort_direction }
+    get :users, params: { orderBy: order_by, sortDirection: sort_direction, entries: 50 }
     ordered_paths = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids).joins(:jurisdiction).select(
       'users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, jurisdictions.path '
     ).order(path: sort_direction).pluck(:path)
     assert_equal(ordered_paths, (JSON.parse(response.body)['user_rows'].map { |u| u['jurisdiction_path'] }))
 
     sort_direction = 'desc'
-    get :users, params: { orderBy: order_by, sortDirection: sort_direction }
+    get :users, params: { orderBy: order_by, sortDirection: sort_direction, entries: 50 }
     ordered_paths = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids).joins(:jurisdiction).select(
       'users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, jurisdictions.path '
     ).order(path: sort_direction).pluck(:path)
@@ -171,13 +172,13 @@ class AdminControllerTest < ActionController::TestCase
     order_by = 'num_failed_logins'
 
     sort_direction = 'asc'
-    get :users, params: { orderBy: order_by, sortDirection: sort_direction }
+    get :users, params: { orderBy: order_by, sortDirection: sort_direction, entries: 50 }
     ordered_logins = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids)
                          .order(failed_attempts: sort_direction).pluck(:failed_attempts)
     assert_equal(ordered_logins, (JSON.parse(response.body)['user_rows'].map { |u| u['num_failed_logins'] }))
 
     sort_direction = 'desc'
-    get :users, params: { orderBy: order_by, sortDirection: sort_direction }
+    get :users, params: { orderBy: order_by, sortDirection: sort_direction, entries: 50 }
     ordered_logins = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids)
                          .order(failed_attempts: sort_direction).pluck(:failed_attempts)
     assert_equal(ordered_logins, (JSON.parse(response.body)['user_rows'].map { |u| u['num_failed_logins'] }))
@@ -284,54 +285,67 @@ class AdminControllerTest < ActionController::TestCase
 
     # Test id param
     post :edit_user, params: { id: 'test', email: 'bad format', jurisdiction: new_jur.id,
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test email param
     post :edit_user, params: { id: 17, email: 'bad format', jurisdiction: new_jur.id,
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     post :edit_user, params: { id: 17, jurisdiction: new_jur.id, role_title: 'analyst', is_api_enabled: false,
-                               is_locked: false, notes: '' }, as: :json
+                               is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test bad jurisdiction param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: '',
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test invalid jurisdiction param (out of scope jurisdiction)
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: Jurisdiction.find_by(path: 'USA, State 2').id,
-                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '' }, as: :json
+                               role_title: 'analyst', is_api_enabled: false, is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test role param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'test',
-                               is_api_enabled: false, is_locked: false, notes: '' }, as: :json
+                               is_api_enabled: false, is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test is_api_enabled param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
-                               is_api_enabled: 'test', is_locked: false, notes: '' }, as: :json
+                               is_api_enabled: 'test', is_locked: false, notes: '', status: '' }, as: :json
     assert_response :bad_request
 
     # Test is_locked param
     post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
-                               is_api_enabled: false, is_locked: 'test', notes: '' }, as: :json
+                               is_api_enabled: false, is_locked: 'test', notes: '', status: '' }, as: :json
+    assert_response :bad_request
+
+    # Test invalid status param
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
+                               is_api_enabled: false, is_locked: true, notes: '', status: 'a fake status' }, as: :json
+    assert_response :bad_request
+
+    # Test valid lock reason with unlocked user
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
+                               is_api_enabled: false, is_locked: false, notes: '',
+                               status: LockReasons::NO_LONGER_NEEDS_ACCESS }, as: :json
     assert_response :bad_request
 
     # Test notes value too long
     error = assert_raises(ActiveRecord::RecordInvalid) do
       post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
-                                 role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true, notes: random_note }, as: :json
+                                 role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
+                                 notes: random_note, status: '' }, as: :json
     end
     assert_equal('Validation failed: Notes is too long (maximum is 5000 characters)', error.message)
 
     # Test User is edited correctly after updating all fields
     assert_no_difference 'User.count' do
       post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
-                                 role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true, notes: 'test note edit' }, as: :json
+                                 role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
+                                 notes: 'test note edit', status: LockReasons::NO_LONGER_AN_EMPLOYEE }, as: :json
     end
     assert_response :success
 
@@ -342,8 +356,48 @@ class AdminControllerTest < ActionController::TestCase
     assert_equal(user.role, 'public_health_enroller')
     assert user.locked_at?
     assert_equal(user.notes, 'test note edit')
+    assert_equal(user.manual_lock_reason, LockReasons::NO_LONGER_AN_EMPLOYEE)
 
     sign_out user
+  end
+
+  test 'edit user status' do
+    current_user_jur = Jurisdiction.find_by(path: 'USA, State 1')
+    new_jur = Jurisdiction.find_by(path: 'USA, State 1, County 1')
+    user = create(:admin_user, jurisdiction: current_user_jur)
+    sign_in user
+
+    # Users with a status of auto-lock will have a manual_lock_reason of nil persisted to the db
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
+                               role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
+                               notes: 'test note edit', status: LockReasons::AUTO_LOCKED_BY_SYSTEM }, as: :json
+
+    user = User.find_by(id: 17)
+    assert_nil(user.manual_lock_reason)
+
+    # Unlocked users with a status of '' will have a manual_lock_reason of nil persisted to the db
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
+                               role_title: 'public_health_enroller', is_api_enabled: false, is_locked: false,
+                               notes: 'test note edit', status: '' }, as: :json
+
+    user = User.find_by(id: 17)
+    assert_nil(user.manual_lock_reason)
+
+    # Locked users with a status of '' will have a manual_lock_reason of '' persisted to the db
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
+                               role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
+                               notes: 'test note edit', status: '' }, as: :json
+
+    user = User.find_by(id: 17)
+    assert_equal(user.manual_lock_reason, '')
+
+    # Locked users with a valid LockReason status will have a manual_lock_reason equal to the LockReason persisted to the db
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
+                               role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true,
+                               notes: 'test note edit', status: LockReasons::NO_LONGER_NEEDS_ACCESS }, as: :json
+
+    user = User.find_by(id: 17)
+    assert_equal(user.manual_lock_reason, LockReasons::NO_LONGER_NEEDS_ACCESS)
   end
 
   test 'reset 2fa' do

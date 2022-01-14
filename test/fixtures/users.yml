@@ -379,3 +379,36 @@ state1_api_proxy:
   api_enabled: true
   role: 'public_health_enroller'
   is_api_proxy: true
+manual_locked_user:
+  id: 26
+  email: "manual_locked_user@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
+  sign_in_count: 2
+  failed_attempts: 4
+  locked_at: "<%= 2.days.ago %>"
+  jurisdiction_id: 1
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
+  current_sign_in_at: "<%= 50.days.ago %>"
+  authy_enabled: false
+  authy_enforced: false
+  api_enabled: false
+  role: 'public_health_enroller'
+  manual_lock_reason: 'No longer an employee'
+auto_locked_user:
+  id: 27
+  email: "auto_locked_user@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
+  sign_in_count: 2
+  failed_attempts: 5
+  locked_at: "<%= 2.days.ago %>"
+  jurisdiction_id: 1
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
+  current_sign_in_at: "<%= 2.days.ago %>"
+  authy_enabled: false
+  authy_enforced: false
+  api_enabled: false
+  role: 'public_health_enroller'

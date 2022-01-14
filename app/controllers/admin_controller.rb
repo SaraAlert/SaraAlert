@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'will_paginate/array'
+
 # AdminController: for administration actions
 class AdminController < ApplicationController
   before_action :authenticate_user!
@@ -31,7 +33,7 @@ class AdminController < ApplicationController
 
     # Validate sort params
     order_by = permitted_params[:orderBy]
-    return head :bad_request unless order_by.nil? || order_by.blank? || %w[id email jurisdiction_path num_failed_logins].include?(order_by)
+    return head :bad_request unless order_by.nil? || order_by.blank? || %w[id email jurisdiction_path num_failed_logins status is_locked].include?(order_by)
 
     sort_direction = permitted_params[:sortDirection]
     return head :bad_request unless sort_direction.nil? || sort_direction.blank? || %w[asc desc].include?(sort_direction)
@@ -42,7 +44,8 @@ class AdminController < ApplicationController
     users = User.where(is_api_proxy: false, jurisdiction_id: current_user.jurisdiction.subtree_ids)
                 .joins(:jurisdiction)
                 .select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id,
-                        users.failed_attempts, users.role, users.notes, jurisdictions.path')
+                        users.failed_attempts, users.role, users.notes, jurisdictions.path, users.manual_lock_reason,
+                        users.current_sign_in_at, users.force_password_change')
 
     # Filter by search text
     users = filter(users, search)
@@ -67,6 +70,10 @@ class AdminController < ApplicationController
         jurisdiction_path: user.path || '',
         role_title: user.role.titleize,
         is_locked: !user.locked_at.nil? || false,
+        lock_reason: user.lock_reason || '',
+        auto_lock_reason: user.auto_lock_reason || '',
+        active_state: user.active_state,
+        status: user.status,
         is_api_enabled: user[:api_enabled] || false,
         is_2fa_enabled: !user.authy_id.nil? || false,
         num_failed_logins: user.failed_attempts,
@@ -92,9 +99,14 @@ class AdminController < ApplicationController
     when 'email'
       users = users.order(email: dir)
     when 'jurisdiction_path'
-      users = users.order(path: dir)
+      users = users.order(path: dir, id: dir)
     when 'num_failed_logins'
-      users = users.order(failed_attempts: dir)
+      users = users.order(failed_attempts: dir, id: dir)
+    when 'status'
+      users = users.sort_by { |u| [u.status.blank? ? 1 : 0, u.status, u.id] } if dir == 'asc'
+      users = users.sort_by { |u| [u.status.blank? ? 0 : 1, u.status, u.id] }.reverse if dir == 'desc'
+    when 'is_locked'
+      users = users.order(locked_at: dir == 'asc' ? 'desc' : 'asc', id: dir)
     end
 
     users
@@ -163,7 +175,8 @@ class AdminController < ApplicationController
   def edit_user
     redirect_to(root_url) && return unless current_user.can_access_admin_panel?
 
-    permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role_title, :is_api_enabled, :is_locked, :notes)
+    permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role_title, :is_api_enabled, :is_locked,
+                                             :status, :notes)
 
     id = permitted_params[:id]
     user_ids = User.pluck(:id)
@@ -195,6 +208,10 @@ class AdminController < ApplicationController
     is_locked = permitted_params[:is_locked]
     return head :bad_request unless [true, false].include? is_locked
 
+    status = permitted_params[:status]
+    return head :bad_request unless (LockReasons.all_reasons.include? status) || (status == '')
+    return head :bad_request if (LockReasons.all_reasons.include? status) && !is_locked
+
     # Find user
     user = User.find_by(id: id)
     return head :bad_request unless user
@@ -214,6 +231,13 @@ class AdminController < ApplicationController
 
     # Update API access
     user.update!(api_enabled: is_api_enabled, role: role)
+
+    # Manual lock reasons exclude 'Auto-locked by the System'
+    # Locked users with a '' status will be saved with a manual_lock_reason of ''. This covers the corner case of a user
+    # who is auto-locked by the system but has been manually locked to '' in the Edit User Modal
+    # When both a manual_lock and an auto_lock exist on a user, we currently prioritize showing the manual_lock in the UI
+    user.manual_lock_reason = status if LockReasons.manual_lock_reasons.include?(status) || (is_locked && status == '')
+    user.manual_lock_reason = nil if !is_locked || status == LockReasons::AUTO_LOCKED_BY_SYSTEM
 
     # Update locked status
     if user.locked_at.nil? && is_locked

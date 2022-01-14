@@ -11,6 +11,18 @@ class AdminTestHelper < ApplicationSystemTestCase
   @@admin_dashboard_verifier = AdminDashboardVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
+  def timeout_user
+    # NOTE: not using system_test_utils here because I need the instance of the user
+    user = User.where(role: 'super_user').first
+
+    visit '/'
+    fill_in 'user_email', with: user.email
+    fill_in 'user_password', with: '1234567ab!'
+    click_on 'login'
+
+    @@admin_dashboard.timeout_user(user)
+  end
+
   def view_users(user_label)
     jurisdiction = @@system_test_utils.login(user_label)
     User.where(is_api_proxy: false, jurisdiction_id: jurisdiction.subtree_ids).each do |user|
@@ -47,8 +59,10 @@ class AdminTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def edit_user(user_label, id)
-    # TODO: implement
+  def edit_user(user_label, email, is_locked:, auto_locked:, is_active:, status:, auto_lock_message:)
+    @@system_test_utils.login(user_label)
+    @@admin_dashboard.edit_user(email, is_locked, auto_locked, is_active, status, auto_lock_message)
+    @@system_test_utils.logout
   end
 
   def select_user(user_label, id)

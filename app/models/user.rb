@@ -7,7 +7,8 @@ class User < ApplicationRecord
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable, :password_archivable, :trackable
+  devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable,
+         :password_archivable, :trackable, :timeoutable
 
   validates :role, inclusion: { in: Roles.all_role_values }
   validates :notes, length: { maximum: 5000 }
@@ -38,6 +39,27 @@ class User < ApplicationRecord
       (33 + SecureRandom.random_number(14)).chr(Encoding::ASCII) +
       (97 + SecureRandom.random_number(26)).chr(Encoding::ASCII) +
       (65 + SecureRandom.random_number(26)).chr(Encoding::ASCII)
+  end
+
+  def status
+    lock_reason || active_state
+  end
+
+  def active_state
+    current_sign_in_at.present? && current_sign_in_at >= Time.zone.today - ADMIN_OPTIONS['inactive_user_threshold'].to_i ? 'Active' : 'Inactive'
+  end
+
+  def auto_lock_reason
+    return if locked_at.nil?
+    return "#{failed_attempts} failed login attempts" if failed_attempts >= User.maximum_attempts
+    return 'Temporary password expired' if force_password_change
+  end
+
+  def lock_reason
+    return if locked_at.nil?
+    return manual_lock_reason unless manual_lock_reason.nil?
+
+    auto_lock_reason.present? ? LockReasons::AUTO_LOCKED_BY_SYSTEM : ''
   end
 
   # Patients this user can view through their jurisdiction access

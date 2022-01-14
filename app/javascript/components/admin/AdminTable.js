@@ -23,10 +23,11 @@ class AdminTable extends React.Component {
           { label: 'Email', field: 'email', className: 'wrap-words', isSortable: true },
           { label: 'Jurisdiction', field: 'jurisdiction_path', isSortable: true },
           { label: 'Role', field: 'role_title', isSortable: false },
-          { label: 'Status', field: 'is_locked', isSortable: false, options: { true: 'Locked', false: 'Unlocked' } },
+          { label: 'System Access', field: 'is_locked', isSortable: true, options: { true: 'Locked', false: 'Unlocked' } },
+          { label: 'Status', field: 'status', isSortable: true },
           { label: 'API Enabled', field: 'is_api_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: '2FA Enabled', field: 'is_2fa_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
-          { label: 'Failed Login Attempts', field: 'num_failed_logins', isSortable: true },
+          { label: 'Failed Logins', field: 'num_failed_logins', isSortable: true },
           { label: 'Notes', field: 'notes', isSortable: false, filter: this.renderNotes, className: 'col-long-text-field' },
           { label: 'Audit', field: 'Audit', isSortable: false, tooltip: null, filter: this.createAuditButton, onClick: this.handleAuditClick },
         ],
@@ -374,6 +375,7 @@ class AdminTable extends React.Component {
       is_api_enabled: data.isAPIEnabled,
       is_locked: data.isLocked,
       notes: data.notes,
+      status: data.isLocked ? data.lockReason : '',
     };
 
     const handleSuccess = () => {
@@ -525,12 +527,16 @@ class AdminTable extends React.Component {
         // This has been addressed and recently merged: https://github.com/react-csv/react-csv/pull/193
         // Once this gets released and we update our version this code won't be necessary.
         const csvData = response.data.user_rows.map(userData => {
+          // _.omit is being removed from lodash in v5.0.0 due to performance issues: lodash/lodash#2930.
+          // instead, use destructuring to omit the keys we do not want to include in the csv export
+          // eslint-disable-next-line no-unused-vars
+          const { active_state, lock_reason, auto_lock_reason, ...dataToExport } = userData;
           return {
-            ...userData,
-            notes: removeFormulaStart(userData.notes).toString(),
-            is_api_enabled: userData.is_api_enabled.toString(),
-            is_2fa_enabled: userData.is_2fa_enabled.toString(),
-            is_locked: userData.is_locked.toString(),
+            ...dataToExport,
+            notes: removeFormulaStart(dataToExport.notes).toString(),
+            is_api_enabled: dataToExport.is_api_enabled.toString(),
+            is_2fa_enabled: dataToExport.is_2fa_enabled.toString(),
+            is_locked: dataToExport.is_locked.toString(),
           };
         });
         // If there's a valid response, update state accordingly
@@ -808,6 +814,7 @@ class AdminTable extends React.Component {
             jurisdiction_paths={Object.keys(this.state.jurisdiction_paths)}
             roles={this.props.role_types}
             initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
+            inactive_user_threshold={this.props.inactive_user_threshold}
           />
         )}
         {this.state.showAuditModal && (
@@ -837,6 +844,7 @@ AdminTable.propTypes = {
   authenticity_token: PropTypes.string,
   role_types: PropTypes.array,
   is_usa_admin: PropTypes.bool,
+  inactive_user_threshold: PropTypes.number,
 };
 
 export default AdminTable;
