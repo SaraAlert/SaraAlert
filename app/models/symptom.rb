@@ -27,7 +27,7 @@ class Symptom < ApplicationRecord
   def bool_based_prompt(lang = :eng, gsm_7: false)
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     symptom_name = if gsm_7
-                     I18n.t("assessments.symptoms.#{name}.name-gsm_7", locale: lang, default: I18n.t("assessments.symptoms.#{name}.name", locale: lang))
+                     I18n.t("assessments.symptoms.#{name}.name-gsm-7", locale: lang, default: I18n.t("assessments.symptoms.#{name}.name", locale: lang))
                    else
                      I18n.t("assessments.symptoms.#{name}.name", locale: lang)
                    end
@@ -39,7 +39,7 @@ class Symptom < ApplicationRecord
         symptom_name,
         if gsm_7
           I18n.t(
-            "assessments.threshold-op.#{threshold_operator.parameterize}-gsm_7",
+            "assessments.threshold-op.#{threshold_operator.parameterize}-gsm-7",
             locale: lang,
             default: I18n.t("assessments.threshold-op.#{threshold_operator.parameterize}", locale: lang)
           )
