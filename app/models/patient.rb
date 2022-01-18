@@ -520,7 +520,7 @@ class Patient < ApplicationRecord
       .where(isolation: true)
       .where(symptom_onset: nil)
       .where.not(latest_assessment_at: nil)
-      .where('first_positive_lab_at < ?', 10.days.ago)
+      .where('first_positive_lab_at < ?', ADMIN_OPTIONS['recovery_period_days'].days.ago)
       .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
   }
 
@@ -529,14 +529,14 @@ class Patient < ApplicationRecord
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .where('symptom_onset <= ?', 10.days.ago)
+      .where('symptom_onset <= ?', ADMIN_OPTIONS['recovery_period_days'].days.ago)
       .where(latest_fever_or_fever_reducer_at: nil)
       .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(isolation: true)
-        .where('symptom_onset <= ?', 10.days.ago)
+        .where('symptom_onset <= ?', ADMIN_OPTIONS['recovery_period_days'].days.ago)
         .where('latest_fever_or_fever_reducer_at < ?', 24.hours.ago)
         .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
       )

@@ -42,7 +42,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now.getlocal,
-                     last_date_of_exposure: 20.days.ago)
+                     last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago)
 
     ClosePatientsJob.perform_now
 
@@ -60,7 +60,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now.getlocal,
-                     last_date_of_exposure: 20.days.ago)
+                     last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago)
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
@@ -76,7 +76,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now.getlocal,
-                     last_date_of_exposure: 20.days.ago,
+                     last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago,
                      created_at: 7.days.ago)
 
     ClosePatientsJob.perform_now
@@ -93,7 +93,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now.getlocal,
-                     last_date_of_exposure: 20.days.ago,
+                     last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago,
                      created_at: Time.now.getlocal)
 
     ClosePatientsJob.perform_now
@@ -110,9 +110,9 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now.getlocal,
-                     last_date_of_exposure: 14.days.ago,
+                     last_date_of_exposure: ADMIN_OPTIONS['monitoring_period_days'].days.ago,
                      created_at: Time.now.getlocal)
-    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - 14.days)
+    patient.update(last_date_of_exposure: patient.curr_date_in_timezone.to_date - ADMIN_OPTIONS['monitoring_period_days'].days)
     assert_not_nil Patient.enrolled_last_day_monitoring_period.find_by(id: patient.id)
     assert_not_nil Patient.close_eligible(:enrolled_last_day_monitoring_period).find_by(id: patient.id)
     ClosePatientsJob.perform_now
@@ -132,7 +132,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now.getlocal,
-                     last_date_of_exposure: 20.days.ago,
+                     last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago,
                      email: 'testpatient@example.com',
                      preferred_contact_method: 'E-mailed Web Link',
                      created_at: 20.days.ago)
@@ -160,7 +160,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now.getlocal,
-                     last_date_of_exposure: 20.days.ago,
+                     last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago,
                      email: 'testpatient@example.com',
                      preferred_contact_method: 'E-mailed Web Link')
     patient.jurisdiction.update(send_close: false)
@@ -178,7 +178,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                        symptom_onset: nil,
                        public_health_action: 'None',
                        latest_assessment_at: Time.now.getlocal,
-                       last_date_of_exposure: 20.days.ago,
+                       last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago,
                        email: 'testpatient@example.com',
                        preferred_contact_method: preferred_contact_method,
                        created_at: 20.days.ago)
@@ -199,7 +199,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                        symptom_onset: nil,
                        public_health_action: 'None',
                        latest_assessment_at: Time.now.getlocal,
-                       last_date_of_exposure: 20.days.ago,
+                       last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago,
                        preferred_contact_method: preferred_contact_method,
                        created_at: 20.days.ago)
 
@@ -218,7 +218,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                        symptom_onset: nil,
                        public_health_action: 'None',
                        latest_assessment_at: Time.now.getlocal,
-                       last_date_of_exposure: 20.days.ago,
+                       last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago,
                        email: 'testpatient@example.com',
                        primary_telephone: '+12223334444',
                        preferred_contact_method: preferred_contact_method,
@@ -241,7 +241,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                        symptom_onset: nil,
                        public_health_action: 'None',
                        latest_assessment_at: Time.now.getlocal,
-                       last_date_of_exposure: 20.days.ago,
+                       last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago,
                        preferred_contact_method: preferred_contact_method,
                        primary_telephone: '+12223334444',
                        created_at: 20.days.ago)
@@ -266,7 +266,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now.getlocal,
-                     last_date_of_exposure: 20.days.ago)
+                     last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago)
     email = ClosePatientsJob.perform_now
     email_body = email.parts.first.body.to_s.tr("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -281,7 +281,7 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now.getlocal,
-                     last_date_of_exposure: 20.days.ago)
+                     last_date_of_exposure: (ADMIN_OPTIONS['monitoring_period_days'] + 6).days.ago)
 
     allow_any_instance_of(Patient).to(receive(:save!) do
       raise StandardError, 'Test StandardError'
