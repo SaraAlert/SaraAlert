@@ -315,7 +315,6 @@ class AdminTable extends React.Component {
     } else {
       this.editUser(this.state.editRow, formData);
     }
-    this.handleUserModalClose();
   };
 
   /**
@@ -334,6 +333,7 @@ class AdminTable extends React.Component {
     };
 
     const handleSuccess = () => {
+      this.handleUserModalClose();
       toast.success('Successfully added new user.', {
         position: toast.POSITION.TOP_CENTER,
       });
@@ -379,6 +379,7 @@ class AdminTable extends React.Component {
     };
 
     const handleSuccess = () => {
+      this.handleUserModalClose();
       this.getTableData(this.state.query);
     };
 
