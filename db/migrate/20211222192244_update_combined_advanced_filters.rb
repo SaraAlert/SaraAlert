@@ -86,39 +86,71 @@ class UpdateCombinedAdvancedFilters < ActiveRecord::Migration[6.1]
   }
 
   def up
-    relevant_filters.each do |filter|
-      contents = JSON.parse(filter[:contents])
-      contents.each do |content|
-        filter_name = content['filterOption']['name'].to_sym
-        if %i[address-foreign address-usa first-name last-name middle-name].include?(filter_name)
-          content['filterOption'] = NEW_FILTER_OPTIONS[FILTER_MAPPINGS[filter_name].to_sym]
-          content['value'] = [{ name: filter_name, value: content['value']}]
-        elsif %i[telephone-number telephone-number-partial].include?(filter_name)
-          content['filterOption'] = NEW_FILTER_OPTIONS[FILTER_MAPPINGS[filter_name].to_sym]
-          content['additionalFilterOption'] = filter_name == :'telephone-number-partial' ? 'Contains' : 'Exact Match'
-        end
+    ActiveRecord::Base.transaction do
+      # Migrate saved advanced filters
+      relevant_filters.each do |uf|
+        contents = JSON.parse(uf[:contents])
+        migrate_advanced_filter_contents(contents)
+        uf.update!(contents: contents.to_json)
       end
-      filter.update!(contents: contents.to_json)
+
+      # Migrate advanced filters in saved export presets
+      relevant_export_presets.each do |uep|
+        config = JSON.parse(uep[:config])
+        contents = config.dig('data', 'patients', 'query', 'filter')
+        migrate_advanced_filter_contents(contents)
+        config['data']['patients']['query']['filter'] = contents
+        uep.update!(config: config.to_json)
+      end
     end
   end
 
   def down
-    relevant_filters.each do |filter|
-      contents = JSON.parse(filter[:contents])
-      contents.each do |content|
-        filter_name = content['filterOption']['name'].to_sym
-        next if content['value'].empty?
-
-        if %i[address name].include?(filter_name)
-          next if content['value'].first['name'].blank?
-
-          content['filterOption'] = OLD_FILTER_OPTIONS[content['value'].first['name'].to_sym]
-          content['value'] = content['value'].first['value']
-        elsif filter_name == :telephone
-          content['filterOption'] = OLD_FILTER_OPTIONS[content['additionalFilterOption'] == 'Contains' ? :'telephone-number-partial' : :'telephone-number']
-        end
+    ActiveRecord::Base.transaction do
+      # Rollback saved advanced filters
+      relevant_filters.each do |uf|
+        contents = JSON.parse(uf[:contents])
+        rollback_advanced_filter_contents(contents)
+        uf.update!(contents: contents.to_json)
       end
-      filter.update!(contents: contents.to_json)
+
+      # Rollback advanced filters in saved export presets
+      relevant_export_presets.each do |uep|
+        config = JSON.parse(uep[:config])
+        contents = config.dig('data', 'patients', 'query', 'filter')
+        rollback_advanced_filter_contents(contents)
+        config['data']['patients']['query']['filter'] = contents
+        uep.update!(config: config.to_json)
+      end
+    end
+  end
+
+  def migrate_advanced_filter_contents(contents)
+    contents.each do |content|
+      filter_name = content['filterOption']['name'].to_sym
+      if %i[address-foreign address-usa first-name last-name middle-name].include?(filter_name)
+        content['filterOption'] = NEW_FILTER_OPTIONS[FILTER_MAPPINGS[filter_name].to_sym]
+        content['value'] = [{ name: filter_name, value: content['value']}]
+      elsif %i[telephone-number telephone-number-partial].include?(filter_name)
+        content['filterOption'] = NEW_FILTER_OPTIONS[FILTER_MAPPINGS[filter_name].to_sym]
+        content['additionalFilterOption'] = filter_name == :'telephone-number-partial' ? 'Contains' : 'Exact Match'
+      end
+    end
+  end
+
+  def rollback_advanced_filter_contents(contents)
+    contents.each do |content|
+      filter_name = content['filterOption']['name'].to_sym
+      next if content['value'].empty?
+
+      if %i[address name].include?(filter_name)
+        next if content['value'].first['name'].blank?
+
+        content['filterOption'] = OLD_FILTER_OPTIONS[content['value'].first['name'].to_sym]
+        content['value'] = content['value'].first['value']
+      elsif filter_name == :telephone
+        content['filterOption'] = OLD_FILTER_OPTIONS[content['additionalFilterOption'] == 'Contains' ? :'telephone-number-partial' : :'telephone-number']
+      end
     end
   end
 
@@ -130,6 +162,22 @@ class UpdateCombinedAdvancedFilters < ActiveRecord::Migration[6.1]
             UserFilter.where('contents LIKE "%middle-name%"').or(
               UserFilter.where('contents LIKE "%last-name%"').or(
                 UserFilter.where('contents LIKE "%telephone%"')
+              )
+            )
+          )
+        )
+      )
+    )
+  end
+
+  def relevant_export_presets
+    UserExportPreset.where('config LIKE "%address-foreign%"').or(
+      UserExportPreset.where('config LIKE "%address-usa%"').or(
+        UserExportPreset.where('config LIKE "%first-name%"').or(
+          UserExportPreset.where('config LIKE "%last-name%"').or(
+            UserExportPreset.where('config LIKE "%middle-name%"').or(
+              UserExportPreset.where('config LIKE "%last-name%"').or(
+                UserExportPreset.where('config LIKE "%telephone%"')
               )
             )
           )
