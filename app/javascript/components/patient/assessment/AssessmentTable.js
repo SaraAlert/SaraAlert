@@ -324,7 +324,12 @@ class AssessmentTable extends React.Component {
             Reports
           </Card.Header>
           <Card.Body>
-            <CurrentStatus report_eligibility={this.props.report_eligibility} status={this.props.patient_status} isolation={this.props.patient?.isolation} />
+            <CurrentStatus
+              report_eligibility={this.props.report_eligibility}
+              status={this.props.patient_status}
+              isolation={this.props.patient?.isolation}
+              recovery_period_days={this.props.recovery_period_days}
+            />
             <Row className="my-4">
               <Col>
                 <Button variant="primary" className="mr-2" onClick={this.handleAddReportClick}>
@@ -438,6 +443,7 @@ AssessmentTable.propTypes = {
   calculated_age: PropTypes.number,
   patient_initials: PropTypes.string,
   monitoring_period_days: PropTypes.number,
+  recovery_period_days: PropTypes.number,
   current_user: PropTypes.object,
   translations: PropTypes.object,
   authenticity_token: PropTypes.string,

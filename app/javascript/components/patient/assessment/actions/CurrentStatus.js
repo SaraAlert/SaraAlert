@@ -102,9 +102,9 @@ class CurrentStatus extends React.Component {
       return (
         <ReactTooltip id={`symptomatic-non-test-based`} multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
           <span>
-            At least 5 days have passed since the Symptom Onset Date and at least 24 hours have passed since the case last reported “Yes” for fever or use of
-            fever-reducing medicine to the system. The system does not collect information on severity of symptoms. Public health will need to validate if other
-            symptoms have improved.
+            At least {this.props.recovery_period_days} days have passed since the Symptom Onset Date and at least 24 hours have passed since the case last
+            reported “Yes” for fever or use of fever-reducing medicine to the system. The system does not collect information on severity of symptoms. Public
+            health will need to validate if other symptoms have improved.
           </span>
         </ReactTooltip>
       );
@@ -112,7 +112,8 @@ class CurrentStatus extends React.Component {
       return (
         <ReactTooltip id={`asymptomatic-non-test-based`} multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
           <span>
-            At least 5 days have passed since the specimen collection date of a positive laboratory test and the monitoree has never reported symptoms.
+            At least {this.props.recovery_period_days} days have passed since the specimen collection date of a positive laboratory test and the monitoree has
+            never reported symptoms.
           </span>
         </ReactTooltip>
       );
@@ -167,6 +168,7 @@ CurrentStatus.propTypes = {
   report_eligibility: PropTypes.object,
   status: PropTypes.string,
   isolation: PropTypes.bool,
+  recovery_period_days: PropTypes.number,
 };
 
 export default CurrentStatus;
