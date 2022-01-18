@@ -42,7 +42,7 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
       { preferred_contact_method: 'SMS Texted Weblink', continuous_exposure: true },
       { preferred_contact_method: 'Telephone call', last_date_of_exposure: nil, created_at: default_days_ago(5) },
       { preferred_contact_method: 'SMS Text-message', last_date_of_exposure: default_days_ago(5), created_at: default_days_ago(5) },
-      { last_date_of_exposure: default_days_ago(11), created_at: default_days_ago(20) }
+      { last_date_of_exposure: default_days_ago(9), created_at: default_days_ago(20) }
     ].map do |eligible_params|
       create(
         :patient_with_submission_token,
@@ -116,7 +116,7 @@ class SendAssessmentsJobTest < ActiveSupport::TestCase
       { preferred_contact_method: 'SMS Texted Weblink', continuous_exposure: true },
       { preferred_contact_method: 'Telephone call', last_date_of_exposure: nil, created_at: default_days_ago(5) },
       { preferred_contact_method: 'SMS Text-message', last_date_of_exposure: default_days_ago(5), created_at: default_days_ago(5) },
-      { last_date_of_exposure: default_days_ago(11), created_at: default_days_ago(20) }
+      { last_date_of_exposure: default_days_ago(9), created_at: default_days_ago(20) }
     ].map do |eligible_params|
       create(
         :patient,

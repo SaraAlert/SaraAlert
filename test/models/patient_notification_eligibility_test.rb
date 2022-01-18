@@ -86,7 +86,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       { continuous_exposure: true },
       { last_date_of_exposure: nil, created_at: default_days_ago(5) },
       { last_date_of_exposure: default_days_ago(5), created_at: default_days_ago(5) },
-      { last_date_of_exposure: default_days_ago(11), created_at: default_days_ago(20) }
+      { last_date_of_exposure: default_days_ago(9), created_at: default_days_ago(20) }
     ].each do |workflow_params|
       dependent_params = {
         responder: patient,
@@ -106,7 +106,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       { continuous_exposure: true },
       { last_date_of_exposure: nil, created_at: default_days_ago(5) },
       { last_date_of_exposure: default_days_ago(5), created_at: default_days_ago(5) },
-      { last_date_of_exposure: default_days_ago(11), created_at: default_days_ago(20) }
+      { last_date_of_exposure: default_days_ago(9), created_at: default_days_ago(20) }
     ].each do |workflow_params|
       dependent = create(
         :patient,
@@ -257,7 +257,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         { continuous_exposure: true },
         { last_date_of_exposure: nil, created_at: default_days_ago(5) },
         { last_date_of_exposure: default_days_ago(5), created_at: default_days_ago(5) },
-        { last_date_of_exposure: default_days_ago(11), created_at: default_days_ago(20) }
+        { last_date_of_exposure: default_days_ago(9), created_at: default_days_ago(20) }
       ].each do |workflow_params|
         patient = create(
           :patient,
@@ -304,7 +304,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         { continuous_exposure: true },
         { last_date_of_exposure: nil, created_at: default_days_ago(5) },
         { last_date_of_exposure: default_days_ago(5), created_at: default_days_ago(5) },
-        { last_date_of_exposure: default_days_ago(11), created_at: default_days_ago(20) }
+        { last_date_of_exposure: default_days_ago(9), created_at: default_days_ago(20) }
       ].each do |workflow_params|
         [
           { pause_notifications: true },
@@ -393,7 +393,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       purged: false,
       isolation: false,
       created_at: default_days_ago(20),
-      last_date_of_exposure: default_days_ago(14)
+      last_date_of_exposure: default_days_ago(ADMIN_OPTIONS['monitoring_period_days'])
     )
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
     create(:assessment, patient: patient, symptomatic: false, created_at: default_days_ago(2))
@@ -409,7 +409,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       purged: false,
       isolation: false,
       created_at: default_days_ago(2),
-      last_date_of_exposure: default_days_ago(14)
+      last_date_of_exposure: default_days_ago(ADMIN_OPTIONS['monitoring_period_days'])
     )
     assert_eligible(patient)
   end
