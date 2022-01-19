@@ -13,7 +13,7 @@ const reportEligibility = {
 };
 
 function getWrapper(status, isolation) {
-  return shallow(<CurrentStatus status={status} isolation={isolation} report_eligibility={reportEligibility} />);
+  return shallow(<CurrentStatus status={status} isolation={isolation} report_eligibility={reportEligibility} recovery_period_days={5} />);
 }
 
 describe('CurrentStatus', () => {
