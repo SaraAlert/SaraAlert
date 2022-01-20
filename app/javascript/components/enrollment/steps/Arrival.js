@@ -91,7 +91,7 @@ class Arrival extends React.Component {
                     id="date_of_departure"
                     date={this.state.current.patient.date_of_departure}
                     minDate={'2020-01-01'}
-                    maxDate={moment().add(30, 'days').format('YYYY-MM-DD')}
+                    maxDate={moment().format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('date_of_departure', date)}
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_departure']}
