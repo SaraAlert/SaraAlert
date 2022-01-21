@@ -1054,7 +1054,7 @@ class Patient < ApplicationRecord
 
   # Single place for calculating the end of monitoring date for this subject.
   def end_of_monitoring
-    return '' if isolation
+    return nil if isolation
     return 'Continuous Exposure' if continuous_exposure
     return (last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if last_date_of_exposure.present?
 
