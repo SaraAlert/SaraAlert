@@ -31,7 +31,7 @@ class ConsumeAssessmentsJob
       patient = Patient.find_by(submission_token: patient_lookup[:new_submission_token]) unless patient_lookup.nil?
       # If new and old submission token does not find a Patient, stop processing
       if patient.nil?
-        log_and_capture("ConsumeAssessmentsJob: No patient found with submission_token: #{message['patient_submission_token']}")
+        log_and_capture("ConsumeAssessmentsJob: No patient found with submission_token: #{message['patient_submission_token']}", false)
         return
       end
     end
@@ -47,7 +47,7 @@ class ConsumeAssessmentsJob
     # Prevent duplicate patient assessment spam
     # Only check for latest assessment if there is one
     if !patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)
-      log_and_capture("ConsumeAssessmentsJob: Skipping duplicate assessment (patient: #{patient.id})")
+      log_and_capture("ConsumeAssessmentsJob: Skipping duplicate assessment (patient: #{patient.id})", false)
       return
     end
 
@@ -179,9 +179,9 @@ class ConsumeAssessmentsJob
 
   private
 
-  def log_and_capture(msg)
+  def log_and_capture(msg, sentry = true)
     Rails.logger.info(msg)
-    Raven.capture_message(msg)
+    Raven.capture_message(msg) if sentry
   end
 
   def handle_opt_in_opt_out(message)
