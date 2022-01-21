@@ -1,5 +1,5 @@
 # Version
-version: v1.41
+version: v1.42
 
 # Base path (useful for WARP or similar environments)
 base_path: ''
