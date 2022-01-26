@@ -17,7 +17,7 @@ class PatientDateValidator < ActiveModel::Validator
     # validate_between_dates(record, :date_of_birth, Date.new(1900, 1, 1), earliest_tz_today) if record.date_of_birth_changed?
     # validate_between_dates(record, :last_date_of_exposure, year_start, month_ahead) if record.last_date_of_exposure_changed?
     # validate_between_dates(record, :extended_isolation, month_behind, month_ahead) if record.extended_isolation_changed?
-    # validate_between_dates(record, :date_of_departure, year_start, month_ahead) if record.date_of_departure_changed?
+    # validate_between_dates(record, :date_of_departure, year_start, earliest_tz_today) if record.date_of_departure_changed?
     # validate_between_dates(record, :date_of_arrival, year_start, month_ahead) if record.date_of_arrival_changed?
     # validate_between_dates(record, :additional_planned_travel_start_date, year_start, month_ahead) if record.additional_planned_travel_start_date_changed?
     # validate_between_dates(record, :additional_planned_travel_end_date, year_start, month_ahead) if record.additional_planned_travel_end_date_changed?
