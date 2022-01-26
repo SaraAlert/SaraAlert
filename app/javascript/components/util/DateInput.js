@@ -94,6 +94,21 @@ class DateInput extends React.Component {
   };
 
   render() {
+    // This variable is ONLY used if this.props.placement is defined (i.e. we want to force the direction the datepicker pops up)
+    // Specifically, this is required when there is more room elsewhere on the page than where the datepicker is supposed to pop (mostly occurs with small screens)
+    // For example, the Symptom Onset datepicker in enrollment is too close to the top on small screens, but if that area is bigger it would pop up anyway
+    const popperModifiers = {
+      flip: {
+        behavior: [this.props.placement], // don't allow it to flip to be above
+      },
+      preventOverflow: {
+        enabled: false, // tell it not to try to stay within the view (this prevents the popper from covering the element you clicked)
+      },
+      hide: {
+        enabled: false, // turn off since needs preventOverflow to be enabled
+      },
+    };
+
     return (
       <div className="date-input">
         <i
@@ -128,6 +143,7 @@ class DateInput extends React.Component {
               minDate={this.props.minDate && moment(this.props.minDate, 'YYYY-MM-DD').toDate()}
               maxDate={this.props.maxDate && moment(this.props.maxDate, 'YYYY-MM-DD').toDate()}
               popperPlacement={this.props.placement || 'auto'}
+              popperModifiers={this.props.placement ? popperModifiers : undefined}
               placeholderText="mm/dd/yyyy"
               ref={this.datePickerRef}
               onChange={this.handleDateChange}
