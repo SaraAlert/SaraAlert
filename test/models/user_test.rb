@@ -794,24 +794,24 @@ class UserTest < ActiveSupport::TestCase
     assert_nil(user.auto_lock_reason)
   end
 
-  test 'user active status has no lock and current_sign_in_at <= 30 days ago' do
-    user = create(:user, current_sign_in_at: 29.days.ago)
+  test 'user active status has no lock and last_activity_at <= 30 days ago' do
+    user = create(:user, last_activity_at: 29.days.ago)
 
     assert_equal(user.status, 'Active')
     assert_nil(user.lock_reason)
     assert_nil(user.auto_lock_reason)
   end
 
-  test 'user inactive status has no lock and current_sign_in_at > 30 days ago' do
-    user = create(:user, current_sign_in_at: 31.days.ago)
+  test 'user inactive status has no lock and last_activity_at > 30 days ago' do
+    user = create(:user, last_activity_at: 31.days.ago)
 
     assert_equal(user.status, 'Inactive')
     assert_nil(user.lock_reason)
     assert_nil(user.auto_lock_reason)
   end
 
-  test 'user inactive status has no current_sign_in_at' do
-    user = create(:user, current_sign_in_at: nil)
+  test 'user inactive status has nil last_activity_at' do
+    user = create(:user, last_activity_at: nil)
 
     assert_equal(user.status, 'Inactive')
     assert_nil(user.lock_reason)

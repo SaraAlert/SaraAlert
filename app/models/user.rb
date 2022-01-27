@@ -46,7 +46,7 @@ class User < ApplicationRecord
   end
 
   def active_state
-    current_sign_in_at.present? && current_sign_in_at >= Time.zone.today - ADMIN_OPTIONS['inactive_user_threshold'].to_i ? 'Active' : 'Inactive'
+    last_activity_at.present? && last_activity_at >= Time.zone.today - ADMIN_OPTIONS['inactive_user_threshold'].to_i ? 'Active' : 'Inactive'
   end
 
   def auto_lock_reason
