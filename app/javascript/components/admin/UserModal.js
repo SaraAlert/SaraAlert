@@ -188,8 +188,8 @@ class UserModal extends React.Component {
                   <ReactTooltip id="disabled-status-select" multiline={true} type="dark" effect="solid" place="bottom" className="tooltip-container">
                     <div>
                       {this.state.activeState === 'Active'
-                        ? `Logged into the system within the last ${this.props.inactive_user_threshold} days`
-                        : `Has not logged into the system for at least ${this.props.inactive_user_threshold} days`}
+                        ? `Active in the system within the last ${this.props.inactive_user_threshold} days`
+                        : `Has not been active in the system for at least ${this.props.inactive_user_threshold} days`}
                     </div>
                   </ReactTooltip>
                 )}
