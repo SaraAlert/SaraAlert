@@ -333,7 +333,7 @@ GEM
       execjs
       railties (>= 3.2)
       tilt
-    redis (4.3.1)
+    redis (4.5.1)
     redis-queue (0.1.0)
       redis (>= 3.3.5, < 5)
     regexp_parser (2.1.1)
@@ -398,7 +398,7 @@ GEM
       rubyzip (>= 1.2.2)
     sentry-raven (3.1.2)
       faraday (>= 1.0)
-    sidekiq (6.2.1)
+    sidekiq (6.4.0)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
