@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Helper methods for filtering through patients in the enroller table
-module EnrollerQueryHelper # rubocop:todo Metrics/ModuleLength
+module EnrollerQueryHelper
   def enroller_table_data(params, current_user)
     query = validate_patients_query(params.require(:query))
 
@@ -14,7 +14,7 @@ module EnrollerQueryHelper # rubocop:todo Metrics/ModuleLength
 
     # Get filtered patients
     patients = patients_by_query(current_user, query)
-        
+
     # Paginate
     patients = patients.paginate(per_page: entries, page: page + 1)
 
@@ -42,7 +42,8 @@ module EnrollerQueryHelper # rubocop:todo Metrics/ModuleLength
 
     # Validate sorting order
     order = query[:order]
-    raise InvalidQueryError.new(:order, order) unless order.nil? || order.blank? || %w[name jurisdiction assigned_user state_local_id sex dob enrollment_date].include?(order)
+    raise InvalidQueryError.new(:order, order) unless order.nil? || order.blank? || %w[name jurisdiction assigned_user state_local_id sex dob
+                                                                                       enrollment_date].include?(order)
 
     # Validate sorting direction
     direction = query[:direction]
@@ -126,7 +127,7 @@ module EnrollerQueryHelper # rubocop:todo Metrics/ModuleLength
   def linelist(patients)
     # get a list of fields relevant only to this linelist
     fields = %i[name jurisdiction assigned_user state_local_id sex dob enrollment_date]
-    
+
     # retrieve proper jurisdiction
     patients = patients.joins(:jurisdiction)
 
