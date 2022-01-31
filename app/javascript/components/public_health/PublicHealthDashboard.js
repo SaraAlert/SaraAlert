@@ -1,23 +1,15 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import axios from 'axios';
 import PublicHealthHeader from './PublicHealthHeader';
-import PatientsTable from './PatientsTable';
+import PatientsTable from '../patient/PatientsTable';
 
 class PublicHealthDashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      jurisdiction_paths: {},
       query: {},
       current_monitorees_count: 0,
     };
-  }
-
-  componentDidMount() {
-    axios.get(`${window.BASE_PATH}/jurisdictions/paths`).then(response => {
-      this.setState({ jurisdiction_paths: response.data.jurisdiction_paths });
-    });
   }
 
   render() {

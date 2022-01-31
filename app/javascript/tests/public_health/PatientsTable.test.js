@@ -40,7 +40,7 @@ describe('PatientsTable', () => {
   it('Properly renders all main components for the exposure workflow', () => {
     const wrapper = getExposureWrapper();
     expect(wrapper.find('#search').exists()).toBe(true);
-    expect(wrapper.find('#tab-description').exists()).toBe(true);
+    expect(wrapper.find('#table-description').exists()).toBe(true);
     expect(wrapper.find('#clear-all-filters').exists()).toBe(true);
     expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBe(true);
     expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBe(true);
@@ -50,13 +50,13 @@ describe('PatientsTable', () => {
     expect(wrapper.find(Dropdown.Item).length).toEqual(4);
 
     const defaultTab = Object.keys(mockExposureTabs)[0];
-    expect(wrapper.find('#tab-description').text()).toEqual(mockExposureTabs[`${defaultTab}`]['description'] + ' You are currently in the exposure workflow.');
+    expect(wrapper.find('#table-description').text()).toEqual(mockExposureTabs[`${defaultTab}`]['description'] + ' You are currently in the exposure workflow.');
   });
 
   it('Properly renders all main components for the isolation workflow', () => {
     const wrapper = getIsolationWrapper();
     expect(wrapper.find('#search').exists()).toBe(true);
-    expect(wrapper.find('#tab-description').exists()).toBe(true);
+    expect(wrapper.find('#table-description').exists()).toBe(true);
     expect(wrapper.find('#clear-all-filters').exists()).toBe(true);
     expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBe(true);
     expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBe(true);
@@ -66,13 +66,13 @@ describe('PatientsTable', () => {
     expect(wrapper.find(Dropdown.Item).length).toEqual(4);
 
     const defaultTab = Object.keys(mockIsolationTabs)[0];
-    expect(wrapper.find('#tab-description').text()).toEqual(mockIsolationTabs[`${defaultTab}`]['description'] + ' You are currently in the isolation workflow.');
+    expect(wrapper.find('#table-description').text()).toEqual(mockIsolationTabs[`${defaultTab}`]['description'] + ' You are currently in the isolation workflow.');
   });
 
   it('Properly renders all main components for the global workflow', () => {
     const wrapper = getGlobalWrapper();
     expect(wrapper.find('#search').exists()).toBe(true);
-    expect(wrapper.find('#tab-description').exists()).toBe(true);
+    expect(wrapper.find('#table-description').exists()).toBe(true);
     expect(wrapper.find('#clear-all-filters').exists()).toBe(true);
     expect(wrapper.containsMatchingElement(JurisdictionFilter)).toBe(true);
     expect(wrapper.containsMatchingElement(AssignedUserFilter)).toBe(true);
@@ -82,7 +82,7 @@ describe('PatientsTable', () => {
     expect(wrapper.find(Dropdown.Item).length).toEqual(3);
 
     const defaultTab = Object.keys(mockIsolationTabs)[0];
-    expect(wrapper.find('#tab-description').text()).toEqual(mockGlobalTabs[`${defaultTab}`]['description'] + ' You are currently in the global dashboard.');
+    expect(wrapper.find('#table-description').text()).toEqual(mockGlobalTabs[`${defaultTab}`]['description'] + ' You are currently in the global dashboard.');
   });
 
   it('Sets intial state after mount correctly', () => {
