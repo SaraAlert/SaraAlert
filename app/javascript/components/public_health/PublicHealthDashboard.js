@@ -1,12 +1,10 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-
 import axios from 'axios';
-
 import PublicHealthHeader from './PublicHealthHeader';
 import PatientsTable from './PatientsTable';
 
-class Workflow extends React.Component {
+class PublicHealthDashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -54,7 +52,7 @@ class Workflow extends React.Component {
   }
 }
 
-Workflow.propTypes = {
+PublicHealthDashboard.propTypes = {
   authenticity_token: PropTypes.string,
   abilities: PropTypes.object,
   jurisdiction: PropTypes.object,
@@ -67,4 +65,4 @@ Workflow.propTypes = {
   monitoring_reasons: PropTypes.array,
 };
 
-export default Workflow;
+export default PublicHealthDashboard;
