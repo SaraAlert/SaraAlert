@@ -179,6 +179,7 @@ class PatientsFilters extends React.Component {
                 jurisdiction_id={this.props.jurisdiction.id}
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 all_assigned_users={this.props.all_assigned_users}
+                activeFilter={{ contents: this.props.query.filter }}
               />
             </InputGroup>
           </Col>
