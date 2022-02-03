@@ -456,8 +456,6 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
                    else
                      patients.where('last_assessment_reminder_sent < ?', 24.hours.ago).or(patients.where(last_assessment_reminder_sent: nil))
                    end
-      when 'seven-day-quarantine'
-        patients = advanced_filter_quarantine_option(patients, filter, :seven_day)
       when 'sms-blocked'
         # rubocop:disable Rails/PluckInWhere
         patients = if filter[:value]
@@ -481,8 +479,6 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
             patients = patients.where('patients.primary_telephone like ?', "%#{filter[:value].delete('^0-9')}%")
           end
         end
-      when 'ten-day-quarantine'
-        patients = advanced_filter_quarantine_option(patients, filter, :ten_day)
       when 'unenrolled-close-contact'
         patients = if filter[:value]
                      patients.where_assoc_exists(:close_contacts, enrolled_id: nil)
@@ -496,20 +492,6 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     patients
   end
   # rubocop:enable Metrics/MethodLength
-
-  # Handles a given quarantine option from the advanced filter.
-  def advanced_filter_quarantine_option(patients, filter, option_type)
-    # Get all patients who meet this criteria based on the option type
-    case option_type
-    when :ten_day
-      query = patients.ten_day_quarantine_candidates
-    when :seven_day
-      query = patients.seven_day_quarantine_candidates
-    end
-
-    # Based on if the user selected true/false, return appropriate patients
-    filter[:value].present? ? query : patients.where.not(id: query.pluck(:id))
-  end
 
   def advanced_filter_preferred_contact_time(patients, filter)
     value = %w[0 1 2 3 4 5 6 7] if filter[:value] == 'Early Morning'
