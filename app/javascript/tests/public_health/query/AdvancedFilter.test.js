@@ -558,10 +558,10 @@ describe('AdvancedFilter', () => {
   it('Properly renders tooltip when defined with advanced filter option', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterPreferredContactTime.filterOption.name });
-    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterPreferredContactTime.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterContactType.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterContactType.filterOption.name);
     expect(wrapper.find(ReactTooltip).exists()).toBe(true);
-    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterPreferredContactTime.filterOption.tooltip);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(mockFilterContactType.filterOption.tooltip);
   });
 
   it('Properly renders main components of advanced filter combination type statement', () => {
