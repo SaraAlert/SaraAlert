@@ -47,7 +47,7 @@ class FirstPositiveLaboratory extends React.Component {
               </span>
               {this.props.disableDelete && (
                 <ReactTooltip id="delete-first_positive_lab_tooltip" multiline={true} place="left" type="dark" effect="solid" className="tooltip-container">
-                  Existing lab results must be deleted from the Lab Results table in the monitoree&apos;s record
+                  <span>Existing lab results must be deleted from the Lab Results table in the monitoree&apos;s record</span>
                 </ReactTooltip>
               )}
               <div className="edit-link">
