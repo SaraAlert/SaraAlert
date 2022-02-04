@@ -491,8 +491,8 @@ class PatientsTable extends React.Component {
 
   formatEndOfMonitoring = data => {
     const endOfMonitoring = data.value;
-    if (endOfMonitoring === 'Continuous Exposure') {
-      return 'Continuous Exposure';
+    if (endOfMonitoring === 'Continuous Exposure' || endOfMonitoring === '') {
+      return endOfMonitoring;
     }
     return moment(endOfMonitoring, 'YYYY-MM-DD').format('MM/DD/YYYY');
   };
