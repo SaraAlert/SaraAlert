@@ -239,7 +239,13 @@ class CaseInformation extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md={12} xs={24} controlId="first_positive_lab" className="mb-2">
-            <FirstPositiveLaboratory lab={this.state.current.first_positive_lab} onChange={this.handleLabChange} size="lg" displayedLabClass="mx-1 mb-2" />
+            <FirstPositiveLaboratory
+              lab={this.state.current.first_positive_lab}
+              preventDelete={this.props.first_positive_lab != null}
+              onChange={this.handleLabChange}
+              size="lg"
+              displayedLabClass="mx-1 mb-2"
+            />
           </Form.Group>
           <Form.Group as={Col} md={12} xs={24} controlId="case_status" className="mb-2">
             <Form.Label className="input-label">CASE STATUS{schema?.fields?.case_status?._exclusive?.required && ' *'}</Form.Label>
