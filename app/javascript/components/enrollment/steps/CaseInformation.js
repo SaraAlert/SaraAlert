@@ -241,7 +241,7 @@ class CaseInformation extends React.Component {
           <Form.Group as={Col} md={12} xs={24} controlId="first_positive_lab" className="mb-2">
             <FirstPositiveLaboratory
               lab={this.state.current.first_positive_lab}
-              disableDelete={this.props.first_positive_lab != null}
+              preventDelete={this.props.first_positive_lab != null}
               onChange={this.handleLabChange}
               size="lg"
               displayedLabClass="mx-1 mb-2"
