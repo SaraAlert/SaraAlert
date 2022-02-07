@@ -158,8 +158,13 @@ class AdvancedFilter extends React.Component {
           }
           // Apply filter from user export preset if present
         } else if (this.props.activeFilter?.contents) {
+          const comparedAttributes = ['filterOption.name', 'value', 'additiionalFilterOption', 'dateOption', 'numberOption', 'relativeOption'];
+          const activeFilter = this.props.activeFilter.contents.map(c => _.pick(c, comparedAttributes));
           const savedFilter = this.state.savedFilters.find(filter => {
-            return _.isEqual(filter.contents, this.props.activeFilter.contents);
+            return _.isEqual(
+              filter.contents.map(c => _.pick(c, comparedAttributes)),
+              activeFilter
+            );
           });
           this.setFilter(savedFilter?.name ? { ...this.props.activeFilter, name: savedFilter.name } : this.props.activeFilter, true);
         }
