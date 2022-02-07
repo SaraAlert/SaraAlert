@@ -17,7 +17,7 @@ class RemoveShortenedQuarantineFilters < ActiveRecord::Migration[6.1]
         config = JSON.parse(uep[:config])
         contents = config.dig('data', 'patients', 'query', 'filter')
         contents = migrate_advanced_filter_contents(contents)
-        config['data']['patients']['query']['filter'] = contents.empty? ? nil : contents
+        config['data']['patients']['query']['filter'] = contents
         uep.update!(config: config.to_json)
       end
     end
