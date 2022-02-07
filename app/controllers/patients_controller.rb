@@ -16,17 +16,6 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_create_patient?
   end
 
-  # Endpoint for patients in the enroller table
-  def enrolled_patients
-    begin
-      patients = enroller_table_data(params, current_user)
-    rescue InvalidQueryError => e
-      return render json: e, status: :bad_request
-    end
-
-    render json: patients
-  end
-
   # View if monitoree cannot be viewed by the current user
   def monitoree_unavailable
     @title = 'Monitoree Unavailable'
@@ -867,6 +856,17 @@ class PatientsController < ApplicationController
   def head_of_household_options
     begin
       patients = patients_table_data(params, current_user)
+    rescue InvalidQueryError => e
+      return render json: e, status: :bad_request
+    end
+
+    render json: patients
+  end
+
+  # Fetches table data for enrollers
+  def enrolled_patients
+    begin
+      patients = enroller_table_data(params, current_user)
     rescue InvalidQueryError => e
       return render json: e, status: :bad_request
     end
