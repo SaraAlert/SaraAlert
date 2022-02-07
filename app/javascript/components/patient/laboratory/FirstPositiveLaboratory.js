@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button } from 'react-bootstrap';
+import ReactTooltip from 'react-tooltip';
 import moment from 'moment';
 
 import confirmDialog from '../../util/ConfirmDialog';
@@ -33,20 +34,26 @@ class FirstPositiveLaboratory extends React.Component {
           <div className={this.props.displayedLabClass || 'my-2'}>
             <div className="first-positive-lab-result-header pb-1">
               <span className="input-label">FIRST POSITIVE LAB RESULT</span>
-              <div className="edit-link">
+              <span data-for="delete-first-positive-lab-tooltip" data-tip="" className="edit-link">
                 <Button
                   variant="link"
-                  id="delete-first_positive_lab"
+                  id="delete-first-positive-lab"
                   className="py-0 px-1 icon-btn-dark"
                   onClick={this.handleDelete}
+                  disabled={this.props.preventDelete}
                   aria-label="Delete Positive Lab Result">
-                  <i className="fas fa-times fa-fw"></i>
+                  <i className="fas fa-trash"></i>
                 </Button>
-              </div>
+              </span>
+              {this.props.preventDelete && (
+                <ReactTooltip id="delete-first-positive-lab-tooltip" multiline={true} place="left" type="dark" effect="solid" className="tooltip-container">
+                  <span>Existing lab results must be deleted from the Lab Results table in the monitoree&apos;s record</span>
+                </ReactTooltip>
+              )}
               <div className="edit-link">
                 <Button
                   variant="link"
-                  id="edit-first_positive_lab"
+                  id="edit-first-positive-lab"
                   className="py-0 px-1 icon-btn-dark"
                   onClick={() => this.setState({ showModal: true })}
                   aria-label="Edit Positive Lab Result">
@@ -105,6 +112,7 @@ class FirstPositiveLaboratory extends React.Component {
 
 FirstPositiveLaboratory.propTypes = {
   lab: PropTypes.object,
+  preventDelete: PropTypes.bool,
   onChange: PropTypes.func,
   size: PropTypes.oneOf(['sm', 'md', 'lg']),
   displayedLabClass: PropTypes.string,
