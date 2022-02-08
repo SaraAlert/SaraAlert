@@ -126,7 +126,7 @@ class UpdateCombinedAdvancedFilters < ActiveRecord::Migration[6.1]
   end
 
   def migrate_advanced_filter_contents(contents)
-    contents.each do |content|
+    contents&.each do |content|
       filter_name = content['filterOption']['name'].to_sym
       if %i[address-foreign address-usa first-name last-name middle-name].include?(filter_name)
         content['filterOption'] = NEW_FILTER_OPTIONS[FILTER_MAPPINGS[filter_name].to_sym]
@@ -139,7 +139,7 @@ class UpdateCombinedAdvancedFilters < ActiveRecord::Migration[6.1]
   end
 
   def rollback_advanced_filter_contents(contents)
-    contents.each do |content|
+    contents&.each do |content|
       filter_name = content['filterOption']['name'].to_sym
       next if content['value'].empty?
 
