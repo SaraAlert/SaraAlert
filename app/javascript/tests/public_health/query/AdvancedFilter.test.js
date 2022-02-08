@@ -28,8 +28,8 @@ import {
   mockFilterLatestReportRelativeCustomPast,
   mockFilterSymptomOnsetRelativeCustomPast,
   mockFilterLatestReportRelativeCustomFuture,
-  mockFilterAddressForeignEmpty,
-  mockFilterAddressForeign,
+  mockFilterEmail,
+  mockFilterEmailEmpty,
   mockFilterLabResults,
   mockFilterAssignedUser,
   mockFilterContactType,
@@ -285,12 +285,12 @@ describe('AdvancedFilter', () => {
     wrapper.find('.advanced-filter-options-dropdown').at(0).simulate('change', { value: mockFilterMonitoringStatusTrue.filterOption.name });
     wrapper.find('.advanced-filter-options-dropdown').at(1).simulate('change', { value: mockFilterPreferredContactTime.filterOption.name });
     wrapper.find('.advanced-filter-options-dropdown').at(2).simulate('change', { value: mockFilterAgeEqual.filterOption.name });
-    wrapper.find('.advanced-filter-options-dropdown').at(3).simulate('change', { value: mockFilterAddressForeignEmpty.filterOption.name });
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterMonitoringStatusTrue, mockFilterPreferredContactTime, mockFilterAgeEqual, mockFilterAddressForeignEmpty, { filterOption: null }]);
+    wrapper.find('.advanced-filter-options-dropdown').at(3).simulate('change', { value: mockFilterEmailEmpty.filterOption.name });
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterMonitoringStatusTrue, mockFilterPreferredContactTime, mockFilterAgeEqual, mockFilterEmailEmpty, { filterOption: null }]);
     expect(wrapper.find('.advanced-filter-options-dropdown').at(0).prop('value').value).toEqual(mockFilterMonitoringStatusTrue.filterOption.name);
     expect(wrapper.find('.advanced-filter-options-dropdown').at(1).prop('value').value).toEqual(mockFilterPreferredContactTime.filterOption.name);
     expect(wrapper.find('.advanced-filter-options-dropdown').at(2).prop('value').value).toEqual(mockFilterAgeEqual.filterOption.name);
-    expect(wrapper.find('.advanced-filter-options-dropdown').at(3).prop('value').value).toEqual(mockFilterAddressForeignEmpty.filterOption.name);
+    expect(wrapper.find('.advanced-filter-options-dropdown').at(3).prop('value').value).toEqual(mockFilterEmailEmpty.filterOption.name);
     expect(wrapper.find('.advanced-filter-options-dropdown').at(4).prop('value')).toBeNull();
     wrapper.find('.remove-filter-row').at(3).simulate('click');
     expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterMonitoringStatusTrue, mockFilterPreferredContactTime, mockFilterAgeEqual, { filterOption: null }]);
@@ -532,8 +532,8 @@ describe('AdvancedFilter', () => {
   it('Properly renders advanced filter search type statement', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAddressForeign.filterOption.name });
-    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterAddressForeign.filterOption.name);
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterEmail.filterOption.name });
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterEmail.filterOption.name);
     expect(wrapper.find(Form.Control).length).toEqual(1);
     expect(wrapper.find(Form.Control).hasClass('advanced-filter-search-input')).toBe(true);
     expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual('');
@@ -1067,17 +1067,17 @@ describe('AdvancedFilter', () => {
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('activeFilter')).toBeNull();
     expect(wrapper.state('activeFilterOptions')).toEqual([{ filterOption: null }]);
-    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAddressForeign.filterOption.name });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterEmail.filterOption.name });
     expect(wrapper.state('activeFilter')).toBeNull();
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterAddressForeignEmpty]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterEmailEmpty]);
     expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual('');
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterAddressForeign.value } });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterEmail.value } });
     expect(wrapper.state('activeFilter')).toBeNull();
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterAddressForeign]);
-    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterAddressForeign.value);
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterEmail]);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterEmail.value);
     wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: '' } });
     expect(wrapper.state('activeFilter')).toBeNull();
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterAddressForeignEmpty]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterEmailEmpty]);
     expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual('');
   });
 
@@ -1295,25 +1295,25 @@ describe('AdvancedFilter', () => {
   it('Opening Filter Name modal and clicking "Cancel" button maintains advanced filter modal state', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAddressForeign.filterOption.name });
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterAddressForeign.value } });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterEmail.filterOption.name });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterEmail.value } });
     expect(wrapper.state('activeFilter')).toBeNull();
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterAddressForeign]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterEmail]);
     expect(wrapper.state('showAdvancedFilterModal')).toBe(true);
-    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterAddressForeign.filterOption.name);
-    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterAddressForeign.value);
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterEmail.filterOption.name);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterEmail.value);
     wrapper.find('#advanced-filter-save').simulate('click');
     expect(wrapper.state('showAdvancedFilterModal')).toBe(false);
     expect(wrapper.state('activeFilter')).toBeNull();
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterAddressForeign]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterEmail]);
     expect(wrapper.find('.advanced-filter-options-dropdown').exists()).toBe(false);
     expect(wrapper.find('.advanced-filter-search-input').exists()).toBe(false);
     wrapper.find('#filter-name-cancel').simulate('click');
     expect(wrapper.state('showAdvancedFilterModal')).toBe(true);
     expect(wrapper.state('activeFilter')).toBeNull();
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterAddressForeign]);
-    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterAddressForeign.filterOption.name);
-    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterAddressForeign.value);
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterEmail]);
+    expect(wrapper.find('.advanced-filter-options-dropdown').prop('value').value).toEqual(mockFilterEmail.filterOption.name);
+    expect(wrapper.find('.advanced-filter-search-input').prop('value')).toEqual(mockFilterEmail.value);
   });
 
   it('Clicking Filter Name modal "Save" button calls save method', () => {
@@ -1458,14 +1458,14 @@ describe('AdvancedFilter', () => {
     expect(wrapper.state('activeFilter')).toBeNull();
     expect(wrapper.state('lastAppliedFilter')).toBeNull();
     expect(wrapper.find(Form.Control).exists()).toBe(false);
-    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAddressForeign.filterOption.name });
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterAddressForeign.value } });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterEmail.filterOption.name });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterEmail.value } });
     expect(wrapper.state('applied')).toBe(false);
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterAddressForeign]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterEmail]);
     expect(wrapper.state('activeFilter')).toBeNull();
     expect(wrapper.state('lastAppliedFilter')).toBeNull();
     expect(wrapper.find(Form.Control).exists()).toBe(true);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterAddressForeign.value);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEmail.value);
     wrapper.find('#advanced-filter-cancel').simulate('click');
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('applied')).toBe(false);
@@ -1511,36 +1511,36 @@ describe('AdvancedFilter', () => {
     expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([mockFilterMonitoringStatusTrue]);
     expect(wrapper.find(ToggleButton).at(0).prop('checked')).toBe(true);
     expect(wrapper.find(ToggleButton).at(1).prop('checked')).toBe(false);
-    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterAddressForeign.filterOption.name });
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterAddressForeign.value } });
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockFilterEmail.filterOption.name });
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: mockFilterEmail.value } });
     expect(wrapper.state('applied')).toBe(true);
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterAddressForeign]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterEmail]);
     expect(wrapper.state('activeFilter')).toBeNull();
     expect(wrapper.state('lastAppliedFilter').activeFilter).toBeNull();
     expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([mockFilterMonitoringStatusTrue]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterAddressForeign.value);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEmail.value);
     wrapper.find('#advanced-filter-apply').simulate('click');
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('applied')).toBe(true);
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterAddressForeign]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterEmail]);
     expect(wrapper.state('activeFilter')).toBeNull();
     expect(wrapper.state('lastAppliedFilter').activeFilter).toBeNull();
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([mockFilterAddressForeign]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterAddressForeign.value);
-    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: `${mockFilterAddressForeign.value}!!!` } });
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([mockFilterEmail]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEmail.value);
+    wrapper.find('.advanced-filter-search-input').simulate('change', { target: { value: `${mockFilterEmail.value}!!!` } });
     expect(wrapper.state('applied')).toBe(true);
-    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(`${mockFilterAddressForeign.value}!!!`);
+    expect(wrapper.state('activeFilterOptions')[0].value).toEqual(`${mockFilterEmail.value}!!!`);
     expect(wrapper.state('activeFilter')).toBeNull();
     expect(wrapper.state('lastAppliedFilter').activeFilter).toBeNull();
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([mockFilterAddressForeign]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(`${mockFilterAddressForeign.value}!!!`);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([mockFilterEmail]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(`${mockFilterEmail.value}!!!`);
     wrapper.find('#advanced-filter-cancel').simulate('click');
     wrapper.find(Button).simulate('click');
     expect(wrapper.state('applied')).toBe(true);
-    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterAddressForeign]);
+    expect(wrapper.state('activeFilterOptions')).toEqual([mockFilterEmail]);
     expect(wrapper.state('activeFilter')).toBeNull();
     expect(wrapper.state('lastAppliedFilter').activeFilter).toBeNull();
-    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([mockFilterAddressForeign]);
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterAddressForeign.value);
+    expect(wrapper.state('lastAppliedFilter').activeFilterOptions).toEqual([mockFilterEmail]);
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockFilterEmail.value);
   });
 });

@@ -206,22 +206,22 @@ const mockFilterSymptomOnsetRelativeCustomPast = {
 };
 
 /* SEARCH TYPE MOCK FILTERS */
-const mockFilterAddressForeignEmpty = {
+const mockFilterEmail = {
   additionalFilterOption: null,
   dateOption: null,
-  filterOption: advancedFilterOptions.find(filter => filter.name === 'address-foreign'),
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'email'),
+  numberOption: null,
+  relativeOption: null,
+  value: 'email123@example.com',
+};
+
+const mockFilterEmailEmpty = {
+  additionalFilterOption: null,
+  dateOption: null,
+  filterOption: advancedFilterOptions.find(filter => filter.name === 'email'),
   numberOption: null,
   relativeOption: null,
   value: '',
-};
-
-const mockFilterAddressForeign = {
-  additionalFilterOption: null,
-  dateOption: null,
-  filterOption: advancedFilterOptions.find(filter => filter.name === 'address-foreign'),
-  numberOption: null,
-  relativeOption: null,
-  value: '42 Wallaby Way',
 };
 
 /* COMBINATION TYPE MOCK FILTERS */
@@ -236,7 +236,7 @@ const mockFilterLabResults = {
 
 /* MOCK SAVED FILTERS */
 const mockFilter1 = {
-  contents: [mockFilterAddressForeign],
+  contents: [mockFilterEmail],
   created_at: '2021-01-11T14:04:32.994Z',
   id: 2,
   name: 'my new filter',
@@ -273,8 +273,8 @@ export {
   mockFilterLatestReportRelativeCustomPast,
   mockFilterSymptomOnsetRelativeCustomPast,
   mockFilterLatestReportRelativeCustomFuture,
-  mockFilterAddressForeignEmpty,
-  mockFilterAddressForeign,
+  mockFilterEmail,
+  mockFilterEmailEmpty,
   mockFilterLabResults,
   mockFilterAssignedUser,
   mockFilterContactType,
