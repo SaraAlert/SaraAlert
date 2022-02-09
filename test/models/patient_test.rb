@@ -3375,17 +3375,17 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'has_not_reported_recently scope' do
-    # Example: 1 day reporting period => was patient last assessment before midnight today?
-    # Example: 2 day reporting period => was patient last assessment before midnight yesterday?
-    # Example: 7 day reporting period => was patient last assessment before midnight 6 days ago?
-    original_reporting_period = ADMIN_OPTIONS['reporting_period_minutes']
+    # Example: 1 day non_reporting_period => was patient last assessment before midnight today?
+    # Example: 2 day non_reporting_period => was patient last assessment before midnight yesterday?
+    # Example: 7 day non_reporting_period => was patient last assessment before midnight 6 days ago?
+    original_non_reporting_period = ADMIN_OPTIONS['non_reporting_period_minutes']
     [
       1440,
       1440 * 2,
       1440 * 7,
       1440 * 21
-    ].each do |reporting_period|
-      ADMIN_OPTIONS['reporting_period_minutes'] = reporting_period
+    ].each do |non_reporting_period|
+      ADMIN_OPTIONS['non_reporting_period_minutes'] = non_reporting_period
       state_params_array = [
         { monitored_address_state: nil, address_state: nil },
         { monitored_address_state: 'california', address_state: nil },
@@ -3409,7 +3409,7 @@ class PatientTest < ActiveSupport::TestCase
           patient: patient,
           created_at: correct_dst_edge(
             patient,
-            Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes
+            Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['non_reporting_period_minutes'].minutes
           )
         )
         patient.reload
@@ -3419,7 +3419,7 @@ class PatientTest < ActiveSupport::TestCase
         assessment_2.update(
           created_at: correct_dst_edge(
             patient,
-            Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['reporting_period_minutes'].minutes + 1.second
+            Time.now.getlocal(patient.address_timezone_offset).end_of_day - ADMIN_OPTIONS['non_reporting_period_minutes'].minutes + 1.second
           )
         )
         assessment_2.reload
@@ -3433,7 +3433,7 @@ class PatientTest < ActiveSupport::TestCase
         assert_nil Patient.has_not_reported_recently.find_by(id: patient.id)
       end
     end
-    ADMIN_OPTIONS['reporting_period_minutes'] = original_reporting_period
+    ADMIN_OPTIONS['non_reporting_period_minutes'] = original_non_reporting_period
   end
 
   test 'is_being_monitored scope' do
