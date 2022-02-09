@@ -8,11 +8,11 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     # and if it will be non-nil, then the specific test can change the Timecop time.
     # Default timezone is Eastern Time.
     Timecop.freeze(Time.now.in_time_zone('Eastern Time (US & Canada)').noon.utc)
-    @original_reporting_period = ADMIN_OPTIONS['reporting_period_minutes']
+    @original_non_reporting_period = ADMIN_OPTIONS['non_reporting_period_minutes']
   end
 
   def teardown
-    ADMIN_OPTIONS['reporting_period_minutes'] = @original_reporting_period
+    ADMIN_OPTIONS['non_reporting_period_minutes'] = @original_non_reporting_period
     Timecop.return
   end
 
@@ -493,7 +493,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       continuous_exposure: true
     )
     assert_eligible(patient)
-    ADMIN_OPTIONS['reporting_period_minutes'] = 1440 * 7 # 1 week
+    ADMIN_OPTIONS['non_reporting_period_minutes'] = 1440 * 7 # 1 week
 
     create(
       :assessment,
