@@ -144,6 +144,7 @@ class AdvancedFilter extends React.Component {
         // Apply filter if it exists in local storage
         let sessionFilter = this.getLocalStorage(`SaraFilter`);
         if (this.props.updateStickySettings) {
+          // Apply saved filter from localStorage if present
           if (parseInt(sessionFilter)) {
             this.setFilter(
               this.state.savedFilters.find(filter => {
@@ -151,9 +152,21 @@ class AdvancedFilter extends React.Component {
               }),
               true
             );
+            // Apply unsaved filter from localStorage if present
           } else if (JSON.parse(sessionFilter)) {
             this.setState({ activeFilterOptions: JSON.parse(sessionFilter) }, this.apply);
           }
+          // Apply filter from user export preset if present
+        } else if (this.props.activeFilter?.contents) {
+          const comparedAttributes = ['filterOption.name', 'value', 'additiionalFilterOption', 'dateOption', 'numberOption', 'relativeOption'];
+          const activeFilter = this.props.activeFilter.contents.map(c => _.pick(c, comparedAttributes));
+          const savedFilter = this.state.savedFilters.find(filter => {
+            return _.isEqual(
+              filter.contents.map(c => _.pick(c, comparedAttributes)),
+              activeFilter
+            );
+          });
+          this.setFilter(savedFilter?.name ? { ...this.props.activeFilter, name: savedFilter.name } : this.props.activeFilter, true);
         }
       });
     });
@@ -1633,6 +1646,7 @@ AdvancedFilter.propTypes = {
   jurisdiction_id: PropTypes.number,
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
+  activeFilter: PropTypes.object,
 };
 
 export default AdvancedFilter;
