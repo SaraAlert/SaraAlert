@@ -4,6 +4,8 @@
 class ApplicationController < ActionController::Base
   before_action :user_must_change_password
   before_action :ensure_authy_enabled
+  before_action :set_last_activity_at, if:
+    proc { user_signed_in? && (current_user.last_activity_at.nil? || current_user.last_activity_at < 15.minutes.ago) }
   protect_from_forgery prepend: true
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
@@ -33,5 +35,11 @@ class ApplicationController < ActionController::Base
 
   def record_not_found
     redirect_to '/errors#not_found'
+  end
+
+  # While the user is making requests, last_activity_at timestamp is updated every 15 minutes
+  # Use touch to skip model validations and reduce overhead
+  def set_last_activity_at
+    current_user.touch(:last_activity_at) # rubocop:disable Rails/SkipsModelValidations
   end
 end

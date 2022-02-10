@@ -391,6 +391,7 @@ manual_locked_user:
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
   current_sign_in_at: "<%= 50.days.ago %>"
+  last_activity_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
   api_enabled: false
@@ -408,6 +409,7 @@ auto_locked_user:
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
   current_sign_in_at: "<%= 2.days.ago %>"
+  last_activity_at: "<%= 2.days.ago %>"
   authy_enabled: false
   authy_enforced: false
   api_enabled: false
