@@ -19,7 +19,7 @@ module EnrollerQueryHelper
     patients = patients.paginate(per_page: entries, page: page + 1)
 
     # Extract only relevant fields to be displayed in the enroller table
-   	enroller_linelist(patients)
+    enroller_linelist(patients)
   end
 
   def validate_enroller_query(unsanitized_query)

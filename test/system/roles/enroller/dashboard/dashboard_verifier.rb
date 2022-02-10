@@ -15,32 +15,32 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
 
     Patient.where(creator_id: creator_id).each do |patient|
       # view patient without any filters
-      fill_in 'Search', with: "#{patient.last_name}"
+      fill_in 'Search', with: patient.last_name.to_s
       verify_patient_info_in_enroller_table(patient, is_epi)
 
-    Jurisdiction.find(jurisdiction.subtree_ids).each do |jur|
-      fill_in 'jurisdiction_path', with: jur[:path]
-      verify_patient_info_in_enroller_table(patient, is_epi) if patient.jurisdiction[:path].include?(jur[:name])
+      Jurisdiction.find(jurisdiction.subtree_ids).each do |jur|
+        fill_in 'jurisdiction_path', with: jur[:path]
+        verify_patient_info_in_enroller_table(patient, is_epi) if patient.jurisdiction[:path].include?(jur[:name])
 
-      find_by_id('exactJurisdiction').click
-      sleep(1.5) # wait for data to load
-      page.all('tbody tr').each do |row|
-        assigned_jurisdiction_cell = row.all('td')[is_epi ? 2 : 1]
-        assert_equal(jur[:name], assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
+        find_by_id('exactJurisdiction').click
+        sleep(1.5) # wait for data to load
+        page.all('tbody tr').each do |row|
+          assigned_jurisdiction_cell = row.all('td')[is_epi ? 2 : 1]
+          assert_equal(jur[:name], assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
+        end
+        verify_patient_info_in_enroller_table(patient, is_epi) if patient.jurisdiction[:path] == jur[:path]
+        find_by_id('allJurisdictions').click
       end
-      verify_patient_info_in_enroller_table(patient, is_epi) if patient.jurisdiction[:path] == jur[:path]
-      find_by_id('allJurisdictions').click
-    end
-    fill_in 'jurisdiction_path', with: jurisdiction[:path]
+      fill_in 'jurisdiction_path', with: jurisdiction[:path]
 
-    # view patient with assigned user filter
-    if patient[:assigned_user].nil?
-      find_by_id('noAssignedUser').click
-    else
-      fill_in 'assigned_user', with: patient[:assigned_user]
-    end
-    verify_patient_info_in_enroller_table(patient, is_epi)
-    find_by_id('allAssignedUsers').click
+      # view patient with assigned user filter
+      if patient[:assigned_user].nil?
+        find_by_id('noAssignedUser').click
+      else
+        fill_in 'assigned_user', with: patient[:assigned_user]
+      end
+      verify_patient_info_in_enroller_table(patient, is_epi)
+      find_by_id('allAssignedUsers').click
     end
   end
 
