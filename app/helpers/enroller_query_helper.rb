@@ -3,7 +3,7 @@
 # Helper methods for filtering through patients in the enroller table
 module EnrollerQueryHelper
   def enroller_table_data(params, current_user)
-    query = validate_patients_query(params.require(:query))
+    query = validate_enroller_query(params.require(:query))
 
     # Validate pagination params
     entries = params.require(:query)[:entries]&.to_i || 25
@@ -18,11 +18,11 @@ module EnrollerQueryHelper
     # Paginate
     patients = patients.paginate(per_page: entries, page: page + 1)
 
-    # Extract only relevant fields to be displayed by workflow and tab
-    linelist(patients)
+    # Extract only relevant fields to be displayed in the enroller table
+   	enroller_linelist(patients)
   end
 
-  def validate_patients_query(unsanitized_query)
+  def validate_enroller_query(unsanitized_query)
     # Only allow permitted params
     query = unsanitized_query.permit(:jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :tz_offset)
 
@@ -59,7 +59,7 @@ module EnrollerQueryHelper
     jurisdiction = current_user.jurisdiction if jurisdiction.nil?
 
     # Get enrolled patients by current user
-    patients = current_user.enrolled_patients.eager_load(:jurisdiction)
+    patients = current_user.enrolled_patients
 
     # Filter by assigned jurisdiction
     patients = patients.where(jurisdiction_id: jurisdiction.subtree_ids)
@@ -124,14 +124,14 @@ module EnrollerQueryHelper
     patients
   end
 
-  def linelist(patients)
-    # get a list of fields relevant only to this linelist
+  def enroller_linelist(patients)
+    # get a list of fields relevant only to enroller table
     fields = %i[name jurisdiction assigned_user state_local_id sex dob enrollment_date]
 
     # retrieve proper jurisdiction
     patients = patients.joins(:jurisdiction)
 
-    # only select patient fields necessary to generate linelists
+    # only select patient fields necessary for enroller table
     patients = patients.select('patients.id, patients.first_name, patients.last_name, patients.user_defined_id_statelocal, patients.sex, '\
                                'patients.date_of_birth, patients.assigned_user, patients.created_at, jurisdictions.name AS jurisdiction_name, '\
                                'jurisdictions.path AS jurisdiction_path, jurisdictions.id AS jurisdiction_id')
@@ -141,7 +141,6 @@ module EnrollerQueryHelper
 
     linelist = []
     patients.each do |patient|
-      # populate fields common to all linelists
       linelist << {
         id: patient[:id],
         name: patient.displayed_name,

@@ -62,7 +62,7 @@ patient_2:
   updated_at: <%= 45.days.ago %>
   responder_id: 2
   creator_id: 4
-  jurisdiction_id: 2
+  jurisdiction_id: 3
   assigned_user: 7493
   submission_token: 'WhEykbMrna'
   monitoring: true
@@ -113,7 +113,7 @@ patient_3:
   updated_at: <%= 45.days.ago %>
   responder_id: 3
   creator_id: 2
-  jurisdiction_id: 2
+  jurisdiction_id: 4
   submission_token: 'gHCt6YMaYb'
   monitoring: true
   first_name: 'Brianne43'
@@ -132,7 +132,7 @@ patient_3:
   symptom_onset: <%= 23.days.ago %>
   latest_assessment_at: <%= 23.days.ago %>
   latest_transfer_at: <%= 4.hours.ago %>
-  latest_transfer_from: 4
+  latest_transfer_from: 2
 patient_4:
   id: 4
   created_at: <%= 45.days.ago %>
@@ -165,7 +165,7 @@ patient_5:
   updated_at: <%= 45.days.ago %>
   responder_id: 5
   creator_id: 2
-  jurisdiction_id: 2
+  jurisdiction_id: 4
   submission_token: 'KG11InyAp6'
   monitoring: false
   closed_at: <%= 1.hour.ago %>
@@ -193,7 +193,7 @@ patient_6:
   updated_at: <%= 45.days.ago %>
   responder_id: 6
   creator_id: 2
-  jurisdiction_id: 5
+  jurisdiction_id: 4
   submission_token: '1vWvwwz7Jv'
   monitoring: true
   first_name: 'Kendall65'
@@ -355,7 +355,8 @@ patient_12:
   created_at: <%= 6.days.ago %>
   updated_at: <%= 6.days.ago %>
   responder_id: 12
-  jurisdiction_id: 1
+  creator_id: 13
+  jurisdiction_id: 2
   monitoring: true
   first_name: 'David'
   last_name: 'Smith'
@@ -379,7 +380,8 @@ patient_13:
   created_at: <%= 4.days.ago %>
   updated_at: <%= 4.days.ago %>
   responder_id: 13
-  jurisdiction_id: 1
+  creator_id: 13
+  jurisdiction_id: 2
   monitoring: true
   first_name: 'Stephen'
   last_name: 'Yoo'
@@ -403,7 +405,8 @@ patient_14:
   created_at: <%= 4.days.ago %>
   updated_at: <%= 4.days.ago %>
   responder_id: 14
-  jurisdiction_id: 1
+  creator_id: 13
+  jurisdiction_id: 2
   monitoring: false
   closed_at: <%= 5.hours.ago %>
   first_name: 'Sarah'
@@ -843,7 +846,7 @@ patient_44:
   creator_id: 1
   jurisdiction_id: 5
   monitoring: true
-  isolation: true
+  isolation: false
   first_name: 'Edward54'
   last_name: 'Kilback94'
   sex: 'Female'
@@ -855,6 +858,7 @@ patient_44:
   primary_telephone: '+15555550177'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
+  public_health_action: 'Recommended medical evaluation of symptoms'
   source_of_report: 'CDC'
   last_date_of_exposure: <%= 9.days.ago %>
   latest_transfer_at: <%= 22.hours.ago %>
