@@ -1014,12 +1014,12 @@ class PatientTest < ActiveSupport::TestCase
 
   test 'exposure non reporting' do
     patient = create(:patient, monitoring: true, purged: false, public_health_action: 'None',
-                     created_at: ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago - 1.minute)
+                               created_at: ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago - 1.minute)
     verify_patient_status(patient, :exposure_non_reporting)
 
     patient = create(:patient, monitoring: true, purged: false, public_health_action: 'None', created_at: 25.hours.ago)
     create(:assessment, patient: patient, symptomatic: false,
-           created_at: ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago - 1.minute)
+                        created_at: ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago - 1.minute)
     verify_patient_status(patient, :exposure_non_reporting)
   end
 
@@ -1221,19 +1221,19 @@ class PatientTest < ActiveSupport::TestCase
     # patient was created more than non_reporting_period_minutes ago with no assessments
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: true,
-                     created_at: ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago - 1.minute)
+                               created_at: ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago - 1.minute)
     verify_patient_status(patient, :isolation_non_reporting)
 
     # patient has asymptomatic assessment more than non_reporting_period_minutes ago
     assessment = create(:assessment, patient: patient, symptomatic: false,
-                        created_at: ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago - 1.minute)
+                                     created_at: ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago - 1.minute)
 
     verify_patient_status(patient, :isolation_non_reporting)
     assessment.destroy
 
     # patient has symptomatic assessment more than non_reporting_period_minutes ago
     assessment = create(:assessment, patient: patient, symptomatic: true,
-                        created_at: ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago - 1.minute)
+                                     created_at: ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago - 1.minute)
     verify_patient_status(patient, :isolation_non_reporting)
     assessment.destroy
   end
