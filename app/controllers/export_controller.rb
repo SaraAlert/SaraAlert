@@ -272,7 +272,7 @@ class ExportController < ApplicationController
     exp_recently = current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 15.minutes.ago).exists?
     if exp_recently
       render json: { message: 'You have already initiated an export of this type in the last 15 minutes. Please try again later.' }.to_json,
-             status: :unauthorized
+             status: :bad_request
     end
     exp_recently
   end
