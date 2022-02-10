@@ -45,7 +45,7 @@ class AdminController < ApplicationController
                 .joins(:jurisdiction)
                 .select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id,
                         users.failed_attempts, users.role, users.notes, jurisdictions.path, users.manual_lock_reason,
-                        users.current_sign_in_at, users.force_password_change')
+                        users.last_activity_at, users.force_password_change')
 
     # Filter by search text
     users = filter(users, search)
