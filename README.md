@@ -355,7 +355,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## License
 
-Copyright © 2020, 2021 The MITRE Corporation
+Copyright © 2020, 2021, 2022 The MITRE Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
