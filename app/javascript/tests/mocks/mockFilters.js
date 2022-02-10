@@ -20,15 +20,6 @@ const mockFilterMonitoringStatusFalse = {
   value: false,
 };
 
-const mockFilterSevenDayQuarantine = {
-  additionalFilterOption: null,
-  dateOption: null,
-  filterOption: advancedFilterOptions.find(filter => filter.name === 'seven-day-quarantine'),
-  numberOption: null,
-  relativeOption: null,
-  value: false,
-};
-
 /* SELECT TYPE MOCK FILTERS */
 const mockFilterPreferredContactTime = {
   additionalFilterOption: null,
@@ -258,7 +249,6 @@ const mockSavedFilters = [mockFilter1, mockFilter2];
 export {
   mockFilterMonitoringStatusTrue,
   mockFilterMonitoringStatusFalse,
-  mockFilterSevenDayQuarantine,
   mockFilterPreferredContactTime,
   mockFilterAgeEqual,
   mockFilterAgeBetween,

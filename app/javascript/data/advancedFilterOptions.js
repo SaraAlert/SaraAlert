@@ -68,22 +68,6 @@ export const advancedFilterOptions = [
       'This filter will return monitorees that have texted “STOP” in response to a Sara Alert text message and cannot receive messages through SMS Preferred Reporting Methods until they text "START".',
   },
   {
-    name: 'seven-day-quarantine',
-    title: 'Candidate to Reduce Quarantine after 7 Days (Boolean)',
-    description: 'All asymptomatic records that meet CDC criteria to end quarantine after Day 7 (based on last date of exposure and most recent lab result)',
-    type: 'boolean',
-    tooltip:
-      'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.',
-  },
-  {
-    name: 'ten-day-quarantine',
-    title: 'Candidate to Reduce Quarantine after 10 Days (Boolean)',
-    description: 'All asymptomatic records that meet CDC criteria to end quarantine after Day 10 (based on last date of exposure)',
-    type: 'boolean',
-    tooltip:
-      'This filter is based on "Options to Reduce Quarantine for Contacts of Persons with SARS-COV-2 Infection Using Symptom Monitoring and Diagnostic Testing" released by the CDC on December 2, 2020. For more specific information, see Appendix A in the User Guide.',
-  },
-  {
     name: 'unenrolled-close-contact',
     title: 'Unenrolled Close Contact (Boolean)',
     description: 'All records with at least one unenrolled Close Contact',
