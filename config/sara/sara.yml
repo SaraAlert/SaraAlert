@@ -16,6 +16,9 @@ isolation_non_reporting_max_days: <%= ENV["SARA_ALERT_ISOLATION_NON_REPORING_MAX
 # How many minutes in a reporting period (hint: 1440 mins for 24 hours)
 reporting_period_minutes: <%= ENV["SARA_ALERT_REPORTING_PERIOD_MINUTES"] || 1440 %>
 
+# The number of minutes since a monitoree's last symptom report to be considered non-reporting (hint: 1440 mins is 24 hours)
+non_reporting_period_minutes: <%= ENV["SARA_ALERT_NON_REPORTING_PERIOD_MINUTES"] || 1440 %>
+
 # How many minutes after a closed record last_update it can be purged
 purgeable_after: <%= ENV["SARA_ALERT_PURGEABLE_AFTER_MINUTES"] || 20160 %>
 
