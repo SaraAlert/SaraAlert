@@ -140,6 +140,7 @@ end
 group :test do
   gem 'capybara', '>= 2.15'
   gem 'fakeredis'
+  gem 'minitest', '~> 5.14.4'
   gem 'minitest-retry'
   gem 'mocha'
   gem 'rack-test'
