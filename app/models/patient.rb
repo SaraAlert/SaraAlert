@@ -333,10 +333,10 @@ class Patient < ApplicationRecord
     )
   }
 
-  # A patient has not reported within the reporting period if either:
+  # A patient has not reported recently if either:
   # - last assessment is null
   # - latest assessment date is before the beginning of the day in patient local
-  #   time for (time now - reporting_period_minutes).beginning of day
+  #   time for (time now - non_reporting_period_minutes).beginning of day
   scope :has_not_reported_recently, lambda {
     where(
       # Converting to a timezone, then casting to date effectively gives us
@@ -346,10 +346,10 @@ class Patient < ApplicationRecord
       '    DATE(CONVERT_TZ(patients.latest_assessment_at, "UTC", patients.time_zone)),'\
       '    INTERVAL ? DAY'\
       ') < CONVERT_TZ(?, "UTC", patients.time_zone)',
-      # Example: 1 day reporting period => was patient last assessment before midnight today?
-      # Example: 2 day reporting period => was patient last assessment before midnight yesterday?
-      # Example: 7 day reporting period => was patient last assessment before midnight 6 days ago?
-      (ADMIN_OPTIONS['reporting_period_minutes'] / 1440).to_i,
+      # Example: 1 day non_reporting period => was patient last assessment before midnight today?
+      # Example: 2 day non_reporting period => was patient last assessment before midnight yesterday?
+      # Example: 7 day non_reporting period => was patient last assessment before midnight 6 days ago?
+      (ADMIN_OPTIONS['non_reporting_period_minutes'] / 1440).to_i,
       Time.now.getlocal('-00:00')
     )
   }
@@ -447,13 +447,13 @@ class Patient < ApplicationRecord
       .where(purged: false)
       .where(public_health_action: 'None')
       .where(symptom_onset: nil)
-      .where('latest_assessment_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+      .where('latest_assessment_at >= ?', ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(public_health_action: 'None')
         .where(symptom_onset: nil)
-        .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+        .where('patients.created_at >= ?', ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago)
       )
   }
 
@@ -464,14 +464,14 @@ class Patient < ApplicationRecord
       .where(public_health_action: 'None')
       .where(symptom_onset: nil)
       .where(latest_assessment_at: nil)
-      .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+      .where('patients.created_at < ?', ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(public_health_action: 'None')
         .where(symptom_onset: nil)
-        .where('latest_assessment_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-        .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+        .where('latest_assessment_at < ?', ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago)
+        .where('patients.created_at < ?', ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago)
       )
   }
 
@@ -579,13 +579,13 @@ class Patient < ApplicationRecord
          .where(monitoring: true)
          .where(purged: false)
          .where(isolation: true)
-         .where('latest_assessment_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+         .where('latest_assessment_at >= ?', ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago)
          .or(
            where.not(id: Patient.unscoped.isolation_requiring_review)
            .where(monitoring: true)
            .where(purged: false)
            .where(isolation: true)
-           .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+           .where('patients.created_at >= ?', ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago)
          )
   }
 
@@ -596,14 +596,14 @@ class Patient < ApplicationRecord
          .where(purged: false)
          .where(isolation: true)
          .where(latest_assessment_at: nil)
-         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+         .where('patients.created_at < ?', ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago)
          .or(
            where.not(id: Patient.unscoped.isolation_requiring_review)
            .where(monitoring: true)
            .where(purged: false)
            .where(isolation: true)
-           .where('latest_assessment_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-           .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+           .where('latest_assessment_at < ?', ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago)
+           .where('patients.created_at < ?', ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago)
          )
   }
 
