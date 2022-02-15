@@ -12,6 +12,13 @@ class AssignedUserFilter extends React.Component {
     };
   }
 
+  // This update is necessary since sticky settings are loaded after this component is constructed
+  componentDidUpdate() {
+    if (this.state.assigned_user !== (this.props.assigned_user !== 'none' ? this.props.assigned_user : '')) {
+      this.setState({ assigned_user: this.props.assigned_user !== 'none' ? this.props.assigned_user : '' });
+    }
+  }
+
   handleAssignedUserChange = assigned_user => {
     if (!isNaN(assigned_user) && parseInt(assigned_user) > 0 && parseInt(assigned_user) <= 999999) {
       this.setState({ assigned_user }, () => {
@@ -43,7 +50,7 @@ class AssignedUserFilter extends React.Component {
           type="text"
           autoComplete="off"
           list="assigned_users"
-          value={this.state.assigned_user}
+          value={this.state.assigned_user || ''}
           onChange={event => this.handleAssignedUserChange(event?.target?.value)}
         />
         <datalist id="assigned_users">
