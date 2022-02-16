@@ -109,5 +109,14 @@ class PublicHealthPatientPageTest < ApplicationSystemTestCase
 
   test 'pause notifications' do
     @@public_health_test_helper.pause_notifications('state1_epi', 'patient_52', 'non_reporting')
+    @@public_health_test_helper.pause_notifications('state1_epi', 'patient_52', 'non_reporting')
+  end
+
+  test 'add comment' do
+    @@public_health_test_helper.add_comment('locals2c3_epi', 'patient_11', 'pui', 'comment')
+  end
+
+  test 'move to household' do
+    @@public_health_test_helper.pause_notifications('state1_epi', 'patient_52', 'non_reporting')
   end
 end

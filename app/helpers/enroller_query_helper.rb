@@ -134,7 +134,7 @@ module EnrollerQueryHelper
     # only select patient fields necessary for enroller table
     patients = patients.select('patients.id, patients.first_name, patients.last_name, patients.user_defined_id_statelocal, patients.sex, '\
                                'patients.date_of_birth, patients.assigned_user, patients.created_at, jurisdictions.name AS jurisdiction_name, '\
-                               'jurisdictions.path AS jurisdiction_path, jurisdictions.id AS jurisdiction_id')
+                               'jurisdictions.id AS jurisdiction_id')
 
     # execute query and get total count
     total = patients.total_entries
