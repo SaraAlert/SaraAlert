@@ -380,7 +380,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           #     [{"label": "USA", "value": "1"}, {"label": "USA, State 1", "value": "2"}],
           #   would map to
           #     Jurisdiction.where([1, 2])
-          filter_jurisdictions = Jurisdiction.where(id: filter[:value].map(&:values).map(&:second).map(&:to_i))
+          filter_jurisdictions = Jurisdiction.where(id: filter[:value].pluck(:value))
 
           # Get subset of jurisdictions
           subjurisdictions = filter_jurisdictions.map(&:subtree_ids).flatten.uniq
