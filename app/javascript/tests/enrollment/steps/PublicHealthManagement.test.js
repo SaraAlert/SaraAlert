@@ -60,16 +60,16 @@ describe('PublicHealthManagement', () => {
 
     expect(wrapper.find('#exposure_risk_assessment').exists()).toBe(true);
     expect(wrapper.find('#exposure_risk_assessment').prop('value')).toEqual('');
-    expect(wrapper.find('[htmlFor="exposure_risk_assessment"]').find(InfoTooltip).exists()).toBe(true);
-    expect(wrapper.find('[htmlFor="exposure_risk_assessment"]').find(InfoTooltip).prop('tooltipTextKey')).toEqual('exposureRiskAssessment');
+    expect(wrapper.find({ controlId: 'exposure_risk_assessment' }).find(InfoTooltip).exists()).toBe(true);
+    expect(wrapper.find({ controlId: 'exposure_risk_assessment' }).find(InfoTooltip).prop('tooltipTextKey')).toEqual('exposureRiskAssessment');
     exposureRiskAssessmentOptions.forEach((option, index) => {
       expect(wrapper.find('#exposure_risk_assessment').find('option').at(index).text()).toContain(option);
     });
 
     expect(wrapper.find('#monitoring_plan').exists()).toBe(true);
     expect(wrapper.find('#monitoring_plan').prop('value')).toEqual('');
-    expect(wrapper.find('[htmlFor="monitoring_plan"]').find(InfoTooltip).exists()).toBe(true);
-    expect(wrapper.find('[htmlFor="monitoring_plan"]').find(InfoTooltip).prop('tooltipTextKey')).toEqual('monitoringPlan');
+    expect(wrapper.find({ controlId: 'monitoring_plan' }).find(InfoTooltip).exists()).toBe(true);
+    expect(wrapper.find({ controlId: 'monitoring_plan' }).find(InfoTooltip).prop('tooltipTextKey')).toEqual('monitoringPlan');
     monitoringPlanOptions.forEach((option, index) => {
       expect(wrapper.find('#monitoring_plan').find('option').at(index).text()).toContain(option);
     });
