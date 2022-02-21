@@ -156,7 +156,10 @@ class PublicHealthManagement extends React.Component {
               )}
           </Form.Group>
           <Form.Group as={Col} md="8" controlId="exposure_risk_assessment" className="mb-2 pt-2">
-            <Form.Label className="input-label">RISK ASSESSMENT{this.props.schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="input-label">
+              RISK ASSESSMENT{this.props.schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
+              <InfoTooltip tooltipTextKey={'exposureRiskAssessment'} location="right"></InfoTooltip>
+            </Form.Label>
             <Form.Control
               isInvalid={this.props.errors['exposure_risk_assessment']}
               as="select"
@@ -175,7 +178,10 @@ class PublicHealthManagement extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md="16" controlId="monitoring_plan" className="mb-2 pt-2">
-            <Form.Label className="input-label">MONITORING PLAN{this.props.schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="input-label">
+              MONITORING PLAN{this.props.schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}
+              <InfoTooltip tooltipTextKey={'monitoringPlan'} location="right"></InfoTooltip>
+            </Form.Label>
             <Form.Control
               isInvalid={this.props.errors['monitoring_plan']}
               as="select"
