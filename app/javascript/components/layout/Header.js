@@ -48,7 +48,7 @@ class Header extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Navbar bg={this.props.show_demo_warning ? 'danger' : 'primary'} variant="dark" expand="lg" className={this.props.show_demo_warning ? '' : 'mb-3'}>
+        <Navbar bg={this.props.show_demo_warning_bg ? 'danger' : 'primary'} variant="dark" expand="lg" className={this.props.demo_warning_msg ? '' : 'mb-3'}>
           <Navbar.Brand className="header-brand-text" href={`${window.BASE_PATH}/`}>
             Sara Alert<small className="nav-version ml-1">{this.props.version}</small>
           </Navbar.Brand>
@@ -133,10 +133,9 @@ class Header extends React.Component {
             </React.Fragment>
           )}
         </Navbar>
-        {this.props.show_demo_warning && (
+        {this.props.demo_warning_msg && (
           <Navbar bg="warning" variant="dark" expand="lg" className="mb-3">
-            This system is for demonstration use only, please do not provide any personal identifying information other than business contact data that may be
-            required for testing.
+            {this.props.demo_warning_msg}
           </Navbar>
         )}
       </React.Fragment>
@@ -147,7 +146,8 @@ class Header extends React.Component {
 Header.propTypes = {
   report_mode: PropTypes.bool,
   version: PropTypes.string,
-  show_demo_warning: PropTypes.bool,
+  show_demo_warning_bg: PropTypes.bool,
+  demo_warning_msg: PropTypes.string,
   current_user: PropTypes.object,
 };
 

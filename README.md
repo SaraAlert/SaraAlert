@@ -12,11 +12,11 @@ Sara Alert is a Ruby on Rails application that uses the MySQL database for data 
 
 To work with the application, you will need to install some prerequisites:
 
-* [Ruby](https://www.ruby-lang.org/)
-* [Bundler](https://bundler.io/)
-* [MySQL](https://www.mysql.com/)
-* [Redis](https://redis.io) (installation instructions [below](#redis))
-* [Yarn](https://yarnpkg.com/)
+- [Ruby](https://www.ruby-lang.org/)
+- [Bundler](https://bundler.io/)
+- [MySQL](https://www.mysql.com/)
+- [Redis](https://redis.io) (installation instructions [below](#redis))
+- [Yarn](https://yarnpkg.com/)
 
 ### Development Installation
 
@@ -30,8 +30,8 @@ Ensure mime type information is present on your machine (`brew install shared-mi
 
 Run the following commands from the project's root directory to pull in both frontend and backend dependencies:
 
-* `bundle install`
-* `yarn install`
+- `bundle install`
+- `yarn install`
 
 #### Database
 
@@ -76,11 +76,12 @@ bundle install
 
 Run the following commands from the root of the project directory to initialize the database (note: make sure you have a MySQL database and Redis running):
 
-* `mysql -u root -e "CREATE USER 'disease_trakker'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'disease_trakker'@'localhost';"` optional for local development only, not for docker containers
-* `rails db:create`
-* `rails db:schema:load`
-* `bundle exec rake admin:import_or_update_jurisdictions`
-* `bundle exec rake demo:setup demo:populate` optional
+- `mysql -u root -e "CREATE USER 'disease_trakker'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'disease_trakker'@'localhost';"` optional for local development only, not for docker containers
+- `rails db:create`
+- `rails db:schema:load`
+- `bundle exec rake admin:import_or_update_jurisdictions`
+- `bundle exec rake demo:setup demo:populate` optional
+
 #### ActiveJob + Sidkiq + Redis
 
 ActiveJob will work with Sidekiq, and Redis to manage the queueing and running of jobs (used to send emails, SMS, and other methods of notification).
@@ -112,44 +113,46 @@ bundle exec sidekiq -q default -q mailers -q exports -q assessments
 
 ##### Jobs
 
-  The following jobs are configured to run continuously:
-  * `ConsumeAssessmentsJob`
-      - Should always be running to be ready to consume assessments at any time
-      - Handles the processing of incoming Patient assessments from the assessment container into the enrollment container.
-      - Utilizes Redis `RPOPLPUSH` pattern.
-      - Run with `bin/bundle exec rake reports:queue_reports`
+The following jobs are configured to run continuously:
 
-  The following jobs are configured to run periodically:
-  * `ClosePatientsJob`
-      - Closes (stops active monitoring of) Patients that meet duration/symptomatic conditions criteria
-      - Recommend this be run every hour
-      - Run with `bin/bundle exec rake subjects:close_patients`
-  * `PurgeJob`
-      - Purges eligible records
-      - Recommend this be run once every week
-      - Date/Time which the Job runs needs to match what is set in `config/sara.yml`: `weekly_purge_date`
-      - Run with `bin/bundle exec rake admin:purge_job`
-  * `SendPurgeWarningsJob`
-      - Send warnings to users of upcoming `PurgeJob`
-      - Recommend this be run once every week before `PurgeJob`
-      - Date/Time which the Job runs needs to match what is set in `confi/sara.yml`: `weekly_purge_warning_date`
-      - Run with `bin/bundle exec rake mailers:send_purge_warning`
-  * `SendPatientDigestJob`
-      - Send reports on recently symptomatic patients to jurisdictions that opt in with `send_digest: true` set in their jurisdiction's configuration in `jurisdictions.yml`
-      - Recommend this be run once every hour
-      - Run with `bin/bundle exec rake mailers:send_patient_digest`
-  * `CacheAnalyticsJob`
-      - Caches analytics information for faster retrieval
-      - Recommend this be run once every 24 hours
-      - Run with `bin/bundle exec rake analytics:cache_current_analytics`
-  * `SendAssessmentsJob`
-      - Send assessment reminders to monitorees
-      - Recommend this be run once every hour
-      - Run with `bin/bundle exec rake mailers:send_assessments`
-  * `PurgeJwtIdentifiersJob`
-      - Purge expired JWT Identifiers that are saved and validated when clients request access to the API.
-      - Recommend this be run once every 24 hours
-      - Run with `bin/bundle exec rake admin:purge_jwt_identifiers`
+- `ConsumeAssessmentsJob`
+  - Should always be running to be ready to consume assessments at any time
+  - Handles the processing of incoming Patient assessments from the assessment container into the enrollment container.
+  - Utilizes Redis `RPOPLPUSH` pattern.
+  - Run with `bin/bundle exec rake reports:queue_reports`
+
+The following jobs are configured to run periodically:
+
+- `ClosePatientsJob`
+  - Closes (stops active monitoring of) Patients that meet duration/symptomatic conditions criteria
+  - Recommend this be run every hour
+  - Run with `bin/bundle exec rake subjects:close_patients`
+- `PurgeJob`
+  - Purges eligible records
+  - Recommend this be run once every week
+  - Date/Time which the Job runs needs to match what is set in `config/sara.yml`: `weekly_purge_date`
+  - Run with `bin/bundle exec rake admin:purge_job`
+- `SendPurgeWarningsJob`
+  - Send warnings to users of upcoming `PurgeJob`
+  - Recommend this be run once every week before `PurgeJob`
+  - Date/Time which the Job runs needs to match what is set in `confi/sara.yml`: `weekly_purge_warning_date`
+  - Run with `bin/bundle exec rake mailers:send_purge_warning`
+- `SendPatientDigestJob`
+  - Send reports on recently symptomatic patients to jurisdictions that opt in with `send_digest: true` set in their jurisdiction's configuration in `jurisdictions.yml`
+  - Recommend this be run once every hour
+  - Run with `bin/bundle exec rake mailers:send_patient_digest`
+- `CacheAnalyticsJob`
+  - Caches analytics information for faster retrieval
+  - Recommend this be run once every 24 hours
+  - Run with `bin/bundle exec rake analytics:cache_current_analytics`
+- `SendAssessmentsJob`
+  - Send assessment reminders to monitorees
+  - Recommend this be run once every hour
+  - Run with `bin/bundle exec rake mailers:send_assessments`
+- `PurgeJwtIdentifiersJob`
+  - Purge expired JWT Identifiers that are saved and validated when clients request access to the API.
+  - Recommend this be run once every 24 hours
+  - Run with `bin/bundle exec rake admin:purge_jwt_identifiers`
 
 NOTE: In any production instance, these jobs should be handled outside of any of the containers (they should be scheduled and launched via crontab by the host).
 
@@ -168,12 +171,12 @@ Ensure [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https:
 
 This application includes several Dockerfiles and Docker Compose configurations. Let's go over each of them:
 
-* `Dockerfile`: This Dockerfile is essentially the same as the `DevelopmentTest.Dockerfile` but provides support for developers that want to get a development and test environment up and running with a simple `docker build .`
-* `DevelopmentTest.Dockerfile`: This Dockerfile is used in the project's Continuous Integration (CI) and allows developers to get started with the full split stack architecture as its the default used in the compose files. It contains the dependencies for running tests.
-* `Production.Dockerfile`: This Dockerfile is built for production or staging deployments.
-* `Nginx.Dockerfile`: This Dockerfile is built from `DevelopmentTest.Dockerfile` or `Production.Dockerfile` which contains all static assets (i.e. the `public/` folder).
-* `docker-compose.yml`: This docker compose file sets up the numerous containers, networks, and volumes required for the split architecture.
-* `docker-compose.prod.yml`: The only difference between this file and the normal one is the overwriting of the `DevelopmentTest` image tag with the `latest` tag.
+- `Dockerfile`: This Dockerfile is essentially the same as the `DevelopmentTest.Dockerfile` but provides support for developers that want to get a development and test environment up and running with a simple `docker build .`
+- `DevelopmentTest.Dockerfile`: This Dockerfile is used in the project's Continuous Integration (CI) and allows developers to get started with the full split stack architecture as its the default used in the compose files. It contains the dependencies for running tests.
+- `Production.Dockerfile`: This Dockerfile is built for production or staging deployments.
+- `Nginx.Dockerfile`: This Dockerfile is built from `DevelopmentTest.Dockerfile` or `Production.Dockerfile` which contains all static assets (i.e. the `public/` folder).
+- `docker-compose.yml`: This docker compose file sets up the numerous containers, networks, and volumes required for the split architecture.
+- `docker-compose.prod.yml`: The only difference between this file and the normal one is the overwriting of the `DevelopmentTest` image tag with the `latest` tag.
 
 NOTE: The provided docker compose configurations are meant to be examples of production style deployments ONLY. Do not use them verbatim in real production scenarios.
 
@@ -184,23 +187,24 @@ Amazon S3 is the currently used method for object storage within Sara Alert. Bec
 Object storage is used by the monitoree exports feature.
 
 **Basic S3 Setup:**
+
 1. Create a bucket for exports
 2. Create an IAM user with an associated access key
 3. Create a new permissions policy with the minimum required permissions for the S3 service of ListBucket, GetObject, DeleteObject, and PutObject and assign it to the user
 
 ##### Building
 
-* Create a `certs/` directory in the root of the project
+- Create a `certs/` directory in the root of the project
 
 If you are building the image behined a corporate proxy:
 
-* Place your company `.crt` file in it
-* `export CERT_PATH=/path/to/crt_from_above.crt`
+- Place your company `.crt` file in it
+- `export CERT_PATH=/path/to/crt_from_above.crt`
 
 Building for staging requires the use of the `Production.Dockerfile` and `Nginx.Dockerfile`.
 
-* `docker build -f Production.Dockerfile --tag sara-alert:latest --build-arg cert="$(cat $CERT_PATH)" .`
-* `docker build -f Nginx.Dockerfile --tag sara-alert-nginx:latest --build-arg sara_alert_image=sara-alert:latest .`
+- `docker build -f Production.Dockerfile --tag sara-alert:latest --build-arg cert="$(cat $CERT_PATH)" .`
+- `docker build -f Nginx.Dockerfile --tag sara-alert-nginx:latest --build-arg sara_alert_image=sara-alert:latest .`
 
 ##### Deploying Staging
 
@@ -210,9 +214,9 @@ Deploying a staging server is done with `docker-compose.yml`, `docker-compose.pr
 
 The `docker-compose.yml` file sets up three networks which route traffic between the containers. The networks are:
 
-* `dt-net-enrollment`: Hosts the applications/services used for enrolling and monitoring.
-* `dt-net-assessment`: Hosts the application/services used by monitorees filling out assessments.
-* `dt-net-bridge`: Facilitates communication between the two other networks.
+- `dt-net-enrollment`: Hosts the applications/services used for enrolling and monitoring.
+- `dt-net-assessment`: Hosts the application/services used by monitorees filling out assessments.
+- `dt-net-bridge`: Facilitates communication between the two other networks.
 
 This results in a 'split architecture' where multiple instances of the SaraAlert application are running. This approach attempts to reduces the amount of services that have access to the monitoree database.
 
@@ -225,44 +229,46 @@ Below is a graphic depicting the services and applications present on each netwo
 
 To set up Sara Alert in a staging configuration, generate two environment variable files which correspond with the networks described above:
 
-* `.env-prod-assessment`
-* `.env-prod-enrollment`
+- `.env-prod-assessment`
+- `.env-prod-enrollment`
 
-The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files. It is important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file. `SHOW_DEMO_WARNING=true` should be set to warn users against uploading sensitive data to a test or demonstration instance of Sara Alert.
+The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files. It is important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file. `SHOW_DEMO_WARNING_BG=true` should be set to warn users against uploading sensitive data to a test or demonstration instance of Sara Alert.
 
 The `SECRET_KEY_BASE` and `MYSQL_PASSWORD` variables should be changed at the very least. These variables should also not be the same between both assessment and enrollment instances of the files.
 
 Sara Alert relies upon several external services that are configured with environment variables:
 
-***Redis Environment Variables***
+**_Redis Environment Variables_**
 
 The `REDIS_URL` environment variable is utilized within `docker-compose.yml` to specify which Redis instance (bridge or enrollment) the container should connect to. This URL can also incorporate authentication information.
 
-***Export Environment Variables***
+**_Export Environment Variables_**
 
 The following environment variables are used to adjust export configurations. They only need to be set on the enrollment instances as those are what handle the exports.
 If not set, these variables will default to 10,000 and 500 respectively.
 
-* `EXPORT_INNER_BATCH_SIZE: number of Patient records to be considered at a given time when getting and writing data to files (for memory optimizations)`
+- `EXPORT_INNER_BATCH_SIZE: number of Patient records to be considered at a given time when getting and writing data to files (for memory optimizations)`
 
 To bypass AWS S3 object storage and use local storage for development or test purposes, set `ACTIVE_STORAGE_DRIVER=development`. To use AWS S3, set this environment variable to `amazon`.
 
 Information on changing the Sara Alert storage backend can be found [here](https://edgeguides.rubyonrails.org/active_storage_overview.html#s3-service-amazon-s3-and-s3-compatible-apis). The following environment variables need to be set in the relevant containers, where exports will be created and/or served.
-* `ACTIVE_STORAGE_DRIVER=amazon`
-* `AWS_S3_ACCESS_KEY_ID=<Access Key ID generated from the AWS console or API that has access to the bucket provided below>`
-* `AWS_S3_SECRET_ACCESS_KEY=<Secret belonging to the Access Key ID above>`
-* `AWS_S3_BUCKET=<S3 bucket for Sara Alert export upload/download>`
-* `AWS_S3_REGION=<S3 region the above S3 bucket exists in>`
 
-***Twilio/Authy Environment Variables***
+- `ACTIVE_STORAGE_DRIVER=amazon`
+- `AWS_S3_ACCESS_KEY_ID=<Access Key ID generated from the AWS console or API that has access to the bucket provided below>`
+- `AWS_S3_SECRET_ACCESS_KEY=<Secret belonging to the Access Key ID above>`
+- `AWS_S3_BUCKET=<S3 bucket for Sara Alert export upload/download>`
+- `AWS_S3_REGION=<S3 region the above S3 bucket exists in>`
+
+**_Twilio/Authy Environment Variables_**
 
 The following environment variables need to be set on the enrollment instances, which are the instances that will be dispatching the SMS/Voice assessments via Twilio and performing Two-Factor Authentication using Authy. These environment variables can be set in a `config/local_env.yml` file, or via a method provided by the deployment environment.
-* `TWILLIO_API_ACCOUNT: <Account number for Twilio Account>`
-* `TWILLIO_API_KEY: <API key for Twilio Account>`
-* `TWILLIO_SENDING_NUMBER: <Phone number registered to Twilio Account for SMS/Voice>`
-* `TWILLIO_STUDIO_FLOW: <Twilio Studio Flow ID for handling SMS/Voice Assessments>`
-* `AUTHY_API_KEY: <API key for Authy project>`
-* `TWILLIO_MESSAGING_SERVICE_SID=<SID of assigned messaging service>`
+
+- `TWILLIO_API_ACCOUNT: <Account number for Twilio Account>`
+- `TWILLIO_API_KEY: <API key for Twilio Account>`
+- `TWILLIO_SENDING_NUMBER: <Phone number registered to Twilio Account for SMS/Voice>`
+- `TWILLIO_STUDIO_FLOW: <Twilio Studio Flow ID for handling SMS/Voice Assessments>`
+- `AUTHY_API_KEY: <API key for Authy project>`
+- `TWILLIO_MESSAGING_SERVICE_SID=<SID of assigned messaging service>`
 
 **Container Dependencies**
 
@@ -274,12 +280,12 @@ The Nginx configuration is also staged within the same directory. You will need 
 
 Before any of the following commands, export the images you're working with. For the staging environment, the tag is assumed to be `latest`. Example for a locally built image (you will likely need to update this to point to your registry!): `export SARA_ALERT_IMAGE=sara-alert` and `export NGINX_IMAGE=sara-alert-nginx`.
 
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull`
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphan`
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake db:create`
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake db:migrate`
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-assessment bin/bundle exec rake db:create`
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-assessment bin/bundle exec rake db:migrate`
+- `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull`
+- `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphan`
+- `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake db:create`
+- `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake db:migrate`
+- `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-assessment bin/bundle exec rake db:create`
+- `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-assessment bin/bundle exec rake db:migrate`
 
 **Post-deployment Setup**
 
@@ -287,15 +293,15 @@ Before any of the following commands, export the image you're working with. For 
 
 Load Jurisdictions:
 
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake admin:import_or_update_jurisdictions`
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-assessment bin/bundle exec rake admin:import_or_update_jurisdictions`
+- `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake admin:import_or_update_jurisdictions`
+- `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-assessment bin/bundle exec rake admin:import_or_update_jurisdictions`
 
 Note: If you need to make live-changes to the jurisdictions loaded on they system, you'll have to update `config/sara/jurisdictions.yml` on the sara-alert-assessment and sara-alert-enrollment containers. The changes made to each of the jurisdictions.yml files **NEED TO BE IDENTICAL**
 
 Setup the demonstration accounts and population if desired:
 
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run -e DISABLE_DATABASE_ENVIRONMENT_CHECK=true sara-alert-enrollment bin/bundle exec rake demo:setup`
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run -e DISABLE_DATABASE_ENVIRONMENT_CHECK=true sara-alert-enrollment bin/bundle exec rake demo:populate`
+- `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run -e DISABLE_DATABASE_ENVIRONMENT_CHECK=true sara-alert-enrollment bin/bundle exec rake demo:setup`
+- `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run -e DISABLE_DATABASE_ENVIRONMENT_CHECK=true sara-alert-enrollment bin/bundle exec rake demo:populate`
 
 The applications should be running on port 443 with Nginx proxying traffic between.
 
