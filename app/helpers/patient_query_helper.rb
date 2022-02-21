@@ -382,7 +382,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           #     Jurisdiction.where([1, 2])
           filter_jurisdiction_ids = Jurisdiction.where(id: filter[:value].pluck(:value)).pluck(:id)
 
-          # Get patients where jurisdiction is any of the jurisdictions or subjurisdictions of the filter
+          # Get patients where jurisdiction is any of the jurisdictions of the filter
           patients = patients.where(jurisdiction_id: filter_jurisdiction_ids)
         end
       when 'lab-result'
