@@ -835,7 +835,6 @@ class AdvancedFilter extends React.Component {
         className="advanced-filter-options-dropdown"
         styles={cursorPointerStyle}
         theme={bootstrapSelectTheme}
-        menuPortalTarget={document.body}
       />
     );
   };
@@ -1002,7 +1001,6 @@ class AdvancedFilter extends React.Component {
           }}
           styles={cursorPointerStyle}
           theme={bootstrapSelectTheme}
-          menuPortalTarget={document.body}
         />
         {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip)}
       </div>
@@ -1307,7 +1305,6 @@ class AdvancedFilter extends React.Component {
                   }}
                   styles={cursorPointerStyle}
                   theme={bootstrapSelectTheme}
-                  menuPortalTarget={document.body}
                 />
               )}
               {combinationFilter?.type === 'date' && (
