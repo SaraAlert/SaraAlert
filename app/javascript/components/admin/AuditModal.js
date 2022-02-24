@@ -7,6 +7,7 @@ import axios from 'axios';
 import _ from 'lodash';
 
 import CustomTable from '../layout/CustomTable';
+import InfoTooltip from '../util/InfoTooltip';
 import reportError from '../util/ReportError';
 
 class AuditModal extends React.Component {
@@ -257,6 +258,25 @@ class AuditModal extends React.Component {
             <b>User Signed In</b>
           </span>
         );
+      case 'manual_lock_reason':
+        // Generic audit message in case before & after values not provided
+        if (!change.details || !Array.isArray(change.details) || !change.details.length) {
+          return (
+            <span>
+              <b>Manually set Status</b>
+              <InfoTooltip tooltipTextKey={'manualLockReasonAudit'} location="right"></InfoTooltip>: Updated
+            </span>
+          );
+          // More detailed audit message when before & after values provided
+        } else {
+          return (
+            <span>
+              <b>Manually set Status</b>
+              <InfoTooltip tooltipTextKey={'manualLockReasonAudit'} location="right"></InfoTooltip>: Changed from &quot;{change.details[0]}&quot; to &quot;
+              {change.details[1]}&quot;
+            </span>
+          );
+        }
     }
   };
 
