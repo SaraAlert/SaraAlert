@@ -809,7 +809,8 @@ class AdvancedFilter extends React.Component {
    * @param {Number} index - Filter index
    */
   renderOptions = (current, index) => {
-    const selectedValue = this.getFormattedOptions().find(option => {
+    const options = this.getFormattedOptions();
+    const selectedIndex = options.findIndex(option => {
       return option.value === current;
     });
     const Option = props => {
@@ -822,8 +823,8 @@ class AdvancedFilter extends React.Component {
     };
     return (
       <Select
-        options={this.getFormattedOptions()}
-        value={selectedValue || null}
+        options={options}
+        value={options[selectedIndex] || null}
         isOptionDisabled={option => option.disabled}
         components={{ Option }}
         onChange={event => {
