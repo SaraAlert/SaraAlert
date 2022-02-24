@@ -202,7 +202,7 @@ class Patient < ApplicationRecord
     where(purged: false)
       .where(pause_notifications: false)
       .where('patients.id = patients.responder_id')
-      .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
+      .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.in_time_zone('UTC').beginning_of_day)
       .has_usable_preferred_contact_method
       .within_preferred_contact_time
       .reminder_not_sent_recently
