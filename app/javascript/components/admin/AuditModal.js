@@ -130,7 +130,7 @@ class AuditModal extends React.Component {
         return (
           <span>
             <b>Account Status</b>
-            <br></br>
+            <br />
             {!change.details || !Array.isArray(change.details) || !change.details.length ? ' Updated' : change.details[0] ? 'Unlocked' : 'Locked'}
           </span>
         );
@@ -138,7 +138,7 @@ class AuditModal extends React.Component {
         return (
           <span>
             <b>Notes</b>
-            <br></br>
+            <br />
             {!change.details || !Array.isArray(change.details) || !change.details.length
               ? ' Updated'
               : ' Changed from "' +
@@ -152,7 +152,7 @@ class AuditModal extends React.Component {
         return (
           <span>
             <b>Jurisdiction</b>
-            <br></br>
+            <br />
             {!change.details || !Array.isArray(change.details) || change.details.length < 2
               ? ' Updated'
               : ' Changed from "' +
@@ -172,7 +172,7 @@ class AuditModal extends React.Component {
         return (
           <span>
             <b>API Access</b>
-            <br></br>
+            <br />
             {!change.details || !Array.isArray(change.details) || !change.details.length ? ' Updated' : change.details[0] ? 'Disabled' : 'Enabled'}
           </span>
         );
@@ -180,7 +180,7 @@ class AuditModal extends React.Component {
         return (
           <span>
             <b>Role</b>
-            <br></br>
+            <br />
             {!change.details || !Array.isArray(change.details) || change.details.length < 2
               ? ' Updated'
               : ' Changed from "' + _.startCase(change.details[0]) + '" to "' + _.startCase(change.details[1]) + '"'}
@@ -190,7 +190,7 @@ class AuditModal extends React.Component {
         return (
           <span>
             <b>Email</b>
-            <br></br>
+            <br />
             {!change.details || !Array.isArray(change.details) || change.details.length < 2
               ? ' Updated'
               : ' Changed from "' + change.details[0] + '" to "' + change.details[1] + '"'}
@@ -200,7 +200,7 @@ class AuditModal extends React.Component {
         return (
           <span>
             <b>2FA</b>
-            <br></br>
+            <br />
             {!change.details || !Array.isArray(change.details) || !change.details.length ? ' Updated' : change.details[0] ? 'Disabled' : 'Enabled'}
           </span>
         );
@@ -221,7 +221,7 @@ class AuditModal extends React.Component {
           <span>
             <b>Manually Set Status</b>
             <InfoTooltip tooltipTextKey={'manualLockReasonAudit'} location="right"></InfoTooltip>
-            <br></br>
+            <br />
             {!change.details || !Array.isArray(change.details) || change.details.length < 2
               ? ' Updated'
               : ' Changed from "' +
