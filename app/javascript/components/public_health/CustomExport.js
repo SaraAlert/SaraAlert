@@ -357,6 +357,7 @@ class CustomExport extends React.Component {
                       all_cohort_names={this.props.all_cohort_names}
                       all_cohort_locations={this.props.all_cohort_locations}
                       jurisdiction={this.props.jurisdiction}
+                      vaccine_standards={this.props.vaccine_standards}
                       query={this.state.custom_patient_query}
                       onQueryChange={(field, value, cb) =>
                         this.setState(
@@ -627,6 +628,7 @@ CustomExport.propTypes = {
   options: PropTypes.object,
   onClose: PropTypes.func,
   reloadExportPresets: PropTypes.func,
+  vaccine_standards: PropTypes.object,
 };
 
 export default CustomExport;

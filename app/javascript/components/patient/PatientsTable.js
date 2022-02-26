@@ -83,6 +83,7 @@ class PatientsTable extends React.Component {
       selectAll: false,
       jurisdiction_paths: {},
       assigned_users: [],
+      vaccine_standards: props.vaccine_standards,
       query: {
         workflow: props.workflow,
         tab: props.default_tab ?? props.tabs ? Object.keys(props.tabs)[0] : null,
@@ -858,6 +859,7 @@ PatientsTable.propTypes = {
   setFilteredMonitoreesCount: PropTypes.func,
   monitoring_reasons: PropTypes.array,
   enroller: PropTypes.bool,
+  vaccine_standards: PropTypes.object,
 };
 
 export default PatientsTable;

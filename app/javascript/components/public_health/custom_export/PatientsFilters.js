@@ -180,6 +180,7 @@ class PatientsFilters extends React.Component {
                 jurisdiction_paths={this.props.jurisdiction_paths}
                 all_assigned_users={this.props.all_assigned_users}
                 activeFilter={{ contents: this.props.query.filter }}
+                vaccine_standards={this.props.vaccine_standards}
               />
             </InputGroup>
           </Col>
@@ -196,6 +197,7 @@ PatientsFilters.propTypes = {
   jurisdiction: PropTypes.object,
   query: PropTypes.object,
   onQueryChange: PropTypes.func,
+  vaccine_standards: PropTypes.object,
 };
 
 export default PatientsFilters;
