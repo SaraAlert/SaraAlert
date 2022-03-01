@@ -23,13 +23,9 @@ const getVaccineAdvancedFilterFields = (vaccine_standards) => {
     doseNumberOptions = doseNumberOptions.concat(_.map(value["vaccines"], "num_doses"));
   }
 
-  productNameOptions.push('Unknown');
-  doseNumberOptions.push('Unknown');
-  doseNumberOptions.unshift('');
-
   fields.push(selectTypeFilter('vaccine-group', 'vaccine group', vaccineGroupOptions));
-  fields.push(selectTypeFilter('product-name', 'product name', _.uniq(productNameOptions)));
-  fields.push(selectTypeFilter('dose-number', 'dose number', _.uniq(doseNumberOptions)));
+  fields.push(selectTypeFilter('product-name', 'product name', _.uniq([...productNameOptions, 'Unknown'])));
+  fields.push(selectTypeFilter('dose-number', 'dose number', _.uniq(['', ...doseNumberOptions, 'Unknown'])));
   fields.push(dateTypeFilter('administration-date', 'administration date'));
 
   return fields;
