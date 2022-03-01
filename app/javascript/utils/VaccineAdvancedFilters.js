@@ -1,5 +1,9 @@
 import _ from 'lodash';
 
+/**
+ * Transforms the vaccine_standards configuration in /config/vaccines.yml to match structure in app/javascript/data/advancedFilterOptions.js
+ * @param {vaccine_standards} vaccine_standards - vaccine_standards object
+ */
 const getVaccineAdvancedFilters = (vaccine_standards) => {
   return {
     name: 'vaccination',
