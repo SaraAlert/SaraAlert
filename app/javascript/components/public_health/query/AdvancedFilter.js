@@ -824,7 +824,7 @@ class AdvancedFilter extends React.Component {
     return (
       <Select
         options={options}
-        value={options[selectedIndex] || null}
+        value={options[parseInt(selectedIndex)] || null}
         isOptionDisabled={option => option.disabled}
         components={{ Option }}
         onChange={event => {
