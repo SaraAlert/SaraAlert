@@ -564,13 +564,10 @@ class Patient < ApplicationRecord
 
   # Individuals in the isolation workflow that require review (isolation workflow only)
   scope :isolation_requiring_review, lambda {
-    isolation_asymp_non_test_based
-      .or(
-        isolation_symp_non_test_based
-      )
-      .or(
-        isolation_test_based
-      )
+    antb = ADMIN_OPTIONS['enable_isolation_asymp_non_test_based'] ? isolation_asymp_non_test_based : none
+    sntb = ADMIN_OPTIONS['enable_isolation_symp_non_test_based'] ? isolation_symp_non_test_based : none
+    tb = ADMIN_OPTIONS['enable_isolation_test_based'] ? isolation_test_based : none
+    antb.or(sntb).or(tb)
   }
 
   # Individuals not meeting review but are reporting (isolation workflow only)

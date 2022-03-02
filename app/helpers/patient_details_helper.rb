@@ -30,13 +30,16 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
 
     # Time.zone is set by Rails.application.config.time_zone which defaults to UTC.
     # Therefore, Time.zone.today makes UTC explicit and is consistient with previous behavior.
-    return :isolation_asymp_non_test_based if !latest_assessment_at.nil? && !first_positive_lab_at.nil? &&
+    return :isolation_asymp_non_test_based if ADMIN_OPTIONS['enable_isolation_asymp_non_test_based'] &&
+                                              !latest_assessment_at.nil? && !first_positive_lab_at.nil? &&
                                               first_positive_lab_at < ADMIN_OPTIONS['recovery_period_days'].days.ago &&
                                               symptom_onset.nil? && (!extended_isolation || extended_isolation < Time.zone.today)
-    return :isolation_symp_non_test_based if (latest_fever_or_fever_reducer_at.nil? || latest_fever_or_fever_reducer_at < 24.hours.ago) &&
+    return :isolation_symp_non_test_based if ADMIN_OPTIONS['enable_isolation_symp_non_test_based'] &&
+                                             (latest_fever_or_fever_reducer_at.nil? || latest_fever_or_fever_reducer_at < 24.hours.ago) &&
                                              !symptom_onset.nil? && symptom_onset <= ADMIN_OPTIONS['recovery_period_days'].days.ago &&
                                              (!extended_isolation || extended_isolation < Time.zone.today)
-    return :isolation_test_based if !latest_assessment_at.nil? && (latest_fever_or_fever_reducer_at.nil? || latest_fever_or_fever_reducer_at < 24.hours.ago) &&
+    return :isolation_test_based if ADMIN_OPTIONS['enable_isolation_test_based'] &&
+                                    !latest_assessment_at.nil? && (latest_fever_or_fever_reducer_at.nil? || latest_fever_or_fever_reducer_at < 24.hours.ago) &&
                                     negative_lab_count >= 2 && (!extended_isolation || extended_isolation < Time.zone.today)
     return :isolation_reporting if (!latest_assessment_at.nil? && latest_assessment_at >= ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago) ||
                                    (!created_at.nil? && created_at >= ADMIN_OPTIONS['non_reporting_period_minutes'].minutes.ago)
