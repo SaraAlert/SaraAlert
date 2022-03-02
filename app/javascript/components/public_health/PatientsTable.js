@@ -277,10 +277,16 @@ class PatientsTable extends React.Component {
 
   handleJurisdictionChange = jurisdiction => {
     if (jurisdiction !== this.state.query.jurisdiction) {
+      if (jurisdiction) {
+        this.setLocalStorage(`SaraJurisdiction`, jurisdiction);
+      } else {
+        this.removeLocalStorage(`SaraJurisdiction`);
+        // Default back to current_user.jurisdiction_id when jurisdiction is null
+        jurisdiction = this.props.jurisdiction.id;
+      }
       this.updateAssignedUsers({ ...this.state.query, jurisdiction });
       this.updateTable({ ...this.state.query, jurisdiction, page: 0 });
       this.removeLocalStorage(`SaraPage`);
-      this.setLocalStorage(`SaraJurisdiction`, jurisdiction);
     }
   };
 

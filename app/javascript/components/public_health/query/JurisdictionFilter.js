@@ -25,6 +25,8 @@ class JurisdictionFilter extends React.Component {
       const jurisdiction = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === jurisdiction_path);
       if (jurisdiction) {
         this.props.onJurisdictionChange(parseInt(jurisdiction));
+      } else {
+        this.props.onJurisdictionChange(null);
       }
     });
   };
@@ -48,16 +50,12 @@ class JurisdictionFilter extends React.Component {
           type="text"
           autoComplete="off"
           list="jurisdiction_paths"
-          defaultValue={this.props.jurisdiction_paths[this.props.jurisdiction] || ''}
+          value={this.props.jurisdiction_paths[this.props.jurisdiction] || '' || ''}
           onChange={event => this.handleJurisdictionChange(event?.target?.value)}
         />
         <datalist id="jurisdiction_paths">
           {this.state.sorted_jurisdiction_paths.map((jurisdiction, index) => {
-            return (
-              <option value={jurisdiction} key={index}>
-                {jurisdiction}
-              </option>
-            );
+            return <option value={jurisdiction} key={index} />;
           })}
         </datalist>
         <React.Fragment>
