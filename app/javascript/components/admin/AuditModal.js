@@ -7,6 +7,7 @@ import axios from 'axios';
 import _ from 'lodash';
 
 import CustomTable from '../layout/CustomTable';
+import InfoTooltip from '../util/InfoTooltip';
 import reportError from '../util/ReportError';
 
 class AuditModal extends React.Component {
@@ -126,54 +127,41 @@ class AuditModal extends React.Component {
     const change = data.value;
     switch (change.name) {
       case 'locked_at':
-        // Generic audit message in case before & after values not provided
-        if (!change.details || !Array.isArray(change.details) || !change.details.length) {
-          return (
-            <span>
-              <b>Account Status</b>: Updated
-            </span>
-          );
-          // More detailed audit message when before & after values provided
-        } else {
-          return (
-            <span>
-              <b>Account Status</b>: {change.details[0] ? 'Unlocked' : 'Locked'}
-            </span>
-          );
-        }
+        return (
+          <span>
+            <b>Account Status</b>
+            <br />
+            {!change.details || !Array.isArray(change.details) || !change.details.length ? ' Updated' : change.details[0] ? 'Unlocked' : 'Locked'}
+          </span>
+        );
       case 'notes':
-        // Generic audit message in case before & after values not provided
-        if (!change.details || !Array.isArray(change.details) || !change.details.length) {
-          return (
-            <span>
-              <b>Notes</b>: Updated
-            </span>
-          );
-          // More detailed audit message when before & after values provided
-        } else {
-          return (
-            <span>
-              <b>Notes</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;
-            </span>
-          );
-        }
+        return (
+          <span>
+            <b>Notes</b>
+            <br />
+            {!change.details || !Array.isArray(change.details) || !change.details.length
+              ? ' Updated'
+              : ' Changed from "' +
+                (change.details[0] == null ? '' : change.details[0]) +
+                '" to "' +
+                (change.details[1] == null ? '' : change.details[1]) +
+                '"'}
+          </span>
+        );
       case 'jurisdiction_id':
-        // Generic audit message in case before & after values not provided
-        if (!change.details || !Array.isArray(change.details) || change.details.length < 2) {
-          return (
-            <span>
-              <b>Jurisdiction</b>: Updated
-            </span>
-          );
-          // More detailed audit message when before & after values provided
-        } else {
-          return (
-            <span>
-              <b>Jurisdiction</b>: Changed from &quot;{_.invert(this.state.all_jurisdiction_paths)[change.details[0]]}&quot; to &quot;
-              {_.invert(this.state.all_jurisdiction_paths)[change.details[1]]}&quot;
-            </span>
-          );
-        }
+        return (
+          <span>
+            <b>Jurisdiction</b>
+            <br />
+            {!change.details || !Array.isArray(change.details) || change.details.length < 2
+              ? ' Updated'
+              : ' Changed from "' +
+                _.invert(this.state.all_jurisdiction_paths)[change.details[0]] +
+                '" to "' +
+                _.invert(this.state.all_jurisdiction_paths)[change.details[1]] +
+                '"'}
+          </span>
+        );
       case 'created_at':
         return (
           <span>
@@ -181,70 +169,41 @@ class AuditModal extends React.Component {
           </span>
         );
       case 'api_enabled':
-        // Generic audit message in case before & after values not provided
-        if (!change.details || !Array.isArray(change.details) || !change.details.length) {
-          return (
-            <span>
-              <b>API Access</b>: Updated
-            </span>
-          );
-          // More detailed audit message when before & after values provided
-        } else {
-          return (
-            <span>
-              <b>API Access</b>: {change.details[0] ? 'Disabled' : 'Enabled'}
-            </span>
-          );
-        }
+        return (
+          <span>
+            <b>API Access</b>
+            <br />
+            {!change.details || !Array.isArray(change.details) || !change.details.length ? ' Updated' : change.details[0] ? 'Disabled' : 'Enabled'}
+          </span>
+        );
       case 'role':
-        // Generic audit message in case before & after values not provided
-        if (!change.details || !Array.isArray(change.details) || change.details.length < 2) {
-          return (
-            <span>
-              <b>Role</b>: Updated
-            </span>
-          );
-          // More detailed audit message when before & after values provided
-        } else {
-          return (
-            <span>
-              <b>Role</b>: Changed from &quot;{_.startCase(change.details[0])}&quot; to &quot;
-              {_.startCase(change.details[1])}&quot;
-            </span>
-          );
-        }
+        return (
+          <span>
+            <b>Role</b>
+            <br />
+            {!change.details || !Array.isArray(change.details) || change.details.length < 2
+              ? ' Updated'
+              : ' Changed from "' + _.startCase(change.details[0]) + '" to "' + _.startCase(change.details[1]) + '"'}
+          </span>
+        );
       case 'email':
-        // Generic audit message in case before & after values not provided
-        if (!change.details || !Array.isArray(change.details) || change.details.length < 2) {
-          return (
-            <span>
-              <b>Email</b>: Updated
-            </span>
-          );
-          // More detailed audit message when before & after values provided
-        } else {
-          return (
-            <span>
-              <b>Email</b>: Changed from &quot;{change.details[0]}&quot; to &quot;{change.details[1]}&quot;
-            </span>
-          );
-        }
+        return (
+          <span>
+            <b>Email</b>
+            <br />
+            {!change.details || !Array.isArray(change.details) || change.details.length < 2
+              ? ' Updated'
+              : ' Changed from "' + change.details[0] + '" to "' + change.details[1] + '"'}
+          </span>
+        );
       case 'authy_enabled':
-        // Generic audit message in case before & after values not provided
-        if (!change.details || !Array.isArray(change.details) || !change.details.length) {
-          return (
-            <span>
-              <b>2FA</b>: Updated
-            </span>
-          );
-          // More detailed audit message when before & after values provided
-        } else {
-          return (
-            <span>
-              <b>2FA</b>: {change.details[0] ? 'Disabled' : 'Enabled'}
-            </span>
-          );
-        }
+        return (
+          <span>
+            <b>2FA</b>
+            <br />
+            {!change.details || !Array.isArray(change.details) || !change.details.length ? ' Updated' : change.details[0] ? 'Disabled' : 'Enabled'}
+          </span>
+        );
       case 'force_password_change':
         return (
           <span>
@@ -255,6 +214,21 @@ class AuditModal extends React.Component {
         return (
           <span>
             <b>User Signed In</b>
+          </span>
+        );
+      case 'manual_lock_reason':
+        return (
+          <span>
+            <b>Manual Status Update</b>
+            <InfoTooltip tooltipTextKey={'manualLockReasonAudit'} location="right"></InfoTooltip>
+            <br />
+            {!change.details || !Array.isArray(change.details) || change.details.length < 2
+              ? ' Updated'
+              : ' Changed from "' +
+                (change.details[0] == null ? '' : change.details[0]) +
+                '" to "' +
+                (change.details[1] == null ? '' : change.details[1]) +
+                '"'}
           </span>
         );
     }

@@ -363,6 +363,11 @@ const TOOLTIP_TEXT = {
       Current Date - Date of Birth
     </div>
   ),
+
+  /* ADMIN */
+  manualLockReasonAudit: (
+    <div>A manual change to Status by a user. The Audit log does not track system generated Statuses such as &quot;Active&quot; and &quot;Inactive.&quot;</div>
+  ),
 };
 
 class InfoTooltip extends React.Component {
