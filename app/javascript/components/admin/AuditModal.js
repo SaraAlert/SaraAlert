@@ -219,7 +219,7 @@ class AuditModal extends React.Component {
       case 'manual_lock_reason':
         return (
           <span>
-            <b>Manually Set Status</b>
+            <b>Manual Status Update</b>
             <InfoTooltip tooltipTextKey={'manualLockReasonAudit'} location="right"></InfoTooltip>
             <br />
             {!change.details || !Array.isArray(change.details) || change.details.length < 2
