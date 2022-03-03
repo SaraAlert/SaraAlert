@@ -29,7 +29,7 @@ class JurisdictionFilter extends React.Component {
     }
   }
 
-  // Handle changes to jurisdiction_path and jurisdiction_input so that the user can backspace into the form input
+  // Handle changes to jurisdiction_path and jurisdiction_input separately so that the user can backspace into the form input
   handleJurisdictionChange = event => {
     const value = event.target.value;
     const jurisdiction = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === event.target.value);
