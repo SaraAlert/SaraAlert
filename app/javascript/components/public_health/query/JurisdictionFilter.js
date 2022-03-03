@@ -11,6 +11,7 @@ class JurisdictionFilter extends React.Component {
     this.state = {
       sorted_jurisdiction_paths: [],
       jurisdiction_path: props.jurisdiction_paths[props.jurisdiction] || '',
+      jurisdiction_input: props.jurisdiction_paths[props.jurisdiction] || '',
     };
   }
 
@@ -20,15 +21,26 @@ class JurisdictionFilter extends React.Component {
     };
   }
 
-  handleJurisdictionChange = jurisdiction_path => {
-    this.setState({ jurisdiction_path }, () => {
-      const jurisdiction = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === jurisdiction_path);
-      if (jurisdiction) {
+  // This update is necessary since sticky settings are loaded after this component is constructed
+  componentDidUpdate() {
+    if (this.state.jurisdiction_path !== this.props.jurisdiction_paths[this.props.jurisdiction]) {
+      this.setState({ jurisdiction_path: this.props.jurisdiction_paths[this.props.jurisdiction] });
+      this.setState({ jurisdiction_input: this.props.jurisdiction_paths[this.props.jurisdiction] });
+    }
+  }
+
+  // Handle changes to jurisdiction_path and jurisdiction_input so that the user can backspace into the form input
+  handleJurisdictionChange = event => {
+    const value = event.target.value;
+    const jurisdiction = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === event.target.value);
+
+    this.setState({ jurisdiction_input: value });
+
+    if (jurisdiction) {
+      this.setState({ jurisdiction_path: value }, () => {
         this.props.onJurisdictionChange(parseInt(jurisdiction));
-      } else {
-        this.props.onJurisdictionChange(null);
-      }
-    });
+      });
+    }
   };
 
   handleScopeChange = scope => {
@@ -50,12 +62,16 @@ class JurisdictionFilter extends React.Component {
           type="text"
           autoComplete="off"
           list="jurisdiction_paths"
-          value={this.props.jurisdiction_paths[this.props.jurisdiction] || '' || ''}
-          onChange={event => this.handleJurisdictionChange(event?.target?.value)}
+          value={this.state.jurisdiction_input}
+          onChange={this.handleJurisdictionChange}
         />
         <datalist id="jurisdiction_paths">
           {this.state.sorted_jurisdiction_paths.map((jurisdiction, index) => {
-            return <option value={jurisdiction} key={index} />;
+            return (
+              <option value={jurisdiction} key={index}>
+                {jurisdiction}
+              </option>
+            );
           })}
         </datalist>
         <React.Fragment>
