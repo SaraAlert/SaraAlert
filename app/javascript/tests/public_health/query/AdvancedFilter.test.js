@@ -126,20 +126,18 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(Modal.Header).exists()).toBe(true);
     expect(wrapper.find(Modal.Header).text()).toEqual('Advanced Filter: untitled');
     expect(wrapper.find(Modal.Body).exists()).toBe(true);
-    expect(wrapper.find(Modal.Body).find(Button).length).toEqual(4);
+    expect(wrapper.find(Modal.Body).find(Button).length).toEqual(3);
     expect(wrapper.find(Modal.Body).find('#advanced-filter-save').exists()).toBe(true);
     expect(wrapper.find(Modal.Body).find('#advanced-filter-save').text()).toEqual('Save');
     expect(wrapper.find(Modal.Body).find('#advanced-filter-save').find('i').hasClass('fa-save')).toBe(true);
     expect(wrapper.find(Modal.Body).find('#advanced-filter-update').exists()).toBe(false);
     expect(wrapper.find(Modal.Body).find('#advanced-filter-delete').exists()).toBe(false);
-    expect(wrapper.find(Modal.Body).find('#advanced-filter-reset').exists()).toBe(true);
-    expect(wrapper.find(Modal.Body).find('#advanced-filter-reset').text()).toEqual('Reset');
     expect(wrapper.find(Modal.Body).find('.advanced-filter-statement').exists()).toBe(true);
     expect(wrapper.find(Modal.Body).find('.advanced-filter-statement').length).toEqual(1);
     expect(wrapper.find(Modal.Body).find('.remove-filter-row').exists()).toBe(true);
     expect(wrapper.find(Modal.Body).find('#add-filter-row').exists()).toBe(true);
     expect(wrapper.find(Modal.Footer).exists()).toBe(true);
-    expect(wrapper.find(Modal.Footer).find('p').text()).toEqual('Filter will be applied to all line lists in the current dashboard until reset.');
+    expect(wrapper.find(Modal.Footer).find('p').text()).toEqual('Filter will be applied to all line lists until cleared by the user.');
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
     expect(wrapper.find(Modal.Footer).find('#advanced-filter-cancel').exists()).toBe(true);
     expect(wrapper.find(Modal.Footer).find('#advanced-filter-cancel').text()).toEqual('Cancel');
@@ -172,7 +170,7 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(Modal.Header).exists()).toBe(true);
     expect(wrapper.find(Modal.Header).text()).toEqual(`Advanced Filter: ${mockFilter1.name}`);
     expect(wrapper.find(Modal.Body).exists()).toBe(true);
-    expect(wrapper.find(Modal.Body).find(Button).length).toEqual(5);
+    expect(wrapper.find(Modal.Body).find(Button).length).toEqual(4);
     expect(wrapper.find(Modal.Body).find('#advanced-filter-save').exists()).toBe(false);
     expect(wrapper.find(Modal.Body).find('#advanced-filter-update').exists()).toBe(true);
     expect(wrapper.find(Modal.Body).find('#advanced-filter-update').text()).toEqual('Update');
@@ -180,14 +178,12 @@ describe('AdvancedFilter', () => {
     expect(wrapper.find(Modal.Body).find('#advanced-filter-delete').exists()).toBe(true);
     expect(wrapper.find(Modal.Body).find('#advanced-filter-delete').text()).toEqual('Delete');
     expect(wrapper.find(Modal.Body).find('#advanced-filter-delete').find('i').hasClass('fa-trash')).toBe(true);
-    expect(wrapper.find(Modal.Body).find('#advanced-filter-reset').exists()).toBe(true);
-    expect(wrapper.find(Modal.Body).find('#advanced-filter-reset').text()).toEqual('Reset');
     expect(wrapper.find(Modal.Body).find('.advanced-filter-statement').exists()).toBe(true);
     expect(wrapper.find(Modal.Body).find('.advanced-filter-statement').length).toEqual(1);
     expect(wrapper.find(Modal.Body).find('.remove-filter-row').exists()).toBe(true);
     expect(wrapper.find(Modal.Body).find('#add-filter-row').exists()).toBe(true);
     expect(wrapper.find(Modal.Footer).exists()).toBe(true);
-    expect(wrapper.find(Modal.Footer).find('p').text()).toEqual('Filter will be applied to all line lists in the current dashboard until reset.');
+    expect(wrapper.find(Modal.Footer).find('p').text()).toEqual('Filter will be applied to all line lists until cleared by the user.');
     expect(wrapper.find(Modal.Footer).find(Button).length).toEqual(2);
     expect(wrapper.find(Modal.Footer).find('#advanced-filter-cancel').exists()).toBe(true);
     expect(wrapper.find(Modal.Footer).find('#advanced-filter-cancel').text()).toEqual('Cancel');
@@ -1357,15 +1353,6 @@ describe('AdvancedFilter', () => {
     expect(deleteSpy).not.toHaveBeenCalled();
     wrapper.find('#advanced-filter-delete').simulate('click');
     expect(deleteSpy).toHaveBeenCalled();
-  });
-
-  it('Clicking "Reset" button calls reset method', () => {
-    const wrapper = getWrapper();
-    const resetSpy = jest.spyOn(wrapper.instance(), 'reset');
-    wrapper.find(Button).simulate('click');
-    expect(resetSpy).not.toHaveBeenCalled();
-    wrapper.find('#advanced-filter-reset').simulate('click');
-    expect(resetSpy).toHaveBeenCalled();
   });
 
   it('Clicking "Apply" button calls props.advancedFilterUpdate', () => {

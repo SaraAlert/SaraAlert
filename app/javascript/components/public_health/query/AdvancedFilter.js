@@ -11,7 +11,6 @@ import Select, { components } from 'react-select';
 import { bootstrapSelectTheme, cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
 
 import DateInput from '../../util/DateInput';
-import confirmDialog from '../../util/ConfirmDialog';
 import { advancedFilterOptions } from '../../../data/advancedFilterOptions';
 import { getAllLanguageDisplayNames } from '../../../utils/Languages';
 
@@ -337,15 +336,6 @@ class AdvancedFilter extends React.Component {
           }
         );
       });
-  };
-
-  /**
-   * Resets modal to initial state
-   */
-  reset = async () => {
-    if (await confirmDialog('Are you sure you want to reset this filter? Anything currently configured will be lost.')) {
-      this.newFilter();
-    }
   };
 
   /**
@@ -1479,11 +1469,6 @@ class AdvancedFilter extends React.Component {
                   <span className="ml-1">Delete</span>
                 </Button>
               )}
-              <div className="float-right">
-                <Button id="advanced-filter-reset" variant="danger" onClick={this.reset}>
-                  Reset
-                </Button>
-              </div>
             </Col>
           </Row>
           <Row>
@@ -1517,7 +1502,7 @@ class AdvancedFilter extends React.Component {
           </Row>
         </Modal.Body>
         <Modal.Footer className="justify-unset">
-          <p className="lead mr-auto">Filter will be applied to all line lists in the current dashboard until reset.</p>
+          <p className="lead mr-auto">Filter will be applied to all line lists until cleared by the user.</p>
           <Button id="advanced-filter-cancel" variant="secondary btn-square" onClick={this.cancel}>
             Cancel
           </Button>
