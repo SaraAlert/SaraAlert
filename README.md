@@ -232,7 +232,7 @@ To set up Sara Alert in a staging configuration, generate two environment variab
 - `.env-prod-assessment`
 - `.env-prod-enrollment`
 
-The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files. It is important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file. `SHOW_DEMO_WARNING_BG=true` should be set to warn users against uploading sensitive data to a test or demonstration instance of Sara Alert.
+The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files. It is important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file. `SHOW_DEMO_WARNING_BACKGROUND=true` should be set to warn users against uploading sensitive data to a test or demonstration instance of Sara Alert.
 
 The `SECRET_KEY_BASE` and `MYSQL_PASSWORD` variables should be changed at the very least. These variables should also not be the same between both assessment and enrollment instances of the files.
 

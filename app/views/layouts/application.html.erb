@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang='en-US'>
   <%= render 'layouts/html_head' %>
-  <body id="sara-alert-body" class="<%= ENV['SHOW_DEMO_WARNING_BG'].present? ? 'demo-bg' : '' %>">
+  <body id="sara-alert-body" class="<%= ADMIN_OPTIONS['show_demo_warning_background'].present? ? 'demo-bg' : '' %>">
     <%= react_component('layout/Header', {
                           report_mode: ADMIN_OPTIONS['report_mode'],
                           version: ADMIN_OPTIONS['version'],
-                          show_demo_warning_bg: ENV['SHOW_DEMO_WARNING_BG'].present?,
-                          demo_warning_msg: ENV['DEMO_WARNING_MSG'],
+                          show_demo_warning_background: ADMIN_OPTIONS['show_demo_warning_background'].present?,
+                          banner_message: ADMIN_OPTIONS['banner_message'],
                           current_user: current_user.nil? ? nil : {
                             email: current_user&.email,
                             role: current_user&.role,

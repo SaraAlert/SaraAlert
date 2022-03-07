@@ -43,6 +43,12 @@ enable_voice: <%= ENV["SARA_ALERT_ENABLE_VOICE"] || true %>
 # Assessment Report Mode
 report_mode: <%= ENV["SARA_ALERT_REPORT_MODE"] || false %>
 
+# This value should be set to true to warn users against uploading sensitive data to a test or demonstration instance of Sara Alert.
+show_demo_warning_background: <%= ENV["SHOW_DEMO_WARNING_BACKGROUND"] || false %>
+
+# If this message is set, it will be displayed at the top of the page.
+banner_message: <%= ENV["BANNER_MESSAGE"] || '' %>
+
 # Optional Sentry URL for application monitoring and error reporting
 sentry_url: <%= ENV["SENTRY_URL"] || '' %>
 
