@@ -9,33 +9,38 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
   @@enroller_patient_page_verifier = EnrollerPatientPageVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def verify_enrolled_monitorees(user_label)
+  def verify_enrolled_monitorees(user_label, jurisdiction, is_epi: false)
     creator_id = User.where(email: "#{user_label}@example.com").first
+    find_by_id('all_tab').click if is_epi
+
     Patient.where(creator_id: creator_id).each do |patient|
       # view patient without any filters
-      fill_in 'Search', with: "#{patient.first_name} #{patient.last_name}"
-      verify_patient_info_in_data_table(patient)
+      fill_in 'Search', with: patient.last_name.to_s
+      verify_patient_info_in_enroller_table(patient, is_epi)
 
-      # view patient with assigned jurisdiction filter
-      page.all('select#assigned_jurisdiction option').map(&:text).each do |jur|
-        select jur, from: 'assigned_jurisdiction'
-        verify_patient_info_in_data_table(patient) if patient.jurisdiction[:path].include?(jur.split(', ').last)
+      Jurisdiction.find(jurisdiction.subtree_ids).each do |jur|
+        fill_in 'jurisdiction_path', with: jur[:path]
+        verify_patient_info_in_enroller_table(patient, is_epi) if patient.jurisdiction[:path].include?(jur[:name])
 
-        next if jur == 'All'
-
-        select 'Exact Match', from: 'scope'
-        page.all('.dataTable tbody tr').each do |row|
-          assigned_jurisdiction_cell = row.all('td')[1]
-          assert_equal(jur.split(', ').last, assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
+        find_by_id('exactJurisdiction').click
+        sleep(1.5) # wait for data to load
+        page.all('tbody tr').each do |row|
+          assigned_jurisdiction_cell = row.all('td')[is_epi ? 2 : 1]
+          assert_equal(jur[:name], assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
         end
-        select 'All', from: 'scope'
+        verify_patient_info_in_enroller_table(patient, is_epi) if patient.jurisdiction[:path] == jur[:path]
+        find_by_id('allJurisdictions').click
       end
-      select 'All', from: 'assigned_jurisdiction'
+      fill_in 'jurisdiction_path', with: jurisdiction[:path]
 
       # view patient with assigned user filter
-      select patient[:assigned_user].nil? ? 'None' : patient[:assigned_user], from: 'assigned_user'
-      verify_patient_info_in_data_table(patient)
-      select 'All', from: 'assigned_user'
+      if patient[:assigned_user].nil?
+        find_by_id('noAssignedUser').click
+      else
+        fill_in 'assigned_user', with: patient[:assigned_user]
+      end
+      verify_patient_info_in_enroller_table(patient, is_epi)
+      find_by_id('allAssignedUsers').click
     end
   end
 
@@ -80,21 +85,22 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
   def search_and_verify_nonexistence(query, is_epi)
     click_on 'Asymptomatic' if is_epi
     fill_in is_epi ? 'search' : 'Search', with: query
-    assert page.has_content?('No matching records found'), @@system_test_utils.get_err_msg('Dashboard', 'monitoree', 'non-existent')
+    assert page.has_content?('No data available in table.'), @@system_test_utils.get_err_msg('Dashboard', 'monitoree', 'non-existent')
   end
 
-  def verify_patient_info_in_data_table(patient)
-    verify_patient_field_in_data_table('first name', patient.first_name)
-    verify_patient_field_in_data_table('last name', patient.last_name)
-    verify_patient_field_in_data_table('assigned jurisdiction', patient.jurisdiction[:name])
-    verify_patient_field_in_data_table('assigned user', patient.assigned_user)
-    verify_patient_field_in_data_table('state/local id', patient.user_defined_id_statelocal)
-    verify_patient_field_in_data_table('date of birth', patient.date_of_birth.strftime('%m/%d/%Y'))
-    verify_patient_field_in_data_table('enrollment date', patient.created_at.to_date.strftime('%m/%d/%Y'))
+  def verify_patient_info_in_enroller_table(patient, is_epi)
+    verify_patient_field_in_enroller_table('first name', patient.first_name)
+    verify_patient_field_in_enroller_table('last name', patient.last_name)
+    verify_patient_field_in_enroller_table('assigned jurisdiction', patient.jurisdiction[:name])
+    verify_patient_field_in_enroller_table('assigned user', patient.assigned_user)
+    verify_patient_field_in_enroller_table('state/local id', patient.user_defined_id_statelocal)
+    verify_patient_field_in_enroller_table('sex', patient.sex) unless is_epi
+    verify_patient_field_in_enroller_table('date of birth', patient.date_of_birth.strftime('%m/%d/%Y'))
+    verify_patient_field_in_enroller_table('enrollment date', patient.created_at.to_date.strftime('%m/%d/%Y')) unless is_epi
   end
 
-  def verify_patient_field_in_data_table(field, value)
-    assert page.has_content?(value), @@system_test_utils.get_err_msg('Patient info', field, value) unless value.nil?
+  def verify_patient_field_in_enroller_table(field, value)
+    assert page.find('tbody').has_content?(value), @@system_test_utils.get_err_msg('Patient info', field, value) unless value.nil?
   end
 
   def verify_enrollment_analytics

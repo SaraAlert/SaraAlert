@@ -20,7 +20,7 @@ class PublicHealthPatientPageTest < ApplicationSystemTestCase
   end
 
   test 'update monitoring status to not monitoring' do
-    @@public_health_test_helper.update_monitoring_status('state1_epi', 'patient_2', 'non_reporting', 'closed',
+    @@public_health_test_helper.update_monitoring_status('state1_epi', 'patient_52', 'non_reporting', 'closed',
                                                          'Not Monitoring', 'Completed Monitoring', 'details')
   end
 
@@ -34,7 +34,7 @@ class PublicHealthPatientPageTest < ApplicationSystemTestCase
   end
 
   test 'update monitoring plan' do
-    @@public_health_test_helper.update_monitoring_plan('locals1c2_epi', 'patient_6', 'pui', 'Daily active monitoring', 'details')
+    @@public_health_test_helper.update_monitoring_plan('locals1c2_epi', 'patient_44', 'pui', 'Daily active monitoring', 'details')
   end
 
   test 'update latest public health action' do
@@ -70,20 +70,20 @@ class PublicHealthPatientPageTest < ApplicationSystemTestCase
   end
 
   test 'update assigned user' do
-    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '9', 'reasoning', valid_assigned_user: true, changed: true)
-    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '', 'reasoning', valid_assigned_user: true, changed: true)
+    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_7', 'all', '9', 'reasoning', valid_assigned_user: true, changed: true)
+    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_7', 'all', '', 'reasoning', valid_assigned_user: true, changed: true)
     @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1444', 'reason', valid_assigned_user: true, changed: true)
   end
 
   test 'update assigned user validation' do
-    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '', 'reason', valid_assigned_user: false, changed: false)
+    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_7', 'all', '', 'reason', valid_assigned_user: false, changed: false)
     @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1444', '', valid_assigned_user: false, changed: false)
     @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '0', 'reason', valid_assigned_user: false, changed: true)
     @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1000000', '', valid_assigned_user: false, changed: true)
     @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_4', 'all', '-8', 'reason', valid_assigned_user: false, changed: true)
-    @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', '1.5', '', valid_assigned_user: false, changed: true)
+    @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_7', 'all', '1.5', '', valid_assigned_user: false, changed: true)
     @@public_health_test_helper.update_assigned_user('state1_epi_enroller',
-                                                     'patient_2',
+                                                     'patient_7',
                                                      'all',
                                                      'not valid',
                                                      'reason',
@@ -108,8 +108,8 @@ class PublicHealthPatientPageTest < ApplicationSystemTestCase
   end
 
   test 'pause notifications' do
-    @@public_health_test_helper.pause_notifications('state1_epi', 'patient_2', 'non_reporting')
-    @@public_health_test_helper.pause_notifications('state1_epi', 'patient_2', 'non_reporting')
+    @@public_health_test_helper.pause_notifications('state1_epi', 'patient_52', 'non_reporting')
+    @@public_health_test_helper.pause_notifications('state1_epi', 'patient_52', 'non_reporting')
   end
 
   test 'add comment' do
@@ -117,6 +117,6 @@ class PublicHealthPatientPageTest < ApplicationSystemTestCase
   end
 
   test 'move to household' do
-    @@public_health_test_helper.move_to_household('state1_epi', 'patient_2', 'patient_4')
+    @@public_health_test_helper.pause_notifications('state1_epi', 'patient_52', 'non_reporting')
   end
 end

@@ -23,16 +23,16 @@ import axios from 'axios';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 
-import AdvancedFilter from './query/AdvancedFilter';
-import BadgeHoH from '../patient/icons/BadgeHoH';
-import FollowUpFlag from '../patient/follow_up_flag/FollowUpFlag';
-import CloseRecords from './bulk_actions/CloseRecords';
-import UpdateCaseStatus from './bulk_actions/UpdateCaseStatus';
-import UpdateAssignedUser from './bulk_actions/UpdateAssignedUser';
+import AdvancedFilter from '../public_health/query/AdvancedFilter';
+import BadgeHoH from './icons/BadgeHoH';
+import FollowUpFlag from './follow_up_flag/FollowUpFlag';
+import CloseRecords from '../public_health/bulk_actions/CloseRecords';
+import UpdateCaseStatus from '../public_health/bulk_actions/UpdateCaseStatus';
+import UpdateAssignedUser from '../public_health/bulk_actions/UpdateAssignedUser';
 import InfoTooltip from '../util/InfoTooltip';
 import CustomTable from '../layout/CustomTable';
-import JurisdictionFilter from './query/JurisdictionFilter';
-import AssignedUserFilter from './query/AssignedUserFilter';
+import JurisdictionFilter from '../public_health/query/JurisdictionFilter';
+import AssignedUserFilter from '../public_health/query/AssignedUserFilter';
 import EligibilityTooltip from '../util/EligibilityTooltip';
 import confirmDialog from '../util/ConfirmDialog';
 import { patientHref } from '../../utils/Navigation';
@@ -52,6 +52,7 @@ class PatientsTable extends React.Component {
           { field: 'transferred_to', label: 'To Jurisdiction', isSortable: true, tooltip: null },
           { field: 'assigned_user', label: 'Assigned User', isSortable: true, tooltip: null },
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
+          { field: 'sex', label: 'Sex', isSortable: true, tooltip: null },
           { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDOB },
           { field: 'primary_telephone', label: 'Phone Number', isSortable: true, tooltip: null, filter: this.formatPhoneNumber },
           { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatEndOfMonitoring },
@@ -70,6 +71,7 @@ class PatientsTable extends React.Component {
           { field: 'workflow', label: 'Workflow', isSortable: true, tooltip: null },
           { field: 'status', label: 'Status', isSortable: false, tooltip: null },
           { field: 'report_eligibility', label: '', isSortable: false, tooltip: null, filter: this.createEligibilityTooltip, icon: 'far fa-comment' },
+          { field: 'enrollment_date', label: 'Enrollment Date', isSortable: true, tooltip: null, filter: formatDate },
         ],
         displayedColData: [],
         rowData: [],
@@ -83,7 +85,7 @@ class PatientsTable extends React.Component {
       assigned_users: [],
       query: {
         workflow: props.workflow,
-        tab: props.default_tab ?? Object.keys(props.tabs)[0],
+        tab: props.default_tab ?? props.tabs ? Object.keys(props.tabs)[0] : null,
         jurisdiction: props.jurisdiction.id,
         scope: 'all',
         user: null,
@@ -102,12 +104,14 @@ class PatientsTable extends React.Component {
     const query = {};
 
     // Set tab from local storage if it exists and is a valid tab
-    let tab = this.getLocalStorage(`${this.props.workflow}Tab`);
-    if (tab === null || !Object.keys(this.props.tabs).includes(tab)) {
-      query.tab = this.state.query.tab;
-      this.setLocalStorage(`${this.props.workflow}Tab`, query.tab);
-    } else {
-      query.tab = tab;
+    if (this.props.tabs) {
+      let tab = this.getLocalStorage(`${this.props.workflow}Tab`);
+      if (tab === null || !Object.keys(this.props.tabs).includes(tab)) {
+        query.tab = this.state.query.tab;
+        this.setLocalStorage(`${this.props.workflow}Tab`, query.tab);
+      } else {
+        query.tab = tab;
+      }
     }
 
     // Set jurisdiction if it exists in local storage
@@ -167,13 +171,15 @@ class PatientsTable extends React.Component {
     this.updateTable({ ...this.state.query, ...query });
 
     // fetch workflow and tab counts
-    Object.keys(this.props.tabs).forEach(tab => {
-      axios.get(`${window.BASE_PATH}/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
-        const count = {};
-        count[`${tab}Count`] = response.data.total;
-        this.setState(count);
+    if (this.props.tabs) {
+      Object.keys(this.props.tabs).forEach(tab => {
+        axios.get(`${window.BASE_PATH}/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
+          const count = {};
+          count[`${tab}Count`] = response.data.total;
+          this.setState(count);
+        });
       });
-    });
+    }
   }
 
   clearAllFilters = async () => {
@@ -361,12 +367,15 @@ class PatientsTable extends React.Component {
     );
 
     // set query
-    this.props.setQuery(query);
+    if (this.props.setQuery) {
+      this.props.setQuery(query);
+    }
   };
 
   queryServer = _.debounce(query => {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post(window.BASE_PATH + '/public_health/patients', { query, cancelToken: this.state.cancelToken.token })
+      .post(`${window.BASE_PATH}/${this.props.enroller ? 'enroller' : 'public_health'}/patients`, { query, cancelToken: this.state.cancelToken.token })
       .catch(error => {
         if (!axios.isCancel(error)) {
           this.setState(state => {
@@ -391,7 +400,9 @@ class PatientsTable extends React.Component {
           });
 
           // update count for custom export
-          this.props.setFilteredMonitoreesCount(response.data.total);
+          if (this.props.setFilteredMonitoreesCount) {
+            this.props.setFilteredMonitoreesCount(response.data.total);
+          }
         } else {
           this.setState({
             selectedPatients: [],
@@ -401,7 +412,9 @@ class PatientsTable extends React.Component {
           });
 
           // update count for custom export
-          this.props.setFilteredMonitoreesCount(0);
+          if (this.props.setFilteredMonitoreesCount) {
+            this.props.setFilteredMonitoreesCount(response.data.total);
+          }
         }
       });
   }, 500);
@@ -454,6 +467,7 @@ class PatientsTable extends React.Component {
    */
   updateAssignedUsers = query => {
     if (query.tab !== 'transferred_out') {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/jurisdictions/assigned_users', {
           query: { jurisdiction: query.jurisdiction, scope: query.scope, workflow: query.workflow, tab: query.tab },
@@ -613,33 +627,41 @@ class PatientsTable extends React.Component {
   render() {
     return (
       <div className={`dashboard ${this.props.workflow}-dashboard mx-2 pb-4`}>
-        <Nav variant="tabs" activeKey={this.state.query.tab}>
-          {Object.entries(this.props.tabs).map(([tab, tabProps]) => {
-            return (
-              <Nav.Item key={tab}>
-                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`}>
-                  <span className="large-tab">{tabProps.label}</span>
-                  <span className="small-tab" aria-label={tabProps.label}>
-                    {tabProps.abbreviatedLabel || tabProps.label}
-                  </span>
-                  <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
-                    <span>{`${tab}Count` in this.state ? this.state[`${tab}Count`] : ''}</span>
-                  </Badge>
-                </Nav.Link>
-              </Nav.Item>
-            );
-          })}
-        </Nav>
+        {this.props.tabs && (
+          <Nav variant="tabs" activeKey={this.state.query.tab}>
+            {Object.entries(this.props.tabs).map(([tab, tabProps]) => {
+              return (
+                <Nav.Item key={tab}>
+                  <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`}>
+                    <span className="large-tab">{tabProps.label}</span>
+                    <span className="small-tab" aria-label={tabProps.label}>
+                      {tabProps.abbreviatedLabel || tabProps.label}
+                    </span>
+                    <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
+                      <span>{`${tab}Count` in this.state ? this.state[`${tab}Count`] : ''}</span>
+                    </Badge>
+                  </Nav.Link>
+                </Nav.Item>
+              );
+            })}
+          </Nav>
+        )}
         <TabContent>
           <Card style={{ marginTop: '-1px' }}>
             <Card.Body className="px-4">
               <Row>
                 <Col md="18">
-                  <div id="tab-description" className="lead mt-1 mb-3">
-                    {this.props.tabs[this.state.query.tab].description} You are currently in the <u>{this.props.workflow}</u>{' '}
-                    {this.props.workflow === 'global' ? 'dashboard' : 'workflow'}.
-                    {this.props.tabs[this.state.query.tab].tooltip && (
-                      <InfoTooltip tooltipTextKey={_.camelCase(this.props.tabs[this.state.query.tab].tooltip)} location="right"></InfoTooltip>
+                  <div id="table-description" className="lead mt-1 mb-3">
+                    {this.props.enroller ? (
+                      <span className="display-6">Enrolled Monitorees</span>
+                    ) : (
+                      <React.Fragment>
+                        {this.props.tabs[this.state.query.tab].description} You are currently in the <u>{this.props.workflow}</u>{' '}
+                        {this.props.workflow === 'global' ? 'dashboard' : 'workflow'}.
+                        {this.props.tabs[this.state.query.tab].tooltip && (
+                          <InfoTooltip tooltipTextKey={_.camelCase(this.props.tabs[this.state.query.tab].tooltip)} location="right"></InfoTooltip>
+                        )}
+                      </React.Fragment>
                     )}
                   </div>
                 </Col>
@@ -699,47 +721,51 @@ class PatientsTable extends React.Component {
                     onChange={this.handleSearchChange}
                     onKeyPress={this.handleKeyPress}
                   />
-                  <AdvancedFilter
-                    advancedFilterUpdate={this.advancedFilterUpdate}
-                    authenticity_token={this.props.authenticity_token}
-                    updateStickySettings={true}
-                    jurisdiction_id={this.props.jurisdiction.id}
-                    jurisdiction_paths={this.props.jurisdiction_paths}
-                    all_assigned_users={this.props.all_assigned_users}
-                  />
-                  {this.state.query.tab !== 'transferred_out' && (
-                    <DropdownButton
-                      as={ButtonGroup}
-                      size="sm"
-                      variant="primary"
-                      title={
-                        <React.Fragment>
-                          <i className="fas fa-tools"></i> Bulk Actions{' '}
-                        </React.Fragment>
-                      }
-                      className="ml-2"
-                      disabled={!this.state.actionsEnabled}>
-                      {this.state.query.tab !== 'closed' && (
-                        <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Close Records' })}>
-                          <i className="fas fa-window-close text-center" style={{ width: '1em' }}></i>
-                          <span className="ml-2">Close Records</span>
-                        </Dropdown.Item>
+                  {!this.props.enroller && (
+                    <React.Fragment>
+                      <AdvancedFilter
+                        advancedFilterUpdate={this.advancedFilterUpdate}
+                        authenticity_token={this.props.authenticity_token}
+                        updateStickySettings={true}
+                        jurisdiction_id={this.props.jurisdiction.id}
+                        jurisdiction_paths={this.props.jurisdiction_paths}
+                        all_assigned_users={this.props.all_assigned_users}
+                      />
+                      {this.state.query.tab !== 'transferred_out' && (
+                        <DropdownButton
+                          as={ButtonGroup}
+                          size="sm"
+                          variant="primary"
+                          title={
+                            <React.Fragment>
+                              <i className="fas fa-tools"></i> Bulk Actions{' '}
+                            </React.Fragment>
+                          }
+                          className="ml-2"
+                          disabled={!this.state.actionsEnabled}>
+                          {this.state.query.tab !== 'closed' && (
+                            <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Close Records' })}>
+                              <i className="fas fa-window-close text-center" style={{ width: '1em' }}></i>
+                              <span className="ml-2">Close Records</span>
+                            </Dropdown.Item>
+                          )}
+                          {this.props.workflow !== 'global' && (
+                            <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Case Status' })}>
+                              <i className="fas fa-clipboard-list text-center" style={{ width: '1em' }}></i>
+                              <span className="ml-2">Update Case Status</span>
+                            </Dropdown.Item>
+                          )}
+                          <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Assigned User' })}>
+                            <i className="fas fa-users text-center" style={{ width: '1em' }}></i>
+                            <span className="ml-2">Update Assigned User</span>
+                          </Dropdown.Item>
+                          <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Flag for Follow-up' })}>
+                            <i className="fas fa-flag text-center" style={{ width: '1em' }}></i>
+                            <span className="ml-2">Flag for Follow-up</span>
+                          </Dropdown.Item>
+                        </DropdownButton>
                       )}
-                      {this.props.workflow !== 'global' && (
-                        <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Case Status' })}>
-                          <i className="fas fa-clipboard-list text-center" style={{ width: '1em' }}></i>
-                          <span className="ml-2">Update Case Status</span>
-                        </Dropdown.Item>
-                      )}
-                      <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Assigned User' })}>
-                        <i className="fas fa-users text-center" style={{ width: '1em' }}></i>
-                        <span className="ml-2">Update Assigned User</span>
-                      </Dropdown.Item>
-                      <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Flag for Follow-up' })}>
-                        <i className="fas fa-flag text-center" style={{ width: '1em' }}></i>
-                        <span className="ml-2">Flag for Follow-up</span>
-                      </Dropdown.Item>
-                    </DropdownButton>
+                    </React.Fragment>
                   )}
                 </InputGroup>
               </Form>
@@ -755,7 +781,7 @@ class PatientsTable extends React.Component {
                   handlePageUpdate={this.handlePageUpdate}
                   getRowClassName={this.getRowClassName}
                   getRowCheckboxAriaLabel={this.getRowCheckboxAriaLabel}
-                  isSelectable={true}
+                  isSelectable={!this.props.enroller}
                   isEditable={false}
                   isLoading={this.state.loading}
                   page={this.state.query.page}
@@ -831,6 +857,7 @@ PatientsTable.propTypes = {
   setQuery: PropTypes.func,
   setFilteredMonitoreesCount: PropTypes.func,
   monitoring_reasons: PropTypes.array,
+  enroller: PropTypes.bool,
 };
 
 export default PatientsTable;
