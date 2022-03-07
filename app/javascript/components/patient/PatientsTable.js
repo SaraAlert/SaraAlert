@@ -83,7 +83,6 @@ class PatientsTable extends React.Component {
       selectAll: false,
       jurisdiction_paths: {},
       assigned_users: [],
-      vaccine_standards: props.vaccine_standards,
       query: {
         workflow: props.workflow,
         tab: props.default_tab ?? props.tabs ? Object.keys(props.tabs)[0] : null,
@@ -731,6 +730,7 @@ class PatientsTable extends React.Component {
                         jurisdiction_id={this.props.jurisdiction.id}
                         jurisdiction_paths={this.props.jurisdiction_paths}
                         all_assigned_users={this.props.all_assigned_users}
+                        vaccine_standards={this.props.vaccine_standards}
                       />
                       {this.state.query.tab !== 'transferred_out' && (
                         <DropdownButton
