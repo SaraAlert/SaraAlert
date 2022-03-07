@@ -1,6 +1,6 @@
 {
   "low": true,
   "package-manager": "yarn",
-  "allowlist": [1004946, 1004967, 1005059, 1006852, 1006854, 1006898, 1006947],
+  "allowlist": [1030652, 1030671, 1030673, 1030838, 1031069, 1030860, 1030956],
   "registry": "https://registry.npmjs.org"
 }
