@@ -2,7 +2,6 @@
   <%= javascript_packs_with_chunks_tag 'datatables' %>
 <% end %>
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Dashboard', href: nil }] } %>
-<h1 class="sr-only">Enrolled Monitorees</h1>
 
 <%= react_component('enroller/EnrollerDashboard', {
                       jurisdiction: {
