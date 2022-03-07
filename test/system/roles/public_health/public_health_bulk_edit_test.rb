@@ -12,12 +12,12 @@ class PublicHealthBulkEditTest < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   test 'bulk edit case status from exposure to isolation' do
-    @@public_health_test_helper.bulk_edit_update_case_status('state1_epi', %w[patient_1 patient_2], :exposure, 'all', 'Confirmed',
+    @@public_health_test_helper.bulk_edit_update_case_status('state1_epi', %w[patient_1 patient_7], :exposure, 'all', 'Confirmed',
                                                              'Continue Monitoring in Isolation Workflow')
   end
 
   test 'bulk edit case status from exposure to closed' do
-    @@public_health_test_helper.bulk_edit_update_case_status('state1_epi', %w[patient_1 patient_2], :exposure, 'all', 'Confirmed', 'End Monitoring')
+    @@public_health_test_helper.bulk_edit_update_case_status('state1_epi', %w[patient_1 patient_7], :exposure, 'all', 'Confirmed', 'End Monitoring')
   end
 
   test 'bulk edit case status from isolation to exposure' do
@@ -38,7 +38,7 @@ class PublicHealthBulkEditTest < ApplicationSystemTestCase
   end
 
   test 'bulk edit close records from exposure workflow' do
-    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_1 patient_2], :exposure, 'all', nil, '')
+    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_1 patient_7], :exposure, 'all', nil, '')
   end
 
   test 'bulk edit close records from isolation workflow' do

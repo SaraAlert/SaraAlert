@@ -24,10 +24,10 @@ class AnalyticsJobTest < ActiveSupport::TestCase
 
     assert_equal(10, Analytic.all.size)
 
-    assert_equal(40, MonitoreeCount.where(category_type: 'Age Group').size)
+    assert_equal(43, MonitoreeCount.where(category_type: 'Age Group').size)
     assert_equal(27, MonitoreeCount.where(category_type: 'Sex').size)
-    assert_equal(8, MonitoreeCount.where(category_type: 'Risk Factor').size)
-    assert_equal(8, MonitoreeCount.where(category_type: 'Exposure Country').size)
+    assert_equal(11, MonitoreeCount.where(category_type: 'Risk Factor').size)
+    assert_equal(10, MonitoreeCount.where(category_type: 'Exposure Country').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Date').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Week').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Month').size)
@@ -39,11 +39,11 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(20, MonitoreeSnapshot.where(time_frame: 'Total').size)
     assert_equal(80, MonitoreeSnapshot.all.size)
 
-    assert_equal(31, MonitoreeMap.where(level: 'State', workflow: 'Exposure').size)
-    assert_equal(11, MonitoreeMap.where(level: 'State', workflow: 'Isolation').size)
-    assert_equal(29, MonitoreeMap.where(level: 'County', workflow: 'Exposure').size)
-    assert_equal(7, MonitoreeMap.where(level: 'County', workflow: 'Isolation').size)
-    assert_equal(78, MonitoreeMap.all.size)
+    assert_equal(33, MonitoreeMap.where(level: 'State', workflow: 'Exposure').size)
+    assert_equal(10, MonitoreeMap.where(level: 'State', workflow: 'Isolation').size)
+    assert_equal(33, MonitoreeMap.where(level: 'County', workflow: 'Exposure').size)
+    assert_equal(6, MonitoreeMap.where(level: 'County', workflow: 'Isolation').size)
+    assert_equal(82, MonitoreeMap.all.size)
   end
 
   test 'all monitoree counts' do
@@ -64,8 +64,8 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 8, true, 'Age Group', '40-49', 9)
     verify_monitoree_count(active_counts, 9, true, 'Age Group', '50-59', 1)
     verify_monitoree_count(active_counts, 10, true, 'Age Group', '50-59', 1)
-    verify_monitoree_count(active_counts, 11, true, 'Age Group', '60-69', 1)
-    verify_monitoree_count(active_counts, 12, true, 'Age Group', '60-69', 2)
+    verify_monitoree_count(active_counts, 11, true, 'Age Group', '60-69', 2)
+    verify_monitoree_count(active_counts, 12, true, 'Age Group', '60-69', 1)
     verify_monitoree_count(active_counts, 13, true, 'Age Group', '70-79', 1)
     assert_equal(14, active_counts.length)
   end
@@ -73,8 +73,8 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   test 'monitoree counts by sex' do
     active_counts = CacheAnalyticsJob.monitoree_counts_by_sex(1, @@monitorees)
     verify_monitoree_count(active_counts, 0, true, 'Sex', 'Missing', 2)
-    verify_monitoree_count(active_counts, 1, true, 'Sex', 'Female', 10)
-    verify_monitoree_count(active_counts, 2, true, 'Sex', 'Female', 6)
+    verify_monitoree_count(active_counts, 1, true, 'Sex', 'Female', 11)
+    verify_monitoree_count(active_counts, 2, true, 'Sex', 'Female', 5)
     verify_monitoree_count(active_counts, 3, true, 'Sex', 'Male', 11)
     verify_monitoree_count(active_counts, 4, true, 'Sex', 'Male', 10)
     verify_monitoree_count(active_counts, 5, true, 'Sex', 'Unknown', 3)
@@ -99,10 +99,12 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 1, true, 'Last Exposure Date', days_ago(26), 1)
     verify_monitoree_count(active_counts, 2, true, 'Last Exposure Date', days_ago(22), 2)
     verify_monitoree_count(active_counts, 3, true, 'Last Exposure Date', days_ago(11), 2)
-    verify_monitoree_count(active_counts, 4, true, 'Last Exposure Date', days_ago(5), 6)
-    verify_monitoree_count(active_counts, 5, true, 'Last Exposure Date', days_ago(3), 1)
-    verify_monitoree_count(active_counts, 6, true, 'Last Exposure Date', days_ago(1), 1)
-    assert_equal(8, active_counts.length)
+    verify_monitoree_count(active_counts, 4, true, 'Last Exposure Date', days_ago(9), 1)
+    verify_monitoree_count(active_counts, 5, true, 'Last Exposure Date', days_ago(5), 6)
+    verify_monitoree_count(active_counts, 6, true, 'Last Exposure Date', days_ago(3), 1)
+    verify_monitoree_count(active_counts, 7, true, 'Last Exposure Date', days_ago(1), 1)
+    verify_monitoree_count(active_counts, 8, true, 'Last Exposure Date', days_ago(0), 1)
+    assert_equal(9, active_counts.length)
   end
 
   test 'monitoree counts by last exposure week' do
@@ -207,12 +209,12 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   test 'state level maps' do
     maps = CacheAnalyticsJob.state_level_maps(1, @@monitorees)
     verify_map(maps, 0, 'State', 'Exposure', nil, nil, 2)
-    verify_map(maps, 1, 'State', 'Exposure', 'California', nil, 4)
+    verify_map(maps, 1, 'State', 'Exposure', 'California', nil, 5)
     verify_map(maps, 2, 'State', 'Exposure', 'Delaware', nil, 2)
     verify_map(maps, 3, 'State', 'Exposure', 'Massachusetts', nil, 7)
     verify_map(maps, 4, 'State', 'Exposure', 'New Mexico', nil, 7)
     verify_map(maps, 5, 'State', 'Exposure', 'New York', nil, 4)
-    verify_map(maps, 6, 'State', 'Isolation', 'California', nil, 6)
+    verify_map(maps, 6, 'State', 'Isolation', 'California', nil, 5)
     verify_map(maps, 7, 'State', 'Isolation', 'Massachusetts', nil, 1)
     verify_map(maps, 8, 'State', 'Isolation', 'New York', nil, 1)
     verify_map(maps, 9, 'State', 'Isolation', 'Utah', nil, 10)
@@ -223,7 +225,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     maps = CacheAnalyticsJob.county_level_maps(1, @@monitorees)
     verify_map(maps, 0, 'County', 'Exposure', nil, nil, 1)
     verify_map(maps, 1, 'County', 'Exposure', nil, 'Lake', 1)
-    verify_map(maps, 2, 'County', 'Exposure', 'California', nil, 2)
+    verify_map(maps, 2, 'County', 'Exposure', 'California', nil, 3)
     verify_map(maps, 3, 'County', 'Exposure', 'California', 'Monroe', 2)
     verify_map(maps, 4, 'County', 'Exposure', 'Delaware', 'Jackson', 1)
     verify_map(maps, 5, 'County', 'Exposure', 'Delaware', 'Pike', 1)
@@ -234,7 +236,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_map(maps, 10, 'County', 'Exposure', 'New York', nil, 2)
     verify_map(maps, 11, 'County', 'Exposure', 'New York', 'Monroe', 1)
     verify_map(maps, 12, 'County', 'Exposure', 'New York', 'Pike', 1)
-    verify_map(maps, 13, 'County', 'Isolation', 'California', nil, 6)
+    verify_map(maps, 13, 'County', 'Isolation', 'California', nil, 5)
     verify_map(maps, 14, 'County', 'Isolation', 'Massachusetts', nil, 1)
     verify_map(maps, 15, 'County', 'Isolation', 'New York', nil, 1)
     verify_map(maps, 16, 'County', 'Isolation', 'Utah', nil, 10)

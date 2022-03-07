@@ -20,9 +20,9 @@ class EnrollerTestHelper < ApplicationSystemTestCase
   MONITOREES = SystemTestUtils::MONITOREES
   PATIENTS = SystemTestUtils::PATIENTS
 
-  def view_enrolled_monitorees(user_label)
-    @@system_test_utils.login(user_label)
-    @@enroller_dashboard_verifier.verify_enrolled_monitorees(user_label)
+  def view_enrolled_monitorees(user_label, is_epi: false)
+    jurisdiction = @@system_test_utils.login(user_label)
+    @@enroller_dashboard_verifier.verify_enrolled_monitorees(user_label, jurisdiction, is_epi: is_epi)
     @@system_test_utils.logout
   end
 
@@ -146,6 +146,7 @@ class EnrollerTestHelper < ApplicationSystemTestCase
     displayed_name = "#{last_name}, #{first_name}"
 
     @@system_test_utils.login(user_label)
+    sleep(1) # wait for data to load
     fill_in 'Search', with: displayed_name
     click_on displayed_name
     @@enroller_patient_page_verifier.move_to_household(user_label, patient_label, target_hoh_label)

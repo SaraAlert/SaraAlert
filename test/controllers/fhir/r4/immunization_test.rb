@@ -241,7 +241,7 @@ class ImmunizationTest < ApiControllerTestCase
   #----- search tests -----
 
   test 'should find Immunizations for a Patient via search' do
-    @vaccine_1.patient_id = 2
+    @vaccine_1.patient_id = 1
     @vaccine_1.save
     patient = Patient.find_by(id: @vaccine_1.patient_id)
     get(

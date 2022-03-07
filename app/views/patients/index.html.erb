@@ -2,18 +2,13 @@
   <%= javascript_packs_with_chunks_tag 'datatables' %>
 <% end %>
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Dashboard', href: nil }] } %>
-<h1 class="sr-only">Enrolled Monitorees</h1>
-<div class="btn-group">
-  <%= link_to({ controller: 'patients', action: 'new' }, { class: 'btn btn-primary btn-square ml-2 mb-3' }) do %>
-    <i class="fas fa-user-plus"></i> Enroll New Monitoree
-  <% end %>
-</div>
 
-<div class="mx-2 pb-4">
-  <div class="card card-square">
-    <div class="card-header h5">Enrolled Monitorees</div>
-    <div class="m-3">
-      <%= render partial: 'patients', locals: { patients: @enrolled_patients } %>
-    </div>
-  </div>
-</div>
+<%= react_component('enroller/EnrollerDashboard', {
+                      jurisdiction: {
+                        id: current_user.jurisdiction_id,
+                        path: current_user.jurisdiction[:path]
+                      },
+                      jurisdiction_paths: @possible_jurisdiction_paths,
+                      all_assigned_users: @all_assigned_users,
+                      authenticity_token: form_authenticity_token
+                    }) %>

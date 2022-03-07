@@ -104,6 +104,7 @@ Rails.application.routes.draw do
   post '/patients/:id/remove_from_household', to: 'patients#remove_from_household'
   post '/patients/:id/follow_up_flag', to: 'patients#update_follow_up_flag'
   post '/patients/current_case_status', to: 'patients#current_case_status'
+  post '/enroller/patients', to: 'patients#enrolled_patients', as: :enrolled_patients
 
   resources :patients, param: :submission_token do
     resources :assessments, only: [:create, :new, :index]

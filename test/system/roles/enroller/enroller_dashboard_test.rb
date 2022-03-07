@@ -10,9 +10,12 @@ class EnrollerDashboardTest < ApplicationSystemTestCase
   @@enroller_test_helper = EnrollerTestHelper.new(nil)
 
   test 'view enrolled monitorees' do
-    @@enroller_test_helper.view_enrolled_monitorees('state1_epi_enroller')
-    @@enroller_test_helper.view_enrolled_monitorees('locals1c1_enroller')
-    @@enroller_test_helper.view_enrolled_monitorees('state2_enroller')
+    @@enroller_test_helper.view_enrolled_monitorees('locals1c1_enroller', is_epi: false)
+    @@enroller_test_helper.view_enrolled_monitorees('state2_enroller', is_epi: false)
+  end
+
+  test 'view enrolled monitorees as epi' do
+    @@enroller_test_helper.view_enrolled_monitorees('state1_epi_enroller', is_epi: true)
   end
 
   test 'view enrollment analytics' do
