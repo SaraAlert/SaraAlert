@@ -10,6 +10,7 @@ class JurisdictionFilter extends React.Component {
     super(props);
     this.state = {
       sorted_jurisdiction_paths: [],
+      jurisdiction_id: props.jurisdiction,
       jurisdiction_path: props.jurisdiction_paths[props.jurisdiction] || '',
     };
   }
@@ -20,9 +21,19 @@ class JurisdictionFilter extends React.Component {
     };
   }
 
-  handleJurisdictionChange = jurisdiction_path => {
-    this.setState({ jurisdiction_path }, () => {
-      const jurisdiction = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === jurisdiction_path);
+  // This update is necessary since sticky settings are loaded after this component is constructed
+  componentDidUpdate() {
+    if (this.state.jurisdiction_id !== this.props.jurisdiction) {
+      this.setState({ jurisdiction_id: this.props.jurisdiction, jurisdiction_path: this.props.jurisdiction_paths[this.props.jurisdiction] });
+    }
+  }
+
+  // Handle changes to jurisdiction_path and jurisdiction_input separately so that the user can backspace into the form input
+  handleJurisdictionChange = event => {
+    const value = event.target.value;
+    const jurisdiction = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === value);
+
+    this.setState({ jurisdiction_path: value }, () => {
       if (jurisdiction) {
         this.props.onJurisdictionChange(parseInt(jurisdiction));
       }
@@ -48,8 +59,8 @@ class JurisdictionFilter extends React.Component {
           type="text"
           autoComplete="off"
           list="jurisdiction_paths"
-          defaultValue={this.props.jurisdiction_paths[this.props.jurisdiction] || ''}
-          onChange={event => this.handleJurisdictionChange(event?.target?.value)}
+          value={this.state.jurisdiction_path}
+          onChange={this.handleJurisdictionChange}
         />
         <datalist id="jurisdiction_paths">
           {this.state.sorted_jurisdiction_paths.map((jurisdiction, index) => {
