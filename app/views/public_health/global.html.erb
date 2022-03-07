@@ -1,7 +1,3 @@
-<% content_for :assets do %>
-<%= javascript_packs_with_chunks_tag 'moment' %>
-<% end %>
-
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Global Dashboard', href: nil }] } %>
 
 <%= react_component('public_health/PublicHealthDashboard', {

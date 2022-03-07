@@ -14,8 +14,8 @@ gem 'puma', '~> 4.3'
 # Use SCSS for stylesheets
 gem 'sassc', '~> 2.3.0'
 gem 'sass-rails', '>= 6'
-# Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
-gem 'webpacker', '~> 4.0'
+# Transpile app-like JavaScript. Read more: https://github.com/rails/jsbundling-rails
+gem 'jsbundling-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.7'
 # Twillio gem for sending SMS and robo calls

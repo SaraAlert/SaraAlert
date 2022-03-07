@@ -1,5 +1,5 @@
 <% content_for :assets do %>
-  <%= javascript_packs_with_chunks_tag 'moment', 'closest' %>
+  <%= javascript_include_tag 'moment', 'closest' %>
 <% end %>
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Analytics', href: nil }] } %>
 <% if current_user.role?(Roles::ENROLLER) %>

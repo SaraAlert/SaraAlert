@@ -1,0 +1,92 @@
+.sort-header {
+  position: relative;
+
+  &__button {
+    &--default {
+      color: #b8b8b8;
+      position: absolute;
+      right: -12px;
+    }
+
+    &--selected {
+      position: absolute;
+      right: -12px;
+    }
+  }
+}
+
+.pointer-cursor {
+  cursor: pointer;
+}
+
+.col-long-text-field {
+  max-width: 500px;
+  overflow-wrap: break-word;
+}
+
+.opaque-table {
+  opacity: 1;
+  background-color: white;
+}
+
+.paginate_button {
+  border-radius: 0 !important;
+}
+
+.page-link {
+  border-radius: 0 !important;
+}
+
+.num-rows-displayed-text {
+  background-color: transparent;
+  color: #212529;
+  border: none;
+}
+
+.table-responsive {
+  margin-bottom: 1em;
+
+  table {
+    margin-bottom: 0px;
+  }
+}
+
+// This is how we deal with slight vertical overflow from a dropdown in a table that needs to be horizontal scrollable.
+// See this for the core issue: https://stackoverflow.com/a/6433475
+.table-has-dropdown {
+  padding-top: 80px;
+  margin-top: -80px;
+
+  &-large {
+    padding-top: 105px;
+    margin-top: -105px;
+  }
+}
+
+// REMOVE WHEN CLOSE CONTACT AND LAB TABLES ARE CONVERTED
+.table-smaller-font {
+  font-size: 0.9em;
+}
+
+.admin-table, .patients-table {
+  tbody tr:hover {
+    background-color: #ddd;
+    td {
+      border-color: white;
+    }
+  }
+}
+
+.selected-row {
+  background-color: #d4e7f7 !important;
+
+  td, th {
+    border: 1px solid white;
+  }
+
+  &:hover {
+    td, th {
+      background-color: #bcdcf5 ;
+    }
+  }
+}

@@ -64,3 +64,6 @@ jmeter.log
 performance/benchmarks/output/
 performance/github_artifacts/
 
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

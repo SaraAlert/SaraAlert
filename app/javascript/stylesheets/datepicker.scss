@@ -1,0 +1,122 @@
+@import './constants';
+
+.date-input {
+  position: relative;
+}
+
+.date-input__calendar_icon_sm {
+  z-index: 1;
+  position: absolute;
+  left: 0.75rem;
+  top: 0.40rem;
+  color: $datepicker-gray;
+  font-size: 14pt;
+}
+
+.date-input__calendar_icon_md {
+  z-index: 1;
+  position: absolute;
+  left: 1.125rem;
+  top: 0.575rem;
+  color: $datepicker-gray;
+  font-size: 16pt;
+}
+
+.date-input__calendar_icon_lg {
+  z-index: 1;
+  position: absolute;
+  left: 1.25rem;
+  top: 0.75rem;
+  color: $datepicker-gray;
+  font-size: 18pt;
+}
+
+.date-input__input_sm {
+  padding-left: 2.125rem;
+}
+
+.date-input__input_md {
+  padding-left: 2.875rem;
+}
+
+.date-input__input_lg {
+  padding-left: 3.375rem;
+}
+
+.date-input__clear-btn_lg {
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  padding: 0.8125rem 1rem !important;
+  color: #555;
+  font-size: 16pt;
+  outline: none;
+}
+
+.date-input__clear-btn_md {
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  padding: 0.8125rem 1rem !important;
+  color: #555;
+  font-size: 16pt;
+  outline: none;
+}
+
+.date-input__clear-btn_sm {
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  padding: 0.4125rem 0.5rem !important;
+  color: #555;
+  font-size: 13pt;
+  outline: none;
+}
+
+.date-input__clear-btn-invalid_lg {
+  z-index: 1;
+  position: absolute;
+  right: 1.5rem;
+  padding: 0.8125rem 1rem !important;
+  color: #555;
+  font-size: 16pt;
+  outline: none;
+}
+
+.date-input__clear-btn-invalid_md {
+  z-index: 1;
+  position: absolute;
+  right: 1.5rem;
+  padding: 0.8125rem 1rem !important;
+  color: #555;
+  font-size: 16pt;
+  outline: none;
+}
+
+.date-input__clear-btn-invalid_sm {
+  z-index: 1;
+  position: absolute;
+  right: 1.5rem;
+  padding: 0.4125rem 0.5rem !important;
+  color: #555;
+  font-size: 13pt;
+  outline: none;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker-popper {
+  z-index: 100 !important
+}
+
+// Hide the timepicker, because we don't need it and it can only do 12 hour time
+.react-datepicker__input-time-container {
+  height: 0px;
+  visibility: collapse;
+}
+
+.time-zone {
+  color: $datepicker-gray;
+}

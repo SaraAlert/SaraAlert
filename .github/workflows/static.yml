@@ -64,3 +64,5 @@ jobs:
         run: ./node_modules/.bin/pretty-quick --check --pattern "**/{tests,components}/**/*.*(js|jsx)"
       - name: Run Spellcheck
         run: bundle exec rails spellcheck
+      - name: Run Build
+        run: yarn build
