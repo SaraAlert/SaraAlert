@@ -69,7 +69,7 @@ class CurrentStatus extends React.Component {
           variant="danger"
           className="badge-larger-font"
           aria-label="Linelist: Asymptomatic Non Test Based."
-          data-for={`aymptomatic-non-test-based`}
+          data-for={`asymptomatic-non-test-based`}
           data-tip="">
           requires review (asymptomatic non test based)
         </Badge>
