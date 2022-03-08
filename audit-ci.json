@@ -1,6 +1,6 @@
 {
   "low": true,
   "package-manager": "yarn",
-  "allowlist": [1033264, 1033283, 1033285, 1033450, 1033681, 1033472, 1033568],
+  "allowlist": ["*|@rails/webpacker>*", "*|webpack-dev-server>*", "*|eslint>*"],
   "registry": "https://registry.npmjs.org"
 }
