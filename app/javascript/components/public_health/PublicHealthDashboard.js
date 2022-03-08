@@ -17,8 +17,8 @@ class PublicHealthDashboard extends React.Component {
       <React.Fragment>
         <PublicHealthHeader
           authenticity_token={this.props.authenticity_token}
-          all_assigned_users={this.props.all_assigned_users}
           jurisdiction_paths={this.props.jurisdiction_paths}
+          advanced_filter_options={this.props.advanced_filter_options}
           workflow={this.props.workflow}
           jurisdiction={this.props.jurisdiction}
           tabs={this.props.tabs}
@@ -31,12 +31,12 @@ class PublicHealthDashboard extends React.Component {
         <PatientsTable
           authenticity_token={this.props.authenticity_token}
           jurisdiction_paths={this.props.jurisdiction_paths}
-          all_assigned_users={this.props.all_assigned_users}
           workflow={this.props.workflow}
           jurisdiction={this.props.jurisdiction}
           tabs={this.props.tabs}
           default_tab={this.props.default_tab}
           monitoring_reasons={this.props.monitoring_reasons}
+          advanced_filter_options={this.props.advanced_filter_options}
           setQuery={query => this.setState({ query })}
           setFilteredMonitoreesCount={current_monitorees_count => this.setState({ current_monitorees_count })}
           vaccine_standards={this.props.vaccine_standards}
@@ -54,7 +54,7 @@ PublicHealthDashboard.propTypes = {
   tabs: PropTypes.object,
   default_tab: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
-  all_assigned_users: PropTypes.array,
+  advanced_filter_options: PropTypes.array,
   custom_export_options: PropTypes.object,
   monitoring_reasons: PropTypes.array,
   vaccine_standards: PropTypes.object,

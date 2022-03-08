@@ -222,7 +222,7 @@ export const advancedFilterOptions = [
     title: 'Age (Number)',
     description: 'Current Monitoree Age',
     type: 'number',
-    allowRange: true,
+    allow_range: true,
   },
   {
     name: 'manual-contact-attempts',
@@ -264,28 +264,28 @@ export const advancedFilterOptions = [
     title: 'Enrolled (Relative Date)',
     description: 'Monitorees enrolled in system during specified date range (relative to the current date)',
     type: 'relative',
-    hasTimestamp: true,
+    has_timestamp: true,
   },
   {
     name: 'latest-report-relative',
     title: 'Latest Report (Relative Date)',
     description: 'Monitorees with latest report during specified date range (relative to the current date)',
     type: 'relative',
-    hasTimestamp: true,
+    has_timestamp: true,
   },
   {
     name: 'last-date-exposure-relative',
     title: 'Last Date of Exposure (Relative Date)',
     description: 'Monitorees who have a last date of exposure during specified date range (relative to the current date)',
     type: 'relative',
-    hasTimestamp: false,
+    has_timestamp: false,
   },
   {
     name: 'symptom-onset-relative',
     title: 'Symptom Onset (Relative Date)',
     description: 'Monitorees who have a Symptom Onset Date during specified date range (relative to the current date)',
     type: 'relative',
-    hasTimestamp: false,
+    has_timestamp: false,
   },
 
   /* COMBINATION OPTIONS */

@@ -724,13 +724,10 @@ class PatientsTable extends React.Component {
                   {!this.props.enroller && (
                     <React.Fragment>
                       <AdvancedFilter
-                        advancedFilterUpdate={this.advancedFilterUpdate}
-                        authenticity_token={this.props.authenticity_token}
-                        updateStickySettings={true}
-                        jurisdiction_id={this.props.jurisdiction.id}
-                        jurisdiction_paths={this.props.jurisdiction_paths}
-                        all_assigned_users={this.props.all_assigned_users}
-                        vaccine_standards={this.props.vaccine_standards}
+                   		advancedFilterUpdate={this.advancedFilterUpdate}
+                    	authenticity_token={this.props.authenticity_token}
+                   		updateStickySettings={true}
+                    	advanced_filter_options={this.props.advanced_filter_options}
                       />
                       {this.state.query.tab !== 'transferred_out' && (
                         <DropdownButton
@@ -845,7 +842,6 @@ class PatientsTable extends React.Component {
 PatientsTable.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
-  all_assigned_users: PropTypes.array,
   all_cohort_names: PropTypes.array,
   all_cohort_locations: PropTypes.array,
   workflow: PropTypes.oneOf(['global', 'exposure', 'isolation']),
@@ -859,7 +855,7 @@ PatientsTable.propTypes = {
   setFilteredMonitoreesCount: PropTypes.func,
   monitoring_reasons: PropTypes.array,
   enroller: PropTypes.bool,
-  vaccine_standards: PropTypes.object,
+  advanced_filter_options: PropTypes.array,
 };
 
 export default PatientsTable;

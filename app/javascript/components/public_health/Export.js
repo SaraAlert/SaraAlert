@@ -123,7 +123,7 @@ class Export extends React.Component {
           <CustomExport
             authenticity_token={this.props.authenticity_token}
             jurisdiction_paths={this.props.jurisdiction_paths}
-            all_assigned_users={this.props.all_assigned_users}
+            advanced_filter_options={this.props.advanced_filter_options}
             all_cohort_names={this.props.all_cohort_names}
             all_cohort_locations={this.props.all_cohort_locations}
             jurisdiction={this.props.jurisdiction}
@@ -149,7 +149,7 @@ class Export extends React.Component {
 Export.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
-  all_assigned_users: PropTypes.array,
+  advanced_filter_options: PropTypes.array,
   all_cohort_names: PropTypes.array,
   all_cohort_locations: PropTypes.array,
   jurisdiction: PropTypes.object,
