@@ -7,7 +7,7 @@ class EnrollerDashboard extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <h1 class="sr-only">Enrolled Monitorees</h1>
+        <h1 className="sr-only">Enrolled Monitorees</h1>
         <Button variant="primary" className="ml-2 mb-3" href={`${window.BASE_PATH}/patients/new`}>
           <span>
             <i className="fas fa-user-plus"></i> Enroll New Monitoree
