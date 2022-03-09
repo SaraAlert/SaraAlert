@@ -515,6 +515,8 @@ class Patient < ApplicationRecord
 
   # Individuals that meet the asymptomatic recovery definition (isolation workflow only)
   scope :isolation_asymp_non_test_based, lambda {
+    return none unless ADMIN_OPTIONS['enable_asymp_non_test_based']
+
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
@@ -526,6 +528,8 @@ class Patient < ApplicationRecord
 
   # Individuals that meet the symptomatic non test based review requirement (isolation workflow only)
   scope :isolation_symp_non_test_based, lambda {
+    return none unless ADMIN_OPTIONS['enable_symp_non_test_based']
+
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
@@ -544,6 +548,8 @@ class Patient < ApplicationRecord
 
   # Individuals that meet the test based review requirement (isolation workflow only)
   scope :isolation_test_based, lambda {
+    return none unless ADMIN_OPTIONS['enable_test_based']
+
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
@@ -564,10 +570,13 @@ class Patient < ApplicationRecord
 
   # Individuals in the isolation workflow that require review (isolation workflow only)
   scope :isolation_requiring_review, lambda {
-    antb = ADMIN_OPTIONS['enable_asymp_non_test_based'] ? isolation_asymp_non_test_based : none
-    sntb = ADMIN_OPTIONS['enable_symp_non_test_based'] ? isolation_symp_non_test_based : none
-    tb = ADMIN_OPTIONS['enable_test_based'] ? isolation_test_based : none
-    antb.or(sntb).or(tb)
+    isolation_asymp_non_test_based
+      .or(
+        isolation_symp_non_test_based
+      )
+      .or(
+        isolation_test_based
+      )
   }
 
   # Individuals not meeting review but are reporting (isolation workflow only)
