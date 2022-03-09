@@ -1175,11 +1175,11 @@ class PatientTest < ActiveSupport::TestCase
     # does not meet definition: had a fever within the past 24 hours
     assessment_1 = create(:assessment, patient: patient, symptomatic: true,
                                        created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] + 1).days.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['SYMP_NON_TEST_BASED_HOURS_SINCE_FEVER'] - 2).hours.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['symp_non_test_based_hours_since_fever'] - 2).hours.ago)
     reported_condition = create(:reported_condition, assessment: assessment_2,
-                                                     created_at: (ADMIN_OPTIONS['SYMP_NON_TEST_BASED_HOURS_SINCE_FEVER'] - 2).hours.ago)
+                                                     created_at: (ADMIN_OPTIONS['symp_non_test_based_hours_since_fever'] - 2).hours.ago)
     create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true,
-                     created_at: (ADMIN_OPTIONS['SYMP_NON_TEST_BASED_HOURS_SINCE_FEVER'] - 2).hours.ago)
+                     created_at: (ADMIN_OPTIONS['symp_non_test_based_hours_since_fever'] - 2).hours.ago)
     patient.reload.latest_fever_or_fever_reducer_at
     verify_patient_status(patient, :isolation_reporting)
     assessment_1.destroy
@@ -1187,7 +1187,7 @@ class PatientTest < ActiveSupport::TestCase
 
     # does not meet definition: used a fever reducer within the past 24 hours
     assessment_1 = create(:assessment, patient: patient, symptomatic: true, created_at: 80.hours.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['SYMP_NON_TEST_BASED_HOURS_SINCE_FEVER'] - 3).hours.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['symp_non_test_based_hours_since_fever'] - 3).hours.ago)
     reported_condition = create(:reported_condition, assessment: assessment_2)
     create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'used-a-fever-reducer', bool_value: true)
     patient.reload.latest_fever_or_fever_reducer_at

@@ -526,13 +526,13 @@ namespace :demo do
     end
 
     # Potential Exposure/Case information
-    patient[:isolation] = rand < (data[:days_ago] > ADMIN_OPTIONS['SYMP_NON_TEST_BASED_RECOVERY_PERIOD_DAYS'] ? 0.9 : 0.4)
+    patient[:isolation] = rand < (data[:days_ago] > ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] ? 0.9 : 0.4)
     if patient[:isolation]
       if rand < 0.7
-        patient[:symptom_onset] = data[:beginning_of_day] - rand(ADMIN_OPTIONS['SYMP_NON_TEST_BASED_RECOVERY_PERIOD_DAYS']).days
+        patient[:symptom_onset] = data[:beginning_of_day] - rand(ADMIN_OPTIONS['symp_non_test_based_recovery_period_days']).days
         patient[:user_defined_symptom_onset] = true
       end
-      patient[:extended_isolation] = data[:beginning_of_day] + rand(ADMIN_OPTIONS['SYMP_NON_TEST_BASED_RECOVERY_PERIOD_DAYS']).days if rand < 0.3
+      patient[:extended_isolation] = data[:beginning_of_day] + rand(ADMIN_OPTIONS['symp_non_test_based_recovery_period_days']).days if rand < 0.3
       patient[:case_status] = %w[Confirmed Probable].sample
     else
       patient[:continuous_exposure] = rand < 0.3
@@ -819,7 +819,7 @@ namespace :demo do
     puts 'done!'
 
     # Create earlier symptom onset dates to meet isolation symptomatic non test based requirement
-    num_symptomatic_assessments = new_assessments.count * (data[:days_ago] > ADMIN_OPTIONS['SYMP_NON_TEST_BASED_RECOVERY_PERIOD_DAYS'] ? rand(75..80) : rand(20..25)) / 100
+    num_symptomatic_assessments = new_assessments.count * (data[:days_ago] > ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] ? rand(75..80) : rand(20..25)) / 100
     symptomatic_assessments = new_assessments.where('patients.symptom_onset IS NOT NULL')
                                              .or(
                                                new_assessments.where('patients.isolation = ?', false)
