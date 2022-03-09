@@ -18,11 +18,13 @@ asymp_non_test_based_recovery_period_days: <%= ENV["ASYMP_NON_TEST_BASED_RECOVER
 # Corresponding scope in patient model: isolation_symp_non_test_based
 enable_symp_non_test_based: <%= ENV["ENABLE_SYMP_NON_TEST_BASED"] || true %>
 symp_non_test_based_recovery_period_days: <%= ENV["SYMP_NON_TEST_BASED_RECOVERY_PERIOD_DAYS"] || 5 %>
+# This much time must have passed since monitoree had a fever or used a fever reducer
 symp_non_test_based_hours_since_fever: <%= ENV["SYMP_NON_TEST_BASED_HOURS_SINCE_FEVER"] || 24 %>
 
 # Corresponding scope in patient model: isolation_test_based
 enable_test_based: <%= ENV["ENABLE_TEST_BASED"] || true %>
 test_based_min_negative_labs: <%= ENV["TEST_BASED_MIN_NEGATIVE_LABS"] || 2 %>
+# This much time must have passed since monitoree had a fever or used a fever reducer
 test_based_hours_since_fever: <%= ENV["TEST_BASED_HOURS_SINCE_FEVER"] || 24 %>
 
 
