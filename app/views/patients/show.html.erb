@@ -50,7 +50,7 @@
                         symptoms: reporting_condition.symptoms,
                         threshold_condition_hash: reporting_condition.threshold_condition_hash,
                         monitoring_period_days: ADMIN_OPTIONS['monitoring_period_days'].to_i,
-                        recovery_period_days: ADMIN_OPTIONS['recovery_period_days'].to_i,
+                        recovery_period_days: @patient.recovery_period,
                         current_user: current_user,
                         translations: Assessment.new.translations,
                         authenticity_token: form_authenticity_token,

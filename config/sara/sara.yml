@@ -7,14 +7,24 @@ base_path: ''
 # How many days an enrolled monitoree should be monitored
 monitoring_period_days: <%= ENV["MONITORING_PERIOD_DAYS"] || 10 %>
 
-# How many days an enrolled case should be monitored until recovery
-recovery_period_days: <%= ENV["RECOVERY_PERIOD_DAYS"] || 5 %>
+# The following config values control certain variables in the recovery definitions for the Isolation Workflow,
+# including whether they're enabled. See the actual recovery definitions in the Patient model for a thorough
+# understanding of how these values are used.
+# 
+# Corresponding scope in patient model: isolation_asymp_non_test_based
+enable_asymp_non_test_based: <%= ENV["ENABLE_ASYMP_NON_TEST_BASED"] || true %>
+asymp_non_test_based_recovery_period_days: <%= ENV["ASYMP_NON_TEST_BASED_RECOVERY_PERIOD_DAYS"] || 5 %>
 
-# The following config values determine whether each of the recovery definitions for the Isolation Workflow are enabled
-# These recovery definitions are implemented in the Patient model
-enable_isolation_asymp_non_test_based: <%= ENV["ENABLE_ISOLATION_ASYMP_NON_TEST_BASED"] || true %>
-enable_isolation_symp_non_test_based: <%= ENV["ENABLE_ISOLATION_SYMP_NON_TEST_BASED"] || true %>
-enable_isolation_test_based: <%= ENV["ENABLE_ISOLATION_TEST_BASED"] || true %>
+# Corresponding scope in patient model: isolation_symp_non_test_based
+enable_symp_non_test_based: <%= ENV["ENABLE_SYMP_NON_TEST_BASED"] || true %>
+symp_non_test_based_recovery_period_days: <%= ENV["SYMP_NON_TEST_BASED_RECOVERY_PERIOD_DAYS"] || 5 %>
+symp_non_test_based_hours_since_fever: <%= ENV["SYMP_NON_TEST_BASED_HOURS_SINCE_FEVER"] || 24 %>
+
+# Corresponding scope in patient model: isolation_test_based
+enable_test_based: <%= ENV["ENABLE_TEST_BASED"] || true %>
+test_based_min_negative_labs: <%= ENV["TEST_BASED_MIN_NEGATIVE_LABS"] || 2 %>
+test_based_hours_since_fever: <%= ENV["TEST_BASED_HOURS_SINCE_FEVER"] || 24 %>
+
 
 # How long a monitoree should be in isolation and considered non-reporting before we halt daily reports
 isolation_non_reporting_max_days: <%= ENV["SARA_ALERT_ISOLATION_NON_REPORING_MAX"] || 7 %>
