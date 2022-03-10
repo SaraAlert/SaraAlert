@@ -81,7 +81,7 @@ class Symptom < ApplicationRecord
     patient.update(
       latest_fever_or_fever_reducer_at: patient.assessments
                                               .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
-                                              .maximum(:reported_at)
+                                              .maximum(:created_at)
     )
   end
 
@@ -94,7 +94,7 @@ class Symptom < ApplicationRecord
                                                   .where(id: patient.assessments)
                                                   .where.not('conditions.id = ?', condition_id)
                                                   .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
-                                                  .maximum(:reported_at)
+                                                  .maximum(:created_at)
     )
   end
 end
