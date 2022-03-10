@@ -57,16 +57,6 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
     status&.to_s&.humanize&.downcase&.sub('exposure ', '')&.sub('isolation ', '')
   end
 
-  # Get the revovery period for a patient based on which recovery definition they meet
-  def recovery_period
-    case status
-    when :isolation_asymp_non_test_based
-      ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'].to_i
-    when :isolation_symp_non_test_based
-      ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'].to_i
-    end
-  end
-
   # Information about this subject (that is useful in a linelist)
   def linelist
     {

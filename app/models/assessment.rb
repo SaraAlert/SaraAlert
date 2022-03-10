@@ -155,7 +155,7 @@ class Assessment < ApplicationRecord
 
     # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
     if action == :removed
-      updates[:latest_fever_or_fever_reducer_at] = patient.assessments.where_assoc_exists(:reported_condition, &:fever_or_fever_reducer).maximum(:created_at)
+      updates[:latest_fever_or_fever_reducer_at] = patient.assessments.where_assoc_exists(:reported_condition, &:fever_or_fever_reducer).maximum(:reported_at)
     end
 
     # wrap patient and history updates in transaction for consistency
