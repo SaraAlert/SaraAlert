@@ -19,10 +19,8 @@ class UserFiltersController < ApplicationController
 
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
-        filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :has_timestamp, :allow_range, :tooltip,
-                                                           options: [], fields: [:name, :title, :type, { options: [] }]),
-        value: filter[:value].nil? && filter[:filterOption][:type].eql?('multi') ? [] : filter.permit(:value,
-                                                                                                      value: [])[:value] || filter.require(:value) || false,
+        name: filter.require(:name),
+        value: filter[:value].nil? && filter[:value].is_a?(Array) ? [] : filter.permit(:value, value: [])[:value] || filter.require(:value) || false,
         numberOption: filter.permit(:numberOption)[:numberOption],
         dateOption: filter.permit(:dateOption)[:dateOption],
         relativeOption: filter.permit(:relativeOption)[:relativeOption],
@@ -36,10 +34,8 @@ class UserFiltersController < ApplicationController
   def update
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
-        filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :has_timestamp, :allow_range, :tooltip,
-                                                           options: [], fields: [:name, :title, :type, { options: [] }]),
-        value: filter[:value].nil? && filter[:filterOption][:type].eql?('multi') ? [] : filter.permit(:value,
-                                                                                                      value: [])[:value] || filter.require(:value) || false,
+        name: filter.require(:name),
+        value: filter[:value].nil? && filter[:value].is_a?(Array) ? [] : filter.permit(:value, value: [])[:value] || filter.require(:value) || false,
         numberOption: filter.permit(:numberOption)[:numberOption],
         dateOption: filter.permit(:dateOption)[:dateOption],
         relativeOption: filter.permit(:relativeOption)[:relativeOption],

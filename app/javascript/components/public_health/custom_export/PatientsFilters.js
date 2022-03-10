@@ -168,12 +168,7 @@ class PatientsFilters extends React.Component {
                 }}
               />
               <AdvancedFilter
-                advancedFilterUpdate={filter =>
-                  this.props.onQueryChange(
-                    'filter',
-                    filter?.filter(field => field?.filterOption != null)
-                  )
-                }
+                advancedFilterUpdate={filter => this.props.onQueryChange('filter', filter)}
                 authenticity_token={this.props.authenticity_token}
                 updateStickySettings={false}
                 advanced_filter_options={this.props.advanced_filter_options}

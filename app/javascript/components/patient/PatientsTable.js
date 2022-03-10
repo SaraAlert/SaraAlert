@@ -447,7 +447,7 @@ class PatientsTable extends React.Component {
     this.setState(
       state => {
         const query = state.query;
-        query.filter = filter?.filter(field => field?.filterOption != null);
+        query.filter = filter;
         query.page = page;
         if (sort) {
           query.order = sortField;
@@ -724,10 +724,10 @@ class PatientsTable extends React.Component {
                   {!this.props.enroller && (
                     <React.Fragment>
                       <AdvancedFilter
-                   		advancedFilterUpdate={this.advancedFilterUpdate}
-                    	authenticity_token={this.props.authenticity_token}
-                   		updateStickySettings={true}
-                    	advanced_filter_options={this.props.advanced_filter_options}
+                        advancedFilterUpdate={this.advancedFilterUpdate}
+                        authenticity_token={this.props.authenticity_token}
+                        updateStickySettings={true}
+                        advanced_filter_options={this.props.advanced_filter_options}
                       />
                       {this.state.query.tab !== 'transferred_out' && (
                         <DropdownButton
