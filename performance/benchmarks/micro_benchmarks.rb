@@ -77,7 +77,7 @@ divider
 # Setup: Changes many patients to be close_eligible
 micro_results << benchmark(
   name: 'PatientCloseEligible',
-  time_threshold: 7,
+  time_threshold: 10,
   no_exit: true,
   mode: :real,
   setup: proc {
