@@ -81,15 +81,15 @@ class Vaccine < ApplicationRecord
     vaccine_group['vaccines'].map { |vaccine| vaccine['product_name'] } + ADDITIONAL_PRODUCT_NAME_OPTIONS.map { |option| option['product_name'] }
   end
 
-    # Gets the list of ALL possible vaccine product names for all possible groups.
-    def self.all_product_name_options
-      vaccine_names = []
-      VACCINE_STANDARDS.each do |key, value|
-        vaccine_names.concat value['vaccines'].map { |vaccine| vaccine['product_name'] }
-      end
-
-      vaccine_names
+  # Gets the list of ALL possible vaccine product names for all possible groups.
+  def self.all_product_name_options
+    vaccine_names = []
+    VACCINE_STANDARDS.each do |_key, value|
+      vaccine_names.concat(value['vaccines'].map { |vaccine| vaccine['product_name'] })
     end
+
+    vaccine_names
+  end
 
   # Gets the codes relevant to a specified vaccine in a specified group.
   # Returns: an array of hashes of the form {code: <string>, system: <string>}

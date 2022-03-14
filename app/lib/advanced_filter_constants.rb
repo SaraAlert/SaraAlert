@@ -138,7 +138,8 @@ module AdvancedFilterConstants
         description: 'Monitoree primary contact preferred contact time',
         type: 'select',
         options: ['Early Morning', 'Morning', 'Afternoon', 'Evening', 'Late Night', ''],
-        tooltip: ['Early Morning (Midnight - 7:00)', 'Morning (8:00 - 11:00)', 'Afternoon (Noon - 15:00)', 'Evening (16:00 - 19:00)', 'Late Night (20:00 - 23:00)']
+        tooltip: ['Early Morning (Midnight - 7:00)', 'Morning (8:00 - 11:00)', 'Afternoon (Noon - 15:00)', 'Evening (16:00 - 19:00)',
+                  'Late Night (20:00 - 23:00)']
       },
       {
         name: 'primary-language',
