@@ -1,5 +1,8 @@
 # WARNING: Changing this configuration during the lifetime of a deployment may cause data in your application to become invalid.
 #          Please read the section below carefully, which details safe and unsafe changes to this file.
+#          
+#          Note that any changes, whether safe or unsafe, should be reflected in "Sara Alert Import Format.xlsx" spreadsheet
+#          within the "Guidance" tab. This spreadsheet is located in the public directory. 
 #
 # SAFE CHANGES: Adding entire vaccine groups, adding new products to existing vaccine groups, or adding new doses to existing
 # vaccine products are safe changes. In general, additive changes are SAFE.
