@@ -45,7 +45,7 @@ class UpdateAdvancedFilterFormat < ActiveRecord::Migration[6.1]
 
   def migrate_advanced_filter_contents(contents)
     contents&.each do |content|
-      content['name'] = content['filterOption']['name']
+      content['name'] = content['filterOption']['name'] == 'continous-exposure' ? 'continuous-exposure' : content['filterOption']['name']
       content.delete('filterOption')
     end
   end
@@ -54,6 +54,7 @@ class UpdateAdvancedFilterFormat < ActiveRecord::Migration[6.1]
     contents&.each do |content|
       af_option = advanced_filter_options(user).find { |af| af[:name] == content['name'] }
       content['filterOption'] = af_option
+      content['filterOption']['name'] = 'continous-exposure' if content['name'] == 'continuous-exposure'
       content.delete('name')
     end
   end

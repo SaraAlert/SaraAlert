@@ -331,7 +331,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           # Get patients where contact type is any of the contact types specified in the filter
           patients = patients.where(contact_type: filter_contact_types)
         end
-      when 'continous-exposure'
+      when 'continuous-exposure'
         patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
       when 'email'
         patients = if filter[:value].blank?
