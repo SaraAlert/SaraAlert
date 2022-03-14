@@ -288,7 +288,6 @@ class AdvancedFilter extends React.Component {
         return {
           name: filter.filterOption.name,
           value: filter.value,
-          // TO BE REMOVED
           additionalFilterOption: filter.additionalFilterOption,
           dateOption: filter.dateOption,
           numberOption: filter.numberOption,
@@ -307,7 +306,6 @@ class AdvancedFilter extends React.Component {
       return {
         filterOption,
         value: filter.value,
-        // TO BE REMOVED
         additionalFilterOption: filter.additionalFilterOption,
         dateOption: filter.dateOption,
         numberOption: filter.numberOption,
