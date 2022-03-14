@@ -20,7 +20,7 @@ class UserFiltersController < ApplicationController
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
         name: filter.require(:name),
-        value: filter[:value].nil? && filter[:value].is_a?(Array) ? [] : filter.permit(:value, value: [])[:value] || filter.require(:value) || false,
+        value: filter[:value].nil? && filter[:type].eql?('multi') ? [] : filter.permit(:value, value: [])[:value] || filter.require(:value) || false,
         numberOption: filter.permit(:numberOption)[:numberOption],
         dateOption: filter.permit(:dateOption)[:dateOption],
         relativeOption: filter.permit(:relativeOption)[:relativeOption],
@@ -35,7 +35,7 @@ class UserFiltersController < ApplicationController
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
         name: filter.require(:name),
-        value: filter[:value].nil? && filter[:value].is_a?(Array) ? [] : filter.permit(:value, value: [])[:value] || filter.require(:value) || false,
+        value: filter[:value].nil? && filter[:type].eql?('multi') ? [] : filter.permit(:value, value: [])[:value] || filter.require(:value) || false,
         numberOption: filter.permit(:numberOption)[:numberOption],
         dateOption: filter.permit(:dateOption)[:dateOption],
         relativeOption: filter.permit(:relativeOption)[:relativeOption],

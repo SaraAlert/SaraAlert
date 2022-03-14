@@ -7,6 +7,7 @@ FactoryBot.define do
       [
         {
           'name' => 'vaccination',
+          'type' => 'combination',
           'value' => [{
             'name' => 'vaccine-group',
             'value' => 'COVID-19'

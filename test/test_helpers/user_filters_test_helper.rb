@@ -5,6 +5,7 @@ module UserFiltersTestHelper
     {
       'activeFilterOptions' => [{
         'name' => 'lab-result',
+        'type' => 'combination',
         'value' => [{
           'name' => 'result',
           'value' => 'positive'
@@ -18,13 +19,11 @@ module UserFiltersTestHelper
     }
   end
 
-  def self.multi_select_filter_params(options_selected:)
-    raise(ArgumentError, 'options_selected must be false, alternative is not implemented') if options_selected
-
-    # Value and all options are nil.
+  def self.multi_select_filter_params
     {
       'activeFilterOptions' => [{
         'name' => 'assigned-user',
+        'type' => 'multi',
         'value' => [],
         'numberOption' => nil,
         'dateOption' => nil,

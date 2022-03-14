@@ -77,11 +77,11 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       raise InvalidQueryError.new(:tz_offset, tz_offset) unless tz_offset.to_i.to_s == tz_offset.to_s
 
       query[:filter] = unsanitized_query[:filter].collect do |filter|
-        permitted_filter_params = filter.permit(:name, :value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption,
+        permitted_filter_params = filter.permit(:name, :type, :value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption,
                                                 value: filter[:value].is_a?(Array) ? [] : {})
         {
           name: permitted_filter_params[:name],
-          value: filter[:value].nil? && filter[:value].is_a?(Array) ? [] : filter.permit(:value, value: [])[:value] || filter.require(:value) || false,
+          value: filter[:value].nil? && filter[:type].eql?('multi') ? [] : filter.permit(:value, value: [])[:value] || filter.require(:value) || false,
           numberOption: permitted_filter_params[:numberOption],
           dateOption: permitted_filter_params[:dateOption],
           relativeOption: permitted_filter_params[:relativeOption],

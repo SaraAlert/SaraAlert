@@ -152,7 +152,7 @@ class AdvancedFilter extends React.Component {
       activeFilterOptions: _.cloneDeep(this.state.activeFilterOptions),
     };
     this.setState({ showAdvancedFilterModal: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
-      this.props.advancedFilterUpdate(this.formatFiltersForBackend(this.state.activeFilterOptions), keepStickySettings);
+      this.props.advancedFilterUpdate(this.formatFiltersForBackend(this.state.activeFilterOptions, true), keepStickySettings);
       if (this.props.updateStickySettings) {
         this.setLocalStorage(`SaraFilter`, this.state.activeFilter?.id || JSON.stringify(this.state.activeFilterOptions));
       }
@@ -281,7 +281,7 @@ class AdvancedFilter extends React.Component {
    * Formats filter object for backend use (applying and saving)
    * Removes the filterOption object and adds a name property with the name of the filterOption
    */
-  formatFiltersForBackend = filters => {
+  formatFiltersForBackend = (filters, includeType) => {
     return filters
       .filter(field => field?.filterOption != null)
       .map(filter => {
@@ -292,6 +292,7 @@ class AdvancedFilter extends React.Component {
           dateOption: filter.dateOption,
           numberOption: filter.numberOption,
           relativeOption: filter.relativeOption,
+          ...(includeType && { type: filter.filterOption.type }),
         };
       });
   };
