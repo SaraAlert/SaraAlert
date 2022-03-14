@@ -138,6 +138,7 @@ class Export extends React.Component {
             options={this.props.custom_export_options}
             onClose={() => this.setState({ showCustomFormatModal: false, savedPreset: null })}
             reloadExportPresets={this.reloadExportPresets}
+            vaccine_standards={this.props.vaccine_standards}
           />
         )}
       </React.Fragment>
@@ -157,6 +158,7 @@ Export.propTypes = {
   all_monitorees_count: PropTypes.number,
   current_monitorees_count: PropTypes.number,
   custom_export_options: PropTypes.object,
+  vaccine_standards: PropTypes.object,
 };
 
 export default Export;

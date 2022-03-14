@@ -730,6 +730,7 @@ class PatientsTable extends React.Component {
                         jurisdiction_id={this.props.jurisdiction.id}
                         jurisdiction_paths={this.props.jurisdiction_paths}
                         all_assigned_users={this.props.all_assigned_users}
+                        vaccine_standards={this.props.vaccine_standards}
                       />
                       {this.state.query.tab !== 'transferred_out' && (
                         <DropdownButton
@@ -858,6 +859,7 @@ PatientsTable.propTypes = {
   setFilteredMonitoreesCount: PropTypes.func,
   monitoring_reasons: PropTypes.array,
   enroller: PropTypes.bool,
+  vaccine_standards: PropTypes.object,
 };
 
 export default PatientsTable;

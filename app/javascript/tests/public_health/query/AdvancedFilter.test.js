@@ -8,6 +8,7 @@ import AdvancedFilter from '../../../components/public_health/query/AdvancedFilt
 import DateInput from '../../../components/util/DateInput';
 import { advancedFilterOptions } from '../../../data/advancedFilterOptions';
 import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
+import { mockVaccineStandards } from '../../mocks/mockVaccineStandards';
 import {
   mockFilter1,
   mockFilter2,
@@ -49,7 +50,7 @@ const relativeOptionUnitValues = ['day(s)', 'week(s)', 'month(s)'];
 const relativeOptionWhenValues = ['past', 'future'];
 
 function getWrapper() {
-  return shallow(<AdvancedFilter all_assigned_users={assignedUsers} jurisdiction_paths={mockJurisdictionPaths} advancedFilterUpdate={advancedFilterUpdateMock} updateStickySettings={true} authenticity_token={mockToken} />);
+  return shallow(<AdvancedFilter all_assigned_users={assignedUsers} jurisdiction_paths={mockJurisdictionPaths} advancedFilterUpdate={advancedFilterUpdateMock} updateStickySettings={true} authenticity_token={mockToken} vaccine_standards={mockVaccineStandards} />);
 }
 
 afterEach(() => {

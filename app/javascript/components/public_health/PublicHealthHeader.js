@@ -225,6 +225,7 @@ class PublicHealthHeader extends React.Component {
                   all_monitorees_count={this.state.counts.exposure + this.state.counts.isolation}
                   current_monitorees_count={this.props.current_monitorees_count}
                   custom_export_options={this.props.custom_export_options}
+                  vaccine_standards={this.props.vaccine_standards}
                 />
               )}
               {this.props.abilities.import && (
@@ -300,6 +301,7 @@ PublicHealthHeader.propTypes = {
   query: PropTypes.object,
   current_monitorees_count: PropTypes.number,
   custom_export_options: PropTypes.object,
+  vaccine_standards: PropTypes.object,
 };
 
 export default PublicHealthHeader;
