@@ -28,7 +28,7 @@ const getVaccineAdvancedFilterFields = (vaccine_standards) => {
   }
 
   const minDose = Math.min(...doseNumberOptions);
-  /* If the minDose is less than 1, fill the doseNumberOptions array with integers from 1...minDose */
+  /* If the minDose is greater than 1, fill the doseNumberOptions array with integers from 1...minDose */
   if(minDose > 1) {
     doseNumberOptions = Array.from({length: minDose - 1 }, (_, i) => i + 1).concat(doseNumberOptions);
   }
