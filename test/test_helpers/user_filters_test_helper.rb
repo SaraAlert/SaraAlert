@@ -4,19 +4,7 @@ module UserFiltersTestHelper
   def self.combination_filter_params
     {
       'activeFilterOptions' => [{
-        'filterOption' => {
-          'name' => 'lab-result',
-          'title' => 'Lab Result (Combination)',
-          'description' => 'Monitorees with specified Lab Result criteria',
-          'type' => 'combination',
-          'tooltip' => 'short tooltip',
-          'fields' => [{
-            'name' => 'result',
-            'title' => 'result',
-            'type' => 'select',
-            'options' => ['positive', 'negative', 'indeterminate', 'other', '']
-          }]
-        },
+        'name' => 'lab-result',
         'value' => [{
           'name' => 'result',
           'value' => 'positive'
@@ -36,13 +24,7 @@ module UserFiltersTestHelper
     # Value and all options are nil.
     {
       'activeFilterOptions' => [{
-        'filterOption' => {
-          'name' => 'assigned-user',
-          'title' => 'Assigned User (Multi-select)',
-          'description' => 'Monitorees who have a specific assigned user',
-          'type' => 'multi',
-          'options' => [{ 'value' => 57, 'label' => 57 }]
-        },
+        'name' => 'assigned-user',
         'value' => [],
         'numberOption' => nil,
         'dateOption' => nil,
