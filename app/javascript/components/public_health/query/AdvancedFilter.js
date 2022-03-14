@@ -10,7 +10,6 @@ import Select, { components } from 'react-select';
 import { bootstrapSelectTheme, cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
 import DateInput from '../../util/DateInput';
 
-
 class AdvancedFilter extends React.Component {
   constructor(props) {
     super(props);
@@ -1567,7 +1566,6 @@ AdvancedFilter.propTypes = {
   updateStickySettings: PropTypes.bool,
   advanced_filter_options: PropTypes.array,
   activeFilter: PropTypes.object,
-  vaccine_standards: PropTypes.object,
 };
 
 export default AdvancedFilter;

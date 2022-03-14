@@ -26,7 +26,6 @@ class PublicHealthDashboard extends React.Component {
           query={this.state.query}
           current_monitorees_count={this.state.current_monitorees_count}
           custom_export_options={this.props.custom_export_options}
-          vaccine_standards={this.props.vaccine_standards}
         />
         <PatientsTable
           authenticity_token={this.props.authenticity_token}
@@ -39,7 +38,6 @@ class PublicHealthDashboard extends React.Component {
           advanced_filter_options={this.props.advanced_filter_options}
           setQuery={query => this.setState({ query })}
           setFilteredMonitoreesCount={current_monitorees_count => this.setState({ current_monitorees_count })}
-          vaccine_standards={this.props.vaccine_standards}
         />
       </React.Fragment>
     );
@@ -57,7 +55,6 @@ PublicHealthDashboard.propTypes = {
   advanced_filter_options: PropTypes.array,
   custom_export_options: PropTypes.object,
   monitoring_reasons: PropTypes.array,
-  vaccine_standards: PropTypes.object,
 };
 
 export default PublicHealthDashboard;

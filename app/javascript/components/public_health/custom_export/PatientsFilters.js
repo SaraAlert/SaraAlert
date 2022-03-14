@@ -173,7 +173,6 @@ class PatientsFilters extends React.Component {
                 updateStickySettings={false}
                 advanced_filter_options={this.props.advanced_filter_options}
                 activeFilter={{ contents: this.props.query.filter }}
-                vaccine_standards={this.props.vaccine_standards}
               />
             </InputGroup>
           </Col>
@@ -190,7 +189,6 @@ PatientsFilters.propTypes = {
   jurisdiction: PropTypes.object,
   query: PropTypes.object,
   onQueryChange: PropTypes.func,
-  vaccine_standards: PropTypes.object,
 };
 
 export default PatientsFilters;
