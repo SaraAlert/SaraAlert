@@ -26,16 +26,13 @@ const getVaccineAdvancedFilterFields = (vaccine_standards) => {
     productNameOptions = productNameOptions.concat(_.map(value["vaccines"], "product_name"));
     doseNumberOptions = doseNumberOptions.concat(_.map(value["vaccines"], "num_doses"));
   }
-
-  const minDose = Math.min(...doseNumberOptions);
-  /* If the minDose is greater than 1, fill the doseNumberOptions array with integers from 1...minDose */
-  if(minDose > 1) {
-    doseNumberOptions = Array.from({length: minDose - 1 }, (_, i) => i + 1).concat(doseNumberOptions);
-  }
+  
+  /* Fill the doseNumberOptions array with integers from 1...max doseNumberOption present */
+  doseNumberOptions = Array.from({length: Math.max(...doseNumberOptions) }, (_, i) => i + 1);
 
   fields.push(selectTypeFilter('vaccine-group', 'vaccine group', vaccineGroupOptions));
   fields.push(selectTypeFilter('product-name', 'product name', _.uniq([...productNameOptions, 'Unknown'])));
-  fields.push(selectTypeFilter('dose-number', 'dose number', _.uniq(['', ...doseNumberOptions.sort(), 'Unknown'])));
+  fields.push(selectTypeFilter('dose-number', 'dose number', ['', ...doseNumberOptions, 'Unknown']));
   fields.push(dateTypeFilter('administration-date', 'administration date'));
 
   return fields;
