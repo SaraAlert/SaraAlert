@@ -1042,68 +1042,85 @@ class PatientTest < ActiveSupport::TestCase
     verify_patient_status(patient, :isolation_non_reporting)
 
     # meets definition: asymptomatic after positive test result
-    laboratory = create(:laboratory, patient: patient, result: 'positive', specimen_collection: ADMIN_OPTIONS['recovery_period_days'].days.ago)
-    assessment = create(:assessment, patient: patient, symptomatic: false, created_at: (ADMIN_OPTIONS['recovery_period_days'] - 2).days.ago)
+    laboratory = create(:laboratory, patient: patient, result: 'positive',
+                                     specimen_collection: ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'].days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: false,
+                                     created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] - 2).days.ago)
     verify_patient_status(patient, :isolation_asymp_non_test_based)
     laboratory.destroy
     assessment.destroy
 
     # meets definition: has positive test result more than (recovery period) days ago and another positive test result less than (recovery period) days ago
-    laboratory_1 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] + 1).days.ago)
-    laboratory_2 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] - 1).days.ago)
-    assessment = create(:assessment, patient: patient, symptomatic: false, created_at: (ADMIN_OPTIONS['recovery_period_days'] - 2).days.ago)
+    laboratory_1 = create(:laboratory, patient: patient, result: 'positive',
+                                       specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] + 1).days.ago)
+    laboratory_2 = create(:laboratory, patient: patient, result: 'positive',
+                                       specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] - 1).days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: false,
+                                     created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] - 2).days.ago)
     verify_patient_status(patient, :isolation_asymp_non_test_based)
     assessment.destroy
     laboratory_1.destroy
     laboratory_2.destroy
 
     # does not meet definition: symptomatic before positive test result but not afterwards
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['recovery_period_days'] + 2).days.ago)
-    laboratory = create(:laboratory, patient: patient, result: 'positive', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] + 1).days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] + 2).days.ago)
+    laboratory = create(:laboratory, patient: patient, result: 'positive',
+                                     specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] + 1).days.ago)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
     laboratory.destroy
 
     # does not meet definition: has positive test result less than (recovery period) days ago
-    laboratory = create(:laboratory, patient: patient, result: 'positive', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] - 2).days.ago)
+    laboratory = create(:laboratory, patient: patient, result: 'positive',
+                                     specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] - 2).days.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     laboratory.destroy
 
     # does not meet definition: has negative test result more than (recovery period) days ago,
     # but also has positive test result less than (recovery period) days ago
-    laboratory_1 = create(:laboratory, patient: patient, result: 'negative', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] + 1).days.ago)
-    laboratory_2 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] - 1).days.ago)
+    laboratory_1 = create(:laboratory, patient: patient, result: 'negative',
+                                       specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] + 1).days.ago)
+    laboratory_2 = create(:laboratory, patient: patient, result: 'positive',
+                                       specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] - 1).days.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     laboratory_1.destroy
     laboratory_2.destroy
 
     # does not meet definition: has positive test result more than (recovery period) days ago,
     # but also has positive test result less than (recovery period) days ago
-    laboratory_1 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] + 1).days.ago)
-    laboratory_2 = create(:laboratory, patient: patient, result: 'negative', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] - 1).days.ago)
+    laboratory_1 = create(:laboratory, patient: patient, result: 'positive',
+                                       specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] + 1).days.ago)
+    laboratory_2 = create(:laboratory, patient: patient, result: 'negative',
+                                       specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] - 1).days.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     laboratory_1.destroy
     laboratory_2.destroy
 
     # does not meet definition: symptomatic after positive test result
-    laboratory = create(:laboratory, patient: patient, result: 'positive', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] + 5).days.ago)
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['recovery_period_days'] - 2).days.ago)
+    laboratory = create(:laboratory, patient: patient, result: 'positive',
+                                     specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] + 5).days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] - 2).days.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     assessment.destroy
     laboratory.destroy
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than (recovery period) days ago
-    laboratory = create(:laboratory, patient: patient, result: 'positive', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] + 3).days.ago)
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['recovery_period_days'] + 2).days.ago)
+    laboratory = create(:laboratory, patient: patient, result: 'positive',
+                                     specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] + 3).days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] + 2).days.ago)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
     laboratory.destroy
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than (recovery period) days ago
-    laboratory_1 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] + 2).days.ago)
-    assessment_1 = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['recovery_period_days'] - 2).days.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: false, created_at: (ADMIN_OPTIONS['recovery_period_days'] - 3).days.ago)
-    laboratory_2 = create(:laboratory, patient: patient, result: 'negative', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] - 4).days.ago)
+    laboratory_1 = create(:laboratory, patient: patient, result: 'positive',
+                                       specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] + 2).days.ago)
+    assessment_1 = create(:assessment, patient: patient, symptomatic: true,
+                                       created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] - 2).days.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: false,
+                                       created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] - 3).days.ago)
+    laboratory_2 = create(:laboratory, patient: patient, result: 'negative',
+                                       specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] - 4).days.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     assessment_1.destroy
     assessment_2.destroy
@@ -1111,10 +1128,14 @@ class PatientTest < ActiveSupport::TestCase
     laboratory_2.destroy
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than (recovery period) days ago
-    laboratory_1 = create(:laboratory, patient: patient, result: 'positive', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] + 5).days.ago)
-    assessment_1 = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['recovery_period_days'] + 4).days.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: false, created_at: (ADMIN_OPTIONS['recovery_period_days'] + 3).days.ago)
-    laboratory_2 = create(:laboratory, patient: patient, result: 'negative', specimen_collection: (ADMIN_OPTIONS['recovery_period_days'] + 2).days.ago)
+    laboratory_1 = create(:laboratory, patient: patient, result: 'positive',
+                                       specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] + 5).days.ago)
+    assessment_1 = create(:assessment, patient: patient, symptomatic: true,
+                                       created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] + 4).days.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: false,
+                                       created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] + 3).days.ago)
+    laboratory_2 = create(:laboratory, patient: patient, result: 'negative',
+                                       specimen_collection: (ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'] + 2).days.ago)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment_1.destroy
     assessment_2.destroy
@@ -1125,37 +1146,40 @@ class PatientTest < ActiveSupport::TestCase
   test 'isolation symp non test based' do
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: true, created_at: 14.days.ago,
-                               symptom_onset: (ADMIN_OPTIONS['recovery_period_days'] + 2).days.ago)
+                               symptom_onset: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] + 2).days.ago)
 
     # meets definition: symptomatic assessment older than 24 hours
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['recovery_period_days'] + 1).days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] + 1).days.ago)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
 
     # meets definition: had an assessment with no fever
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['recovery_period_days'] + 2).days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] + 2).days.ago)
     reported_condition = create(:reported_condition, assessment: assessment)
     create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: false)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
 
     # meets definition: had a fever but more than 24 hours ago
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['recovery_period_days'] + 3).days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] + 3).days.ago)
     reported_condition = create(:reported_condition, assessment: assessment)
     create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
 
     # does not meet definition: symptom onset not more than (recovery period) days ago
-    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['recovery_period_days'] - 1).days.ago)
+    assessment = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] - 1).days.ago)
     verify_patient_status(patient, :isolation_non_reporting)
     assessment.destroy
 
     # does not meet definition: had a fever within the past 24 hours
-    assessment_1 = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['recovery_period_days'] + 1).days.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: 22.hours.ago)
-    reported_condition = create(:reported_condition, assessment: assessment_2, created_at: 22.hours.ago)
-    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true, created_at: 22.hours.ago)
+    assessment_1 = create(:assessment, patient: patient, symptomatic: true,
+                                       created_at: (ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'] + 1).days.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['symp_non_test_based_hours_since_fever'] - 2).hours.ago)
+    reported_condition = create(:reported_condition, assessment: assessment_2,
+                                                     created_at: (ADMIN_OPTIONS['symp_non_test_based_hours_since_fever'] - 2).hours.ago)
+    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true,
+                     created_at: (ADMIN_OPTIONS['symp_non_test_based_hours_since_fever'] - 2).hours.ago)
     patient.reload.latest_fever_or_fever_reducer_at
     verify_patient_status(patient, :isolation_reporting)
     assessment_1.destroy
@@ -1163,7 +1187,7 @@ class PatientTest < ActiveSupport::TestCase
 
     # does not meet definition: used a fever reducer within the past 24 hours
     assessment_1 = create(:assessment, patient: patient, symptomatic: true, created_at: 80.hours.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: 21.hours.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: (ADMIN_OPTIONS['symp_non_test_based_hours_since_fever'] - 3).hours.ago)
     reported_condition = create(:reported_condition, assessment: assessment_2)
     create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'used-a-fever-reducer', bool_value: true)
     patient.reload.latest_fever_or_fever_reducer_at

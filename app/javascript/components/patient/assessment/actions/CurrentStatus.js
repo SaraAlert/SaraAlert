@@ -102,9 +102,9 @@ class CurrentStatus extends React.Component {
       return (
         <ReactTooltip id={`symptomatic-non-test-based`} multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
           <span>
-            At least {this.props.recovery_period_days} days have passed since the Symptom Onset Date and at least 24 hours have passed since the case last
-            reported “Yes” for fever or use of fever-reducing medicine to the system. The system does not collect information on severity of symptoms. Public
-            health will need to validate if other symptoms have improved.
+            At least {this.props.symp_non_test_based_recovery_period_days} days have passed since the Symptom Onset Date and at least{' '}
+            {this.props.symp_non_test_based_hours_since_fever} hours have passed since the case last reported “Yes” for fever or use of fever-reducing medicine
+            to the system. The system does not collect information on severity of symptoms. Public health will need to validate if other symptoms have improved.
           </span>
         </ReactTooltip>
       );
@@ -112,8 +112,8 @@ class CurrentStatus extends React.Component {
       return (
         <ReactTooltip id={`asymptomatic-non-test-based`} multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
           <span>
-            At least {this.props.recovery_period_days} days have passed since the specimen collection date of a positive laboratory test and the monitoree has
-            never reported symptoms.
+            At least {this.props.asymp_non_test_based_recovery_period_days} days have passed since the specimen collection date of a positive laboratory test
+            and the monitoree has never reported symptoms.
           </span>
         </ReactTooltip>
       );
@@ -121,10 +121,11 @@ class CurrentStatus extends React.Component {
       return (
         <ReactTooltip id={`test-based`} multiline={true} place="top" type="dark" effect="solid" className="tooltip-container">
           <span>
-            Two negative laboratory results have been documented and at least 24 hours have passed since the case last reported “Yes” for fever or use of
-            fever-reducing medicine to the system. The system does not validate the type of test, time between specimen collection, or if the tests were
-            consecutive. Public health will need to validate that the test results meet the latest guidance prior to discontinuing isolation. The system does
-            not collect information on severity of symptoms. Public health will also need to validate if other symptoms have improved.
+            {this.props.test_based_min_negative_labs} negative laboratory results have been documented and at least {this.props.test_based_hours_since_fever}{' '}
+            hours have passed since the case last reported “Yes” for fever or use of fever-reducing medicine to the system. The system does not validate the
+            type of test, time between specimen collection, or if the tests were consecutive. Public health will need to validate that the test results meet the
+            latest guidance prior to discontinuing isolation. The system does not collect information on severity of symptoms. Public health will also need to
+            validate if other symptoms have improved.
           </span>
         </ReactTooltip>
       );
@@ -168,7 +169,11 @@ CurrentStatus.propTypes = {
   report_eligibility: PropTypes.object,
   status: PropTypes.string,
   isolation: PropTypes.bool,
-  recovery_period_days: PropTypes.number,
+  symp_non_test_based_recovery_period_days: PropTypes.number,
+  symp_non_test_based_hours_since_fever: PropTypes.number,
+  asymp_non_test_based_recovery_period_days: PropTypes.number,
+  test_based_min_negative_labs: PropTypes.number,
+  test_based_hours_since_fever: PropTypes.number,
 };
 
 export default CurrentStatus;
