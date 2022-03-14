@@ -13,6 +13,7 @@ import { bootstrapSelectTheme, cursorPointerStyle } from '../../../packs/stylesh
 import DateInput from '../../util/DateInput';
 import { advancedFilterOptions } from '../../../data/advancedFilterOptions';
 import { getAllLanguageDisplayNames } from '../../../utils/Languages';
+import { getVaccineAdvancedFilters } from '../../../utils/VaccineAdvancedFilters';
 
 class AdvancedFilter extends React.Component {
   constructor(props) {
@@ -39,6 +40,10 @@ class AdvancedFilter extends React.Component {
         advancedFilterOptions[Number(index)].options = displayNames;
       }
     });
+
+    if (advancedFilterOptions.filter(advancedFilter => advancedFilter.name === 'vaccination').length === 0) {
+      advancedFilterOptions.push(getVaccineAdvancedFilters(this.props.vaccine_standards));
+    }
 
     // For each multi type filter, format the options in the way react-select requires
     advancedFilterOptions
@@ -1630,6 +1635,7 @@ AdvancedFilter.propTypes = {
   jurisdiction_paths: PropTypes.object,
   all_assigned_users: PropTypes.array,
   activeFilter: PropTypes.object,
+  vaccine_standards: PropTypes.object,
 };
 
 export default AdvancedFilter;

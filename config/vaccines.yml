@@ -1,5 +1,28 @@
+# WARNING: Changing this configuration during the lifetime of a deployment may cause data in your application to become invalid.
+#          Please read the section below carefully, which details safe and unsafe changes to this file.
+#          
+#          Note that any changes, whether safe or unsafe, should be reflected in "Sara Alert Import Format.xlsx" spreadsheet
+#          within the "Guidance" tab. This spreadsheet is located in the public directory. 
+#
+# SAFE CHANGES: Adding entire vaccine groups, adding new products to existing vaccine groups, or adding new doses to existing
+# vaccine products are safe changes. In general, additive changes are SAFE.
+# 
+# UNSAFE CHANGES: Removing entire vaccine groups, removing products from existing vaccine groups, changing product names within 
+# existing vaccine groups, or removing doses from existing vaccine products are unsafe changes. 
+# If it is absolutely necessary to make one or more of the unsafe changes detailed above, database migrations must be written 
+# to update the vaccines, user_filters, and user_export_presets tables. 
+# 
+# Examples of migrations that accomplish these tasks are:
+# (1) /db/migrate/20210824154651_update_vaccine_names.rb (change to vaccines table due to vaccine product name change)
+# (2) /db/migrate/20210901192909_update_vaccine_product_names_to_match_cdc.rb (change to user_filters and user_export_presets tables due to vaccine product name change)
+#
+# Failure to migrate legacy data after an unsafe change to this file will leave "legacy" vaccines in an invalid state. While the 
+# system can still function under these circumstances, vaccine records with invalid legacy data will not be modifiable without updating
+# the invalid value(s) to valid ones. 
+#
 # CONFIGURATION FOR SUPPORT VACCINES AND ASSOCIATED DATA IN SARA ALERT
 # Follows supported mappings as defined by CDC at: https://www2a.cdc.gov/vaccines/iis/iisstandards/vaccines.asp?rpt=vg
+
 'COVID-19':
   name: 'COVID-19'
   codes:
