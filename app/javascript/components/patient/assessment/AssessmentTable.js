@@ -328,7 +328,11 @@ class AssessmentTable extends React.Component {
               report_eligibility={this.props.report_eligibility}
               status={this.props.patient_status}
               isolation={this.props.patient?.isolation}
-              recovery_period_days={this.props.recovery_period_days}
+              symp_non_test_based_recovery_period_days={this.props.symp_non_test_based_recovery_period_days}
+              symp_non_test_based_hours_since_fever={this.props.symp_non_test_based_hours_since_fever}
+              asymp_non_test_based_recovery_period_days={this.props.asymp_non_test_based_recovery_period_days}
+              test_based_min_negative_labs={this.props.test_based_min_negative_labs}
+              test_based_hours_since_fever={this.props.test_based_hours_since_fever}
             />
             <Row className="my-4">
               <Col>
@@ -443,7 +447,11 @@ AssessmentTable.propTypes = {
   calculated_age: PropTypes.number,
   patient_initials: PropTypes.string,
   monitoring_period_days: PropTypes.number,
-  recovery_period_days: PropTypes.number,
+  symp_non_test_based_recovery_period_days: PropTypes.number,
+  symp_non_test_based_hours_since_fever: PropTypes.number,
+  asymp_non_test_based_recovery_period_days: PropTypes.number,
+  test_based_min_negative_labs: PropTypes.number,
+  test_based_hours_since_fever: PropTypes.number,
   current_user: PropTypes.object,
   translations: PropTypes.object,
   authenticity_token: PropTypes.string,

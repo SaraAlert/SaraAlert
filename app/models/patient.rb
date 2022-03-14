@@ -515,49 +515,55 @@ class Patient < ApplicationRecord
 
   # Individuals that meet the asymptomatic recovery definition (isolation workflow only)
   scope :isolation_asymp_non_test_based, lambda {
+    return none unless ADMIN_OPTIONS['enable_asymp_non_test_based']
+
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
       .where(symptom_onset: nil)
       .where.not(latest_assessment_at: nil)
-      .where('first_positive_lab_at < ?', ADMIN_OPTIONS['recovery_period_days'].days.ago)
+      .where('first_positive_lab_at < ?', ADMIN_OPTIONS['asymp_non_test_based_recovery_period_days'].days.ago)
       .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
   }
 
   # Individuals that meet the symptomatic non test based review requirement (isolation workflow only)
   scope :isolation_symp_non_test_based, lambda {
+    return none unless ADMIN_OPTIONS['enable_symp_non_test_based']
+
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .where('symptom_onset <= ?', ADMIN_OPTIONS['recovery_period_days'].days.ago)
+      .where('symptom_onset <= ?', ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'].days.ago)
       .where(latest_fever_or_fever_reducer_at: nil)
       .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(isolation: true)
-        .where('symptom_onset <= ?', ADMIN_OPTIONS['recovery_period_days'].days.ago)
-        .where('latest_fever_or_fever_reducer_at < ?', 24.hours.ago)
+        .where('symptom_onset <= ?', ADMIN_OPTIONS['symp_non_test_based_recovery_period_days'].days.ago)
+        .where('latest_fever_or_fever_reducer_at < ?', ADMIN_OPTIONS['symp_non_test_based_hours_since_fever'].hours.ago)
         .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
       )
   }
 
   # Individuals that meet the test based review requirement (isolation workflow only)
   scope :isolation_test_based, lambda {
+    return none unless ADMIN_OPTIONS['enable_test_based']
+
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
       .where.not(latest_assessment_at: nil)
       .where(latest_fever_or_fever_reducer_at: nil)
-      .where('negative_lab_count >= ?', 2)
+      .where('negative_lab_count >= ?', ADMIN_OPTIONS['test_based_min_negative_labs'])
       .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(isolation: true)
         .where.not(latest_assessment_at: nil)
-        .where('latest_fever_or_fever_reducer_at < ?', 24.hours.ago)
-        .where('negative_lab_count >= ?', 2)
+        .where('latest_fever_or_fever_reducer_at < ?', ADMIN_OPTIONS['test_based_hours_since_fever'].hours.ago)
+        .where('negative_lab_count >= ?', ADMIN_OPTIONS['test_based_min_negative_labs'])
         .where('extended_isolation IS NULL OR extended_isolation < ?', Time.zone.today)
       )
   }
