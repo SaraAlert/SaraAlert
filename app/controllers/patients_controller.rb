@@ -849,7 +849,7 @@ class PatientsController < ApplicationController
     patient_ids = params[:patient_ids]
     patients = current_user.viewable_patients.where(id: patient_ids)
     unique_pha = patients.pluck(:public_health_action).uniq
-    pui_elidgible = !( unique_pha.length == 0 || (unique_pha.length == 1 && unique_pha.include?('None')))
+    pui_elidgible = !(unique_pha.length.zero? || (unique_pha.length == 1 && unique_pha.include?('None')))
     render json: { case_status: patients.pluck(:case_status), isolation: patients.pluck(:isolation), monitoring: patients.pluck(:monitoring),
                    monitoring_reason: patients.pluck(:monitoring_reason), pui_elidgible: pui_elidgible }
   end
