@@ -428,8 +428,9 @@ class ExposureInformation extends React.Component {
               className="ml-1 d-inline"
               checked={!!this.state.current.patient.continuous_exposure}
               onChange={this.handleChange}
+              disabled={this.state.current.patient.isolation}
             />
-            <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
+            <InfoTooltip tooltipTextKey={this.state.current.patient.isolation ? 'continuousExposureDisabled' : 'continuousExposure'} location="right" />
           </Form.Group>
         </Form.Row>
         <Form.Label className="input-label pb-1">EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)</Form.Label>
