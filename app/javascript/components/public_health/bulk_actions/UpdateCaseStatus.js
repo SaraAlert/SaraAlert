@@ -295,8 +295,8 @@ class UpdateCaseStatus extends React.Component {
                     {this.state.case_status != '' &&
                       this.state.initialCaseStatus != this.state.case_status &&
                       this.state.puiElidgible &&
-                      ' Additionally, the Latest Public Health Action will be set to "None" if it does not currently hold that value. '}
-                    {this.renderClosedStatement()}
+                      ' Additionally, the Latest Public Health Action will be set to "None" if it does not currently hold that value.'}
+                    &nbsp;{this.renderClosedStatement()}
                   </p>
                 )}
                 {this.state.allSelectedAreClosed && this.renderReasonsSection()}
