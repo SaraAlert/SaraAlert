@@ -87,3 +87,8 @@ download_destroy_wait_time: <%= ENV['SARA_ALERT_DOWNLOAD_DESTROY_WAIT_TIME']|| 6
 # if the user has not logged into their Sara Alert account within the past inactive_user_threshold days, the user will be considered Inactive
 # If the user has logged into their Sara Alert account within the past inactive_user_threshold days, the user will be considered Active
 inactive_user_threshold: <%= ENV['INACTIVE_USER_THRESHOLD'] || 30 %>
+
+help_links:
+  user_guides: <%= ENV['USER_GUIDES_LINK'] || '' %>
+  user_forum: <%= ENV['USER_FORUM_LINK'] || '' %>
+  contact_us:  <%= ENV['CONTACT_US_LINK'] || '' %>

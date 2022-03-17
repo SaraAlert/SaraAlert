@@ -94,30 +94,40 @@ class Header extends React.Component {
                   {this.props.current_user?.email} ({this.props.current_user?.role?.split('_')?.map(_.capitalize)?.join(' ')})
                 </Navbar.Text>
                 <a className="w-border-right"></a>
-                <div className="dropdown">
-                  <Nav.Link
-                    className="text-white py-0"
-                    id="helpMenuButton"
-                    href="#"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    aria-label="Help">
-                    <i className="fas fa-question-circle fa-fw"></i>
-                  </Nav.Link>
-                  <div className="dropdown-menu dropdown-menu-right" aria-labelledby="helpMenuButton">
-                    <a className="dropdown-item" href="https://saraalert.org/public-health/guides/" target="_blank" rel="noreferrer">
-                      <i className="fas fa-book fa-fw"></i> User Guides
-                    </a>
-                    <a className="dropdown-item" href="https://virtualcommunities.naccho.org/saraalertforum/home" target="_blank" rel="noreferrer">
-                      <i className="fas fa-comments fa-fw"></i> User Forum
-                    </a>
-                    <a className="dropdown-item" href="https://saraalert.org/contact-us/" target="_blank" rel="noreferrer">
-                      <i className="fas fa-envelope-open-text fa-fw"></i> Contact Us
-                    </a>
-                  </div>
-                </div>
-                <a className="w-border-right"></a>
+                {Object.values(this.props.help_links).some(x => x !== null && x !== '') && (
+                  <>
+                    <div className="dropdown">
+                      <Nav.Link
+                        className="text-white py-0"
+                        id="helpMenuButton"
+                        href="#"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-label="Help">
+                        <i className="fas fa-question-circle fa-fw"></i>
+                      </Nav.Link>
+                      <div className="dropdown-menu dropdown-menu-right" aria-labelledby="helpMenuButton">
+                        {this.props.help_links.user_guides !== null && (
+                          <a className="dropdown-item" href={this.props.help_links.user_guides} target="_blank" rel="noreferrer">
+                            <i className="fas fa-book fa-fw"></i> User Guides
+                          </a>
+                        )}
+                        {this.props.help_links.user_forum !== null && (
+                          <a className="dropdown-item" href={this.props.help_links.user_forum} target="_blank" rel="noreferrer">
+                            <i className="fas fa-comments fa-fw"></i> User Forum
+                          </a>
+                        )}
+                        {this.props.help_links.contact_us !== null && (
+                          <a className="dropdown-item" href={this.props.help_links.contact_us} target="_blank" rel="noreferrer">
+                            <i className="fas fa-envelope-open-text fa-fw"></i> Contact Us
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                    <a className="w-border-right"></a>
+                  </>
+                )}
                 {this.props.current_user?.is_usa_admin && (
                   <React.Fragment>
                     <Nav.Link className="text-white py-0" href={`${window.BASE_PATH}/oauth/applications`}>
@@ -153,6 +163,7 @@ Header.propTypes = {
   show_demo_warning_background: PropTypes.bool,
   banner_message: PropTypes.string,
   current_user: PropTypes.object,
+  help_links: PropTypes.object,
 };
 
 export default Header;
