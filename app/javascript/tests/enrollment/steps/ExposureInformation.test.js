@@ -50,6 +50,7 @@ describe('ExposureInformation', () => {
     expect(wrapper.find(Card.Header).text()).toEqual('Monitoree Potential Exposure Information');
     expect(wrapper.find(Card.Body).exists()).toBe(true);
     expect(wrapper.find(Form).exists()).toBe(true);
+    expect(wrapper.find('#continuous_exposure').at(0).prop('disabled')).toBe(false);
     expect(wrapper.find('#exposure_notes').exists()).toBe(true);
     expect(wrapper.find(PublicHealthManagement).exists()).toBe(true);
     expect(wrapper.find('#add-new-cohort-button').exists()).toBe(true);
@@ -67,6 +68,7 @@ describe('ExposureInformation', () => {
     expect(wrapper.find(Card.Header).text()).toEqual('Monitoree Potential Exposure Information');
     expect(wrapper.find(Card.Body).exists()).toBe(true);
     expect(wrapper.find(Form).exists()).toBe(true);
+    expect(wrapper.find('#continuous_exposure').at(0).prop('disabled')).toBe(true);
     expect(wrapper.find('#exposure_notes').exists()).toBe(false);
     expect(wrapper.find(PublicHealthManagement).exists()).toBe(false);
     expect(wrapper.find('#add-new-cohort-button').exists()).toBe(true);
