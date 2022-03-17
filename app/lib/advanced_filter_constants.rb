@@ -88,7 +88,17 @@ module AdvancedFilterConstants
         title: 'Close Contact with a Known Case ID (Text)',
         description: 'Monitorees with a known exposure to a probable or confirmed case ID',
         type: 'search',
-        options: ['Exact Match', 'Contains']
+        options: ['Exact Match', 'Contains'],
+        tooltip: {
+          'Exact Match':
+            'Returns records with an exact match to one or more of the user-entered search values when the known Case ID is specified for \
+            monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID \
+            is “45” or “45, 12”). Leaving this field blank will return monitorees with missing and null values.',
+          Contains:
+            'Returns records that contain a user-entered search value when the known Case ID is specified for monitorees with “Close Contact with \
+            a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “123, 90” or “12” or “1451). \
+            Leaving this field blank will return monitorees with missing and null values.'
+        }
       },
       {
         name: 'email',
@@ -246,25 +256,29 @@ module AdvancedFilterConstants
         name: 'enrolled',
         title: 'Enrolled (Date)',
         description: 'Monitorees enrolled in system during specified date range',
-        type: 'date'
+        type: 'date',
+        support_blank: false
       },
       {
         name: 'latest-report',
         title: 'Latest Report (Date)',
         description: 'Monitorees with latest report during specified date range',
-        type: 'date'
+        type: 'date',
+        support_blank: true
       },
       {
         name: 'last-date-exposure',
         title: 'Last Date of Exposure (Date)',
         description: 'Monitorees who have a last date of exposure during specified date range',
-        type: 'date'
+        type: 'date',
+        support_blank: true
       },
       {
         name: 'symptom-onset',
         title: 'Symptom Onset (Date)',
         description: 'Monitorees who have a Symptom Onset Date during specified date range',
-        type: 'date'
+        type: 'date',
+        support_blank: true
       },
 
       # RELATIVE DATE FILTER OPTIONS
@@ -307,13 +321,11 @@ module AdvancedFilterConstants
           {
             name: 'address-usa',
             title: 'within USA',
-            description: 'Monitoree Address 1, Town/City, State, Address 2, Zip, or County within USA',
             type: 'search'
           },
           {
             name: 'address-foreign',
             title: 'outside USA',
-            description: 'Monitoree Address 1, Town/City, Country, Address 2, Postal Code, Address 3 or State/Province (outside USA)',
             type: 'search'
           }
         ]
@@ -404,19 +416,16 @@ module AdvancedFilterConstants
           {
             name: 'first-name',
             title: 'first',
-            description: 'Monitoree first name',
             type: 'search'
           },
           {
             name: 'last-name',
             title: 'last',
-            description: 'Monitoree last name',
             type: 'search'
           },
           {
             name: 'middle-name',
             title: 'middle',
-            description: 'Monitoree middle name',
             type: 'search'
           }
         ]

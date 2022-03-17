@@ -456,6 +456,8 @@ class AdvancedFilter extends React.Component {
         start: moment().subtract(3, 'days').format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
       };
+    } else if (dateOption === '') {
+      defaultValue = null;
     } else {
       defaultValue = moment().format('YYYY-MM-DD');
     }
@@ -672,10 +674,13 @@ class AdvancedFilter extends React.Component {
    * Renders a tooltip for a statement row
    * @param {Object} filter - Filter currently selected
    * @param {Number} index - Filter index
-   * @param {String} statement - Tooltip text
+   * @param {String} statement - Tooltip text (can be a string, array, or object)
    */
-  renderStatementTooltip = (filter, index, statement) => {
+  renderStatementTooltip = (filter, index, statement, additionalFilterOption) => {
     const tooltipId = `${filter.name}-${index}`;
+    if (_.isObject(statement) && !_.isArray(statement)) {
+      statement = statement[`${additionalFilterOption}`];
+    }
     return (
       <div className="align-middle float-right">
         <span data-for={tooltipId} data-tip="" className="ml-3 tooltip-af">
@@ -843,19 +848,6 @@ class AdvancedFilter extends React.Component {
    * @param {String} additionalFilterOption - Selected option from additional list of options (if provided)
    */
   renderSearchStatement = (filter, index, value, additionalFilterOption) => {
-    // compute tooltip for specific search cases
-    let tooltip = filter.tooltip || '';
-    if (filter.name === 'close-contact-with-known-case-id') {
-      if (additionalFilterOption === 'Exact Match') {
-        tooltip =
-          'Returns records with an exact match to one or more of the user-entered search values when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “45” or “45, 12”). ';
-      } else if (additionalFilterOption === 'Contains') {
-        tooltip =
-          'Returns records that contain a user-entered search value when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “123, 90” or “12” or “1451). ';
-      }
-      tooltip += 'Leaving this field blank will return monitorees with missing and null values.';
-    }
-
     return (
       <React.Fragment>
         <div style={{ display: 'flex' }}>
@@ -868,7 +860,7 @@ class AdvancedFilter extends React.Component {
               this.changeValue(index, event.target.value);
             }}
           />
-          {tooltip && this.renderStatementTooltip(filter.name, index, tooltip)}
+          {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip, additionalFilterOption)}
         </div>
       </React.Fragment>
     );
@@ -1021,7 +1013,7 @@ class AdvancedFilter extends React.Component {
             <option value="within">within</option>
             <option value="before">before</option>
             <option value="after">after</option>
-            {filter.name !== 'enrolled' && <option></option>}
+            {filter.support_blank && <option></option>}
           </Form.Control>
           {(dateOption === 'before' || dateOption === 'after') && (
             <div className="advanced-filter-date-input">
@@ -1205,14 +1197,18 @@ class AdvancedFilter extends React.Component {
                     this.changeCombinationValue(statementIndex, combinationIndex, { name: combinationValue.name, value: event.target.value });
                   }}>
                   {combinationFilter.options.map((option, o_index) => {
-                    return <option key={o_index}>{option}</option>;
+                    return (
+                      <option key={o_index} value={option}>
+                        {option}
+                      </option>
+                    );
                   })}
                 </Form.Control>
               )}
               {combinationFilter?.type === 'search' && (
                 <Form.Control
                   value={combinationValue.value}
-                  className="advanced-filter-combination-multi-select-options advanced-filter-multi-select-options my-0 mx-3 py-0"
+                  className="advanced-filter-combination-search-input my-0 mx-3 py-0"
                   aria-label="Advanced Filter Combination Search"
                   onChange={event => {
                     this.changeCombinationValue(statementIndex, combinationIndex, { name: combinationValue.name, value: event.target.value });
