@@ -22,7 +22,7 @@ class UpdateCaseStatus extends React.Component {
       initialIsolation: undefined,
       initialMonitoringReason: undefined,
       initialMonitoring: undefined,
-      puiElidgible: undefined,
+      puiEligible: undefined,
       apply_to_household: false,
       reasoning: '',
       monitoring: null,
@@ -60,7 +60,7 @@ class UpdateCaseStatus extends React.Component {
           state_updates.initialMonitoringReason = distinctMonitoringReason[0];
           state_updates.monitoring_reason = distinctMonitoringReason[0];
         }
-        state_updates.puiElidgible = response.data.pui_elidgible;
+        state_updates.puiEligible = response.data.pui_eligible;
 
         if (Object.keys(state_updates).length) {
           this.setState(state_updates);
@@ -266,7 +266,7 @@ class UpdateCaseStatus extends React.Component {
                 )}
                 {['Suspect', 'Not a Case', 'Unknown'].includes(this.state.case_status) &&
                   this.state.initialCaseStatus != this.state.case_status &&
-                  this.state.puiElidgible &&
+                  this.state.puiEligible &&
                   'The Latest Public Health Action will be set to "None" if it does not currently hold that value. '}
                 {this.renderClosedStatement()}
               </React.Fragment>
@@ -294,7 +294,7 @@ class UpdateCaseStatus extends React.Component {
                     The selected cases will remain in the exposure workflow.
                     {this.state.case_status != '' &&
                       this.state.initialCaseStatus != this.state.case_status &&
-                      this.state.puiElidgible &&
+                      this.state.puiEligible &&
                       ' Additionally, the Latest Public Health Action will be set to "None" if it does not currently hold that value.'}
                     &nbsp;{this.renderClosedStatement()}
                   </p>
