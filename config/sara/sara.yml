@@ -92,4 +92,3 @@ help_links:
   user_guides: <%= ENV['USER_GUIDES_LINK'] || '' %>
   user_forum: <%= ENV['USER_FORUM_LINK'] || '' %>
   contact_us:  <%= ENV['CONTACT_US_LINK'] || '' %>
-  
