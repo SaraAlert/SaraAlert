@@ -310,7 +310,6 @@ class ApiControllerTestCase < ActionDispatch::IntegrationTest
       secondary_telephone_type: 'Landline',
       black_or_african_american: true,
       asian: true,
-      continuous_exposure: true,
       last_date_of_exposure: nil
     )
     @patient_2 = Patient.find_by(id: 2).as_fhir
@@ -319,6 +318,14 @@ class ApiControllerTestCase < ActionDispatch::IntegrationTest
     Patient.find_by(id: 2).update!(
       primary_telephone: '+15555559998'
     )
+
+    # Update Patient 3 before created FHIR resource from it
+    Patient.find_by(id: 3).update!(
+      isolation: false,
+      last_date_of_exposure: nil,
+      continuous_exposure: true
+    )
+    @patient_3 = Patient.find_by(id: 3).as_fhir
   end
 
   private
