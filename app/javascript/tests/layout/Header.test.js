@@ -32,7 +32,7 @@ describe('Header', () => {
   });
 
   it('Hides help link menu when all help links are null', () => {
-    Object.keys(help_links).forEach(key => (help_links[key] = null));
+    Object.keys(help_links).forEach(key => (help_links[`${key}`] = null));
 
     const wrapper = shallow(<Header report_mode={false} show_demo_warning_background={false} banner_message="" current_user={mockUser1} help_links={help_links} />);
 
