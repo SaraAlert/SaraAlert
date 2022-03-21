@@ -716,7 +716,7 @@ describe('AdvancedFilter', () => {
     checkStatementRender(wrapper, contents);
 
     contents.dateOption = '';
-    contents.value = null;
+    contents.value = '';
     wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: contents.dateOption } });
     expect(wrapper.state('activeFilter')).toBeNull();
     expect(wrapper.state('activeFilterOptions')).toEqual([contents]);

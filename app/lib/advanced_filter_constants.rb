@@ -32,8 +32,8 @@ module AdvancedFilterConstants
         description: 'All isolation records ineligible to ever appear on Records Requiring Review line list',
         type: 'boolean',
         tooltip:
-          'This filter will return all records in the Isolation workflow that both do not have a Symptom Onset Date and do not have a \
-          positive lab result with a Specimen Collection Date'
+          'This filter will return all records in the Isolation workflow that both do not have a Symptom Onset Date and do not have a '\
+          'positive lab result with a Specimen Collection Date'
       },
       {
         name: 'monitoring-status',
@@ -72,8 +72,8 @@ module AdvancedFilterConstants
         description: 'Monitorees that have blocked SMS communications with Sara Alert',
         type: 'boolean',
         tooltip:
-          'This filter will return monitorees that have texted “STOP” in response to a Sara Alert text message and cannot receive messages through \
-          SMS Preferred Reporting Methods until they text "START".'
+          'This filter will return monitorees that have texted “STOP” in response to a Sara Alert text message and cannot receive messages through '\
+          'SMS Preferred Reporting Methods until they text "START".'
       },
       {
         name: 'unenrolled-close-contact',
@@ -91,13 +91,13 @@ module AdvancedFilterConstants
         options: ['Exact Match', 'Contains'],
         tooltip: {
           'Exact Match':
-            'Returns records with an exact match to one or more of the user-entered search values when the known Case ID is specified for \
-            monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID \
-            is “45” or “45, 12”). Leaving this field blank will return monitorees with missing and null values.',
+            'Returns records with an exact match to one or more of the user-entered search values when the known Case ID is specified for '\
+            'monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID '\
+            'is “45” or “45, 12”). Leaving this field blank will return monitorees with missing and null values.',
           Contains:
-            'Returns records that contain a user-entered search value when the known Case ID is specified for monitorees with “Close Contact with \
-            a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “123, 90” or “12” or “1451). \
-            Leaving this field blank will return monitorees with missing and null values.'
+            'Returns records that contain a user-entered search value when the known Case ID is specified for monitorees with “Close Contact with '\
+            'a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “123, 90” or “12” or “1451). '\
+            'Leaving this field blank will return monitorees with missing and null values.'
         }
       },
       {
@@ -188,8 +188,8 @@ module AdvancedFilterConstants
           'Other'
         ],
         tooltip:
-          'This will return monitorees that are flagged for follow-up for the selected reason. To return all montitorees flagged for follow-up, \
-          select the “Any Reason” option.'
+          'This will return monitorees that are flagged for follow-up for the selected reason. To return all montitorees flagged for follow-up, '\
+          'select the “Any Reason” option.'
       },
 
       # MULTI-SELECT OPTIONS
@@ -200,8 +200,8 @@ module AdvancedFilterConstants
         type: 'multi',
         options: current_user.patients.where.not(assigned_user: nil).pluck(:assigned_user).uniq.sort.map { |option| { label: option, value: option } },
         tooltip:
-          'If multiple Assigned Users are selected, records assigned to any of those users will be returned. Only Assigned User values currently listed \
-          in a record are selectable. Leaving this field blank will not filter out any monitorees.'
+          'If multiple Assigned Users are selected, records assigned to any of those users will be returned. Only Assigned User values currently listed '\
+          'in a record are selectable. Leaving this field blank will not filter out any monitorees.'
       },
       {
         name: 'contact-type',
@@ -221,8 +221,8 @@ module AdvancedFilterConstants
           'Unknown'
         ].map { |option| { label: option, value: option } },
         tooltip:
-          'If multiple Contact Relationships are selected, records with any of those options as their Primary Contact Relationship will be returned. Leaving \
-          this field blank will not filter out any monitorees.'
+          'If multiple Contact Relationships are selected, records with any of those options as their Primary Contact Relationship will be returned. Leaving '\
+          'this field blank will not filter out any monitorees.'
       },
       {
         name: 'jurisdiction',
@@ -231,8 +231,8 @@ module AdvancedFilterConstants
         type: 'multi',
         options: current_user.jurisdiction.subtree.pluck(:id, :path).to_h.map { |key, value| { label: value, value: key } },
         tooltip:
-          'If multiple Jurisdictions are selected, records assigned to any of those Jurisdictions will be returned. All Jurisdictions that you have access to \
-          are selectable. Leaving this field blank will not filter out any monitorees.'
+          'If multiple Jurisdictions are selected, records assigned to any of those Jurisdictions will be returned. All Jurisdictions that you have access to '\
+          'are selectable. Leaving this field blank will not filter out any monitorees.'
       },
 
       # NUMBER FILTER OPTIONS
@@ -336,9 +336,9 @@ module AdvancedFilterConstants
         description: 'Monitorees with specified Common Exposure Cohort criteria',
         type: 'combination',
         tooltip:
-          'Returns records that contain at least one Common Exposure Cohort entry that meets all user-specified criteria (e.g., searching for a \
-          specific Common Exposure Cohort Type and Name/Description will only return records containing at least one Common Exposure Cohort entry \
-          with matching values in both fields). Leaving these fields blank will not filter out any monitorees.',
+          'Returns records that contain at least one Common Exposure Cohort entry that meets all user-specified criteria (e.g., searching for a '\
+          'specific Common Exposure Cohort Type and Name/Description will only return records containing at least one Common Exposure Cohort entry '\
+          'with matching values in both fields). Leaving these fields blank will not filter out any monitorees.',
         fields: [
           {
             name: 'cohort-type',
@@ -379,9 +379,9 @@ module AdvancedFilterConstants
         description: 'Monitorees with specified Lab Result criteria',
         type: 'combination',
         tooltip:
-          'Returns records that contain at least one Lab Result entry that meets all user-specified criteria (e.g., searching for a \
-          specific Lab Test Type and Report Date will only return records containing at least one Lab Result entry with matching \
-          values in both fields).',
+          'Returns records that contain at least one Lab Result entry that meets all user-specified criteria (e.g., searching for a '\
+          'specific Lab Test Type and Report Date will only return records containing at least one Lab Result entry with matching '\
+          'values in both fields).',
         fields: [
           {
             name: 'result',
@@ -436,9 +436,9 @@ module AdvancedFilterConstants
         description: 'Monitorees with specified Vaccination criteria',
         type: 'combination',
         tooltip:
-          'Returns records that contain at least one Vaccination entry that meets all user-specified criteria (e.g., searching for a specific \
-          Vaccination Product Name and Administration Date will only return records containing at least one Vaccination entry with matching \
-          values in both fields).',
+          'Returns records that contain at least one Vaccination entry that meets all user-specified criteria (e.g., searching for a specific '\
+          'Vaccination Product Name and Administration Date will only return records containing at least one Vaccination entry with matching '\
+          'values in both fields).',
         fields: [
           {
             name: 'vaccine-group',

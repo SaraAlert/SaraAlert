@@ -241,7 +241,7 @@ class AdvancedFilter extends React.Component {
       .then(response => {
         if (response?.data) {
           toast.success('Filter successfully saved.');
-          let data = { ...response?.data, contents: JSON.parse(response?.data?.contents) };
+          let data = { ...response?.data, contents: this.formatFiltersForFrontend(JSON.parse(response?.data?.contents)) };
           this.setState({ activeFilter: data, savedFilters: [...self.state.savedFilters, data] });
         }
       });
@@ -263,7 +263,7 @@ class AdvancedFilter extends React.Component {
       .then(response => {
         if (response?.data) {
           toast.success('Filter successfully updated.');
-          let data = { ...response?.data, contents: JSON.parse(response?.data?.contents) };
+          let data = { ...response?.data, contents: this.formatFiltersForFrontend(JSON.parse(response?.data?.contents)) };
           this.setState({
             activeFilter: data,
             savedFilters: [
@@ -457,7 +457,7 @@ class AdvancedFilter extends React.Component {
         end: moment().format('YYYY-MM-DD'),
       };
     } else if (dateOption === '') {
-      defaultValue = null;
+      defaultValue = '';
     } else {
       defaultValue = moment().format('YYYY-MM-DD');
     }
