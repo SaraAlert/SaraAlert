@@ -3,7 +3,13 @@
 # rubocop:disable Metrics/ModuleLength
 
 # Options for Advanced Filter
-module AdvancedFilterConstants
+module AdvancedFilterOptions
+  SUPPORTED_LANGUAGES = Languages.all_languages.values.sort_by do |lang|
+    [lang[:supported].blank? ? 1 : 0,
+     lang[:supported].present? && lang[:supported][:sms] && lang[:supported][:phone] && lang[:supported][:email] ? 0 : 1,
+     lang[:display]]
+  end.pluck(:display)
+
   # rubocop:disable Metrics/MethodLength
   def advanced_filter_options(current_user)
     [
@@ -156,11 +162,7 @@ module AdvancedFilterConstants
         title: 'Primary Language (Select)',
         description: 'Monitoree primary language',
         type: 'select',
-        options: Languages.all_languages.values.sort_by do |lang|
-                   [lang[:supported].blank? ? 1 : 0,
-                    lang[:supported].present? && lang[:supported][:sms] && lang[:supported][:phone] && lang[:supported][:email] ? 0 : 1,
-                    lang[:display]]
-                 end.pluck(:display)
+        options: SUPPORTED_LANGUAGES
       },
       {
         name: 'risk-exposure',

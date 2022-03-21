@@ -3,7 +3,7 @@
 # PublicHealthController: handles all epi actions
 class PublicHealthController < ApplicationController
   include PatientQueryHelper
-  include AdvancedFilterConstants
+  include AdvancedFilterOptions
 
   before_action :authenticate_user!
   before_action :authenticate_user_role

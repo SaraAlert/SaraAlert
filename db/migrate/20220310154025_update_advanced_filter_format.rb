@@ -1,13 +1,13 @@
 class UpdateAdvancedFilterFormat < ActiveRecord::Migration[6.1]
-  include AdvancedFilterConstants
+  include AdvancedFilterOptions
 
   def up
     ActiveRecord::Base.transaction do
       # Migrate saved advanced filters
       UserFilter.all.each do |uf|
-          contents = JSON.parse(uf[:contents])
-          migrate_advanced_filter_contents(contents)
-          uf.update!(contents: contents.to_json)
+        contents = JSON.parse(uf[:contents])
+        migrate_advanced_filter_contents(contents)
+        uf.update!(contents: contents.to_json)
       end
 
       # Migrate advanced filters in saved export presets

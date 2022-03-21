@@ -83,12 +83,7 @@ class Vaccine < ApplicationRecord
 
   # Gets the list of ALL possible vaccine product names for all possible groups.
   def self.all_product_name_options
-    vaccine_names = []
-    VACCINE_STANDARDS.each do |_key, value|
-      vaccine_names.concat(value['vaccines'].map { |vaccine| vaccine['product_name'] })
-    end
-
-    vaccine_names
+    Vaccine::VACCINE_STANDARDS.values.map { |group| group['vaccines'].map { |vaccine| vaccine['product_name'] } }.flatten
   end
 
   # Gets the codes relevant to a specified vaccine in a specified group.

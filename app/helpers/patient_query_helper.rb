@@ -2,7 +2,7 @@
 
 # Helper methods for filtering through patients
 module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
-  include AdvancedFilterConstants
+  include AdvancedFilterOptions
 
   def patients_table_data(params, current_user)
     # Require workflow and tab params
