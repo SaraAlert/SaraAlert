@@ -20,7 +20,6 @@ function getWrapper(additionalProps) {
 describe('Header', () => {
   it('Shows help link menu with all help links', () => {
     const wrapper = getWrapper();
-
     expect(wrapper.find('.dropdown-menu').exists()).toBe(true);
     expect(wrapper.find('.dropdown-menu').children()).toHaveLength(3);
     expect(wrapper.find('.dropdown-item').find('a').at(0).prop('href')).toEqual(helpLinks.user_guides);
@@ -29,17 +28,15 @@ describe('Header', () => {
   });
 
   it('Shows help link menu with only two help links', () => {
-    const wrapper = getWrapper({ help_links: { user_guides: null, user_forum: 'https://www.sara.org/user-forum', contact_us: 'https://www.sara.org/contact-us' } });
-
+    const wrapper = getWrapper({ help_links: { user_guides: null, user_forum: helpLinks.user_forum, contact_us: helpLinks.contact_us } });
     expect(wrapper.find('.dropdown-menu').exists()).toBe(true);
     expect(wrapper.find('.dropdown-menu').children()).toHaveLength(2);
-    expect(wrapper.find('.dropdown-item').find('a').at(0).prop('href')).toEqual('https://www.sara.org/user-forum');
-    expect(wrapper.find('.dropdown-item').find('a').at(1).prop('href')).toEqual('https://www.sara.org/contact-us');
+    expect(wrapper.find('.dropdown-item').find('a').at(0).prop('href')).toEqual(helpLinks.user_forum);
+    expect(wrapper.find('.dropdown-item').find('a').at(1).prop('href')).toEqual(helpLinks.contact_us);
   });
 
   it('Hides help link menu when all help links are null', () => {
     const wrapper = getWrapper({ help_links: { user_guides: null, user_forum: '', contact_us: null } });
-
     expect(wrapper.find('.dropdown-menu').exists()).toBe(false);
   });
 });
