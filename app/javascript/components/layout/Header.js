@@ -94,7 +94,7 @@ class Header extends React.Component {
                   {this.props.current_user?.email} ({this.props.current_user?.role?.split('_')?.map(_.capitalize)?.join(' ')})
                 </Navbar.Text>
                 <a className="w-border-right"></a>
-                {Object.values(this.props.help_links).some(x => x !== null && x !== '') && (
+                {Object.values(this.props.help_links).some(x => x) && (
                   <React.Fragment>
                     <div className="dropdown">
                       <Nav.Link
