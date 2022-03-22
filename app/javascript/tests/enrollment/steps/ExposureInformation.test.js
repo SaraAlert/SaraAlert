@@ -10,6 +10,7 @@ import { mockJurisdictionPaths } from '../../mocks/mockJurisdiction';
 import { mockCommonExposureCohort1, mockCommonExposureCohort2 } from '../../mocks/mockCommonExposureCohorts';
 import CommonExposureCohortsTable from '../../../components/patient/common_exposure_cohorts/CommonExposureCohortsTable';
 import CommonExposureCohortModal from '../../../components/patient/common_exposure_cohorts/CommonExposureCohortModal';
+import InfoTooltip from '../../../components/util/InfoTooltip';
 
 const previousMock = jest.fn();
 const nextMock = jest.fn();
@@ -51,6 +52,7 @@ describe('ExposureInformation', () => {
     expect(wrapper.find(Card.Body).exists()).toBe(true);
     expect(wrapper.find(Form).exists()).toBe(true);
     expect(wrapper.find('#continuous_exposure').at(0).prop('disabled')).toBe(false);
+    expect(wrapper.find(InfoTooltip).exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').exists()).toBe(true);
     expect(wrapper.find(PublicHealthManagement).exists()).toBe(true);
     expect(wrapper.find('#add-new-cohort-button').exists()).toBe(true);
@@ -69,6 +71,7 @@ describe('ExposureInformation', () => {
     expect(wrapper.find(Card.Body).exists()).toBe(true);
     expect(wrapper.find(Form).exists()).toBe(true);
     expect(wrapper.find('#continuous_exposure').at(0).prop('disabled')).toBe(true);
+    expect(wrapper.find('#disabled-continuous-exposure').exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').exists()).toBe(false);
     expect(wrapper.find(PublicHealthManagement).exists()).toBe(false);
     expect(wrapper.find('#add-new-cohort-button').exists()).toBe(true);

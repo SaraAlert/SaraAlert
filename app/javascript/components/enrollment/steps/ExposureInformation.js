@@ -421,16 +421,26 @@ class ExposureInformation extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} lg={{ span: 8, order: 4 }} md={{ span: 12, order: 3 }} xs={{ span: 24, order: 2 }} className="pl-1">
-            <Form.Check
-              size="lg"
-              label={`CONTINUOUS EXPOSURE${schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}`}
-              id="continuous_exposure"
-              className="ml-1 d-inline"
-              checked={!!this.state.current.patient.continuous_exposure}
-              onChange={this.handleChange}
-              disabled={this.state.current.patient.isolation}
-            />
-            <InfoTooltip tooltipTextKey={this.state.current.patient.isolation ? 'continuousExposureDisabled' : 'continuousExposure'} location="right" />
+            <span data-for="disabled-continuous-exposure" data-tip="">
+              <Form.Check
+                size="lg"
+                id="continuous_exposure"
+                className="ml-1 d-inline"
+                checked={!!this.state.current.patient.continuous_exposure}
+                onChange={this.handleChange}
+                disabled={this.state.current.patient.isolation}
+              />
+              <Form.Label className="input-label ml-2">
+                CONTINUOUS EXPOSURE{schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}
+              </Form.Label>
+            </span>
+            {this.state.current.patient.isolation ? (
+              <ReactTooltip id="disabled-continuous-exposure" multiline={true} type="dark" effect="solid" place="bottom" className="tooltip-container">
+                <div>Continuous exposure is not relevant for cases in the isolation workflow.</div>
+              </ReactTooltip>
+            ) : (
+              <InfoTooltip tooltipTextKey="continuousExposure" location="right" />
+            )}
           </Form.Group>
         </Form.Row>
         <Form.Label className="input-label pb-1">EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)</Form.Label>

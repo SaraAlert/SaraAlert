@@ -180,8 +180,6 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  continuousExposureDisabled: <div>Continuous exposure is not relevant for cases in the isolation workflow.</div>,
-
   /* REPORTS */
   exposureNeedsReviewColumn: (
     <div>
