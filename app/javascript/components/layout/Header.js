@@ -108,17 +108,17 @@ class Header extends React.Component {
                         <i className="fas fa-question-circle fa-fw"></i>
                       </Nav.Link>
                       <div className="dropdown-menu dropdown-menu-right" aria-labelledby="helpMenuButton">
-                        {this.props.help_links.user_guides !== null && (
+                        {!_.isNil(this.props.help_links.user_guides) && (
                           <a className="dropdown-item" href={this.props.help_links.user_guides} target="_blank" rel="noreferrer">
                             <i className="fas fa-book fa-fw"></i> User Guides
                           </a>
                         )}
-                        {this.props.help_links.user_forum !== null && (
+                        {!_.isNil(this.props.help_links.user_forum) && (
                           <a className="dropdown-item" href={this.props.help_links.user_forum} target="_blank" rel="noreferrer">
                             <i className="fas fa-comments fa-fw"></i> User Forum
                           </a>
                         )}
-                        {this.props.help_links.contact_us !== null && (
+                        {!_.isNil(this.props.help_links.contact_us) && (
                           <a className="dropdown-item" href={this.props.help_links.contact_us} target="_blank" rel="noreferrer">
                             <i className="fas fa-envelope-open-text fa-fw"></i> Contact Us
                           </a>
