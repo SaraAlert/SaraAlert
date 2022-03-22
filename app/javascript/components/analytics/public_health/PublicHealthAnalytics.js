@@ -117,7 +117,7 @@ class PublicHealthAnalytics extends React.Component {
           </Row>
           <Row className="mx-2">
             <Col className="mx-0 my-3 p-0">
-              <MonitoreeFlow stats={this.props.stats} case_development_analytics_start_date={this.props.case_development_analytics_start_date} />
+              <MonitoreeFlow stats={this.props.stats} />
             </Col>
           </Row>
           <Row className="mx-2 mt-3">
@@ -174,7 +174,6 @@ class PublicHealthAnalytics extends React.Component {
 PublicHealthAnalytics.propTypes = {
   stats: PropTypes.object,
   current_user: PropTypes.object,
-  case_development_analytics_start_date: PropTypes.string,
 };
 
 export default PublicHealthAnalytics;
