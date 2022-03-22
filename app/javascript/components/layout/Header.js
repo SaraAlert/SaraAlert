@@ -95,7 +95,7 @@ class Header extends React.Component {
                 </Navbar.Text>
                 <a className="w-border-right"></a>
                 {Object.values(this.props.help_links).some(x => x !== null && x !== '') && (
-                  <>
+                  <React.Fragment>
                     <div className="dropdown">
                       <Nav.Link
                         className="text-white py-0"
@@ -126,7 +126,7 @@ class Header extends React.Component {
                       </div>
                     </div>
                     <a className="w-border-right"></a>
-                  </>
+                  </React.Fragment>
                 )}
                 {this.props.current_user?.is_usa_admin && (
                   <React.Fragment>
