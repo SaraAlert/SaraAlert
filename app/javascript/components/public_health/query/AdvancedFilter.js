@@ -1212,7 +1212,8 @@ class AdvancedFilter extends React.Component {
                   aria-label="Advanced Filter Combination Search"
                   onChange={event => {
                     this.changeCombinationValue(statementIndex, combinationIndex, { name: combinationValue.name, value: event.target.value });
-                  }}></Form.Control>
+                  }}
+                />
               )}
               {combinationFilter?.type === 'multi' && (
                 <Select
