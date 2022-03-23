@@ -71,7 +71,7 @@ describe('UpdateCaseStatus', () => {
       .forEach((option, index) => {
         expect(option.text()).toEqual(CASE_STATUS_OPTIONS[Number(index)]);
       });
-    expect(wrapper.find(Modal.Body).find('span').at(0).text()).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
+    expect(wrapper.find(Modal.Body).find('span').text()).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
     expect(wrapper.find(Modal.Footer).find(Button).at(0).text()).toEqual('Cancel');
     expect(wrapper.find(Modal.Footer).find(Button).at(1).text()).toEqual('Submit');
   });
@@ -145,7 +145,7 @@ describe('UpdateCaseStatus', () => {
         .first()
         .simulate('change', { target: { id: 'case_status', type: 'change', value: case_status_option }, persist: jest.fn() });
       expect(wrapper.state('case_status')).toEqual(case_status_option);
-      expect(wrapper.find('span').at(0).text()).toContain('The selected cases will remain in the isolation workflow.');
+      expect(wrapper.find('span').text()).toContain('The selected cases will remain in the isolation workflow.');
       // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
       expect(wrapper.find(Form.Control).at(1).exists()).toBe(false);
       wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
@@ -199,7 +199,7 @@ describe('UpdateCaseStatus', () => {
         .first()
         .simulate('change', { target: { id: 'case_status', type: 'change', value: case_status_option }, persist: jest.fn() });
 
-      expect(wrapper.find('span').at(0).text()).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
+      expect(wrapper.find('span').text()).toContain('The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.');
       // there are no dropdowns for "Suspect", "Unknown" and "Not a Case"
       expect(wrapper.find(Form.Control).at(1).exists()).toBe(false);
       wrapper.find(Form.Check).simulate('change', { target: { id: 'apply_to_household', type: 'checkbox', checked: false }, persist: jest.fn() });
