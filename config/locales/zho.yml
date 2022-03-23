@@ -1,6 +1,8 @@
 zho:
   assessments:
     dir: 'ltr'
+    shared:
+      privacy_info: '有关保护隐私和更多信息，请访问%{privacy_policy_url}。'
     html:
       shared:
         email: '电子邮件'
@@ -21,7 +23,6 @@ zho:
           report: '每日报告'
           footer: >-
             不要回复此电子邮件，转发此电子邮件或分享此链接。此消息是由Sara Alert系统自动生成的，并且是唯一的，仅供您使用。如果您希望停止接收这些通知，或者认为这是一个错误，请联系您当地的公共卫生部门。
-            有关隐私和更多信息，请访问saraalert.org。
         enrollment:
           subject: '加入Sara Alert'
           header: '欢迎使用Sara Alert系统'
@@ -45,7 +46,7 @@ zho:
         max_retries_message: '抱歉，您已达到最大响应尝试次数。如果您遇到医疗紧急情况，请致电911。'
       sms:
         prompt:
-          intro: 欢迎使用Sara Alert系统。我们会将%{name}每日报告发送到这个电话号码。有关保护隐私和更多信息，请访问saraalert.org。
+          intro: 欢迎使用Sara Alert系统。我们会将%{name}每日报告发送到这个电话号码。
           reminder: '这是Sara Alert系统提醒您请回复我们的每日报告信息'
           name: '%{name}'
           daily: '这是Sara Alert的每日报告: %{names}. %{experiencing_symptoms} 请用“是”或“否”回答'

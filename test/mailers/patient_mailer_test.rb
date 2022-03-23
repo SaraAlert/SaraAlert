@@ -24,6 +24,7 @@ class PatientMailerTest < ActionMailer::TestCase
     ENV['TWILLIO_STUDIO_FLOW'] = 'test'
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = 'test_messaging_sid'
     ADMIN_OPTIONS['job_run_email'] = 'test@test.com'
+    ADMIN_OPTIONS['privacy_policy_url'] = 'test.org'
   end
 
   def teardown
@@ -209,6 +210,7 @@ class PatientMailerTest < ActionMailer::TestCase
       assert_includes email_body.strip, I18n.t('assessments.html.email.reminder.thank_you', locale: lang)
       assert_includes email_body, I18n.t('assessments.html.email.shared.report', locale: lang)
       assert_includes email_body, I18n.t('assessments.html.email.shared.footer', locale: lang)
+      assert_includes email_body, I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url'])
     end
 
     test "closed email contents in #{language}" do
@@ -228,6 +230,7 @@ class PatientMailerTest < ActionMailer::TestCase
         locale: lang
       )
       assert_includes email_body, I18n.t('assessments.html.email.shared.footer', locale: lang)
+      assert_includes email_body, I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url'])
       assert_histories_contain(@patient, 'Monitoring Complete message was sent.')
     end
 
@@ -246,6 +249,7 @@ class PatientMailerTest < ActionMailer::TestCase
       assert_includes email_body, I18n.t('assessments.html.email.enrollment.info2', locale: lang)
       assert_includes email_body, I18n.t('assessments.html.email.shared.report', locale: lang)
       assert_includes email_body, I18n.t('assessments.html.email.shared.footer', locale: lang)
+      assert_includes email_body, I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url'])
     end
 
     test "enrollment email custom messages in #{language}" do

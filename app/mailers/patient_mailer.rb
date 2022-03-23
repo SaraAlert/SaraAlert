@@ -38,9 +38,15 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language(:sms)
     custom_msg = patient&.jurisdiction&.custom_messages_for_hierarchy&.dig('assessments', 'twilio', 'sms', 'prompt', 'intro', lang&.to_s)
-    contents = custom_msg.present? ?
-      "#{patient&.initials_age('-')},\n#{custom_msg}" :
-      I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: patient&.initials_age('-'))
+    contents = if custom_msg.present?
+                 "#{patient&.initials_age('-')},\n#{custom_msg}" +
+                   (custom_msg.exclude?(ADMIN_OPTIONS['privacy_policy_url']) && ADMIN_OPTIONS['privacy_policy_url'].present? ?
+                     I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url']) : '')
+               else
+                 I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: patient&.initials_age('-')) +
+                   (ADMIN_OPTIONS['privacy_policy_url'].present? ?
+                     ' ' + I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url']) : '')
+               end
     threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]
     message = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash }
     success = TwilioSender.send_sms(patient, [message])

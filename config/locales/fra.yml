@@ -1,6 +1,8 @@
 fra:
   assessments:
     dir: 'ltr'
+    shared:
+      privacy_info: "Pour la confidentialité et plus d'informations, visitez %{privacy_policy_url}."
     html:
       shared:
         email: 'Courriel'
@@ -26,7 +28,7 @@ fra:
           footer: >-
             Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le
             système d'Alerte Sara ; il est unique et n'est destiné qu'à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu'il
-            s'agit d'une erreur, veuillez contacter les autorités sanitaires locales. Pour la confidentialité et plus d'informations, visitez saraalert.org.
+            s'agit d'une erreur, veuillez contacter les autorités sanitaires locales.
         enrollment:
           subject: 'Recrutement pour alerte Sara'
           header: "Bienvenue sur le système d'Alerte Sara"
@@ -62,9 +64,7 @@ fra:
         # strings used for sms messages intentionally do not contain special characters so that they get encoded as GSM-7 rather than UCS-2 which results in
         # double the number of SMS segments
         prompt:
-          intro: >-
-            Bienvenue sur le systeme d'Alerte Sara, nous vous enverrons vos rapports quotidiens pour %{name} a ce numero de telephone. Pour la confidentialite
-            et plus d'informations, visitez saraalert.org.
+          intro: "Bienvenue sur le systeme d'Alerte Sara, nous vous enverrons vos rapports quotidiens pour %{name} a ce numero de telephone."
           reminder: "Ceci est un rappel du systeme d'Alerte Sara vous rappelant que vous devez repondre a nos messages de rapport quotidien."
           name: '%{name}'
           daily: 'Il s''agit d''un rapport d''alerte Sara quotidien destine aux: %{names}. %{experiencing_symptoms} Veuillez repondre par "Oui" ou par "Non"'

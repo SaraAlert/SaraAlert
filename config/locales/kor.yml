@@ -1,6 +1,8 @@
 kor:
   assessments:
     dir: 'ltr'
+    shared:
+      privacy_info: '개인 정보 보호 및 더 자세한 정보를 원하시면 %{privacy_policy_url}를 방문하십시오.'
     html:
       shared:
         email: '전자 메일'
@@ -23,7 +25,7 @@ kor:
           report: '일일 보고서'
           footer: >-
             이 이메일에 답장하거나, 이 이메일을 전달하거나, 이 링크를 공유하지 마십시오. 이 메시지는 Sara Alert 시스템에 의해 자동으로 생성되었으며 고유하고 귀하만을 위한 것입니다. 이러한 알림을
-            중단하고 싶거나 실수라고 생각되면 지역 공중 보건부에 문의하십시오. 개인 정보 보호 및 더 자세한 정보를 원하시면 saraalert.org를 방문하십시오.
+            중단하고 싶거나 실수라고 생각되면 지역 공중 보건부에 문의하십시오.
         enrollment:
           subject: 'Sara Alert 등록'
           header: 'Sara Alert 시스템에 오신 것을 환영합니다!'
@@ -47,7 +49,7 @@ kor:
         max_retries_message: '미안 해요, 최대 응답 시도 횟수에 도달했습니다. 당신이 응급 상황이 발생하는 경우, 911에 전화해서 당신이 보건 당국에 의해 감시되고있다 알려 주시기 바랍니다.'
       sms:
         prompt:
-          intro: 'Sara Alert 시스템에 오신 것을 환영합니다. 이 전화번호로 %{name}님의 일일 보고서를 보내드리겠습니다. 개인 정보 보호 및 더 자세한 정보를 원하시면 saraalert.org를 방문하십시오.'
+          intro: 'Sara Alert 시스템에 오신 것을 환영합니다. 이 전화번호로 %{name}님의 일일 보고서를 보내드리겠습니다.'
           reminder: '이것은 Sara Alert로서 우리에게 일일 보고서 메시지에 회신해 주길 바랍니다.'
           name: '%{name}님'
           daily: '이것은 %{names}의 Sara Alert 일일 보고서입니다. %{experiencing_symptoms} "네" 또는 "아니요"로 대답해 주시기 바랍니다.'

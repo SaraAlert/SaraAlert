@@ -66,6 +66,9 @@ show_demo_warning_background: <%= ENV["SHOW_DEMO_WARNING_BACKGROUND"] || false %
 # If this message is set, it will be displayed at the top of the page.
 banner_message: <%= ENV["BANNER_MESSAGE"] || '' %>
 
+# If this URL is set, it will be included in messages sent to moniitorees
+privacy_policy_url: <%= ENV["PRIVACY_POLICY_URL"] || '' %>
+
 # Optional Sentry URL for application monitoring and error reporting
 sentry_url: <%= ENV["SENTRY_URL"] || '' %>
 
