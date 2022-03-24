@@ -75,7 +75,7 @@ const exposureToCaseTotalValues = [{ number: '8' }, { number: '22' }, { number: 
 const isolationToExposureTotalValues = [{ number: '1' }, { number: '7' }, { number: '12' }, { number: '23' }];
 
 function getWrapper() {
-  return shallow(<MonitoreeFlow stats={mockAnalytics} case_development_analytics_start_date={'11/2/2021'} />);
+  return shallow(<MonitoreeFlow stats={mockAnalytics} />);
 }
 
 describe('MonitoreeFlow', () => {
@@ -93,7 +93,7 @@ describe('MonitoreeFlow', () => {
     expect(wrapper.find(Card.Body).find('.info-text').length).toEqual(2);
     expect(wrapper.find(Card.Body).find('.info-text').find('i.fa-info-circle').length).toEqual(2);
     expect(wrapper.find(Card.Body).find('.info-text').at(0).text()).toEqual('Cumulative includes incoming and outgoing counts recorded for this jurisdiction (excluding today’s counts). All counts calculated based on UTC time zone.');
-    expect(wrapper.find(Card.Body).find('.info-text').at(1).text()).toEqual('Cumulative includes counts of the monitorees that met the criteria listed in the tables after 11/2/2021 (excluding today’s counts). All counts calculated based on UTC time zone.');
+    expect(wrapper.find(Card.Body).find('.info-text').at(1).text()).toEqual('Excludes today’s counts. All counts calculated based on UTC time zone.');
   });
 
   it('Properly renders "Exposure" monitoree flow table', () => {
