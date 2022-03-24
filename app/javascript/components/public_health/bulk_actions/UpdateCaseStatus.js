@@ -265,7 +265,7 @@ class UpdateCaseStatus extends React.Component {
                   </span>
                 )}
                 {['Suspect', 'Not a Case', 'Unknown'].includes(this.state.case_status) &&
-                  this.state.initialCaseStatus != this.state.case_status &&
+                  this.state.initialCaseStatus !== this.state.case_status &&
                   this.state.puiEligible &&
                   'The Latest Public Health Action will be set to "None" if it does not currently hold that value. '}
                 {this.renderClosedStatement()}
@@ -292,8 +292,8 @@ class UpdateCaseStatus extends React.Component {
                 {['', 'Suspect', 'Not a Case', 'Unknown'].includes(this.state.case_status) && (
                   <p>
                     The selected cases will remain in the exposure workflow.
-                    {this.state.case_status != '' &&
-                      this.state.initialCaseStatus != this.state.case_status &&
+                    {this.state.case_status !== '' &&
+                      this.state.initialCaseStatus !== this.state.case_status &&
                       this.state.puiEligible &&
                       ' Additionally, the Latest Public Health Action will be set to "None" if it does not currently hold that value.'}
                     &nbsp;{this.renderClosedStatement()}
