@@ -134,7 +134,8 @@ describe('CaseStatus', () => {
     expect(wrapper.state('case_status')).toEqual('Suspect');
     expect(wrapper.state('confirmedOrProbable')).toBe(false);
     expect(wrapper.state('isolation')).toBe(false);
-    expect(modalBody.find('p').text()).toEqual('Are you sure you want to change case status to "Suspect"? The monitoree will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring and the Latest Public Health Action will be set to "None".');
+    expect(modalBody.find('p').text()).toContain('Are you sure you want to change case status to "Suspect"? The monitoree will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring.');
+    expect(modalBody.find('p').text()).toContain('Additionally, the Latest Public Health Action will be set to "None."');
   });
 
   it('Correctly renders modal body when changing Case Status to Confirmed or Probable (all other cases)', () => {
