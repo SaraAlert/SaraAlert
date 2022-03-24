@@ -420,22 +420,27 @@ class ExposureInformation extends React.Component {
               {this.state.errors['potential_exposure_country']}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} lg={{ span: 8, order: 4 }} md={{ span: 12, order: 3 }} xs={{ span: 24, order: 2 }} className="pl-1">
+          <Form.Group
+            as={Col}
+            lg={{ span: 8, order: 4 }}
+            md={{ span: 12, order: 3 }}
+            xs={{ span: 24, order: 2 }}
+            controlId="continuous_exposure"
+            className="pl-1">
             <span data-for="disabled-continuous-exposure" data-tip="">
               <Form.Check
                 size="lg"
-                id="continuous_exposure"
                 className="ml-1 d-inline"
                 checked={!!this.state.current.patient.continuous_exposure}
                 onChange={this.handleChange}
                 disabled={this.state.current.patient.isolation}
               />
-              <Form.Label className="input-label ml-2">
-                CONTINUOUS EXPOSURE{schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}
-              </Form.Label>
             </span>
+            <Form.Label className="input-label ml-2">
+              CONTINUOUS EXPOSURE{schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}
+            </Form.Label>
             {this.state.current.patient.isolation ? (
-              <ReactTooltip id="disabled-continuous-exposure" multiline={true} type="dark" effect="solid" place="bottom" className="tooltip-container">
+              <ReactTooltip id="disabled-continuous-exposure" multiline={true} type="dark" effect="solid" place="right" className="tooltip-container">
                 <div>Continuous exposure is not relevant for cases in the isolation workflow.</div>
               </ReactTooltip>
             ) : (
