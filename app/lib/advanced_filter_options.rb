@@ -463,7 +463,7 @@ module AdvancedFilterOptions
             name: 'dose-number',
             title: 'dose number',
             type: 'select',
-            options: Vaccine::DOSE_OPTIONS.filter { |option| !option.nil? }
+            options: Vaccine::DOSE_OPTIONS.filter { |option| !option.nil? }.sort
           }
         ]
       }
