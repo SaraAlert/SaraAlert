@@ -22,6 +22,7 @@ class UpdateCaseStatus extends React.Component {
       initialIsolation: undefined,
       initialMonitoringReason: undefined,
       initialMonitoring: undefined,
+      puiEligible: undefined,
       apply_to_household: false,
       reasoning: '',
       monitoring: null,
@@ -59,6 +60,7 @@ class UpdateCaseStatus extends React.Component {
           state_updates.initialMonitoringReason = distinctMonitoringReason[0];
           state_updates.monitoring_reason = distinctMonitoringReason[0];
         }
+        state_updates.puiEligible = response.data.pui_eligible;
 
         if (Object.keys(state_updates).length) {
           this.setState(state_updates);
@@ -256,12 +258,16 @@ class UpdateCaseStatus extends React.Component {
               // In the Isolation workflow, only show certain explanation statements
               <React.Fragment>
                 {!this.state.allSelectedAreClosed && (
-                  <p>
-                    {['Confirmed', 'Probable'].includes(this.state.case_status) && 'The selected cases will remain in the isolation workflow.'}
+                  <span>
+                    {['Confirmed', 'Probable'].includes(this.state.case_status) && 'The selected cases will remain in the isolation workflow. '}
                     {['', 'Suspect', 'Not a Case', 'Unknown'].includes(this.state.case_status) &&
-                      'The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.'}
-                  </p>
+                      'The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate. '}
+                  </span>
                 )}
+                {['Suspect', 'Not a Case', 'Unknown'].includes(this.state.case_status) &&
+                  this.state.initialCaseStatus !== this.state.case_status &&
+                  this.state.puiEligible &&
+                  'The Latest Public Health Action will be set to "None" if it does not currently hold that value. '}
                 {this.renderClosedStatement()}
               </React.Fragment>
             ) : (
@@ -284,7 +290,14 @@ class UpdateCaseStatus extends React.Component {
                   </div>
                 )}
                 {['', 'Suspect', 'Not a Case', 'Unknown'].includes(this.state.case_status) && (
-                  <p>The selected cases will remain in the exposure workflow. {this.renderClosedStatement()}</p>
+                  <p>
+                    The selected cases will remain in the exposure workflow.
+                    {this.state.case_status !== '' &&
+                      this.state.initialCaseStatus !== this.state.case_status &&
+                      this.state.puiEligible &&
+                      ' Additionally, the Latest Public Health Action will be set to "None" if it does not currently hold that value.'}
+                    &nbsp;{this.renderClosedStatement()}
+                  </p>
                 )}
                 {this.state.allSelectedAreClosed && this.renderReasonsSection()}
               </React.Fragment>

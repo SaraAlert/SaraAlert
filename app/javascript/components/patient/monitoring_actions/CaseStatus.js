@@ -41,8 +41,17 @@ class CaseStatus extends React.Component {
     }
 
     this.setState({ [event.target.id]: value, showCaseStatusModal: true, confirmedOrProbable }, () => {
-      // changing case status of monitoree in the closed line list (either workflow)
-      if (!this.props.patient.monitoring) {
+      // changing case status of monitoree in the closed line list (either workflow) with a LPHA set to a non-None value that would be cleared by this action
+      if (!this.props.patient.monitoring && !confirmedOrProbable && value !== '' && this.props.patient.public_health_action !== 'None') {
+        this.setState({
+          modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status || 'blank'} to ${
+            value || 'blank'
+          }? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status. 
+          Additionally, the Latest Public Health Action will be set to "None."`,
+        });
+
+        // changing case status of monitoree in the closed line list (either workflow)
+      } else if (!this.props.patient.monitoring) {
         this.setState({
           modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status || 'blank'} to ${
             value || 'blank'
@@ -55,9 +64,14 @@ class CaseStatus extends React.Component {
         !confirmedOrProbable &&
         (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable')
       ) {
+        let modal_text =
+          'This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring.';
+        if (value !== '' && this.props.patient.public_health_action !== 'None') {
+          modal_text = modal_text.concat(' Additionally, the Latest Public Health Action will be set to "None."');
+        }
         this.setState({
           isolation: false,
-          modal_text: `This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring.`,
+          modal_text,
         });
 
         // changing case status to Confirmed from Probable or vice versa in the isolation workflow
@@ -79,20 +93,25 @@ class CaseStatus extends React.Component {
 
         // changing case status to Unknown, Suspect or Not a Case in the isolation workflow (excluding changing from Confirmed or Probable)
       } else if (!confirmedOrProbable && this.state.isolation) {
+        let modal_text = `The case status for the selected record will be updated to ${
+          value || 'blank'
+        } and moved to the appropriate line list in the Exposure Workflow.`;
+        if (value !== '' && this.props.patient.public_health_action !== 'None') {
+          modal_text = modal_text.concat(' Additionally, the Latest Public Health Action will be set to "None."');
+        }
         this.setState({
           isolation: false,
-          modal_text: `The case status for the selected record will be updated to ${
-            value || 'blank'
-          } and moved to the appropriate line list in the Exposure Workflow.`,
+          modal_text,
         });
 
         // changing case status to Unknown, Suspect or Not a Case while on the PUI line list in the exposure workflow
-      } else if (!confirmedOrProbable && !this.state.isolation && this.props.patient.public_health_action != 'None') {
+      } else if (!confirmedOrProbable && !this.state.isolation && this.props.patient.public_health_action !== 'None' && value !== '') {
         this.setState({
           isolation: false,
           modal_text: `Are you sure you want to change case status to "${
             value || 'blank'
-          }"? The monitoree will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring and the Latest Public Health Action will be set to "None".`,
+          }"? The monitoree will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring. 
+          Additionally, the Latest Public Health Action will be set to "None."`,
         });
         // changing case status to Unknown, Suspect or Not a Case while not on the PUI line list in the exposure workflow
       } else if (!confirmedOrProbable && !this.state.isolation) {
