@@ -10,7 +10,7 @@ monitoring_period_days: <%= ENV["MONITORING_PERIOD_DAYS"] || 10 %>
 # The following config values control certain variables in the recovery definitions for the Isolation Workflow,
 # including whether they're enabled. See the actual recovery definitions in the Patient model for a thorough
 # understanding of how these values are used.
-# 
+#
 # Corresponding scope in patient model: isolation_asymp_non_test_based
 enable_asymp_non_test_based: <%= ENV["ENABLE_ASYMP_NON_TEST_BASED"] || true %>
 asymp_non_test_based_recovery_period_days: <%= ENV["ASYMP_NON_TEST_BASED_RECOVERY_PERIOD_DAYS"] || 5 %>
@@ -26,7 +26,6 @@ enable_test_based: <%= ENV["ENABLE_TEST_BASED"] || true %>
 test_based_min_negative_labs: <%= ENV["TEST_BASED_MIN_NEGATIVE_LABS"] || 2 %>
 # This much time must have passed since monitoree had a fever or used a fever reducer
 test_based_hours_since_fever: <%= ENV["TEST_BASED_HOURS_SINCE_FEVER"] || 24 %>
-
 
 # How long a monitoree should be in isolation and considered non-reporting before we halt daily reports
 isolation_non_reporting_max_days: <%= ENV["SARA_ALERT_ISOLATION_NON_REPORING_MAX"] || 7 %>
@@ -83,12 +82,6 @@ max_user_filters: <%= ENV["MAX_USER_FILTERS"] || 150 %>
 # How long to wait for downloads to complete // how long to wait before downloads are cleaned up after clicking the download link
 # in minutes
 download_destroy_wait_time: <%= ENV['SARA_ALERT_DOWNLOAD_DESTROY_WAIT_TIME']|| 60 %>
-
-# The date when case development starts being tracked (for analytics and exports).
-# This date should be set to the date that the AddReportedAtToAssessments migration is applied, which should be when application version 1.38 is deployed.
-# This date is used on the Analytics page to indicate to users when cumulative numbers start from.
-# If your Sara Alert instance was initially deployed at version 1.38 or later, set this to empty string.
-case_development_analytics_start_date: <%= ENV['CASE_DEVELOPMENT_ANALYTICS_START_DATE'] || '' %>
 
 # The threshold for the number of days since a user's last login for the user to be considered Inactive in the system
 # if the user has not logged into their Sara Alert account within the past inactive_user_threshold days, the user will be considered Inactive
