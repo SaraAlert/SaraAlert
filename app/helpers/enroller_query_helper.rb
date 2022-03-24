@@ -13,7 +13,7 @@ module EnrollerQueryHelper
     raise InvalidQueryError.new(:page, page) unless page >= 0
 
     # Get filtered patients
-    patients = patients_by_query(current_user, query)
+    patients = enroller_patients_by_query(current_user, query)
 
     # Paginate
     patients = patients.paginate(per_page: entries, page: page + 1)
@@ -53,7 +53,7 @@ module EnrollerQueryHelper
     query
   end
 
-  def patients_by_query(current_user, query)
+  def enroller_patients_by_query(current_user, query)
     # Determine jurisdiction
     jurisdiction = Jurisdiction.find(query[:jurisdiction].to_i) unless ['all', nil].include?(query[:jurisdiction])
     jurisdiction = current_user.jurisdiction if jurisdiction.nil?
@@ -71,13 +71,13 @@ module EnrollerQueryHelper
     patients = patients.where(assigned_user: query[:user] == 'none' ? nil : query[:user].to_i) unless query[:user].nil?
 
     # Filter by search text
-    patients = filter_by_text(patients, query[:search])
+    patients = enroller_filter_by_text(patients, query[:search])
 
     # Sort
-    sort(patients, query[:order], query[:direction])
+    enroller_sort(patients, query[:order], query[:direction])
   end
 
-  def filter_by_text(patients, search)
+  def enroller_filter_by_text(patients, search)
     return patients if search.nil? || search.blank?
 
     filtered = patients.where('first_name like ?', "#{search&.downcase}%").or(
@@ -98,7 +98,7 @@ module EnrollerQueryHelper
     phone_query.blank? ? filtered : filtered.or(patients.where('primary_telephone like ?', "+1#{phone_query}%"))
   end
 
-  def sort(patients, order, direction)
+  def enroller_sort(patients, order, direction)
     return patients if order.blank? || direction.blank?
 
     # Satisfy brakeman with additional sanitation logic
