@@ -10,7 +10,6 @@ const helpLinks = {
   user_forum: 'https://www.sara.org/user-forum',
   contact_us: 'https://www.sara.org/contact-us',
 };
-
 const version = '123';
 
 /**
