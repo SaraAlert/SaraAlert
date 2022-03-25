@@ -88,6 +88,14 @@ download_destroy_wait_time: <%= ENV['SARA_ALERT_DOWNLOAD_DESTROY_WAIT_TIME']|| 6
 # If the user has logged into their Sara Alert account within the past inactive_user_threshold days, the user will be considered Active
 inactive_user_threshold: <%= ENV['INACTIVE_USER_THRESHOLD'] || 30 %>
 
+# The help-related link options for the application
+# When these links are set, they will be included in three places within the application:
+# 1. Under the "Help" menu tab as dropdown links in the main navigation bar
+# 2. As informational links in the welcome new user email (User Guides and User Forum links, only)
+# 3. Within the Monitoree Unavailable information box (Contact Us link, only)
+#
+# For the Help menu tab, zero, one, two, or all three links may be set. Only the links with non-blank values will appear in the menu. 
+# If all three links are blank, the Help menu tab will be hidden from view.
 help_links:
   user_guides: <%= ENV['USER_GUIDES_LINK'] || '' %>
   user_forum: <%= ENV['USER_FORUM_LINK'] || '' %>
