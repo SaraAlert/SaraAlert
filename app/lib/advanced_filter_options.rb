@@ -243,7 +243,8 @@ module AdvancedFilterOptions
         title: 'Age (Number)',
         description: 'Current Monitoree Age',
         type: 'number',
-        allow_range: true
+        allow_range: true,
+        support_blank: true
       },
       {
         name: 'manual-contact-attempts',
@@ -319,6 +320,7 @@ module AdvancedFilterOptions
         title: 'Address (Combination)',
         description: 'Monitorees with specified address',
         type: 'combination',
+        tooltip: 'Leaving this field blank will return monitorees with blank address fields.',
         fields: [
           {
             name: 'address-usa',

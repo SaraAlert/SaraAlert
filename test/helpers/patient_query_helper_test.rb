@@ -258,6 +258,62 @@ class PatientQueryHelperTest < ActionView::TestCase
 
   # --- COMBINATION ADVANCED FILTER QUERIES --- #
 
+  test 'advanced filter address' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user, address_line_1: '123 main st')
+    patient_2 = create(:patient, creator: user, address_line_2: 'Apt 201')
+    patient_3 = create(:patient, creator: user, address_line_1: '123 main st', address_line_2: 'Apt 201')
+    patient_4 = create(:patient, creator: user, foreign_address_line_1: '123 main st')
+    patient_5 = create(:patient, creator: user, foreign_address_line_2: 'Apt 201')
+    patient_6 = create(:patient, creator: user, foreign_address_line_1: '123 main st', foreign_address_line_2: 'Apt 201')
+    patient_7 = create(:patient, creator: user, address_line_1: '123 main st', foreign_address_line_1: '123 main st')
+    patient_8 = create(:patient, creator: user)
+    patient_9 = create(:patient, creator: user, address_line_1: '123 main st', foreign_address_line_1: '')
+    patient_10 = create(:patient, creator: user, address_line_1: '', foreign_address_line_1: '')
+    patient_11 = create(:patient, creator: user, address_line_1: '', foreign_address_line_1: '123 main st')
+
+    patients = Patient.all
+    tz_offset = 300
+
+    # Check for monitorees who have a blank foreign address
+    filters = [{ name: 'address', type: 'combination', value: [{ name: 'address-foreign', value: '' }] }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3, patient_8, patient_9, patient_10]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Check for monitorees who have a foreign address
+    filters = [{ name: 'address', type: 'combination', value: [{ name: 'address-foreign', value: '123 main st' }] }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_4, patient_6, patient_7, patient_11]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Check for monitorees who have a blank domestic address
+    filters = [{ name: 'address', type: 'combination', value: [{ name: 'address-usa', value: '' }] }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_4, patient_5, patient_6, patient_8, patient_10, patient_11]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Check for monitorees who have a foreign address
+    filters = [{ name: 'address', type: 'combination', value: [{ name: 'address-usa', value: '123 main st' }] }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_3, patient_7, patient_9]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Check for monitorees who have both a domestic and foreign address
+    filters = [{ name: 'address', type: 'combination', value: [{ name: 'address-usa', value: '123 main st' },
+                                                               { name: 'address-foreign', value: '123 main st' }] }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_7]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Check for monitorees who have neither a domestic nor foreign address
+    filters = [{ name: 'address', type: 'combination', value: [{ name: 'address-usa', value: '' }, { name: 'address-foreign', value: '' }] }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_8, patient_10]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+  end
+
   test 'advanced filter laboratory single filter option results' do
     Patient.destroy_all
     user = create(:public_health_enroller_user)
@@ -1058,6 +1114,111 @@ class PatientQueryHelperTest < ActionView::TestCase
                          { label: 'Not real jurisdiction', value: -1 }] }]
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_3]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+  end
+
+  # --- NUMBER FILTER QUERIES --- #
+
+  test 'advanced filter age' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    patient_2 = create(:patient, creator: user, date_of_birth: 6.months.ago)
+    patient_3 = create(:patient, creator: user, date_of_birth: 2.years.ago)
+    patient_4 = create(:patient, creator: user, date_of_birth: 10.years.ago)
+
+    patients = Patient.all
+    tz_offset = 300
+
+    # Blank number option should return patients without dob
+    filters = [{ name: 'age', type: 'number', numberOption: '' }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Blank value should return all patients
+    filters = [{ name: 'age', type: 'number', numberOption: 'equal', value: '' }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Between number option should return patients in range
+    filters = [{ name: 'age', type: 'number', numberOption: 'between', value: { firstBound: 1, secondBound: 11 } }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_4, patient_3]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Equal number option should only return patients with exact age
+    filters = [{ name: 'age', type: 'number', numberOption: 'equal', value: 0 }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_2]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Less than number option should only return patients less than age
+    filters = [{ name: 'age', type: 'number', numberOption: 'less-than', value: 2 }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_2]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Less than or equal number option should only return patients less than or equal to age
+    filters = [{ name: 'age', type: 'number', numberOption: 'less-than-equal', value: 2 }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_3, patient_2]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Greater than number option should only return patients greater than age
+    filters = [{ name: 'age', type: 'number', numberOption: 'greater-than', value: 2 }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_4]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Greater than or equal number option should only return patients greater than or equal to age
+    filters = [{ name: 'age', type: 'number', numberOption: 'greater-than-equal', value: 2 }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_4, patient_3]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+  end
+
+  test 'advanced filter contact attempts' do
+    Patient.destroy_all
+    user = create(:public_health_enroller_user)
+    patient_1 = create(:patient, creator: user)
+    create(:contact_attempt, patient: patient_1)
+    patient_2 = create(:patient, creator: user)
+    create(:contact_attempt, patient: patient_2, successful: false)
+    patient_3 = create(:patient, creator: user)
+    create(:contact_attempt, patient: patient_3, successful: true)
+    patient_4 = create(:patient, creator: user)
+    create(:contact_attempt, patient: patient_4, successful: false)
+    create(:contact_attempt, patient: patient_4, successful: true)
+    patient_5 = create(:patient, creator: user)
+    2.times { create(:contact_attempt, patient: patient_5, successful: true) }
+
+    patients = Patient.all
+    tz_offset = 300
+
+    # Blank value should return all patients
+    filters = [{ name: 'manual-contact-attempts', type: 'number', numberOption: 'equal', value: '' }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_2, patient_3, patient_4, patient_5]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Equal number option should only return patients with exact number of contact attempts
+    filters = [{ name: 'manual-contact-attempts', type: 'number', numberOption: 'equal', additionalFilterOption: 'All', value: 2 }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_4, patient_5]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Less than number option should only return patients with fewer contact attempts than the number specified
+    filters = [{ name: 'manual-contact-attempts', type: 'number', numberOption: 'less-than', additionalFilterOption: 'Unsuccessful', value: 1 }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_1, patient_3, patient_5]
+    assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
+
+    # Greater than or equal number option should only return patients witth more contact attempts than the number specified
+    filters = [{ name: 'manual-contact-attempts', type: 'number', numberOption: 'greater-than-equal', additionalFilterOption: 'Successful', value: 1 }]
+    filtered_patients = advanced_filter(patients, filters, tz_offset)
+    filtered_patients_array = [patient_3, patient_4, patient_5]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
   end
 
