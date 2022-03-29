@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Card, Button, Form } from 'react-bootstrap';
 import moment from 'moment';
 import _ from 'lodash';
+import ReactTooltip from 'react-tooltip';
 import confirmDialog from '../../../util/ConfirmDialog';
 import DateInput from '../../../util/DateInput';
 import InfoTooltip from '../../../util/InfoTooltip';
@@ -237,13 +238,13 @@ class SymptomsAssessment extends React.Component {
     const translated_notes = this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes;
     const dir = this.props.translations[this.props.lang]['dir'] || 'ltr';
     return (
-      <Form.Row className="pt-3" key={key}>
-        <Form.Label className="input-label" key={key + '_label'} htmlFor={id}>
+      <React.Fragment key={key}>
+        <Form.Label className="input-label pt-2" key={key + '_label'} htmlFor={id}>
           <b dir={translated_name ? dir : 'ltr'}>{translated_name || symp.name}</b> <span dir={translated_notes ? dir : 'ltr'}>{translated_notes}</span>
         </Form.Label>
         {symp.type === 'IntegerSymptom' && this.integerSymptom(symp)}
         {symp.type === 'FloatSymptom' && this.floatSymptom(symp)}
-      </Form.Row>
+      </React.Fragment>
     );
   };
 
@@ -271,7 +272,7 @@ class SymptomsAssessment extends React.Component {
                 <Form.Label className="input-label mr-2 pt-1">Symptom Report for Date:</Form.Label>
                 <DateInput
                   id="reported_at"
-                  date={moment(this.state.reportState.reported_at, 'YYYY-MM-DD HH:mm Z')}
+                  date={moment(this.state.reportState.reported_at, 'YYYY-MM-DD HH:mm Z').format('YYYY-MM-DD HH:mm Z')}
                   minDate={'2020-01-01'}
                   maxDate={moment()}
                   onChange={this.handleDateChange}
@@ -313,23 +314,30 @@ class SymptomsAssessment extends React.Component {
                 .map(symp => this.intOrFloatSymptom(symp))}
             </Form.Group>
           </Form.Row>
-          <Form.Row className="pt-4">
-            <Button
-              variant="primary"
-              block
-              size="lg"
-              className="btn-block btn-square"
-              disabled={this.state.loading || !this.hasChanges()}
-              onClick={this.navigate}>
-              {this.state.loading && (
-                <React.Fragment>
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-                </React.Fragment>
-              )}
-              {/* The following <span> tags cannot be removed. They prevent Google Translate from confusing the react node-tree when translated */}
-              <span>{this.props.translations[this.props.lang]['html']['weblink']['submit']}</span>
-            </Button>
-          </Form.Row>
+          <span data-for="disabled-assessment-submit" data-tip="">
+            <Form.Row className="pt-3">
+              <Button
+                variant="primary"
+                block
+                size="lg"
+                className="btn-block btn-square"
+                disabled={this.state.loading || !this.hasChanges()}
+                onClick={this.navigate}>
+                {this.state.loading && (
+                  <React.Fragment>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                  </React.Fragment>
+                )}
+                {/* The following <span> tags cannot be removed. They prevent Google Translate from confusing the react node-tree when translated */}
+                <span>{this.props.translations[this.props.lang]['html']['weblink']['submit']}</span>
+              </Button>
+            </Form.Row>
+          </span>
+          {!this.hasChanges() && (
+            <ReactTooltip id="disabled-assessment-submit" type="dark" effect="solid" place="top">
+              <span>No updates to submit</span>
+            </ReactTooltip>
+          )}
         </Card.Body>
       </Card>
     );

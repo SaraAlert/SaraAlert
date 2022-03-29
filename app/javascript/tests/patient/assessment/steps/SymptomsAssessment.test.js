@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import { Button, Card, Form } from 'react-bootstrap';
 import moment from 'moment';
 import _ from 'lodash';
+import ReactTooltip from 'react-tooltip';
 
 import SymptomsAssessment from '../../../../components/patient/assessment/steps/SymptomsAssessment';
 import DateInput from '../../../../components/util/DateInput';
@@ -78,7 +79,7 @@ describe('SymptomsAssessment', () => {
     const wrapper = getWrapper(editProps, { current_user: mockUser1 });
     let date = moment(editProps.assessment.reported_at).format('YYYY-MM-DD HH:mm Z');
     expect(wrapper.state('reportState').reported_at).toEqual(date);
-    expect(wrapper.find({ controlId: 'reported_at' }).find(DateInput).prop('date')).toEqual(date);
+    expect(wrapper.find({ controlId: 'reported_at' }).find(DateInput).prop('date')).toEqual(moment(editProps.assessment.reported_at).format('YYYY-MM-DD HH:mm Z'));
 
     date = moment().subtract(5, 'days').startOf('minute');
     wrapper.find({ controlId: 'reported_at' }).find(DateInput).simulate('change', date);
@@ -323,18 +324,24 @@ describe('SymptomsAssessment', () => {
 
     wrapper.find(`#${randomBoolSymp.name}_idpre${editProps.idPre}`).simulate('change', { target: { id: `${randomBoolSymp.name}_idpre${editProps.idPre}`, checked: !randomBoolSymp.value } });
     expect(wrapper.find(Button).prop('disabled')).toBe(false);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
     expect(hasChangesSpy).toHaveBeenCalled();
 
     wrapper.find(`#${randomBoolSymp.name}_idpre${editProps.idPre}`).simulate('change', { target: { id: `${randomBoolSymp.name}_idpre${editProps.idPre}`, checked: randomBoolSymp.value } });
     expect(wrapper.find(Button).prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('No updates to submit');
     expect(hasChangesSpy).toHaveBeenCalled();
 
     wrapper.find({ controlId: 'reported_at' }).find(DateInput).simulate('change', moment(editProps.assessment.reported_at).subtract(5, 'days'));
     expect(wrapper.find(Button).prop('disabled')).toBe(false);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(false);
     expect(hasChangesSpy).toHaveBeenCalled();
 
     wrapper.find({ controlId: 'reported_at' }).find(DateInput).simulate('change', moment(editProps.assessment.reported_at));
     expect(wrapper.find(Button).prop('disabled')).toBe(true);
+    expect(wrapper.find(ReactTooltip).exists()).toBe(true);
+    expect(wrapper.find(ReactTooltip).find('span').text()).toEqual('No updates to submit');
     expect(hasChangesSpy).toHaveBeenCalled();
   });
 
