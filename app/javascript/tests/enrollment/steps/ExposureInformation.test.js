@@ -51,7 +51,8 @@ describe('ExposureInformation', () => {
     expect(wrapper.find(Card.Header).text()).toEqual('Monitoree Potential Exposure Information');
     expect(wrapper.find(Card.Body).exists()).toBe(true);
     expect(wrapper.find(Form).exists()).toBe(true);
-    expect(wrapper.find('#continuous_exposure').hostNodes().prop('disabled')).toBe(false);
+    expect(wrapper.find('#continuous_exposure').exists()).toBe(true);
+    expect(wrapper.find('#continuous_exposure').prop('disabled')).toBe(false);
     expect(wrapper.find(InfoTooltip).exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').exists()).toBe(true);
     expect(wrapper.find(PublicHealthManagement).exists()).toBe(true);
@@ -70,7 +71,8 @@ describe('ExposureInformation', () => {
     expect(wrapper.find(Card.Header).text()).toEqual('Monitoree Potential Exposure Information');
     expect(wrapper.find(Card.Body).exists()).toBe(true);
     expect(wrapper.find(Form).exists()).toBe(true);
-    expect(wrapper.find('#continuous_exposure').hostNodes().prop('disabled')).toBe(true);
+    expect(wrapper.find('#continuous_exposure').exists()).toBe(true);
+    expect(wrapper.find('#continuous_exposure').prop('disabled')).toBe(true);
     expect(wrapper.find('#disabled-continuous-exposure').exists()).toBe(true);
     expect(wrapper.find('#exposure_notes').exists()).toBe(false);
     expect(wrapper.find(PublicHealthManagement).exists()).toBe(false);
@@ -195,7 +197,7 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('current').patient.continuous_exposure).toBe(false);
     expect(wrapper.state('modified')).toEqual({});
     expect(wrapper.find(DateInput).prop('date')).toBeNull();
-    expect(wrapper.find('#continuous_exposure').prop('checked')).toBe(false);
+    expect(wrapper.find({ controlId: 'continuous_exposure' }).find(Form.Check).prop('checked')).toBe(false);
 
     wrapper.find(DateInput).simulate('change', '2021-04-18');
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(1);
@@ -204,16 +206,19 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('modified').patient.last_date_of_exposure).toEqual('2021-04-18');
     expect(wrapper.state('current').patient.continuous_exposure).toBe(false);
     expect(wrapper.find(DateInput).prop('date')).toEqual('2021-04-18');
-    expect(wrapper.find('#continuous_exposure').prop('checked')).toBe(false);
+    expect(wrapper.find({ controlId: 'continuous_exposure' }).find(Form.Check).prop('checked')).toBe(false);
 
-    wrapper.find('#continuous_exposure').simulate('change', { target: { id: 'continuous_exposure', value: true } });
+    wrapper
+      .find({ controlId: 'continuous_exposure' })
+      .find(Form.Check)
+      .simulate('change', { target: { id: 'continuous_exposure', value: true } });
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(2);
     expect(wrapper.state('current').patient.last_date_of_exposure).toBeNull();
     expect(wrapper.state('current').patient.continuous_exposure).toBe(true);
     expect(wrapper.state('modified').patient.last_date_of_exposure).toBeNull();
     expect(wrapper.state('current').patient.continuous_exposure).toBe(true);
     expect(wrapper.find(DateInput).prop('date')).toBeNull();
-    expect(wrapper.find('#continuous_exposure').prop('checked')).toBe(true);
+    expect(wrapper.find({ controlId: 'continuous_exposure' }).find(Form.Check).prop('checked')).toBe(true);
 
     wrapper.find(DateInput).simulate('change', '2021-07-04');
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(3);
@@ -222,7 +227,7 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('modified').patient.last_date_of_exposure).toEqual('2021-07-04');
     expect(wrapper.state('current').patient.continuous_exposure).toBe(false);
     expect(wrapper.find(DateInput).prop('date')).toEqual('2021-07-04');
-    expect(wrapper.find('#continuous_exposure').prop('checked')).toBe(false);
+    expect(wrapper.find({ controlId: 'continuous_exposure' }).find(Form.Check).prop('checked')).toBe(false);
 
     wrapper.find(DateInput).simulate('change', null);
     expect(setEnrollmentStateMock).toHaveBeenCalledTimes(4);
@@ -231,7 +236,7 @@ describe('ExposureInformation', () => {
     expect(wrapper.state('modified').patient.last_date_of_exposure).toBeNull();
     expect(wrapper.state('current').patient.continuous_exposure).toBe(false);
     expect(wrapper.find(DateInput).prop('date')).toBeNull();
-    expect(wrapper.find('#continuous_exposure').prop('checked')).toBe(false);
+    expect(wrapper.find({ controlId: 'continuous_exposure' }).find(Form.Check).prop('checked')).toBe(false);
   });
 
   it('Changing Exposure Location properly updates state and calls props.setEnrollmentState', () => {
