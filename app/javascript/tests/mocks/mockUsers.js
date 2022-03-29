@@ -35,8 +35,9 @@ const mockUser2 = {
   role: 'fake_role',
   can_see_enroller_dashboard_tab: true,
   can_see_analytics_tab: true,
-  is_usa_admin: true,
   can_see_monitoring_dashboards_tab: true,
+  can_see_admin_panel_tab: true,
+  is_usa_admin: true,
 };
 
 export { mockUser1, mockUser2 };

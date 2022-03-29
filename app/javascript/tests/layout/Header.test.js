@@ -133,6 +133,15 @@ describe('Header', () => {
     ).toEqual('Jobs');
   });
 
+  it('Properly updates the active link based on the activeKey', () => {
+    const wrapper = getWrapper({ current_user: mockUser2 });
+    const keys = ['/patients', '/public_health', '/admin', '/analytics'];
+    keys.forEach(key => {
+      wrapper.setState({ activeKey: key });
+      expect(wrapper.find(Navbar).find('.primary-nav').find(Nav.Link).find('.nav-link-active').prop('href')).toContain(key);
+    });
+  });
+
   it('Properly renders the help link menu with all help links', () => {
     const wrapper = getWrapper();
     expect(wrapper.find('.dropdown-menu').exists()).toBe(true);
