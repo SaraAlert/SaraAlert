@@ -53,7 +53,7 @@ describe('Header', () => {
     expect(wrapper.find(Navbar).find('.banner-message').exists()).toBe(false);
   });
 
-  it('Shows "Enroller Dashboard" tab when user. can_see_enroller_dashboard_tab', () => {
+  it('Shows "Enroller Dashboard" tab when user.can_see_enroller_dashboard_tab', () => {
     const wrapper = getWrapper({ current_user: mockUser2 });
     const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
@@ -70,7 +70,7 @@ describe('Header', () => {
     ).toEqual('Enroller Dashboard');
   });
 
-  it('Shows "Analytics" tab when user. can_see_analytics_tab', () => {
+  it('Shows "Analytics" tab when user.can_see_analytics_tab', () => {
     const wrapper = getWrapper({ current_user: mockUser2 });
     const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
@@ -87,7 +87,7 @@ describe('Header', () => {
     ).toEqual('Analytics');
   });
 
-  it('Shows "Monitoring Dashboards" tabs when user. can_see_monitoring_dashboards_tab', () => {
+  it('Shows "Monitoring Dashboards" tabs when user.can_see_monitoring_dashboards_tab', () => {
     const wrapper = getWrapper({ current_user: mockUser2 });
     const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
@@ -104,7 +104,7 @@ describe('Header', () => {
     ).toEqual('Monitoring Dashboards');
   });
 
-  it('Shows "API" and "Jobs" when user.  is_usa_admin', () => {
+  it('Shows "API" and "Jobs" when user.is_usa_admin', () => {
     const wrapper = getWrapper({ current_user: mockUser2 });
     const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
