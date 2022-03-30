@@ -68,23 +68,19 @@ describe('SymptomsAssessment', () => {
     expect(wrapper.find({ controlId: 'reported_at' }).find(Form.Label).exists()).toBe(true);
     expect(wrapper.find({ controlId: 'reported_at' }).find(Form.Label).text()).toEqual('Symptom Report for Date:');
     expect(wrapper.find({ controlId: 'reported_at' }).find(DateInput).exists()).toBe(true);
-    expect(wrapper.find({ controlId: 'reported_at' }).find(DateInput).prop('date')).toEqual(moment(editProps.assessment.reported_at).format('YYYY-MM-DD HH:mm Z'));
+    expect(wrapper.find({ controlId: 'reported_at' }).find(DateInput).prop('date')).toEqual(editProps.assessment.reported_at);
     expect(wrapper.find({ controlId: 'reported_at' }).find('.time-zone').exists()).toBe(true);
     expect(wrapper.find({ controlId: 'reported_at' }).find('.time-zone').text()).toEqual(moment.tz(moment.tz.guess()).format('z'));
     expect(wrapper.find({ controlId: 'reported_at' }).find(InfoTooltip).exists()).toBe(true);
     expect(wrapper.find({ controlId: 'reported_at' }).find(InfoTooltip).prop('tooltipTextKey')).toEqual('reportedAtTime');
   });
 
-  it('Changing "Reported At" date properly updates value and state', () => {
+  it('Changing "Reported At" date properly updates state', () => {
     const wrapper = getWrapper(editProps, { current_user: mockUser1 });
-    let date = moment(editProps.assessment.reported_at).format('YYYY-MM-DD HH:mm Z');
-    expect(wrapper.state('reportState').reported_at).toEqual(date);
-    expect(wrapper.find({ controlId: 'reported_at' }).find(DateInput).prop('date')).toEqual(moment(editProps.assessment.reported_at).format('YYYY-MM-DD HH:mm Z'));
-
-    date = moment().subtract(5, 'days').startOf('minute');
-    wrapper.find({ controlId: 'reported_at' }).find(DateInput).simulate('change', date);
-    expect(wrapper.state('reportState').reported_at).toEqual(moment.utc(date).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z'));
-    expect(wrapper.find({ controlId: 'reported_at' }).find(DateInput).prop('date')).toEqual(moment.utc(date).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z'));
+    const newDate = moment().subtract(5, 'days').startOf('minute');
+    expect(wrapper.state('reportState').reported_at).toEqual(moment(editProps.assessment.reported_at).format('YYYY-MM-DD HH:mm Z'));
+    wrapper.find({ controlId: 'reported_at' }).find(DateInput).simulate('change', newDate);
+    expect(wrapper.state('reportState').reported_at).toEqual(moment.utc(newDate).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z'));
   });
 
   it('Properly renders symptom inputs when creating a new report', () => {

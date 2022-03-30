@@ -272,7 +272,7 @@ class SymptomsAssessment extends React.Component {
                 <Form.Label className="input-label mr-2 pt-1">Symptom Report for Date:</Form.Label>
                 <DateInput
                   id="reported_at"
-                  date={moment(this.state.reportState.reported_at, 'YYYY-MM-DD HH:mm Z').format('YYYY-MM-DD HH:mm Z')}
+                  date={this.props.assessment.reported_at ?? moment().toDate()}
                   minDate={'2020-01-01'}
                   maxDate={moment()}
                   onChange={this.handleDateChange}
