@@ -17,7 +17,7 @@ const version = '123';
  * If any props are defined in additional props, they overwrite whatever the default value was set as
  */
 function getWrapper(additionalProps) {
-  return shallow(<Header report_mode={false} version={version} show_demo_warning_background={false} banner_message="" current_user={mockUser1} help_links={helpLinks} {...additionalProps} />);
+  return shallow(<Header report_mode={false} version={version} show_demo_warning_background={false} banner_message="" current_user={mockUser2} help_links={helpLinks} {...additionalProps} />);
 }
 
 describe('Header', () => {
@@ -54,7 +54,7 @@ describe('Header', () => {
   });
 
   it('Shows "Enroller Dashboard" tab when user.can_see_enroller_dashboard_tab', () => {
-    const wrapper = getWrapper({ current_user: mockUser2 });
+    const wrapper = getWrapper();
     const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
       primaryNav
@@ -71,7 +71,7 @@ describe('Header', () => {
   });
 
   it('Shows "Analytics" tab when user.can_see_analytics_tab', () => {
-    const wrapper = getWrapper({ current_user: mockUser2 });
+    const wrapper = getWrapper();
     const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
       primaryNav
@@ -88,7 +88,7 @@ describe('Header', () => {
   });
 
   it('Shows "Monitoring Dashboards" tabs when user.can_see_monitoring_dashboards_tab', () => {
-    const wrapper = getWrapper({ current_user: mockUser2 });
+    const wrapper = getWrapper();
     const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
       primaryNav
@@ -105,7 +105,7 @@ describe('Header', () => {
   });
 
   it('Shows "API" and "Jobs" when user.is_usa_admin', () => {
-    const wrapper = getWrapper({ current_user: mockUser2 });
+    const wrapper = getWrapper();
     const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
       primaryNav
@@ -134,7 +134,7 @@ describe('Header', () => {
   });
 
   it('Properly updates the active link based on the activeKey', () => {
-    const wrapper = getWrapper({ current_user: mockUser2 });
+    const wrapper = getWrapper();
     const keys = ['/patients', '/public_health', '/admin', '/analytics'];
     keys.forEach(key => {
       wrapper.setState({ activeKey: key });
