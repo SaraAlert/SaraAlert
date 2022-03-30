@@ -55,15 +55,18 @@ describe('Header', () => {
 
   it('Shows "Enroller Dashboard" tab when user.can_see_enroller_dashboard_tab', () => {
     const wrapper = getWrapper();
-    const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
-      primaryNav
+      wrapper
+        .find(Navbar)
+        .find('.primary-nav')
         .find(Nav.Link)
         .find({ href: `${window.BASE_PATH}/patients` })
         .exists()
     ).toBe(true);
     expect(
-      primaryNav
+      wrapper
+        .find(Navbar)
+        .find('.primary-nav')
         .find(Nav.Link)
         .find({ href: `${window.BASE_PATH}/patients` })
         .text()
@@ -72,15 +75,18 @@ describe('Header', () => {
 
   it('Shows "Analytics" tab when user.can_see_analytics_tab', () => {
     const wrapper = getWrapper();
-    const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
-      primaryNav
+      wrapper
+        .find(Navbar)
+        .find('.primary-nav')
         .find(Nav.Link)
         .find({ href: `${window.BASE_PATH}/analytics` })
         .exists()
     ).toBe(true);
     expect(
-      primaryNav
+      wrapper
+        .find(Navbar)
+        .find('.primary-nav')
         .find(Nav.Link)
         .find({ href: `${window.BASE_PATH}/analytics` })
         .text()
@@ -89,15 +95,18 @@ describe('Header', () => {
 
   it('Shows "Monitoring Dashboards" tabs when user.can_see_monitoring_dashboards_tab', () => {
     const wrapper = getWrapper();
-    const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
-      primaryNav
+      wrapper
+        .find(Navbar)
+        .find('.primary-nav')
         .find(Nav.Link)
         .find({ href: `${window.BASE_PATH}/public_health` })
         .exists()
     ).toBe(true);
     expect(
-      primaryNav
+      wrapper
+        .find(Navbar)
+        .find('.primary-nav')
         .find(Nav.Link)
         .find({ href: `${window.BASE_PATH}/public_health` })
         .text()
@@ -106,27 +115,34 @@ describe('Header', () => {
 
   it('Shows "API" and "Jobs" when user.is_usa_admin', () => {
     const wrapper = getWrapper();
-    const primaryNav = wrapper.find(Navbar).find('.primary-nav');
     expect(
-      primaryNav
+      wrapper
+        .find(Navbar)
+        .find('.primary-nav')
         .find(Nav.Link)
         .find({ href: `${window.BASE_PATH}/oauth/applications` })
         .exists()
     ).toBe(true);
     expect(
-      primaryNav
+      wrapper
+        .find(Navbar)
+        .find('.primary-nav')
         .find(Nav.Link)
         .find({ href: `${window.BASE_PATH}/oauth/applications` })
         .text()
     ).toEqual('API');
     expect(
-      primaryNav
+      wrapper
+        .find(Navbar)
+        .find('.primary-nav')
         .find(Nav.Link)
         .find({ href: `${window.BASE_PATH}/sidekiq` })
         .exists()
     ).toBe(true);
     expect(
-      primaryNav
+      wrapper
+        .find(Navbar)
+        .find('.primary-nav')
         .find(Nav.Link)
         .find({ href: `${window.BASE_PATH}/sidekiq` })
         .text()
