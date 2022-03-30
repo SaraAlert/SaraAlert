@@ -15,7 +15,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-        - 3306
+          - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -83,7 +83,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-        - 3306
+          - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -151,7 +151,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-        - 3306
+          - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -218,14 +218,14 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-        - 3306
+          - 3306
     steps:
       - uses: actions/checkout@v2
       - name: install jmeter
         run: |
-          wget 'https://mirror.olnevhost.net/pub/apache//jmeter/binaries/apache-jmeter-5.2.1.zip'
-          unzip 'apache-jmeter-5.2.1.zip'
-          sudo ln -s $(pwd)/apache-jmeter-5.2.1/bin/jmeter /usr/local/bin/jmeter
+          wget 'https://mirror.olnevhost.net/pub/apache//jmeter/binaries/apache-jmeter-5.4.3.zip'
+          unzip 'apache-jmeter-5.4.3.zip'
+          sudo ln -s $(pwd)/apache-jmeter-5.4.3/bin/jmeter /usr/local/bin/jmeter
           jmeter --version
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
