@@ -61,28 +61,28 @@ class Header extends React.Component {
               <Nav className="mr-auto" activeKey={this.state.activeKey}>
                 {this.props.current_user?.can_see_enroller_dashboard_tab && (
                   <Nav.Link
-                    className={`${this.state.activeKey === '/patients' ? 'nav-link-active enroller-tab' : 'nav-link-inactive'} py-0 ml-3 enroller-tab`}
+                    className={`${this.state.activeKey === '/patients' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3 enroller-tab`}
                     href={`${window.BASE_PATH}/patients`}>
                     <i className="fas fa-table fa-fw mr-2"></i>Enroller Dashboard
                   </Nav.Link>
                 )}
                 {this.props.current_user?.can_see_monitoring_dashboards_tab && (
                   <Nav.Link
-                    className={`${this.state.activeKey === '/public_health' ? 'nav-link-active monitoring-tab' : 'nav-link-inactive'} py-0 ml-3 monitoring-tab`}
+                    className={`${this.state.activeKey === '/public_health' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3 monitoring-tab`}
                     href={`${window.BASE_PATH}/public_health`}>
                     <i className="fas fa-table fa-fw mr-2"></i>Monitoring Dashboards
                   </Nav.Link>
                 )}
                 {this.props.current_user?.can_see_admin_panel_tab && (
                   <Nav.Link
-                    className={`${this.state.activeKey === '/admin' ? 'nav-link-active admin-panel-tab' : 'nav-link-inactive'} py-0 ml-3 admin-panel-tab`}
+                    className={`${this.state.activeKey === '/admin' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3 admin-panel-tab`}
                     href={`${window.BASE_PATH}/admin`}>
                     <i className="fas fa-user-cog fa-fw mr-2"></i>Admin Panel
                   </Nav.Link>
                 )}
                 {this.props.current_user?.can_see_analytics_tab && (
                   <Nav.Link
-                    className={`${this.state.activeKey === '/analytics' ? 'nav-link-active analytics-tab' : 'nav-link-inactive'} py-0 ml-3 analytics-tab`}
+                    className={`${this.state.activeKey === '/analytics' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3 analytics-tab`}
                     href={`${window.BASE_PATH}/analytics`}>
                     <i className="fas fa-chart-pie fa-fw mr-2"></i>Analytics
                   </Nav.Link>
