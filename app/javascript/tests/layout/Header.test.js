@@ -152,8 +152,9 @@ describe('Header', () => {
   it('Properly updates the active link based on the activeKey', () => {
     const wrapper = getWrapper();
     const keys = ['/patients', '/public_health', '/admin', '/analytics'];
-    keys.forEach(key => {
+    _.shuffle(keys).forEach(key => {
       wrapper.setState({ activeKey: key });
+      expect(wrapper.find('.primary-nav').find('.nav-link-active').length).toEqual(1);
       expect(wrapper.find(Navbar).find('.primary-nav').find(Nav.Link).find('.nav-link-active').prop('href')).toContain(key);
     });
   });
