@@ -67,6 +67,8 @@ show_demo_warning_background: <%= ENV["SHOW_DEMO_WARNING_BACKGROUND"] || false %
 banner_message: <%= ENV["BANNER_MESSAGE"] || '' %>
 
 # If this URL is set, it will be included in messages sent to moniitorees
+# For jurisdictions that use a custom intro SMS message, the privacy policy info will automatically be appended to the custom message
+# if this link is not already included in the message
 privacy_policy_url: <%= ENV["PRIVACY_POLICY_URL"] || '' %>
 
 # Optional Sentry URL for application monitoring and error reporting

@@ -19,6 +19,8 @@
             sms:
               prompt:
                 intro:
+                  # For jurisdictions that use a custom intro SMS message, the privacy policy info will automatically be appended to the custom message
+                  # if this link is not already included in the message
                   eng: |
                     You've been identified by State 1 DOH to be enrolled in Sara Alert to be monitored for COVID symptoms.
 
