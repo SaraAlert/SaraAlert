@@ -88,15 +88,15 @@ const TOOLTIP_TEXT = {
 
   exposureRiskAssessment: (
     <div>
-      Used to prioritize responses to symptomatic and non-reporting individuals. This element does not impact the type or frequency of messages sent by the
-      system to monitorees.
+      Can be used to prioritize responses to symptomatic and non-reporting individuals. This element does not impact the type or frequency of messages sent by
+      the system to monitorees.
     </div>
   ),
 
   monitoringPlan: (
     <div>
-      Used to prioritize responses to symptomatic and non-reporting individuals in the exposure workflow. This element does not impact the type or frequency of
-      messages sent by the system to monitorees.
+      Can be used to prioritize responses to symptomatic and non-reporting individuals. This element does not impact the type or frequency of messages sent by
+      the system to monitorees.
     </div>
   ),
 
