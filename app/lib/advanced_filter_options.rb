@@ -215,7 +215,7 @@ module AdvancedFilterOptions
           'Parent/Guardian',
           'Spouse/Partner',
           'Caregiver',
-          'Healthcare Provide',
+          'Healthcare Provider',
           'Facility Representative',
           'Group Home Manager/Administrator',
           'Surrogate/Proxy',

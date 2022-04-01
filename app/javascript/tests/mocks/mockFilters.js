@@ -16,7 +16,7 @@ const mockFilterOptions = [
   },
   {
     name: 'occupation',
-    title: 'Occpation (Text)',
+    title: 'Occupation (Text)',
     description: 'Monitorees with a certain occupation',
     type: 'search',
     options: ['Full Time', 'Part Time', 'Unemployed'],
