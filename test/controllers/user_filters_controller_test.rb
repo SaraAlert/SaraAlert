@@ -26,14 +26,14 @@ class UserFiltersControllerTest < ActionController::TestCase
   end
 
   test 'index properly returns a multi-select advanced filter with no options selected' do
-    create(:user_filter, user: @user, contents: [UserFiltersTestHelper.multi_select_filter_params(options_selected: false)].to_json)
+    create(:user_filter, user: @user, contents: [UserFiltersTestHelper.multi_select_filter_params].to_json)
     get :index
     assert_response :success
-    assert_equal(UserFiltersTestHelper.multi_select_filter_params(options_selected: false).to_s, JSON.parse(response.body)[0]['contents'][0].to_s)
+    assert_equal(UserFiltersTestHelper.multi_select_filter_params.to_s, JSON.parse(response.body)[0]['contents'][0].to_s)
   end
 
   test 'create a multi-select advanced filter with no options selected' do
-    post :create, params: UserFiltersTestHelper.multi_select_filter_params(options_selected: false)
+    post :create, params: UserFiltersTestHelper.multi_select_filter_params
     assert_response :success
     assert_equal(1, @user.user_filters.count)
     parsed_filter = JSON.parse(@user.user_filters.first.contents)

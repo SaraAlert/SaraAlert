@@ -2,18 +2,13 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, ButtonGroup, Col, Dropdown, Form, Modal, OverlayTrigger, Row, ToggleButton, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-
 import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import ReactTooltip from 'react-tooltip';
 import Select, { components } from 'react-select';
 import { bootstrapSelectTheme, cursorPointerStyle } from '../../../packs/stylesheets/ReactSelectStyling';
-
 import DateInput from '../../util/DateInput';
-import { advancedFilterOptions } from '../../../data/advancedFilterOptions';
-import { getAllLanguageDisplayNames } from '../../../utils/Languages';
-import { getVaccineAdvancedFilters } from '../../../utils/VaccineAdvancedFilters';
 
 class AdvancedFilter extends React.Component {
   constructor(props) {
@@ -31,87 +26,7 @@ class AdvancedFilter extends React.Component {
   }
 
   componentDidMount() {
-    getAllLanguageDisplayNames(this.props.authenticity_token, displayNames => {
-      let index = advancedFilterOptions.findIndex(x => x.name === 'primary-language');
-      if (index > 0) {
-        const languagesToListFirst = ['English', 'French', 'Somali', 'Spanish', 'Spanish (Puerto Rican)'];
-        _.remove(displayNames, l => languagesToListFirst.includes(l));
-        displayNames = [''].concat(languagesToListFirst).concat(displayNames);
-        advancedFilterOptions[Number(index)].options = displayNames;
-      }
-    });
-
-    if (advancedFilterOptions.filter(advancedFilter => advancedFilter.name === 'vaccination').length === 0) {
-      advancedFilterOptions.push(getVaccineAdvancedFilters(this.props.vaccine_standards));
-    }
-
-    // For each multi type filter, format the options in the way react-select requires
-    advancedFilterOptions
-      .filter(filter => filter.type === 'multi')
-      .forEach(multiFilter => {
-        const filterIndex = advancedFilterOptions.findIndex(filter => filter.name === multiFilter.name);
-        let formattedOptions = [];
-        if (multiFilter.name === 'jurisdiction') {
-          formattedOptions = _.toPairs(this.props.jurisdiction_paths).map(([id, path]) => {
-            return { value: id, label: path };
-          });
-        } else if (multiFilter.name === 'assigned-user') {
-          formattedOptions = this.props.all_assigned_users.map(user => {
-            return { value: user, label: user };
-          });
-        } else {
-          formattedOptions = multiFilter.options.map(option => {
-            return { value: option, label: option };
-          });
-        }
-        advancedFilterOptions[Number(filterIndex)].options = formattedOptions;
-      });
-
-    advancedFilterOptions
-      .filter(filter => filter.type === 'combination')
-      .forEach(combinationFilter => {
-        const filterIndex = advancedFilterOptions.findIndex(filter => filter.name === combinationFilter.name);
-        combinationFilter.fields
-          .filter(nestedFilter => nestedFilter.type === 'multi')
-          .forEach(nestedFilter => {
-            const nestedFilterIndex = combinationFilter.fields.findIndex(nestedOption => nestedOption.name === nestedFilter.name);
-            advancedFilterOptions[Number(filterIndex)].fields[Number(nestedFilterIndex)].options = nestedFilter.options.map(option => {
-              return { value: option, label: option };
-            });
-          });
-      });
-
-    const dynamicallyLoadedOptions = {};
-
-    // Dynamically populate common exposure cohort name/description and location options
-    axios
-      .post(window.BASE_PATH + '/jurisdictions/common_exposure_cohorts', {
-        query: {
-          jurisdiction: this.props.jurisdiction_id,
-          scope: 'all',
-        },
-      })
-      .then(response => {
-        advancedFilterOptions
-          .find(filter => filter.name === 'common-exposure-cohort')
-          ?.fields?.forEach(nestedFilter => {
-            if (nestedFilter.name === 'cohort-type') {
-              dynamicallyLoadedOptions['cohort-type'] = nestedFilter.options;
-            } else if (nestedFilter.name === 'cohort-name' && response?.data?.cohort_names) {
-              nestedFilter.options = response.data.cohort_names.map(option => {
-                return { value: option, label: option };
-              });
-              dynamicallyLoadedOptions['cohort-name'] = nestedFilter.options;
-            } else if (nestedFilter.name === 'cohort-location' && response?.data?.cohort_locations) {
-              nestedFilter.options = response.data.cohort_locations.map(option => {
-                return { value: option, label: option };
-              });
-              dynamicallyLoadedOptions['cohort-location'] = nestedFilter.options;
-            }
-          });
-      })
-      // Load saved filters after blank options are replaced by dynamically loaded ones
-      .then(() => this.loadSavedFilters(dynamicallyLoadedOptions));
+    this.loadSavedFilters();
 
     if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
@@ -122,7 +37,7 @@ class AdvancedFilter extends React.Component {
   /**
    * Grab saved filters
    */
-  loadSavedFilters = dynamicallyLoadedOptions => {
+  loadSavedFilters = () => {
     // Set a timestamp to include in url to ensure browser cache is not re-used on page navigation
     const timestamp = `?t=${new Date().getTime()}`;
 
@@ -130,20 +45,9 @@ class AdvancedFilter extends React.Component {
     axios.get(window.BASE_PATH + '/user_filters' + timestamp).then(response => {
       const savedFilters = response.data;
       savedFilters.forEach(savedFilter => {
-        savedFilter.contents
-          ?.filter(filter => filter?.filterOption?.name === 'common-exposure-cohort')
-          .forEach(filter => {
-            filter.filterOption?.fields?.forEach(nestedFilter => {
-              if (nestedFilter.name === 'cohort-type' && dynamicallyLoadedOptions['cohort-type']) {
-                nestedFilter.options = dynamicallyLoadedOptions['cohort-type'];
-              } else if (nestedFilter.name === 'cohort-name' && dynamicallyLoadedOptions['cohort-name']) {
-                nestedFilter.options = dynamicallyLoadedOptions['cohort-name'];
-              } else if (nestedFilter.name === 'cohort-location' && dynamicallyLoadedOptions['cohort-location']) {
-                nestedFilter.options = dynamicallyLoadedOptions['cohort-location'];
-              }
-            });
-          });
+        savedFilter.contents = this.formatFiltersForFrontend(savedFilter.contents);
       });
+
       this.setState({ savedFilters }, () => {
         // Apply filter if it exists in local storage
         let sessionFilter = this.getLocalStorage(`SaraFilter`);
@@ -160,17 +64,13 @@ class AdvancedFilter extends React.Component {
           } else if (JSON.parse(sessionFilter)) {
             this.setState({ activeFilterOptions: JSON.parse(sessionFilter) }, this.apply);
           }
-          // Apply filter from user export preset if present
         } else if (this.props.activeFilter?.contents) {
-          const comparedAttributes = ['filterOption.name', 'value', 'additiionalFilterOption', 'dateOption', 'numberOption', 'relativeOption'];
-          const activeFilter = this.props.activeFilter.contents.map(c => _.pick(c, comparedAttributes));
-          const savedFilter = this.state.savedFilters.find(filter => {
-            return _.isEqual(
-              filter.contents.map(c => _.pick(c, comparedAttributes)),
-              activeFilter
-            );
+          // Apply filter from user export preset
+          const activeFilter = this.formatFiltersForFrontend(this.props.activeFilter.contents);
+          const savedFilter = savedFilters.find(filter => {
+            return _.isEqual(filter.contents, activeFilter);
           });
-          this.setFilter(savedFilter?.name ? { ...this.props.activeFilter, name: savedFilter.name } : this.props.activeFilter, true);
+          this.setFilter(savedFilter?.name ? { contents: activeFilter, name: savedFilter.name } : { contents: activeFilter }, true);
         }
       });
     });
@@ -227,35 +127,14 @@ class AdvancedFilter extends React.Component {
   };
 
   /**
-   * Get options for saved filters
-   */
-  getSavedFilterOptions = () => {
-    let savedFilters = [...this.state.savedFilters];
-    if (savedFilters.length > 0) {
-      _.forEach(savedFilters, (filter, filterIndex) => {
-        _.forEach(filter.contents, (statement, statementIndex) => {
-          if (statement.filterOption?.type == 'multi') {
-            // Get the options for the multi-select types
-            let multiIndex = advancedFilterOptions.findIndex(x => x.name === statement.filterOption.name);
-            savedFilters[Number(filterIndex)].contents[Number(statementIndex)].filterOption.options = advancedFilterOptions[Number(multiIndex)].options;
-          }
-        });
-      });
-    }
-
-    return savedFilters;
-  };
-
-  /**
    * Set the active filter
    * @param {Object} filter
    * @param {Bool} apply - only true when called from componentDidMount(), a flag to determine when the filter should be applied to the results
    *                         results & when other existing sticky settings/filter on the table should persist
    */
   setFilter = (filter, apply = false) => {
-    let savedFilters = this.getSavedFilterOptions();
     if (filter) {
-      this.setState({ savedFilters, activeFilter: filter, showAdvancedFilterModal: true, activeFilterOptions: filter?.contents || [] }, () => {
+      this.setState({ activeFilter: filter, showAdvancedFilterModal: true, activeFilterOptions: filter?.contents || [] }, () => {
         if (apply) {
           this.apply(true);
         }
@@ -273,7 +152,7 @@ class AdvancedFilter extends React.Component {
       activeFilterOptions: _.cloneDeep(this.state.activeFilterOptions),
     };
     this.setState({ showAdvancedFilterModal: false, applied: true, lastAppliedFilter: appliedFilter }, () => {
-      this.props.advancedFilterUpdate(this.state.activeFilterOptions, keepStickySettings);
+      this.props.advancedFilterUpdate(this.formatFiltersForBackend(this.state.activeFilterOptions, true), keepStickySettings);
       if (this.props.updateStickySettings) {
         this.setLocalStorage(`SaraFilter`, this.state.activeFilter?.id || JSON.stringify(this.state.activeFilterOptions));
       }
@@ -350,7 +229,10 @@ class AdvancedFilter extends React.Component {
     let self = this;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post(window.BASE_PATH + '/user_filters', { activeFilterOptions: this.state.activeFilterOptions, name: this.state.filterName })
+      .post(window.BASE_PATH + '/user_filters', {
+        activeFilterOptions: this.formatFiltersForBackend(this.state.activeFilterOptions),
+        name: this.state.filterName,
+      })
       .catch(err => {
         toast.error(err?.response?.data?.error ? err.response.data.error : 'Failed to save filter.', {
           autoClose: 8000,
@@ -359,7 +241,7 @@ class AdvancedFilter extends React.Component {
       .then(response => {
         if (response?.data) {
           toast.success('Filter successfully saved.');
-          let data = { ...response?.data, contents: JSON.parse(response?.data?.contents) };
+          let data = { ...response?.data, contents: this.formatFiltersForFrontend(JSON.parse(response?.data?.contents)) };
           this.setState({ activeFilter: data, savedFilters: [...self.state.savedFilters, data] });
         }
       });
@@ -372,14 +254,16 @@ class AdvancedFilter extends React.Component {
     let self = this;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .put(window.BASE_PATH + '/user_filters/' + this.state.activeFilter.id, { activeFilterOptions: this.state.activeFilterOptions })
+      .put(window.BASE_PATH + '/user_filters/' + this.state.activeFilter.id, {
+        activeFilterOptions: this.formatFiltersForBackend(this.state.activeFilterOptions),
+      })
       .catch(() => {
         toast.error('Failed to update filter.');
       })
       .then(response => {
         if (response?.data) {
           toast.success('Filter successfully updated.');
-          let data = { ...response?.data, contents: JSON.parse(response?.data?.contents) };
+          let data = { ...response?.data, contents: this.formatFiltersForFrontend(JSON.parse(response?.data?.contents)) };
           this.setState({
             activeFilter: data,
             savedFilters: [
@@ -391,6 +275,45 @@ class AdvancedFilter extends React.Component {
           });
         }
       });
+  };
+
+  /**
+   * Formats filter object for backend use (applying and saving)
+   * Removes the filterOption object and adds a name property with the name of the filterOption
+   */
+  formatFiltersForBackend = (filters, apply) => {
+    return filters
+      .filter(field => field?.filterOption != null)
+      .map(filter => {
+        return {
+          name: filter.filterOption.name,
+          value: filter.value,
+          additionalFilterOption: filter.additionalFilterOption,
+          dateOption: filter.dateOption,
+          numberOption: filter.numberOption,
+          relativeOption: filter.relativeOption,
+          ...(apply && { type: filter.filterOption.type }),
+          ...(apply && filter.filterOption.type === 'relative' && { has_timestamp: filter.filterOption.has_timestamp }),
+        };
+      });
+  };
+
+  /**
+   * Formats filter object for frontend use (this component)
+   * Removes the name field and adds the filterOption associated with the name
+   */
+  formatFiltersForFrontend = filters => {
+    return filters.map(filter => {
+      const filterOption = this.props.advanced_filter_options.find(option => option.name === filter.name);
+      return {
+        filterOption,
+        value: filter.value,
+        additionalFilterOption: filter.additionalFilterOption,
+        dateOption: filter.dateOption,
+        numberOption: filter.numberOption,
+        relativeOption: filter.relativeOption,
+      };
+    });
   };
 
   /**
@@ -454,7 +377,7 @@ class AdvancedFilter extends React.Component {
    */
   changeFilterOption = (index, name) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
-    let filterOption = advancedFilterOptions.find(filterOption => {
+    let filterOption = this.props.advanced_filter_options.find(filterOption => {
       return filterOption.name === name;
     });
 
@@ -534,6 +457,8 @@ class AdvancedFilter extends React.Component {
         start: moment().subtract(3, 'days').format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
       };
+    } else if (dateOption === '') {
+      defaultValue = '';
     } else {
       defaultValue = moment().format('YYYY-MM-DD');
     }
@@ -700,7 +625,7 @@ class AdvancedFilter extends React.Component {
       }
     } else if (value.operator === 'less-than') {
       // set variables for date options including a time stamp
-      if (filter.hasTimestamp) {
+      if (filter.has_timestamp) {
         if (value.when === 'past') {
           after = moment().subtract(value.number, value.unit).format('MM/DD/YY');
           before = 'now';
@@ -724,8 +649,8 @@ class AdvancedFilter extends React.Component {
 
     statement += `The current setting of "${operatorValue} ${value.number} ${value.unit} in the ${value.when}" will return records with ${filterName} date`;
     if (value.operator === 'less-than') {
-      const timestampString = filter.hasTimestamp ? 'the current time on ' : '';
-      if (!filter.hasTimestamp && value.number === 1 && value.unit === 'days') {
+      const timestampString = filter.has_timestamp ? 'the current time on ' : '';
+      if (!filter.has_timestamp && value.number === 1 && value.unit === 'days') {
         statement += ' of today. ';
       } else {
         if (value.when === 'past') {
@@ -735,7 +660,7 @@ class AdvancedFilter extends React.Component {
         }
       }
     } else {
-      const timestampString = filter.hasTimestamp ? 'the current time on ' : '';
+      const timestampString = filter.has_timestamp ? 'the current time on ' : '';
       if (value.when === 'past') {
         statement += ` before ${timestampString}${before}. `;
       } else {
@@ -750,17 +675,30 @@ class AdvancedFilter extends React.Component {
    * Renders a tooltip for a statement row
    * @param {Object} filter - Filter currently selected
    * @param {Number} index - Filter index
-   * @param {String} statement - Tooltip text
+   * @param {String} statement - Tooltip text (can be a string, array, or object)
    */
-  renderStatementTooltip = (filter, index, statement) => {
+  renderStatementTooltip = (filter, index, statement, additionalFilterOption) => {
     const tooltipId = `${filter.name}-${index}`;
+    if (_.isObject(statement) && !_.isArray(statement)) {
+      statement = statement[`${additionalFilterOption}`];
+    }
     return (
       <div className="align-middle float-right">
         <span data-for={tooltipId} data-tip="" className="ml-3 tooltip-af">
           <i className="fas fa-question-circle px-0"></i>
         </span>
         <ReactTooltip id={tooltipId} multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container">
-          <span>{statement}</span>
+          {_.isArray(statement) ? (
+            <div>
+              {statement.map((s, i) => (
+                <span key={i} className="d-block">
+                  {s}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <span>{statement}</span>
+          )}
         </ReactTooltip>
       </div>
     );
@@ -782,7 +720,7 @@ class AdvancedFilter extends React.Component {
    * Format options for main select dropdown
    */
   getFormattedOptions = () => {
-    return advancedFilterOptions
+    return this.props.advanced_filter_options
       .sort((a, b) => {
         if (a.type === 'blank') return -1;
         if (b.type === 'blank') return 1;
@@ -911,19 +849,6 @@ class AdvancedFilter extends React.Component {
    * @param {String} additionalFilterOption - Selected option from additional list of options (if provided)
    */
   renderSearchStatement = (filter, index, value, additionalFilterOption) => {
-    // compute tooltip for specific search cases
-    let tooltip = filter.tooltip || '';
-    if (filter.name === 'close-contact-with-known-case-id') {
-      if (additionalFilterOption === 'Exact Match') {
-        tooltip =
-          'Returns records with an exact match to one or more of the user-entered search values when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “45” or “45, 12”). ';
-      } else if (additionalFilterOption === 'Contains') {
-        tooltip =
-          'Returns records that contain a user-entered search value when the known Case ID is specified for monitorees with “Close Contact with a Known Case”. Use commas to separate multiple values (ex: “12, 45” will return records where known Case ID is “123, 90” or “12” or “1451). ';
-      }
-      tooltip += 'Leaving this field blank will return monitorees with missing and null values.';
-    }
-
     return (
       <React.Fragment>
         <div style={{ display: 'flex' }}>
@@ -936,7 +861,7 @@ class AdvancedFilter extends React.Component {
               this.changeValue(index, event.target.value);
             }}
           />
-          {tooltip && this.renderStatementTooltip(filter.name, index, tooltip)}
+          {filter.tooltip && this.renderStatementTooltip(filter.name, index, filter.tooltip, additionalFilterOption)}
         </div>
       </React.Fragment>
     );
@@ -1026,7 +951,7 @@ class AdvancedFilter extends React.Component {
             <option value="equal">equal to</option>
             <option value="greater-than-equal">greater than or equal to</option>
             <option value="greater-than">greater than</option>
-            {filter.allowRange && <option value="between">between</option>}
+            {filter.allow_range && <option value="between">between</option>}
           </Form.Control>
           {numberOption !== 'between' && (
             <Form.Control
@@ -1089,7 +1014,7 @@ class AdvancedFilter extends React.Component {
             <option value="within">within</option>
             <option value="before">before</option>
             <option value="after">after</option>
-            {filter.name !== 'enrolled' && <option></option>}
+            {filter.support_blank && <option></option>}
           </Form.Control>
           {(dateOption === 'before' || dateOption === 'after') && (
             <div className="advanced-filter-date-input">
@@ -1213,7 +1138,7 @@ class AdvancedFilter extends React.Component {
                   this.changeValue(index, { operator: value.operator, number: value.number, unit: value.unit, when: event.target.value });
                 }}>
                 <option value="past">in the past</option>
-                {!filter.hasTimestamp && <option value="future">in the future</option>}
+                {!filter.has_timestamp && <option value="future">in the future</option>}
               </Form.Control>
             </Row>
           )}
@@ -1273,18 +1198,23 @@ class AdvancedFilter extends React.Component {
                     this.changeCombinationValue(statementIndex, combinationIndex, { name: combinationValue.name, value: event.target.value });
                   }}>
                   {combinationFilter.options.map((option, o_index) => {
-                    return <option key={o_index}>{option}</option>;
+                    return (
+                      <option key={o_index} value={option}>
+                        {option}
+                      </option>
+                    );
                   })}
                 </Form.Control>
               )}
               {combinationFilter?.type === 'search' && (
                 <Form.Control
                   value={combinationValue.value}
-                  className="advanced-filter-combination-multi-select-options advanced-filter-multi-select-options my-0 mx-3 py-0"
+                  className="advanced-filter-combination-search-input my-0 mx-3 py-0"
                   aria-label="Advanced Filter Combination Search"
                   onChange={event => {
                     this.changeCombinationValue(statementIndex, combinationIndex, { name: combinationValue.name, value: event.target.value });
-                  }}></Form.Control>
+                  }}
+                />
               )}
               {combinationFilter?.type === 'multi' && (
                 <Select
@@ -1631,11 +1561,8 @@ AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
   advancedFilterUpdate: PropTypes.func,
   updateStickySettings: PropTypes.bool,
-  jurisdiction_id: PropTypes.number,
-  jurisdiction_paths: PropTypes.object,
-  all_assigned_users: PropTypes.array,
+  advanced_filter_options: PropTypes.array,
   activeFilter: PropTypes.object,
-  vaccine_standards: PropTypes.object,
 };
 
 export default AdvancedFilter;

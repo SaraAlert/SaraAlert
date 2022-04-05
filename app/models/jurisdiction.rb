@@ -120,4 +120,24 @@ class Jurisdiction < ApplicationRecord
     end
     bool_symptom_labels.join(', ')
   end
+
+  def all_common_exposure_cohort_names
+    patient_ids = Patient.where(jurisdiction_id: subtree_ids)
+    CommonExposureCohort.where(patient_id: patient_ids)
+                        .where.not(cohort_name: [nil, ''])
+                        .group(:cohort_name)
+                        .order('COUNT(cohort_name) DESC')
+                        .distinct
+                        .pluck(:cohort_name)
+  end
+
+  def all_common_exposure_cohort_locations
+    patient_ids = Patient.where(jurisdiction_id: subtree_ids)
+    CommonExposureCohort.where(patient_id: patient_ids)
+                        .where.not(cohort_location: [nil, ''])
+                        .group(:cohort_location)
+                        .order('COUNT(cohort_location) DESC')
+                        .distinct
+                        .pluck(:cohort_location)
+  end
 end

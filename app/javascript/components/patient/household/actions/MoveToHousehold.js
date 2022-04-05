@@ -37,18 +37,7 @@ class MoveToHousehold extends React.Component {
         tz_offset: new Date().getTimezoneOffset(),
         exclude_patient_id: this.props.patient.id,
         // This query should always filter out records that are not self-reporters
-        filter: [
-          {
-            dateOption: null,
-            filterOption: {
-              description: 'Monitorees that are a Head of Household or self-reporter',
-              name: 'hoh',
-              title: 'Daily Reporters (Boolean)',
-              type: 'boolean',
-            },
-            value: true,
-          },
-        ],
+        filter: [{ name: 'hoh', type: 'boolean', value: true }],
       },
       entryOptions: [5, 10],
       isLoading: false,
