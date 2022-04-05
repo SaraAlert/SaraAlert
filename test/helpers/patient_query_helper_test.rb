@@ -17,8 +17,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     BlockedNumber.create(phone_number: '2222222222')
     patients = Patient.all
 
-    filters = [{ filterOption: {}, additionalFilterOption: nil, value: nil }]
-    filters[0][:filterOption]['name'] = 'sms-blocked'
+    filters = [{ name: 'sms-blocked', type: 'boolean', additionalFilterOption: nil, value: nil }]
     tz_offset = 300
 
     # Check for monitorees who have blocked the system
@@ -62,8 +61,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:laboratory, patient: patient_9, result: 'positive', specimen_collection: '2020-02-02')
 
     patients = Patient.all
-    filters = [{ filterOption: {}, additionalFilterOption: nil, value: nil }]
-    filters[0][:filterOption]['name'] = 'ineligible-for-recovery-definition'
+    filters = [{ name: 'ineligible-for-recovery-definition', type: 'boolean', additionalFilterOption: nil, value: nil }]
     tz_offset = 300
 
     # Check for monitorees who are ineligible for any recovery definition
@@ -96,8 +94,7 @@ class PatientQueryHelperTest < ActionView::TestCase
 
     patients = Patient.all
 
-    filters = [{ filterOption: {}, additionalFilterOption: nil, value: nil }]
-    filters[0][:filterOption]['name'] = 'unenrolled-close-contact'
+    filters = [{ name: 'unenrolled-close-contact', type: 'boolean', additionalFilterOption: nil, value: nil }]
     tz_offset = 300
 
     # Check for monitorees who have at least one unenrolled close contact
@@ -133,8 +130,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user, contact_of_known_case_id: '222, 11')
 
     patients = Patient.all
-    filters = [{ filterOption: {}, additionalFilterOption: 'Exact Match', value: '111' }]
-    filters[0][:filterOption]['name'] = 'close-contact-with-known-case-id'
+    filters = [{ name: 'close-contact-with-known-case-id', type: 'search', additionalFilterOption: 'Exact Match', value: '111' }]
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4, patient_5, patient_6, patient_7, patient_8]
@@ -158,8 +154,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     patient_8 = create(:patient, creator: user, contact_of_known_case_id: '123, 4, 5678')
 
     patients = Patient.all
-    filters = [{ filterOption: {}, additionalFilterOption: 'Exact Match', value: '111, 5678' }]
-    filters[0][:filterOption]['name'] = 'close-contact-with-known-case-id'
+    filters = [{ name: 'close-contact-with-known-case-id', type: 'search', additionalFilterOption: 'Exact Match', value: '111, 5678' }]
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4, patient_5, patient_6, patient_7, patient_8]
@@ -184,8 +179,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user, contact_of_known_case_id: '222, 11')
 
     patients = Patient.all
-    filters = [{ filterOption: {}, additionalFilterOption: 'Contains', value: '111' }]
-    filters[0][:filterOption]['name'] = 'close-contact-with-known-case-id'
+    filters = [{ name: 'close-contact-with-known-case-id', type: 'search', additionalFilterOption: 'Contains', value: '111' }]
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4, patient_5, patient_6, patient_7, patient_8, patient_9, patient_10, patient_11,
@@ -210,8 +204,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     patient_11 = create(:patient, creator: user, contact_of_known_case_id: '123, 4, 5678')
 
     patients = Patient.all
-    filters = [{ filterOption: {}, additionalFilterOption: 'Contains', value: '111, 5678' }]
-    filters[0][:filterOption]['name'] = 'close-contact-with-known-case-id'
+    filters = [{ name: 'close-contact-with-known-case-id', type: 'search', additionalFilterOption: 'Contains', value: '111, 5678' }]
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4, patient_5, patient_6, patient_7, patient_8, patient_9, patient_10, patient_11]
@@ -226,7 +219,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user, primary_telephone: '+5555555555')
 
     patients = Patient.all
-    filters = [{ filterOption: { 'name' => 'telephone' }, additionalFilterOption: 'Contains', value: '234' }]
+    filters = [{ name: 'telephone', type: 'search', additionalFilterOption: 'Contains', value: '234' }]
     tz_offset = 300
 
     filtered_patients = advanced_filter(patients, filters, tz_offset)
@@ -241,7 +234,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user, primary_telephone: '+5555555555')
 
     patients = Patient.all
-    filters = [{ filterOption: { 'name' => 'telephone' }, additionalFilterOption: 'Contains', value: '(234)-111' }]
+    filters = [{ name: 'telephone', type: 'search', additionalFilterOption: 'Contains', value: '(234)-111' }]
     tz_offset = 300
 
     filtered_patients = advanced_filter(patients, filters, tz_offset)
@@ -256,7 +249,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user, primary_telephone: '+1111234445')
 
     patients = Patient.all
-    filters = [{ filterOption: { 'name' => 'telephone' }, additionalFilterOption: 'Exact Match', value: '(111)-123-4444' }]
+    filters = [{ name: 'telephone', type: 'search', additionalFilterOption: 'Exact Match', value: '(111)-123-4444' }]
     tz_offset = 300
 
     filtered_patients = advanced_filter(patients, filters, tz_offset)
@@ -288,8 +281,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'result', value: '' }] }]
-    filters[0][:filterOption]['name'] = 'lab-result'
+    filters = [{ name: 'lab-result', type: 'combination', value: [{ name: 'result', value: '' }] }]
     tz_offset = 300
 
     # Check for monitorees who have a blank result
@@ -327,8 +319,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'lab-type', value: '' }] }]
-    filters[0][:filterOption]['name'] = 'lab-result'
+    filters = [{ name: 'lab-result', type: 'combination', value: [{ name: 'lab-type', value: '' }] }]
     tz_offset = 300
 
     # Check for monitorees who have a blank lab type
@@ -367,8 +358,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'specimen-collection', value: { when: '' } }] }]
-    filters[0][:filterOption]['name'] = 'lab-result'
+    filters = [{ name: 'lab-result', type: 'combination', value: [{ name: 'specimen-collection', value: { when: '' } }] }]
     tz_offset = 300
 
     # Check for monitorees who have a blank specimen collection date
@@ -413,8 +403,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'report', value: { when: '' } }] }]
-    filters[0][:filterOption]['name'] = 'lab-result'
+    filters = [{ name: 'lab-result', type: 'combination', value: [{ name: 'report', value: { when: '' } }] }]
     tz_offset = 300
 
     # Check for monitorees who have a blank report date
@@ -458,8 +447,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'result', value: 'positive' }, { name: 'lab-type', value: 'PCR' }] }]
-    filters[0][:filterOption]['name'] = 'lab-result'
+    filters = [{ name: 'lab-result', type: 'combination', value: [{ name: 'result', value: 'positive' }, { name: 'lab-type', value: 'PCR' }] }]
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_5]
@@ -504,11 +492,10 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {},
+    filters = [{ name: 'lab-result', type: 'combination',
                  value: [{ name: 'result', value: 'positive' }, { name: 'lab-type', value: 'PCR' },
                          { name: 'specimen-collection', value: { when: 'before', date: '2021-03-25' } },
                          { name: 'report', value: { when: 'after', date: '2021-03-25' } }] }]
-    filters[0][:filterOption]['name'] = 'lab-result'
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_5]
@@ -546,10 +533,8 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filter_option_1 = { filterOption: {}, value: [{ name: 'result', value: 'positive' }, { name: 'lab-type', value: 'PCR' }] }
-    filter_option_2 = { filterOption: {}, value: [{ name: 'result', value: 'positive' }, { name: 'lab-type', value: 'Antigen' }] }
-    filter_option_1[:filterOption]['name'] = 'lab-result'
-    filter_option_2[:filterOption]['name'] = 'lab-result'
+    filter_option_1 = { name: 'lab-result', type: 'combination', value: [{ name: 'result', value: 'positive' }, { name: 'lab-type', value: 'PCR' }] }
+    filter_option_2 = { name: 'lab-result', type: 'combination', value: [{ name: 'result', value: 'positive' }, { name: 'lab-type', value: 'Antigen' }] }
     filters = [filter_option_1, filter_option_2]
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
@@ -601,16 +586,14 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filter_option_1 = { filterOption: {},
+    filter_option_1 = { name: 'lab-result', type: 'combination',
                         value: [{ name: 'result', value: 'positive' }, { name: 'lab-type', value: 'PCR' },
                                 { name: 'specimen-collection', value: { when: 'before', date: '2021-03-25' } },
                                 { name: 'report', value: { when: 'after', date: '2021-03-25' } }] }
-    filter_option_2 = { filterOption: {},
+    filter_option_2 = { name: 'lab-result', type: 'combination',
                         value: [{ name: 'result', value: 'indeterminate' }, { name: 'lab-type', value: 'Antigen' },
                                 { name: 'specimen-collection', value: { when: 'before', date: '2021-03-25' } },
                                 { name: 'report', value: { when: 'after', date: '2021-03-25' } }] }
-    filter_option_1[:filterOption]['name'] = 'lab-result'
-    filter_option_2[:filterOption]['name'] = 'lab-result'
     filters = [filter_option_1, filter_option_2]
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
@@ -629,8 +612,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'vaccine-group', value: 'COVID-19' }] }]
-    filters[0][:filterOption]['name'] = 'vaccination'
+    filters = [{ name: 'vaccination', type: 'combination', value: [{ name: 'vaccine-group', value: 'COVID-19' }] }]
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2]
@@ -658,8 +640,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'product-name', value: 'Moderna COVID-19 Vaccine (non-US Spikevax)' }] }]
-    filters[0][:filterOption]['name'] = 'vaccination'
+    filters = [{ name: 'vaccination', type: 'combination', value: [{ name: 'product-name', value: 'Moderna COVID-19 Vaccine (non-US Spikevax)' }] }]
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_3, patient_6]
@@ -693,8 +674,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'administration-date', value: { when: '' } }] }]
-    filters[0][:filterOption]['name'] = 'vaccination'
+    filters = [{ name: 'vaccination', type: 'combination', value: [{ name: 'administration-date', value: { when: '' } }] }]
     tz_offset = 300
 
     # Check for monitorees who have a blank report date
@@ -739,8 +719,7 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:vaccine, patient: patient_7, dose_number: '2')
 
     patients = Patient.all
-    filters = [{ filterOption: {}, value: [{ name: 'dose-number', value: '' }] }]
-    filters[0][:filterOption]['name'] = 'vaccination'
+    filters = [{ name: 'vaccination', type: 'combination', value: [{ name: 'dose-number', value: '' }] }]
     tz_offset = 300
 
     # Check for monitorees who have a blank dose number
@@ -780,9 +759,8 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {},
+    filters = [{ name: 'vaccination', type: 'combination',
                  value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (COMIRNATY)' }, { name: 'dose-number', value: '1' }] }]
-    filters[0][:filterOption]['name'] = 'vaccination'
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_5, patient_7]
@@ -826,12 +804,11 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filters = [{ filterOption: {},
+    filters = [{ name: 'vaccination', type: 'combination',
                  value: [{ name: 'vaccine-group', value: 'COVID-19' },
                          { name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (COMIRNATY)' },
                          { name: 'administration-date', value: { when: 'before', date: '2021-03-25' } },
                          { name: 'dose-number', value: '1' }] }]
-    filters[0][:filterOption]['name'] = 'vaccination'
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_5, patient_7]
@@ -863,14 +840,12 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filter_option_1 = { filterOption: {},
+    filter_option_1 = { name: 'vaccination', type: 'combination',
                         value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (COMIRNATY)' },
                                 { name: 'dose-number', value: '1' }] }
-    filter_option_2 = { filterOption: {},
+    filter_option_2 = { name: 'vaccination', type: 'combination',
                         value: [{ name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (COMIRNATY)' },
                                 { name: 'dose-number', value: '2' }] }
-    filter_option_1[:filterOption]['name'] = 'vaccination'
-    filter_option_2[:filterOption]['name'] = 'vaccination'
     filters = [filter_option_1, filter_option_2]
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
@@ -940,17 +915,15 @@ class PatientQueryHelperTest < ActionView::TestCase
     create(:patient, creator: user)
 
     patients = Patient.all
-    filter_option_1 = { filterOption: {},
+    filter_option_1 = { name: 'vaccination', type: 'combination',
                         value: [{ name: 'vaccine-group', value: 'COVID-19' },
                                 { name: 'product-name', value: 'Pfizer-BioNTech COVID-19 Vaccine (COMIRNATY)' },
                                 { name: 'administration-date', value: { when: 'before', date: '2021-03-25' } },
                                 { name: 'dose-number', value: '1' }] }
-    filter_option_2 = { filterOption: {},
+    filter_option_2 = { name: 'vaccination', type: 'combination',
                         value: [{ name: 'vaccine-group', value: 'COVID-19' }, { name: 'product-name', value: 'Unknown' },
                                 { name: 'administration-date', value: { when: 'after', date: '2021-03-25' } },
                                 { name: 'dose-number', value: '' }] }
-    filter_option_1[:filterOption]['name'] = 'vaccination'
-    filter_option_2[:filterOption]['name'] = 'vaccination'
     filters = [filter_option_1, filter_option_2]
     tz_offset = 300
     filtered_patients = advanced_filter(patients, filters, tz_offset)
@@ -979,52 +952,46 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 240
 
     # Check for monitorees with assigned user user_1
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
+    filters = [{ name: 'assigned-user', type: 'multi', additionalFilterOption: nil,
                  value: [{ label: user_1[:id], value: user_1[:id] }] }]
-    filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with assigned user user_1 or user_2 or user_3
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
+    filters = [{ name: 'assigned-user', type: 'multi', additionalFilterOption: nil,
                  value: [{ label: user_1[:id], value: user_1[:id] },
                          { label: user_2[:id], value: user_2[:id] },
                          { label: user_3[:id], value: user_3[:id] }] }]
-    filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with assigned user user_1 or user_2
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
+    filters = [{ name: 'assigned-user', type: 'multi', additionalFilterOption: nil,
                  value: [{ label: user_1[:id], value: user_1[:id] },
                          { label: user_2[:id], value: user_2[:id] }] }]
-    filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # No selected assigned user should not filter out any monitorees
-    filters = [{ filterOption: {}, additionalFilterOption: nil, value: [] }]
-    filters[0][:filterOption]['name'] = 'assigned-user'
+    filters = [{ name: 'assigned-user', type: 'multi', additionalFilterOption: nil, value: [] }]
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Invalid assigned user should not return any monitorees
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
+    filters = [{ name: 'assigned-user', type: 'multi', additionalFilterOption: nil,
                  value: [{ label: -1, value: -1 }] }]
-    filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = []
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with assigned user user_1 or invalid assigned user
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
+    filters = [{ name: 'assigned-user', type: 'multi', additionalFilterOption: nil,
                  value: [{ label: user_1[:id], value: user_1[:id] },
                          { label: -1, value: -1 }] }]
-    filters[0][:filterOption]['name'] = 'assigned-user'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
@@ -1049,52 +1016,46 @@ class PatientQueryHelperTest < ActionView::TestCase
     tz_offset = 240
 
     # Check for monitorees with jurisdiction of user_1
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
+    filters = [{ name: 'jurisdiction', type: 'multi', additionalFilterOption: nil,
                  value: [{ label: user_1[:jurisdiction_path], value: user_1[:jurisdiction_id] }] }]
-    filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with jurisdiction of user_1 or user_2 or user_3
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
+    filters = [{ name: 'jurisdiction', type: 'multi', additionalFilterOption: nil,
                  value: [{ label: user_1[:jurisdiction_path], value: user_1[:jurisdiction_id] },
                          { label: user_2[:jurisdiction_path], value: user_2[:jurisdiction_id] },
                          { label: user_3[:jurisdiction_path], value: user_3[:jurisdiction_id] }] }]
-    filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with jurisdiction of user_1 or user_2
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
+    filters = [{ name: 'jurisdiction', type: 'multi', additionalFilterOption: nil,
                  value: [{ label: user_1[:jurisdiction_path], value: user_1[:jurisdiction_id] },
                          { label: user_2[:jurisdiction_path], value: user_2[:jurisdiction_id] }] }]
-    filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # No selected jurisdiction should not filter out any monitorees
-    filters = [{ filterOption: {}, additionalFilterOption: nil, value: [] }]
-    filters[0][:filterOption]['name'] = 'jurisdiction'
+    filters = [{ name: 'jurisdiction', type: 'multi', additionalFilterOption: nil, value: [] }]
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_1, patient_2, patient_3, patient_4]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Invalid jurisdiction should not return any monitorees
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
+    filters = [{ name: 'jurisdiction', type: 'multi', additionalFilterOption: nil,
                  value: [{ label: 'Not real jurisdiction', value: -1 }] }]
-    filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = []
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
 
     # Check for monitorees with jurisdiction of user_2 or invalid jurisdiction
-    filters = [{ filterOption: {}, additionalFilterOption: nil,
+    filters = [{ name: 'jurisdiction', type: 'multi', additionalFilterOption: nil,
                  value: [{ label: user_2[:jurisdiction_path], value: user_2[:jurisdiction_id] },
                          { label: 'Not real jurisdiction', value: -1 }] }]
-    filters[0][:filterOption]['name'] = 'jurisdiction'
     filtered_patients = advanced_filter(patients, filters, tz_offset)
     filtered_patients_array = [patient_3]
     assert_equal filtered_patients_array.pluck(:id), filtered_patients.pluck(:id)
@@ -1117,8 +1078,7 @@ class PatientQueryHelperTest < ActionView::TestCase
 
     patients = Patient.all
     # Check for monitorees who have any follow-up flag reason
-    filters = [{ filterOption: {}, additionalFilterOption: nil, value: 'Any Reason' }]
-    filters[0][:filterOption]['name'] = 'flagged-for-follow-up'
+    filters = [{ name: 'flagged-for-follow-up', type: 'select', additionalFilterOption: nil, value: 'Any Reason' }]
     tz_offset = 300
 
     filtered_patients = advanced_filter(patients, filters, tz_offset)
@@ -1232,12 +1192,7 @@ class PatientQueryHelperTest < ActionView::TestCase
                                                   entries: 25,
                                                   tz_offset: 240,
                                                   filter: [{
-                                                    filterOption: {
-                                                      name: 'assigned-user',
-                                                      title: 'Assigned User (Multi-select)',
-                                                      description: 'Monitorees who have a specific assigned user',
-                                                      type: 'multi'
-                                                    },
+                                                    name: 'assigned-user', type: 'multi',
                                                     value: [
                                                       { label: user_1[:id], value: user_1[:id] },
                                                       { label: user_2[:id], value: user_2[:id] }
@@ -1265,12 +1220,7 @@ class PatientQueryHelperTest < ActionView::TestCase
                                                   entries: 25,
                                                   tz_offset: 240,
                                                   filter: [{
-                                                    filterOption: {
-                                                      name: 'assigned-user',
-                                                      title: 'Assigned User (Multi-select)',
-                                                      description: 'Monitorees who have a specific assigned user',
-                                                      type: 'multi'
-                                                    },
+                                                    name: 'assigned-user', type: 'multi',
                                                     value: []
                                                   }]
                                                 }
@@ -1303,12 +1253,7 @@ class PatientQueryHelperTest < ActionView::TestCase
                                                   entries: 25,
                                                   tz_offset: 240,
                                                   filter: [{
-                                                    filterOption: {
-                                                      name: 'jurisdiction',
-                                                      title: 'Jurisdiction (Multi-select)',
-                                                      description: 'Monitorees of a specific jurisdiction',
-                                                      type: 'multi'
-                                                    },
+                                                    name: 'jurisdiction', type: 'multi',
                                                     value: [
                                                       { label: user_1[:jurisdiction_id], value: user_1[:jurisdiction_id] }
                                                     ]

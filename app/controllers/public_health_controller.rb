@@ -3,10 +3,11 @@
 # PublicHealthController: handles all epi actions
 class PublicHealthController < ApplicationController
   include PatientQueryHelper
+  include AdvancedFilterOptions
 
   before_action :authenticate_user!
   before_action :authenticate_user_role
-  before_action :set_jurisdiction_paths, :set_all_assigned_users, only: %i[exposure isolation global]
+  before_action :set_jurisdiction_paths, :set_all_assigned_users, :set_advanced_filter_options, only: %i[exposure isolation global]
 
   def exposure
     @title = 'Exposure Dashboard'
@@ -88,5 +89,9 @@ class PublicHealthController < ApplicationController
   def set_all_assigned_users
     # Get all assigned users of current user's jurisdiction
     @all_assigned_users = current_user.patients.where.not(assigned_user: nil).pluck(:assigned_user).uniq.sort
+  end
+
+  def set_advanced_filter_options
+    @advanced_filter_options = advanced_filter_options(current_user)
   end
 end

@@ -188,6 +188,7 @@ class CustomExport extends React.Component {
     const non_zero_records_selected =
       (this.state.selected_records === 'current' && this.props.current_monitorees_count === 0) ||
       (this.state.selected_records === 'custom' && this.state.filtered_monitorees_count === 0);
+
     return (
       <React.Fragment>
         <Modal size="lg" backdrop="static" show onHide={this.props.onClose}>
@@ -247,14 +248,13 @@ class CustomExport extends React.Component {
                         </span>
                       )}
                       {this.props.patient_query.filter?.map((filter, index) => {
+                        const filterOption = this.props.advanced_filter_options.find(option => option.name === filter.name);
                         return (
                           <span key={`filter-${index}`} className="custom-export-filter-text">
                             <small>
-                              <b className="mr-2">{filter.filterOption?.title}:</b>
-                              {['search', 'select', 'number'].includes(filter.filterOption?.type) && (
-                                <span>{filter.value === '' ? '<blank>' : filter.value}</span>
-                              )}
-                              {filter.filterOption?.type === 'multi' && (
+                              <b className="mr-2">{filterOption?.title}:</b>
+                              {['search', 'select', 'number'].includes(filterOption?.type) && <span>{filter.value === '' ? '<blank>' : filter.value}</span>}
+                              {filterOption?.type === 'multi' && (
                                 <div style={{ display: 'inline-grid' }}>
                                   {filter.value?.map((elem, i) => {
                                     return (
@@ -265,8 +265,8 @@ class CustomExport extends React.Component {
                                   })}
                                 </div>
                               )}
-                              {filter.filterOption?.type === 'boolean' && <span>{filter.value ? 'True' : 'False'}</span>}
-                              {filter.filterOption?.type === 'date' && (
+                              {filterOption?.type === 'boolean' && <span>{filter.value ? 'True' : 'False'}</span>}
+                              {filterOption?.type === 'date' && (
                                 <span>
                                   {filter.dateOption === ''
                                     ? '<blank>'
@@ -277,20 +277,20 @@ class CustomExport extends React.Component {
                                       }`}
                                 </span>
                               )}
-                              {filter.filterOption?.type === 'relative' && (
+                              {filterOption?.type === 'relative' && (
                                 <span>
                                   {filter.relativeOption === 'custom'
                                     ? `in the ${filter.value?.when} ${filter.value?.number} ${filter.value?.unit}`
                                     : filter.relativeOption}
                                 </span>
                               )}
-                              {filter.filterOption?.type === 'combination' && (
+                              {filterOption?.type === 'combination' && (
                                 <div style={{ display: 'inline-grid' }}>
                                   {filter.value?.map((f, i) => {
                                     return (
                                       <span key={`filter-${index}-${i}`} className="mb-0">
                                         <b className="mr-2">
-                                          {filter.filterOption?.fields
+                                          {filterOption?.fields
                                             ?.find(fields => {
                                               return fields.name === f.name;
                                             })
@@ -353,11 +353,10 @@ class CustomExport extends React.Component {
                     <PatientsFilters
                       authenticity_token={this.props.authenticity_token}
                       jurisdiction_paths={this.props.jurisdiction_paths}
-                      all_assigned_users={this.props.all_assigned_users}
+                      advanced_filter_options={this.props.advanced_filter_options}
                       all_cohort_names={this.props.all_cohort_names}
                       all_cohort_locations={this.props.all_cohort_locations}
                       jurisdiction={this.props.jurisdiction}
-                      vaccine_standards={this.props.vaccine_standards}
                       query={this.state.custom_patient_query}
                       onQueryChange={(field, value, cb) =>
                         this.setState(
@@ -615,7 +614,7 @@ class CustomExport extends React.Component {
 CustomExport.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
-  all_assigned_users: PropTypes.array,
+  advanced_filter_options: PropTypes.array,
   all_cohort_names: PropTypes.array,
   all_cohort_locations: PropTypes.array,
   jurisdiction: PropTypes.object,
@@ -628,7 +627,6 @@ CustomExport.propTypes = {
   options: PropTypes.object,
   onClose: PropTypes.func,
   reloadExportPresets: PropTypes.func,
-  vaccine_standards: PropTypes.object,
 };
 
 export default CustomExport;

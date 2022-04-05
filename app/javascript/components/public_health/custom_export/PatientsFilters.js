@@ -168,19 +168,11 @@ class PatientsFilters extends React.Component {
                 }}
               />
               <AdvancedFilter
-                advancedFilterUpdate={filter =>
-                  this.props.onQueryChange(
-                    'filter',
-                    filter?.filter(field => field?.filterOption != null)
-                  )
-                }
+                advancedFilterUpdate={filter => this.props.onQueryChange('filter', filter)}
                 authenticity_token={this.props.authenticity_token}
                 updateStickySettings={false}
-                jurisdiction_id={this.props.jurisdiction.id}
-                jurisdiction_paths={this.props.jurisdiction_paths}
-                all_assigned_users={this.props.all_assigned_users}
+                advanced_filter_options={this.props.advanced_filter_options}
                 activeFilter={{ contents: this.props.query.filter }}
-                vaccine_standards={this.props.vaccine_standards}
               />
             </InputGroup>
           </Col>
@@ -193,11 +185,10 @@ class PatientsFilters extends React.Component {
 PatientsFilters.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
-  all_assigned_users: PropTypes.array,
+  advanced_filter_options: PropTypes.array,
   jurisdiction: PropTypes.object,
   query: PropTypes.object,
   onQueryChange: PropTypes.func,
-  vaccine_standards: PropTypes.object,
 };
 
 export default PatientsFilters;

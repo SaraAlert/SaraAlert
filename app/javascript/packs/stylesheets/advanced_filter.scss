@@ -56,10 +56,11 @@
 }
 
 .advanced-filter-select-product-name {
-  width: 370px !important;
+  width: 380px !important;
   text-overflow: ellipsis;
 }
 
-.advanced-filter-multi-select-options {
+.advanced-filter-multi-select-options,
+.advanced-filter-combination-search-input {
   width: 330px !important;
 }

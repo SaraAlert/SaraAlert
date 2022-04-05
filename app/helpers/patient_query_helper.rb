@@ -2,6 +2,8 @@
 
 # Helper methods for filtering through patients
 module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
+  include AdvancedFilterOptions
+
   def patients_table_data(params, current_user)
     # Require workflow and tab params
     workflow = params.require(:query).require(:workflow).to_sym
@@ -36,8 +38,8 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     # Only allow permitted params
     query = unsanitized_query.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries,
                                      :page, :order, :direction, :tz_offset, :exclude_patient_id,
-                                     filter: [:value, :numberOption, :dateOption, :relativeOption,
-                                              :additionalFilterOption, { filterOption: {}, value: {} },
+                                     filter: [:name, :value, :numberOption, :dateOption, :relativeOption,
+                                              :additionalFilterOption, { value: {} },
                                               { value: %i[label value] }])
 
     # Validate workflow
@@ -75,17 +77,16 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       raise InvalidQueryError.new(:tz_offset, tz_offset) unless tz_offset.to_i.to_s == tz_offset.to_s
 
       query[:filter] = unsanitized_query[:filter].collect do |filter|
-        permitted_filter_params = filter.permit(:value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption,
-                                                filterOption: {}, value: filter[:value].is_a?(Array) ? [] : {})
+        permitted_filter_params = filter.permit(:name, :type, :value, :numberOption, :dateOption, :relativeOption, :additionalFilterOption, :has_timestamp,
+                                                value: filter[:value].is_a?(Array) ? [] : {})
         {
-          filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, :hasTimestamp, :tooltip,
-                                                             options: [], fields: [:name, :title, :type, { options: [] }]),
-          value: filter[:value].nil? && filter[:filterOption][:type].eql?('multi') ? [] : filter.permit(:value,
-                                                                                                        value: [])[:value] || filter.require(:value) || false,
+          name: permitted_filter_params[:name],
+          value: filter[:value].nil? && filter[:type].eql?('multi') ? [] : filter.permit(:value, value: [])[:value] || filter.require(:value) || false,
           numberOption: permitted_filter_params[:numberOption],
           dateOption: permitted_filter_params[:dateOption],
           relativeOption: permitted_filter_params[:relativeOption],
-          additionalFilterOption: permitted_filter_params[:additionalFilterOption]
+          additionalFilterOption: permitted_filter_params[:additionalFilterOption],
+          has_timestamp: permitted_filter_params[:has_timestamp]
         }
       end
     end
@@ -260,7 +261,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     tz_diff = tz_offset.to_i.minutes + DateTime.now.utc_offset
 
     filters.each do |filter|
-      case filter[:filterOption]['name']
+      case filter[:name]
       when 'address'
         patients = advanced_filter_address(patients, filter)
       when 'age'
@@ -331,7 +332,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
           # Get patients where contact type is any of the contact types specified in the filter
           patients = patients.where(contact_type: filter_contact_types)
         end
-      when 'continous-exposure'
+      when 'continuous-exposure'
         patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
       when 'email'
         patients = if filter[:value].blank?
@@ -693,7 +694,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         # EXAMPLE: if today is 3/17/21 and you search for less than 14 days in the past
         # Date fields 3/4/21 - 3/17/21 will be returned for a field with no timestamp (does not include exactly 14 days ago)
         # Date/time fields on 3/4/21 after the current time throuhgh 3/17/21 before the current time will be returned for a field with a timestamp
-        timespan -= 1.day if filter[:filterOption][:hasTimestamp] == false
+        timespan -= 1.day if filter[:has_timestamp] == false
         timeframe = { after: timespan.ago - tz_diff, before: local_current_time } if filter[:value][:when] == 'past'
         timeframe = { after: local_current_time, before: timespan.from_now - tz_diff } if filter[:value][:when] == 'future'
       when 'greater-than'
@@ -702,7 +703,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         # EXAMPLE: if today is 3/17/21 and you search for more than 14 days in the past
         # Date fields before 3/3/21 will be returned for a field with no timestamp (does not include exactly 14 days ago)
         # Date/time fields 3/3/21 before the current time will be returned for a field with a timestamp
-        timespan += 1.day if filter[:filterOption][:hasTimestamp] == false
+        timespan += 1.day if filter[:has_timestamp] == false
         timeframe = { before: timespan.ago - tz_diff } if filter[:value][:when] == 'past'
         timeframe = { after: timespan.from_now - tz_diff } if filter[:value][:when] == 'future'
       end
