@@ -6,20 +6,17 @@ which is the key and some optional values:
 - `phone`, `webpage`, `email` - jurisdiction contact information that will only be shown if populated
 - `message` - custom jurisdiction message
 - `send_digest` - sends assessment reminder to patients if `true`
-- `send_close` - sends closed notification to patients who are reporters if `true`,
-- `symptoms` - defines the symptoms that the jurisdiction which they belong to would like to track, said jurisdiction will track the symptoms that it specifies **_IN ADDITION TO_** the symptoms specified by all of it's parent jurisdictions
-- `children` - the children of a jurisdiction are nested jurisdictions that may have their own properties, which are the same as listed here
+- `send_close` - sends closed notification to patients who are reporters if `true`
+- `symptoms` - defines the symptoms that the jurisdiction tracks. A jurisdiction tracks the symptoms that it specifies **_IN ADDITION TO_** the symptoms specified by all of its parent jurisdictions (i.e., ancestors)
+- `children` - the children of a jurisdiction are nested jurisdictions that may have their own properties which override their parents' properties if populated, which are the same as listed here
 
 ## Symptoms
 
-A `symptom` will be identified by it's name, which is the key in the symptom object, a `value`, `type`, `required`, `group` and `threshold_operator`.
+A `symptom` will be identified by its name, which is the key in the symptom object, a `value`, `type`, `required`, `group` and `threshold_operator`.
 
 ### value
 
-The `value` of a symptom defines the threshold of the symptom, this is the value that is considered as
-symptomatic for the symptom which it is defining, only symptoms marked as 'required' will be considered when
-determining whether or not a patient is symptomatic. For float and integer symptoms, a reported symptom
-will be compared using the specified `threshold_operator` to the specified `value` and will be considered as symptomatic. if the result of the comparison is true.
+The value of a symptom defines the threshold value that is considered symptomatic for the symptom it defines; only symptoms marked as 'required' are considered when determining whether or not a patient is symptomatic. For float and integer symptoms, a reported symptom will be compared using the specified threshold_operator to the specified value and will be considered as symptomatic if the result of the comparison is true. For boolean symptoms, a reported symptom will be considered as symptomatic if the threshold and reported values are both true.
 
 ### threshold_operator
 
@@ -37,7 +34,7 @@ Note: Sub-jurisdictinos can add symptoms to groups, but should not be specifying
 
 ### required
 
-The `required` field can either take the value `true` of `false`. Only symptoms with `required` set to `true` will be taken into consideration during symptomatic assessment calculation. Additionally, symptoms that have the `required` attribute set to `false` will be omitted from the voice and SMS assessment prompts.
+The `required` field can either take the value `true` or `false`. Only symptoms with `required` set to `true` will be taken into consideration during symptomatic assessment calculation. Additionally, symptoms that have the `required` attribute set to `false` will be omitted from the voice and SMS assessment prompts.
 
 ## Translations and Notes
 
@@ -46,8 +43,8 @@ Each symptom supports the inclusion of a more descriptive sentence about what th
 ## Example:
 
 In the configuration below, the USA jurisdiction will have 3 symptoms, these symptoms will apply to the
-USA jurisdiction as well as ALL of it's nested children, meaning that all jurisdictions all the way down
-to the county-level jurisdictions will inherit these symptoms. State 1 has specified it's own symptoms which
+USA jurisdiction as well as ALL of its nested children, meaning that all jurisdictions all the way down
+to the county-level jurisdictions will inherit these symptoms. State 1 has specified its own symptoms which
 will be added to the symptoms that it inherited from its parent jurisdiction, these symptoms will be applied
 to State 1, and the children of State 1 (County 1 and County 2). In other words, a monitoree in State 1,
 County 1 or County 2 will be asked about 5 total symptoms as part of their assessments, whereas a monitoree in State 2 or County 3 would only be asked about 3 symptoms. Assessments which have 2 or more of the required group symptoms (Fever) will be considered symptomatic.
