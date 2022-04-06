@@ -41,13 +41,12 @@ class PatientMailer < ApplicationMailer
     contents = if custom_msg.present?
                  "#{patient&.initials_age('-')},\n#{custom_msg}" +
                    (ADMIN_OPTIONS['privacy_policy_url'].present? ?
-                     I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url']) : '')
+                     '\n' + I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url']) : '')
                else
                  I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: patient&.initials_age('-')) +
                    (ADMIN_OPTIONS['privacy_policy_url'].present? ?
                      ' ' + I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url']) : '')
                end
-    puts contents
     threshold_hash = patient.jurisdiction[:current_threshold_condition_hash]
     message = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash }
     success = TwilioSender.send_sms(patient, [message])
