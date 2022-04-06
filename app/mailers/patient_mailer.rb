@@ -41,7 +41,7 @@ class PatientMailer < ApplicationMailer
     contents = if custom_msg.present?
                  "#{patient&.initials_age('-')},\n#{custom_msg}" +
                    (ADMIN_OPTIONS['privacy_policy_url'].present? ?
-                     '\n' + I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url']) : '')
+                     "\n" + I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url']) : '')
                else
                  I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: patient&.initials_age('-')) +
                    (ADMIN_OPTIONS['privacy_policy_url'].present? ?
