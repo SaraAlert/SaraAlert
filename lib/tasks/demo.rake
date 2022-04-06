@@ -34,9 +34,34 @@ namespace :demo do
     system "mysql --user=#{username} #{database} < #{ENV['FILE']}"
   end
 
-  # Duplicate existing monitoree data
+  desc 'Populate purged patients'
+  task populate_purged_patients: :environment do
+    raise 'This task is only for use in a development environment' unless Rails.env.development? || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
+
+    num_patients = 1_000_000
+    batch_size = 100
+    num_batches = num_patients / batch_size
+
+    user_ids = User.where(role: [Roles::SUPER_USER, Roles::PUBLIC_HEALTH_ENROLLER, Roles::ENROLLER]).pluck(:id)
+    jurisdiction_ids = Jurisdiction.all.pluck(:id)
+
+    printf('Generating patient batches...')
+    num_batches.times do |n|
+      printf("\rGenerating patient batch #{n + 1} of #{num_batches}...")
+      data = {
+        num_unique_patients: 1,
+        num_duplicate_patients: batch_size,
+        jurisdictions: Jurisdiction.all,
+        enroller_users: User.where(role: %w[enroller public_health_enroller]).pluck(:id, :email).to_h
+      }
+      patients = demo_populate_purged_patients(data)
+      Patient.import! patients
+    end
+  end
+
+  # Duplicate existing patient data
   # Note: comment out `around_save :inform_responder, if: :responder_id_changed?` in app/models/patient.rb to speed up process
-  desc 'Generate N many more monitorees based on existing data'
+  desc 'Generate N many more patients based on existing data'
   task create_bulk_data: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env.development? || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
@@ -50,7 +75,7 @@ namespace :demo do
 
     ::ActiveRecord::Base.clear_all_connections!
     num_forks.times do |fork_num|
-      patients = Patient.where('patients.responder_id = patients.id AND patients.id % ? = ?', num_forks, fork_num)
+      patients = Patient.where('patients.responder_id = patients.id AND patients.id % ? = ?', num_forks, fork_num).where(purged: false)
       reader, writer = IO.pipe
 
       pids << fork do
@@ -234,7 +259,7 @@ namespace :demo do
     puts ''
   end
 
-  desc 'Add synthetic patient/monitoree data to the database for an initial time period in days'
+  desc 'Add synthetic patient data to the database for an initial time period in days'
   task populate: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env.development? || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
@@ -294,7 +319,7 @@ namespace :demo do
     end
   end
 
-  desc 'Add synthetic patient/monitoree data to the database for a single day (today)'
+  desc 'Add synthetic patient data to the database for a single day (today)'
   task update: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env.development? || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
@@ -310,7 +335,7 @@ namespace :demo do
         ]
       end.to_h,
       known_case_ids: jurisdictions.map do |jur|
-        [jur[:id], jur.immediate_patients.where.not(contact_of_known_case_id: nil).distinct.pluck(:contact_of_known_case_id).sort]
+        [jur[:id], jur.immediate_patients.where(purged: false).where.not(contact_of_known_case_id: nil).distinct.pluck(:contact_of_known_case_id).sort]
       end.to_h
     }
     data = initialize_static_data.merge(variable_data)
@@ -367,10 +392,10 @@ namespace :demo do
   def demo_populate_patients(data)
     include PatientHelper
 
-    printf('  Generating monitorees...')
+    printf('  Generating patients...')
     patients = []
     data[:num_patients_today].times do |i|
-      printf("\r  Generating monitoree #{i + 1} of #{data[:num_patients_today]}...") unless ENV['APP_IN_CI']
+      printf("\r  Generating patient #{i + 1} of #{data[:num_patients_today]}...") unless ENV['APP_IN_CI']
       patient = Patient.new
 
       demo_populate_patient_enrollment_details(data, patient)
@@ -379,9 +404,13 @@ namespace :demo do
       patients << patient
     end
 
+    data[:num_unique_patients] = (Patient.where(purged: false).size * 0.3).to_i
+    purged_patients = demo_populate_purged_patients(data)
+    patients.concat(purged_patients)
+
     puts "\n"
 
-    puts '  - Importing monitorees...'
+    puts '  - Importing patients...'
     Patient.import! patients
 
     demo_populate_patients_associated_details(data)
@@ -626,7 +655,7 @@ namespace :demo do
 
   def demo_populate_patients_associated_details(data)
     histories = []
-    new_patients = Patient.where('created_at >= ?', data[:beginning_of_day])
+    new_patients = Patient.where(purged: false).where('created_at >= ?', data[:beginning_of_day])
     new_patients.update_all('responder_id = id')
 
     # Create household members (10-20% of patients are managed by a HoH)
@@ -642,7 +671,7 @@ namespace :demo do
     # Create first positive lab for patients who are asymptomatic
     puts '  - Creating first positive labs...'
     laboratories = []
-    asymptomatic_cases = new_patients.where(isolation: true, symptom_onset: nil)
+    asymptomatic_cases = new_patients.where(purged: false, isolation: true, symptom_onset: nil)
     user_emails = User.where(id: asymptomatic_cases.distinct.pluck(:creator_id)).pluck(:id, :email).to_h
     asymptomatic_cases.each do |patient|
       laboratories << Laboratory.new(
@@ -668,7 +697,7 @@ namespace :demo do
     # Create common exposure cohorts
     puts '  - Creating common exposure cohorts...'
     cohorts = []
-    cohort_patients = new_patients.where(member_of_a_common_exposure_cohort: true)
+    cohort_patients = new_patients.where(purged: false, member_of_a_common_exposure_cohort: true)
     cohort_patients = cohort_patients.where(isolation: false).limit(new_patients.count * rand(30..40) / 100).order('RAND()').to_a +
                       cohort_patients.where(isolation: true).limit(new_patients.count * rand(5..10) / 100).order('RAND()').to_a
     cohort_patients.each do |patient|
@@ -687,7 +716,7 @@ namespace :demo do
     CommonExposureCohort.import! cohorts
 
     new_patients.each_with_index do |patient, i|
-      printf("\r  Generating histories for monitoree #{i + 1} of #{new_patients.size}...") unless ENV['APP_IN_CI']
+      printf("\r  Generating histories for patient #{i + 1} of #{new_patients.size}...") unless ENV['APP_IN_CI']
       # enrollment
       histories << History.new(
         patient_id: patient[:id],
@@ -755,6 +784,55 @@ namespace :demo do
     end
 
     History.import! histories
+  end
+
+  def demo_populate_purged_patients(data)
+    patients = []
+    (data[:num_unique_patients] || 1).times do |n|
+      isolation = rand < 0.4
+      sex = Faker::Gender.binary_type
+      patients.concat(Array.new(data[:num_duplicate_patients] || 1) {
+        Patient.new(
+          responder_id: 1,
+          creator_id: data[:enroller_users].keys.sample,
+          jurisdiction_id: data[:jurisdictions].sample.id,
+          monitoring: false,
+          monitoring_reason: ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_reason].sample,
+          exposure_risk_assessment: ValidationHelper::VALID_PATIENT_ENUMS[:exposure_risk_assessment].sample,
+          monitoring_plan: ValidationHelper::VALID_PATIENT_ENUMS[:monitoring_plan].sample,
+          isolation: isolation,
+          symptom_onset: (isolation || rand < 0.4) ? Date.today - rand(7).days : nil,
+          public_health_action: (isolation || rand < 0.6) ? nil : ValidationHelper::VALID_PATIENT_ENUMS[:public_health_action].sample,
+          age: rand(0..120),
+          sex: rand < 0.9 ? sex : 'Unknown',
+          address_county: Faker::Address.community,
+          contact_of_known_case: rand < 0.5,
+          member_of_a_common_exposure_cohort: rand < 0.45,
+          travel_to_affected_country_or_area: rand < 0.1,
+          laboratory_personnel: rand < 0.25,
+          was_in_health_care_facility_with_known_cases: rand < 0.15,
+          healthcare_personnel: rand < 0.2,
+          crew_on_passenger_or_cargo_flight: rand < 0.25,
+          white: rand < 0.3,
+          black_or_african_american: rand < 0.25,
+          american_indian_or_alaska_native: rand < 0.1,
+          asian: rand < 0.2,
+          native_hawaiian_or_other_pacific_islander: rand < 0.05,
+          race_other: rand < 0.3,
+          race_unknown: rand < 0.2,
+          race_refused_to_answer: rand < 0.1,
+          ethnicity: rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino',
+          purged: true,
+          continuous_exposure: !isolation && rand < 0.2,
+          time_zone: ['America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles', 'Pacific/Honolulu'].sample,
+          case_status: isolation ? %w[Confirmed Probable].sample : ['Suspect', 'Unknown', 'Not a Case'].sample,
+          enrolled_isolation: rand < 0.3,
+          exposure_to_isolation_at: rand < 0.3 ? Date.today - rand(7).days : nil,
+          isolation_to_exposure_at: rand < 0.15 ? Date.today - rand(7).days : nil
+        )
+      })
+    end
+    patients
   end
 
   def demo_populate_assessments(data)
@@ -1006,7 +1084,7 @@ namespace :demo do
     patient_and_jur_ids = data[:existing_patients].limit(data[:existing_patients].count * rand(15..25) / 100).order('RAND()').pluck(:id, :jurisdiction_id)
     enrolled_close_contacts_ids = data[:existing_patients].where.not(id: patient_and_jur_ids.map(&:first)).where(isolation: false)
                                                           .limit(data[:existing_patients].count * rand(5..15) / 100).order('RAND()').pluck(:id)
-    enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids)
+    enrolled_close_contacts = Patient.where(purged: false, id: enrolled_close_contacts_ids)
                                      .pluck(:id, :first_name, :last_name, :primary_telephone, :email, :assigned_user, :last_date_of_exposure)
     patient_and_jur_ids.each_with_index do |(patient_id, jur_id), index|
       printf("\r  Generating close contact #{index + 1} of #{patient_and_jur_ids.length}...") unless ENV['APP_IN_CI']
