@@ -1,10 +1,11 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card, Button, Form } from 'react-bootstrap';
+import moment from 'moment';
 import _ from 'lodash';
+import ReactTooltip from 'react-tooltip';
 import confirmDialog from '../../../util/ConfirmDialog';
 import DateInput from '../../../util/DateInput';
-import moment from 'moment';
 import InfoTooltip from '../../../util/InfoTooltip';
 
 class SymptomsAssessment extends React.Component {
@@ -31,8 +32,15 @@ class SymptomsAssessment extends React.Component {
     let report = this.state.reportState;
     let field_id = event.target.id.split('_idpre')[0];
     Object.values(report.symptoms).find(symp => symp.name === field_id).value = value;
+    this.setState({ reportState: report }, () => {
+      this.updateBoolSymptomCount();
+    });
+  };
+
+  handleDateChange = newDate => {
+    let report = this.state.reportState;
+    report.reported_at = moment.utc(newDate).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z');
     this.setState({ reportState: report });
-    this.updateBoolSymptomCount();
   };
 
   handleBoolChange = event => {
@@ -48,11 +56,8 @@ class SymptomsAssessment extends React.Component {
     //        (2.b) the value can be parsed as an integer
     //        (2.c) the user is prevented from inputting '.' characters (since parseInt() would allow that as an input)
     //        (3) if the value is not a valid number, check if it is an acceptable character input
-    if (
-      (value || value === '') &&
-      ((!isNaN(event.target.value) && !isNaN(parseInt(event.target.value)) && !event?.target?.value.includes('.')) || validInputs.includes(value))
-    ) {
-      this.handleChange(event, event.target.value);
+    if (!_.isNil(value) && ((!isNaN(value) && !isNaN(parseInt(value)) && !String(value).includes('.')) || validInputs.includes(value))) {
+      this.handleChange(event, value);
     }
   };
 
@@ -63,8 +68,8 @@ class SymptomsAssessment extends React.Component {
     //        (2.a) the value is a number & the user is prevented from inputting non-numerical characters after inputting a number (ex. '4.3test')
     //        (2.b) the value can be parsed as an float
     //        (3) if the value is not a valid number, check if it is an acceptable character input
-    if ((value || value === '') && ((!isNaN(event.target.value) && !isNaN(parseFloat(event.target.value))) || validInputs.includes(value))) {
-      this.handleChange(event, event.target.value);
+    if (!_.isNil(value) && ((!isNaN(value) && !isNaN(parseFloat(value))) || validInputs.includes(value))) {
+      this.handleChange(event, value);
     }
   };
 
@@ -92,7 +97,10 @@ class SymptomsAssessment extends React.Component {
   };
 
   hasChanges = () => {
-    return !_.isEqual(this.state.reportState.symptoms, this.props.symptoms);
+    return (
+      !_.isEqual(this.state.reportState.symptoms, this.props.symptoms) ||
+      moment(this.props.assessment?.reported_at).format('YYYY-MM-DD HH:mm Z') !== this.state.reportState.reported_at
+    );
   };
 
   fieldIsEmptyOrNew = object => {
@@ -223,12 +231,6 @@ class SymptomsAssessment extends React.Component {
     );
   };
 
-  handleDateChange = newDate => {
-    let report = this.state.reportState;
-    report.reported_at = moment.utc(newDate).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z');
-    this.setState({ reportState: report });
-  };
-
   intOrFloatSymptom = symp => {
     const key = `key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
     const id = `${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`;
@@ -236,13 +238,13 @@ class SymptomsAssessment extends React.Component {
     const translated_notes = this.props.translations[this.props.lang]['symptoms'][symp.name]?.notes;
     const dir = this.props.translations[this.props.lang]['dir'] || 'ltr';
     return (
-      <Form.Row className="pt-3" key={key}>
-        <Form.Label className="input-label" key={key + '_label'} htmlFor={id}>
+      <React.Fragment key={key}>
+        <Form.Label className="input-label pt-2" key={key + '_label'} htmlFor={id}>
           <b dir={translated_name ? dir : 'ltr'}>{translated_name || symp.name}</b> <span dir={translated_notes ? dir : 'ltr'}>{translated_notes}</span>
         </Form.Label>
         {symp.type === 'IntegerSymptom' && this.integerSymptom(symp)}
         {symp.type === 'FloatSymptom' && this.floatSymptom(symp)}
-      </Form.Row>
+      </React.Fragment>
     );
   };
 
@@ -265,7 +267,7 @@ class SymptomsAssessment extends React.Component {
         <Card.Body>
           {this.props.current_user && (
             // Only allow users, not monitorees, to edit the report date
-            <Form.Group>
+            <Form.Group controlId="reported_at">
               <Form.Row>
                 <Form.Label className="input-label mr-2 pt-1">Symptom Report for Date:</Form.Label>
                 <DateInput
@@ -312,17 +314,30 @@ class SymptomsAssessment extends React.Component {
                 .map(symp => this.intOrFloatSymptom(symp))}
             </Form.Group>
           </Form.Row>
-          <Form.Row className="pt-4">
-            <Button variant="primary" block size="lg" className="btn-block btn-square" disabled={this.state.loading} onClick={this.navigate}>
-              {this.state.loading && (
-                <React.Fragment>
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-                </React.Fragment>
-              )}
-              {/* The following <span> tags cannot be removed. They prevent Google Translate from confusing the react node-tree when translated */}
-              <span>{this.props.translations[this.props.lang]['html']['weblink']['submit']}</span>
-            </Button>
-          </Form.Row>
+          <span data-for="disabled-assessment-submit" data-tip="">
+            <Form.Row className="pt-3">
+              <Button
+                variant="primary"
+                block
+                size="lg"
+                className="btn-block btn-square"
+                disabled={this.state.loading || !this.hasChanges()}
+                onClick={this.navigate}>
+                {this.state.loading && (
+                  <React.Fragment>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                  </React.Fragment>
+                )}
+                {/* The following <span> tags cannot be removed. They prevent Google Translate from confusing the react node-tree when translated */}
+                <span>{this.props.translations[this.props.lang]['html']['weblink']['submit']}</span>
+              </Button>
+            </Form.Row>
+          </span>
+          {!this.hasChanges() && (
+            <ReactTooltip id="disabled-assessment-submit" type="dark" effect="solid" place="top">
+              <span>No updates to submit</span>
+            </ReactTooltip>
+          )}
         </Card.Body>
       </Card>
     );
