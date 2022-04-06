@@ -35,40 +35,37 @@ Run the following commands from the project's root directory to pull in both fro
 
 #### Database
 
-Sara Alert targets compatibility with MySQL 5.7.
+Sara Alert targets compatibility with MySQL 8.0.
 
 **macOS Installation Instructions:**
 
-**Migrating from a newer verison down to MySQL 5.7:**
-Before installing MySQL, if newer versions (i.e. version 8 of MySQL) have previously been installed and initialized in the newer format, these new-format databases will be incompatible with the older 5.7 version. A simple way to install 5.7 after newer versions is to delete the MySQL data directory and let the 5.7 version recreate it in the correct format. Take care to **back up** existing databases before executing the following command, as it will delete them:
+**Migrating from an older version up to MySQL 8.0:**
+Before installing MySQL, if older versions (i.e. version 5.7 of MySQL) have previously been installed, make sure to stop and/or uninstall them.
 
 ```sh
-brew services stop mysql # stop current mysql version
-rm -rf /usr/local/var/mysql # remove the macOS mysql data directory and any existing databases
-brew uninstall mysql # remove current mysql version
+brew services stop mysql@5.7 # stop old mysql version
+brew uninstall mysql@5.7 # remove old mysql version
 ```
 
-If Sara Alert had already been installed with a newer version of MySQL, navigate to the project directory and uninstall the `mysql2` gem. It needs to build the correct native extensions for MySQL 5.7.
+If Sara Alert had already been installed with an older version of MySQL, navigate to the project directory and uninstall the `mysql2` gem. It needs to build the correct native extensions for MySQL 8.0.
 
 ```sh
 gem uninstall mysql2 # uninstall mysql2
 ```
 
-Newer versions of MySQL also start with incompatible options for version 5.7, so if you had a newer version installed edit `/usr/local/etc/my.cnf` to remove the line `'mysqlx-bind-address=127.0.0.1'`.
-
 **Installation:**
 
-Now, install `mysql@5.7` using [`homebrew`](https://brew.sh):
+Now, install `mysql` using [`homebrew`](https://brew.sh):
 
 ```sh
-brew install mysql@5.7
-brew link mysql@5.7 --force
-brew services start mysql@5.7
+brew install mysql
+brew link mysql --force
+brew services start mysql
 ```
 
 ```sh
 # Please update this command with the appropriate <MINOR_VERSION> installed from homebrew.
-bundle config --local build.mysql2 "--with-mysql-config=/usr/local/Cellar/mysql@5.7/5.7.<MINOR_VERSION>/bin/mysql_config --with-ldflags=-L/usr/local/opt/openssl/lib --with-cppflags=-I/usr/local/opt/openssl/include"
+bundle config --local build.mysql2 "--with-mysql-config=/usr/local/Cellar/mysql/8.0.<MINOR_VERSION>/bin/mysql_config --with-ldflags=-L/usr/local/opt/openssl/lib --with-cppflags=-I/usr/local/opt/openssl/include"
 bundle install
 ```
 
