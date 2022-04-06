@@ -1,11 +1,11 @@
-import { mockSymptoms1, mockSymptoms2 } from './mockSymptoms';
+import { mockSymptoms1 } from './mockSymptoms';
 
 const mockAssessment1 = {
   chills: 'No',
   congestion_or_runny_nose: 'No',
   cough: 'No',
-  created_at: '2020-12-23T15:12:53.000Z',
-  reported_at: '2020-12-20T14:10:53.000Z',
+  created_at: '2020-12-23T15:12:00.000Z',
+  reported_at: '2020-12-20T14:10:00.000Z',
   diarrhea: 'No',
   difficulty_breathing: 'Yes',
   fatigue: 'Yes',
@@ -52,8 +52,8 @@ const mockAssessment2 = {
   chills: 'No',
   congestion_or_runny_nose: 'No',
   cough: 'No',
-  created_at: '2020-12-22T08:57:53.000Z',
-  reported_at: '2020-12-20T14:10:53.000Z',
+  created_at: '2020-12-22T08:57:00.000Z',
+  reported_at: '2020-12-20T14:10:00.000Z',
   diarrhea: 'No',
   difficulty_breathing: 'No',
   fatigue: 'No',
@@ -90,7 +90,7 @@ const mockAssessment2 = {
   shortness_of_breath: 'No',
   sore_throat: 'No',
   symptomatic: 'No',
-  symptoms: mockSymptoms2,
+  symptoms: mockSymptoms1,
   threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df',
   used_a_fever_reducer: 'No',
   who_reported: 'Monitoree',
