@@ -17,14 +17,21 @@
     This temporary password is only valid for 72 hours, so please log in to the Sara Alert application to change your password as soon as possible. If copying and pasting the temporary password results in an invalid login attempt, please manually type it instead.
   </p>
   <p style="margin-bottom: none">
-    Please follow your jurisdiction's guidance on using Sara Alert and contact them with any questions. Here is some information to help you get started:
+    Please follow your jurisdiction's guidance on using Sara Alert and contact them with any questions.
   </p>
-  <p style="margin-bottom: none">
-    <a href="https://saraalert.org/public-health/guides/">Sara Alert Website Resources</a> – Find user guides, training videos and more. (Note: This is not where you log into the Sara Alert Application. That link is below.)
-  </p>
-  <p style="margin-bottom: none">
-    <a href="https://virtualcommunities.naccho.org/saraalertforum/home">Sara Alert User Forum</a> – Click to join this online community, hosted by NACCHO, to find project- and user-generated resources, participate in discussions, and connect with peer users.
-  </p>
+  <% if ADMIN_OPTIONS['help_links']['user_guides'].present? || ADMIN_OPTIONS['help_links']['user_forum'].present? %>
+    <p>Here is some information to help you get started:</p>
+    <% if ADMIN_OPTIONS['help_links']['user_guides'].present? %>
+      <p style="margin-bottom: none">
+        <a href="<%= ADMIN_OPTIONS['help_links']['user_guides'] %>">Sara Alert Website Resources</a> – Find user guides, training videos and more. (Note: This is not where you log into the Sara Alert Application. That link is below.)
+      </p>
+    <% end %>
+    <% if ADMIN_OPTIONS['help_links']['user_forum'].present? %>
+      <p style="margin-bottom: none">
+        <a href="<%= ADMIN_OPTIONS['help_links']['user_forum'] %>">Sara Alert User Forum</a> – Click to join this online community to find project- and user-generated resources, participate in discussions, and connect with peer users.
+      </p>
+    <% end %>
+  <% end %>
 
   <%= render partial: 'main_mailer/responsive_button', locals: { link: root_url, text: 'Sara Alert' } %>
 <% end %>

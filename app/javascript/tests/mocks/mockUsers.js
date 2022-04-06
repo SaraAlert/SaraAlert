@@ -12,6 +12,32 @@ const mockUser1 = {
   last_sign_in_with_authy: null,
   password_changed_at: '2020-07-15T15:15:15.000Z',
   updated_at: '2020-07-15T15:15:15.000Z',
+  role: 'fake_role',
+  can_see_enroller_dashboard_tab: false,
+  can_see_analytics_tab: false,
+  is_usa_admin: false,
 };
 
-export { mockUser1 };
+const mockUser2 = {
+  api_enabled: true,
+  authy_enabled: false,
+  authy_enforced: false,
+  authy_id: null,
+  created_at: '2020-07-15T15:15:15.000Z',
+  email: 'mock_user_1@example.com',
+  force_password_change: false,
+  id: 16,
+  jurisdiction_id: 2,
+  jurisdiction_path: ['USA', 'State 1'],
+  last_sign_in_with_authy: null,
+  password_changed_at: '2020-07-15T15:15:15.000Z',
+  updated_at: '2020-07-15T15:15:15.000Z',
+  role: 'fake_role',
+  can_see_enroller_dashboard_tab: true,
+  can_see_analytics_tab: true,
+  can_see_monitoring_dashboards_tab: true,
+  can_see_admin_panel_tab: true,
+  is_usa_admin: true,
+};
+
+export { mockUser1, mockUser2 };

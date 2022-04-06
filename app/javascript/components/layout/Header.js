@@ -52,7 +52,7 @@ class Header extends React.Component {
           bg={this.props.show_demo_warning_background ? 'danger' : 'primary'}
           variant="dark"
           expand="lg"
-          className={this.props.banner_message ? '' : 'mb-3'}>
+          className={this.props.banner_message ? 'primary-nav' : 'primary-nav mb-3'}>
           <Navbar.Brand className="header-brand-text" href={`${window.BASE_PATH}/`}>
             Sara Alert<small className="nav-version ml-1">{this.props.version}</small>
           </Navbar.Brand>
@@ -61,28 +61,28 @@ class Header extends React.Component {
               <Nav className="mr-auto" activeKey={this.state.activeKey}>
                 {this.props.current_user?.can_see_enroller_dashboard_tab && (
                   <Nav.Link
-                    className={`${this.state.activeKey === '/patients' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3`}
+                    className={`${this.state.activeKey === '/patients' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3 enroller-tab`}
                     href={`${window.BASE_PATH}/patients`}>
                     <i className="fas fa-table fa-fw mr-2"></i>Enroller Dashboard
                   </Nav.Link>
                 )}
                 {this.props.current_user?.can_see_monitoring_dashboards_tab && (
                   <Nav.Link
-                    className={`${this.state.activeKey === '/public_health' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3`}
+                    className={`${this.state.activeKey === '/public_health' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3 monitoring-tab`}
                     href={`${window.BASE_PATH}/public_health`}>
                     <i className="fas fa-table fa-fw mr-2"></i>Monitoring Dashboards
                   </Nav.Link>
                 )}
                 {this.props.current_user?.can_see_admin_panel_tab && (
                   <Nav.Link
-                    className={`${this.state.activeKey === '/admin' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3`}
+                    className={`${this.state.activeKey === '/admin' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3 admin-panel-tab`}
                     href={`${window.BASE_PATH}/admin`}>
                     <i className="fas fa-user-cog fa-fw mr-2"></i>Admin Panel
                   </Nav.Link>
                 )}
                 {this.props.current_user?.can_see_analytics_tab && (
                   <Nav.Link
-                    className={`${this.state.activeKey === '/analytics' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3`}
+                    className={`${this.state.activeKey === '/analytics' ? 'nav-link-active' : 'nav-link-inactive'} py-0 ml-3 analytics-tab`}
                     href={`${window.BASE_PATH}/analytics`}>
                     <i className="fas fa-chart-pie fa-fw mr-2"></i>Analytics
                   </Nav.Link>
@@ -94,37 +94,47 @@ class Header extends React.Component {
                   {this.props.current_user?.email} ({this.props.current_user?.role?.split('_')?.map(_.capitalize)?.join(' ')})
                 </Navbar.Text>
                 <a className="w-border-right"></a>
-                <div className="dropdown">
-                  <Nav.Link
-                    className="text-white py-0"
-                    id="helpMenuButton"
-                    href="#"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    aria-label="Help">
-                    <i className="fas fa-question-circle fa-fw"></i>
-                  </Nav.Link>
-                  <div className="dropdown-menu dropdown-menu-right" aria-labelledby="helpMenuButton">
-                    <a className="dropdown-item" href="https://saraalert.org/public-health/guides/" target="_blank" rel="noreferrer">
-                      <i className="fas fa-book fa-fw"></i> User Guides
-                    </a>
-                    <a className="dropdown-item" href="https://virtualcommunities.naccho.org/saraalertforum/home" target="_blank" rel="noreferrer">
-                      <i className="fas fa-comments fa-fw"></i> User Forum
-                    </a>
-                    <a className="dropdown-item" href="https://saraalert.org/contact-us/" target="_blank" rel="noreferrer">
-                      <i className="fas fa-envelope-open-text fa-fw"></i> Contact Us
-                    </a>
-                  </div>
-                </div>
-                <a className="w-border-right"></a>
+                {Object.values(this.props.help_links).some(x => x) && (
+                  <React.Fragment>
+                    <div className="dropdown">
+                      <Nav.Link
+                        className="text-white py-0"
+                        id="helpMenuButton"
+                        href="#"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-label="Help">
+                        <i className="fas fa-question-circle fa-fw"></i>
+                      </Nav.Link>
+                      <div className="dropdown-menu dropdown-menu-right" aria-labelledby="helpMenuButton">
+                        {!_.isNil(this.props.help_links.user_guides) && (
+                          <a className="dropdown-item" href={this.props.help_links.user_guides} target="_blank" rel="noreferrer">
+                            <i className="fas fa-book fa-fw"></i> User Guides
+                          </a>
+                        )}
+                        {!_.isNil(this.props.help_links.user_forum) && (
+                          <a className="dropdown-item" href={this.props.help_links.user_forum} target="_blank" rel="noreferrer">
+                            <i className="fas fa-comments fa-fw"></i> User Forum
+                          </a>
+                        )}
+                        {!_.isNil(this.props.help_links.contact_us) && (
+                          <a className="dropdown-item" href={this.props.help_links.contact_us} target="_blank" rel="noreferrer">
+                            <i className="fas fa-envelope-open-text fa-fw"></i> Contact Us
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                    <a className="w-border-right"></a>
+                  </React.Fragment>
+                )}
                 {this.props.current_user?.is_usa_admin && (
                   <React.Fragment>
-                    <Nav.Link className="text-white py-0" href={`${window.BASE_PATH}/oauth/applications`}>
+                    <Nav.Link className="text-white py-0 api-tab" href={`${window.BASE_PATH}/oauth/applications`}>
                       <i className="fas fa-share-alt fa-fw mr-2"></i>API
                     </Nav.Link>
                     <a className="w-border-right"></a>
-                    <Nav.Link className="text-white py-0" href={`${window.BASE_PATH}/sidekiq`}>
+                    <Nav.Link className="text-white py-0 jobs-tab" href={`${window.BASE_PATH}/sidekiq`}>
                       <i className="fas fa-hourglass fa-fw mr-2"></i>Jobs
                     </Nav.Link>
                     <a className="w-border-right"></a>
@@ -138,7 +148,7 @@ class Header extends React.Component {
           )}
         </Navbar>
         {this.props.banner_message && (
-          <Navbar bg="warning" variant="dark" expand="lg" className="mb-3">
+          <Navbar bg="warning" variant="dark" expand="lg" className="banner-message mb-3">
             {this.props.banner_message}
           </Navbar>
         )}
@@ -153,6 +163,7 @@ Header.propTypes = {
   show_demo_warning_background: PropTypes.bool,
   banner_message: PropTypes.string,
   current_user: PropTypes.object,
+  help_links: PropTypes.object,
 };
 
 export default Header;

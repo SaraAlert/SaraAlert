@@ -15,8 +15,16 @@
               <li>The monitoree has completed monitoring and is no longer active in Sara Alert</li>
               <li>The monitoree has been transferred to a jurisdiction which you do not have permission to view</li>
             </ul>
-            <div class="my-1">If you still need help, visit our <a href="https://saraalert.org/public-health/guides/" target="_blank">user guide help pages</a>.</div>
-            <div>You may also <a href="https://saraalert.org/contact-us/" target="_blank">contact us</a> if you need technical assistance.</div>
+            <% if ADMIN_OPTIONS['help_links']['user_guides'].present? || ADMIN_OPTIONS['help_links']['contact_us'].present? %>
+              <% if ADMIN_OPTIONS['help_links']['user_guides'].present? %>
+                <div class="my-1">
+                  If you still need help, visit our <a href="<%= ADMIN_OPTIONS['help_links']['user_guides'] %>" target="_blank">user guide help pages</a>.
+                </div>
+              <% end %>
+              <% if ADMIN_OPTIONS['help_links']['contact_us'].present? %>
+                <div>You may <a href="<%= ADMIN_OPTIONS['help_links']['contact_us'] %>" target="_blank">contact us</a> if you need technical assistance.</div>
+              <% end %>
+            <% end %>
           </div>
           <div class="card-footer">
             <a class="btn btn-primary btn-sm float-right" href="/">
