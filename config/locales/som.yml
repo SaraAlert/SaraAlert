@@ -1,6 +1,8 @@
 som:
   assessments:
     dir: 'ltr'
+    shared:
+      privacy_info: 'Xogta gaarka ah iyo macluumaad dheeri ah, booqo %{privacy_policy_url}'
     html:
       shared:
         email: 'Email'
@@ -24,7 +26,7 @@ som:
           footer: >-
             Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo
             adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan
-            la xiriir waaxda caafimaadka dadweynaha ee deegaanka. Xogta gaarka ah iyo macluumaad dheeri ah, booqo saraalert.org.
+            la xiriir waaxda caafimaadka dadweynaha ee deegaanka.
         enrollment:
           subject: 'Diiwaangelinta Sara Alert'
           header: 'Ku soo dhowow nidaamka Sara Alert!'
@@ -55,9 +57,7 @@ som:
           Waan ka xumahay, waxaad gaadhay tirada ugu badan ee isku day jawaab celin ah. Haddii aad la kulanto xaalad caafimaad oo degdeg ah, fadlan wac 911.
       sms:
         prompt:
-          intro: >-
-            Ku soo dhowow nidaamka Sara Alert, waxaan ku soo diri doonnaa warbixinadaada maalinlaha ah ee loogu talagalay %{name} lambarkan telefoon. Xogta
-            gaarka ah iyo macluumaad dheeri ah, booqo saraalert.org.
+          intro: 'Ku soo dhowow nidaamka Sara Alert, waxaan ku soo diri doonnaa warbixinadaada maalinlaha ah ee loogu talagalay %{name} lambarkan telefoon.'
           reminder: 'Kani waa nidaamka Sara Alert oo ku xusuusinayo inaad fadlan jawaab ka bixiso fariimahayaga warbixinta maalinlaha ah.'
           name: '%{name}'
           daily: 'Tani waa warbixinta maalinlaha ah ee Sara Alert ee loogu talagalay: %{names}. %{experiencing_symptoms} Ku jawaab "Haa" ama "Maya"'

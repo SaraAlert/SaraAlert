@@ -1,6 +1,8 @@
 vie:
   assessments:
     dir: 'ltr'
+    shared:
+      privacy_info: 'Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập %{privacy_policy_url}.'
     html:
       shared:
         email: 'Email'
@@ -24,7 +26,7 @@ vie:
           footer: >-
             Xin đừng trả lời email này, chuyển tiếp email này hoặc chia sẻ liên kết này. Thông báo này được tạo tự động bởi hệ thống Sara Alert và là duy nhất
             và chỉ dành cho bạn. Nếu bạn muốn ngừng nhận những thông báo này hoặc tin rằng đó là do nhầm lẫn, vui lòng liên hệ với sở y tế công cộng địa phương
-            của bạn. Để biết về quyền riêng tư và biết thêm thông tin, hãy truy cập saraalert.org.
+            của bạn.
         enrollment:
           subject: 'Đăng ký Sara Alert'
           header: 'Chào mừng bạn đến với Hệ thống Cảnh báo Sara'
@@ -54,9 +56,7 @@ vie:
           đang được theo dõi bởi các bộ phận y tế.
       sms:
         prompt:
-          intro: >-
-            Chào mừng bạn đến với hệ thống Sara Alert, chúng tôi sẽ gửi các báo cáo hàng ngày của bạn cho %{name} tới số điện thoại này. Để biết về quyền riêng
-            tư và biết thêm thông tin, hãy truy cập saraalert.org.
+          intro: 'Chào mừng bạn đến với hệ thống Sara Alert, chúng tôi sẽ gửi các báo cáo hàng ngày của bạn cho %{name} tới số điện thoại này.'
           reminder: 'Đây là Sara Alert nhắc nhở bạn để vui lòng trả lời để hoàn thành báo cáo hàng ngày của bạn.'
           name: '%{name}'
           daily: 'Đây là bản báo cáo hàng ngày của Sara Alert cho: %{names}. %{experiencing_symptoms} Xin vui lòng trả lời "Có" hoặc "Không"'

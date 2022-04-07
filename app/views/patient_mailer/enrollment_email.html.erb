@@ -49,6 +49,9 @@
   <div dir="<%= t('assessments.dir', locale: @lang) %>">
     <p>
       <%= t('assessments.html.email.shared.footer', locale: @lang) %>
+      <% if ADMIN_OPTIONS['privacy_policy_url'].present? %>
+        <%= t('assessments.shared.privacy_info', locale: @lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url']) %>
+      <% end %>
     </p>
   </div>
 <% end %>
