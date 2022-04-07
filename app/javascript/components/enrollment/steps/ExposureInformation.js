@@ -433,13 +433,13 @@ class ExposureInformation extends React.Component {
                 className="ml-1 d-inline"
                 checked={!!this.state.current.patient.continuous_exposure}
                 onChange={this.handleChange}
-                disabled={this.state.current.patient.isolation}
+                disabled={this.props.currentState.isolation}
               />
             </span>
             <Form.Label className="input-label ml-2">
               CONTINUOUS EXPOSURE{schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}
             </Form.Label>
-            {this.state.current.patient.isolation ? (
+            {this.props.currentState.isolation ? (
               <ReactTooltip id="disabled-continuous-exposure" multiline={true} type="dark" effect="solid" place="right" className="tooltip-container">
                 <div>Continuous exposure is not relevant for cases in the isolation workflow.</div>
               </ReactTooltip>
