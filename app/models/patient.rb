@@ -1477,7 +1477,7 @@ class Patient < ApplicationRecord
     isolation_change if isolation_changed?
     case_status_change if case_status_changed?
     symptom_onset_change if symptom_onset_changed?
-    continuous_exposure_change if continuous_exposure_changed?
+    continuous_exposure_change if continuous_exposure_changed? || isolation_changed?
   end
 
   # Handle side effects to monitoring being set to false.
@@ -1531,7 +1531,7 @@ class Patient < ApplicationRecord
   # Handle side effects to continuous_exposure being set while not monitoring
   # * continuous_exposure should alwasy remain false when not monitoring
   def continuous_exposure_change
-    self.continuous_exposure = false if continuous_exposure && !monitoring
+    self.continuous_exposure = false if (continuous_exposure && !monitoring) || isolation
   end
 
   # Create History items corresponding to updates to monitoring fields.
