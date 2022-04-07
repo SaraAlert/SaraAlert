@@ -10,8 +10,15 @@ import { mockFilterOptions, additionalMultiOption, mockFilter1, mockFilter2, moc
 
 const advancedFilterUpdateMock = jest.fn();
 const mockToken = 'testMockTokenString12345';
-const numberOptionValues = ['less-than', 'less-than-equal', 'equal', 'greater-than-equal', 'greater-than', 'between'];
-const numberOptionValuesText = ['less than', 'less than or equal to', 'equal to', 'greater than or equal to', 'greater than', 'between'];
+const numberOptionValues = {
+  'less-than': 'less than',
+  'less-than-equal': 'less than or equal to',
+  equal: 'equal to',
+  'greater-than-equal': 'greater than or equal to',
+  'greater-than': 'greater than',
+  between: 'between',
+  '': '',
+};
 const dateOptionValues = ['within', 'before', 'after'];
 const combinationDateOptionValues = ['before', 'after', ''];
 const relativeOptionValues = ['today', 'tomorrow', 'yesterday', 'custom'];
@@ -64,19 +71,31 @@ function checkStatementRender(wrapper, contents, index) {
 
       /* NUMBER TYPE */
     } else if (contents.filterOption.type === 'number') {
+      let numberOptions = _.keys(_.clone(numberOptionValues));
+      if (!contents.filterOption.support_blank) {
+        numberOptions = numberOptions.filter(o => o !== '');
+      }
+      if (!contents.filterOption.allow_range) {
+        numberOptions = numberOptions.filter(o => o !== 'between');
+      }
+
       expect(statement.find('.advanced-filter-number-options').exists()).toBe(true);
       expect(statement.find('.advanced-filter-number-options').prop('value')).toEqual(contents.numberOption);
-      expect(statement.find('.advanced-filter-number-options').find('option').length).toEqual(numberOptionValues.length);
-      numberOptionValues.forEach((value, index) => {
-        expect(statement.find('.advanced-filter-number-options').find('option').at(index).text()).toEqual(numberOptionValuesText[Number(index)]);
-        expect(statement.find('.advanced-filter-number-options').find('option').at(index).prop('value')).toEqual(value);
+      expect(statement.find('.advanced-filter-number-options').find('option').length).toEqual(numberOptions.length);
+      numberOptions.forEach((option, index) => {
+        expect(statement.find('.advanced-filter-number-options').find('option').at(index).text()).toEqual(numberOptionValues[`${option}`]);
+        expect(statement.find('.advanced-filter-number-options').find('option').at(index).prop('value')).toEqual(option === '' ? undefined : option);
       });
-      expect(statement.find('.advanced-filter-number-input').exists()).toBe(true);
-      expect(statement.find('.advanced-filter-number-input').length).toEqual(contents.numberOption === 'between' ? 2 : 1);
-      if (contents.numberOption === 'between') {
+      if (contents.numberOption === '') {
+        expect(statement.find('.advanced-filter-number-input').exists()).toBe(false);
+      } else if (contents.numberOption === 'between') {
+        expect(statement.find('.advanced-filter-number-input').exists()).toBe(true);
+        expect(statement.find('.advanced-filter-number-input').length).toEqual(2);
         expect(statement.find('.advanced-filter-number-input').at(0).prop('value')).toEqual(contents.value.firstBound);
         expect(statement.find('.advanced-filter-number-input').at(1).prop('value')).toEqual(contents.value.secondBound);
       } else {
+        expect(statement.find('.advanced-filter-number-input').exists()).toBe(true);
+        expect(statement.find('.advanced-filter-number-input').length).toEqual(1);
         expect(statement.find('.advanced-filter-number-input').prop('value')).toEqual(contents.value);
       }
 
@@ -84,7 +103,7 @@ function checkStatementRender(wrapper, contents, index) {
     } else if (contents.filterOption.type === 'date') {
       expect(statement.find('.advanced-filter-date-options').exists()).toBe(true);
       expect(statement.find('.advanced-filter-date-options').prop('value')).toEqual(contents.dateOption);
-      expect(statement.find('.advanced-filter-date-options').find('option').length).toEqual(contents.filterOption.support_blank ? dateOptionValues.length + 1 : dateOptionValues.length);
+      expect(statement.find('.advanced-filter-date-options').find('option').length).toEqual(dateOptionValues.length + (contents.filterOption.support_blank ? 1 : 0));
       dateOptionValues.forEach((value, index) => {
         expect(statement.find('.advanced-filter-date-options').find('option').at(index).text()).toEqual(value);
         expect(statement.find('.advanced-filter-date-options').find('option').at(index).prop('value')).toEqual(value);
@@ -206,7 +225,7 @@ function checkStatementRender(wrapper, contents, index) {
     }
 
     /* TOOLTIPS */
-    expect(statement.find(ReactTooltip).exists()).toBe(!_.isNil(contents.filterOption.tooltip) || contents.numberOption === 'between' || contents.relativeOption === 'custom' || (contents.filterOption.type === 'combination' && contents.filterOption.fields.length !== contents.value.length));
+    expect(statement.find(ReactTooltip).exists()).toBe(!_.isNil(contents.filterOption.tooltip) || contents.filterOption.type === 'number' || contents.relativeOption === 'custom' || (contents.filterOption.type === 'combination' && contents.filterOption.fields.length !== contents.value.length));
     if (!_.isNil(contents.filterOption.tooltip)) {
       if (_.isArray(contents.filterOption.tooltip)) {
         contents.filterOption.tooltip.forEach((text, index) => {
@@ -217,8 +236,14 @@ function checkStatementRender(wrapper, contents, index) {
       } else {
         expect(statement.find(ReactTooltip).find('span').text()).toEqual(contents.filterOption.tooltip);
       }
-    } else if (contents.numberOption === 'between') {
-      expect(statement.find(ReactTooltip).find('span').text()).toEqual('"Between" is inclusive and will filter for values within the user-entered range, including the start and end values.');
+    } else if (contents.filterOption.type === 'number') {
+      if (contents.numberOption === '') {
+        expect(statement.find(ReactTooltip).find('span').text()).toEqual('Leaving the operator blank will return monitorees with a blank value for this field.');
+      } else if (contents.numberOption === 'between') {
+        expect(statement.find(ReactTooltip).find('span').text()).toEqual('"Between" is inclusive and will filter for values within the user-entered range, including the start and end values. Leaving either or both number fields blank will result in no monitorees being filtered out.');
+      } else {
+        expect(statement.find(ReactTooltip).find('span').text()).toEqual('Leaving the number field blank will result in no monitorees being filtered out.');
+      }
     } else if (contents.relativeOption === 'custom') {
       expect(statement.find(ReactTooltip).find('span').text()).toEqual(wrapper.instance().getRelativeTooltipString(contents.filterOption, contents.value));
     } else if (contents.filterOption.type === 'combination' && contents.filterOption.fields.length !== contents.value.length) {
@@ -583,16 +608,32 @@ describe('AdvancedFilter', () => {
     checkStatementRender(wrapper, mockNumberContents);
   });
 
-  it('Properly renders advanced filter number type statement with number range', () => {
+  it('Properly renders advanced filter number type statement with number range (filter.allow_range)', () => {
     const wrapper = getWrapper();
     wrapper.find(Button).simulate('click');
 
     const contents = _.clone(mockNumberContents);
+    contents.filterOption.allow_range = true;
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: contents.filterOption.name });
     checkStatementRender(wrapper, contents);
 
     contents.numberOption = 'between';
     contents.value = { firstBound: 0, secondBound: 0 };
+    wrapper.find('.advanced-filter-number-options').simulate('change', { target: { value: contents.numberOption } });
+    checkStatementRender(wrapper, contents);
+  });
+
+  it('Properly renders advanced filter number type statement with blank number option (filter.support_blank)', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+
+    const contents = _.clone(mockNumberContents);
+    contents.filterOption.support_blank = true;
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: contents.filterOption.name });
+    checkStatementRender(wrapper, contents);
+
+    contents.numberOption = '';
+    contents.value = null;
     wrapper.find('.advanced-filter-number-options').simulate('change', { target: { value: contents.numberOption } });
     checkStatementRender(wrapper, contents);
   });
@@ -604,15 +645,19 @@ describe('AdvancedFilter', () => {
     expect(wrapper.state('activeFilterOptions')).toEqual([{ filterOption: null }]);
 
     const contents = _.clone(mockNumberContents);
+    contents.filterOption.allow_range = true;
+    contents.filterOption.support_blank = true;
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: contents.filterOption.name });
     expect(wrapper.state('activeFilter')).toBeNull();
     expect(wrapper.state('activeFilterOptions')).toEqual([contents]);
     checkStatementRender(wrapper, contents);
 
-    _.shuffle(numberOptionValues).forEach(option => {
-      if (option === 'between') {
+    _.shuffle(_.keys(numberOptionValues)).forEach(option => {
+      if (option === '') {
+        contents.value = null;
+      } else if (option === 'between') {
         contents.value = { firstBound: 0, secondBound: 0 };
-      } else if (contents.numberOption === 'between') {
+      } else if (contents.numberOption === '' || contents.numberOption === 'between') {
         contents.value = 0;
       }
       contents.numberOption = option;
@@ -640,6 +685,10 @@ describe('AdvancedFilter', () => {
         expect(wrapper.state('activeFilter')).toBeNull();
         expect(wrapper.state('activeFilterOptions')).toEqual([contents]);
         checkStatementRender(wrapper, contents);
+      } else if (contents.numberOption === '') {
+        expect(wrapper.state('activeFilter')).toBeNull();
+        expect(wrapper.state('activeFilterOptions')).toEqual([contents]);
+        checkStatementRender(wrapper, contents);
       } else {
         contents.value = _.random(1, 10);
         wrapper.find('.advanced-filter-number-input').simulate('change', { target: { value: contents.value } });
@@ -650,32 +699,34 @@ describe('AdvancedFilter', () => {
     });
   });
 
+  it('Properly renders advanced filter date type statement with date range', () => {
+    const wrapper = getWrapper();
+    wrapper.find(Button).simulate('click');
+    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockDateContents.filterOption.name });
+    checkStatementRender(wrapper, mockDateContents);
+  });
+
   it('Properly renders advanced filter date type statement with single date', () => {
     const wrapper = getWrapper();
     const contents = _.clone(mockDateContents);
     contents.dateOption = 'before';
     contents.value = moment(new Date()).format('YYYY-MM-DD');
-    contents.filterOption.support_blank = true;
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: contents.filterOption.name });
     wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: contents.dateOption } });
     checkStatementRender(wrapper, contents);
   });
 
-  it('Properly renders advanced filter date type statement with single date where blank is not supported', () => {
+  it('Properly renders advanced filter number type statement with blank date option (filter.support_blank)', () => {
     const wrapper = getWrapper();
     const contents = _.clone(mockDateContents);
-    contents.dateOption = 'before';
-    contents.value = moment(new Date()).format('YYYY-MM-DD');
+    contents.dateOption = '';
+    contents.value = null;
+    contents.filterOption.support_blank = true;
     wrapper.find(Button).simulate('click');
     wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: contents.filterOption.name });
-  });
-
-  it('Properly renders advanced filter date type statement with date range', () => {
-    const wrapper = getWrapper();
-    wrapper.find(Button).simulate('click');
-    wrapper.find('.advanced-filter-options-dropdown').simulate('change', { value: mockDateContents.filterOption.name });
-    checkStatementRender(wrapper, mockDateContents);
+    wrapper.find('.advanced-filter-date-options').simulate('change', { target: { value: contents.dateOption } });
+    checkStatementRender(wrapper, contents);
   });
 
   it('Changing advanced filter dateOption and values for date type advanced filters properly updates state and value', () => {
