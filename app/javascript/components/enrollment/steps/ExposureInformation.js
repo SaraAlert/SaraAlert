@@ -51,6 +51,21 @@ class ExposureInformation extends React.Component {
   componentDidUpdate(prevProps) {
     if (prevProps.currentState.isolation !== this.props.currentState.isolation) {
       this.updateStaticValidations(this.props.currentState.isolation);
+
+      // If workflow is changed to isolation and CE is true, set it to false
+      if (this.props.currentState.isolation && this.state.current.patient.continuous_exposure) {
+        this.setState(
+          state => {
+            return {
+              current: { ...state.current, patient: { ...state.current.patient, continuous_exposure: false } },
+              modified: { ...state.modified, patient: { ...state.modified.patient, continuous_exposure: false } },
+            };
+          },
+          () => {
+            this.props.setEnrollmentState({ ...this.state.modified });
+          }
+        );
+      }
     }
   }
 
