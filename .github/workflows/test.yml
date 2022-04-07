@@ -7,11 +7,11 @@ jobs:
     runs-on: ubuntu-18.04
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -71,7 +71,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -135,7 +135,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -199,7 +199,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
         with:
@@ -266,7 +266,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -330,7 +330,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -394,7 +394,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -458,7 +458,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -522,7 +522,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -586,7 +586,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -650,7 +650,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -714,7 +714,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -778,7 +778,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306
+        - 3306
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
@@ -860,21 +860,20 @@ jobs:
         run: yarn run test
   compile-test-coverage:
     name: Display Test Coverage Results
-    needs:
-      [
-        test-system-workflow,
-        test-system-monitoree,
-        test-model-controller,
-        test-system-public-health-dashboard,
-        test-system-public-health-import,
-        test-system-public-health-export,
-        test-system-public-health-custom-export,
-        test-system-public-health-patient-page,
-        test-system-enroller-dashboard,
-        test-system-enroller-enrollment,
-        test-system-analyst,
-        test-system-admin,
-      ]
+    needs: [
+      test-system-workflow,
+      test-system-monitoree,
+      test-model-controller,
+      test-system-public-health-dashboard,
+      test-system-public-health-import,
+      test-system-public-health-export,
+      test-system-public-health-custom-export,
+      test-system-public-health-patient-page,
+      test-system-enroller-dashboard,
+      test-system-enroller-enrollment,
+      test-system-analyst,
+      test-system-admin
+    ]
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
