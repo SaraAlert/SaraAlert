@@ -3,16 +3,15 @@
 The jurisdictions in `config/sara/jurisdictions.yml` file follow a hierarchical structure. A jurisdiction has a name,
 which is the key and some optional values:
 
-- `phone`, `webpage`, `email` - jurisdiction contact information that will only be shown if populated
-- `message` - custom jurisdiction message
-- `send_digest` - sends assessment reminder to patients if `true`
+- `phone`, `webpage`, `email` - jurisdiction contact information that will only be shown to monitorees after completing assessments if populated
+- `send_digest` - sends a list of monitorees with reported symptoms within the past hour to public health users if `true`
 - `send_close` - sends closed notification to patients who are reporters if `true`
 - `symptoms` - defines the symptoms that the jurisdiction tracks. A jurisdiction tracks the symptoms that it specifies **_IN ADDITION TO_** the symptoms specified by all of its parent jurisdictions (i.e., ancestors)
 - `children` - the children of a jurisdiction are nested jurisdictions that may have their own properties which override their parents' properties if populated, which are the same as listed here
 
 ## Symptoms
 
-A `symptom` will be identified by its name, which is the key in the symptom object, a `value`, `type`, `required`, `group` and `threshold_operator`.
+A member of the `symptoms` list will be identified by its name, which is the key in the symptom object, a `value`, `type`, `required`, `group`, `threshold_operator`, and `notes`.
 
 ### value
 
@@ -36,9 +35,9 @@ Note: Sub-jurisdictinos can add symptoms to groups, but should not be specifying
 
 The `required` field can either take the value `true` or `false`. Only symptoms with `required` set to `true` will be taken into consideration during symptomatic assessment calculation. Additionally, symptoms that have the `required` attribute set to `false` will be omitted from the voice and SMS assessment prompts.
 
-## Translations and Notes
+### Translations and Notes
 
-Each symptom supports the inclusion of a more descriptive sentence about what the symptom entails. This, as well as the translations for each symptom name are defined in a locale file under `config/locales`. When adding symptoms, you MUST include entries for these symptoms in each locale!
+Each symptom supports `notes`, which is a more descriptive sentence about what the symptom entails. This, as well as the translations for each symptom name are defined in a locale file under `config/locales`. When adding symptoms, you MUST include entries for these symptoms in each locale!
 
 ## Example:
 
@@ -47,7 +46,7 @@ USA jurisdiction as well as ALL of its nested children, meaning that all jurisdi
 to the county-level jurisdictions will inherit these symptoms. State 1 has specified its own symptoms which
 will be added to the symptoms that it inherited from its parent jurisdiction, these symptoms will be applied
 to State 1, and the children of State 1 (County 1 and County 2). In other words, a monitoree in State 1,
-County 1 or County 2 will be asked about 5 total symptoms as part of their assessments, whereas a monitoree in State 2 or County 3 would only be asked about 3 symptoms. Assessments which have 2 or more of the required group symptoms (Fever) will be considered symptomatic.
+County 1 or County 2 will be asked about 5 total symptoms as part of their assessments, whereas a monitoree in State 2 or County 3 would only be asked about 3 symptoms.
 
 ```
 'USA':
