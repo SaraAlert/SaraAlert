@@ -82,7 +82,6 @@ County 1 or County 2 will be asked about 5 total symptoms as part of their asses
             phone: '+13455555555'
             webpage: 'www.example.com'
             email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
             send_digest: true
             send_close: true
             symptoms:
