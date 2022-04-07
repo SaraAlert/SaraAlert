@@ -394,7 +394,7 @@ class ApiControllerTest < ApiControllerTestCase
 
   #----- update tests -----
 
-  test 'should update Patient via update' do
+  test 'should update Patient in isolation via update' do
     patient_id = 1
     patient = Patient.find_by(id: 2)
     resource_path = "/fhir/r4/Patient/#{patient_id}"
@@ -414,7 +414,6 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal 'Kirlin44', json_response['name'].first['family']
     assert_equal 'SMS Texted Weblink', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-method' }['valueString']
     assert_equal 'Afternoon', json_response['extension'].detect { |e| e['url'].include? 'preferred-contact-time' }['valueString']
-    assert json_response['extension'].detect { |e| e['url'].include? 'continuous-exposure' }['valueBoolean']
     assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].detect { |e| e['url'].include? 'symptom-onset-date' }['valueDate']
     assert p.user_defined_symptom_onset
     assert json_response['extension'].detect { |e| e['url'].include? 'isolation' }['valueBoolean']
@@ -440,6 +439,23 @@ class ApiControllerTest < ApiControllerTestCase
     assert_equal patient.follow_up_reason, fhir_ext_str(json_response, 'follow-up-reason')
     assert_equal patient.follow_up_note, fhir_ext_str(json_response, 'follow-up-note')
     assert_equal patient.jurisdiction_id, Transfer.find_by(patient_id: patient_id).to_jurisdiction_id
+  end
+
+  test 'should update Patient in exposure via update' do
+    patient_id = 1
+    resource_path = "/fhir/r4/Patient/#{patient_id}"
+    put(
+      resource_path,
+      params: @patient_3.to_json,
+      headers: { Authorization: "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+    assert_not p.nil?
+    assert_nil(json_response['extension'].detect { |e| e['url'].include? 'last-date-of-exposure' })
+    assert json_response['extension'].detect { |e| e['url'].include? 'continuous-exposure' }['valueBoolean']
   end
 
   test 'should create "Record Edit" and not "Monitoring Change" History item when updating patient with record edit' do
@@ -478,8 +494,7 @@ class ApiControllerTest < ApiControllerTestCase
     json_response = JSON.parse(response.body)
     assert_equal false, json_response['active']
     histories = History.where(patient: patient.id)
-    assert_equal(monitoring_change_count + 2, histories.where(history_type: 'Monitoring Change').count)
-    assert_match(/Continuous Exposure/, histories.find_by(created_by: 'Sara Alert System').comment)
+    assert_equal(monitoring_change_count + 1, histories.where(history_type: 'Monitoring Change').count)
     assert_match(/"Monitoring" to "Not Monitoring"/, histories.find_by(history_type: 'Monitoring Change').comment)
   end
 

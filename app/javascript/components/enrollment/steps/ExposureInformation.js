@@ -51,6 +51,21 @@ class ExposureInformation extends React.Component {
   componentDidUpdate(prevProps) {
     if (prevProps.currentState.isolation !== this.props.currentState.isolation) {
       this.updateStaticValidations(this.props.currentState.isolation);
+
+      // If workflow is changed to isolation and CE is true, set it to false
+      if (this.props.currentState.isolation && this.state.current.patient.continuous_exposure) {
+        this.setState(
+          state => {
+            return {
+              current: { ...state.current, patient: { ...state.current.patient, continuous_exposure: false } },
+              modified: { ...state.modified, patient: { ...state.modified.patient, continuous_exposure: false } },
+            };
+          },
+          () => {
+            this.props.setEnrollmentState({ ...this.state.modified });
+          }
+        );
+      }
     }
   }
 
@@ -420,16 +435,32 @@ class ExposureInformation extends React.Component {
               {this.state.errors['potential_exposure_country']}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} lg={{ span: 8, order: 4 }} md={{ span: 12, order: 3 }} xs={{ span: 24, order: 2 }} className="pl-1">
-            <Form.Check
-              size="lg"
-              label={`CONTINUOUS EXPOSURE${schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}`}
-              id="continuous_exposure"
-              className="ml-1 d-inline"
-              checked={!!this.state.current.patient.continuous_exposure}
-              onChange={this.handleChange}
-            />
-            <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
+          <Form.Group
+            as={Col}
+            lg={{ span: 8, order: 4 }}
+            md={{ span: 12, order: 3 }}
+            xs={{ span: 24, order: 2 }}
+            controlId="continuous_exposure"
+            className="pl-1">
+            <span data-for="disabled-continuous-exposure" data-tip="">
+              <Form.Check
+                size="lg"
+                className="ml-1 d-inline"
+                checked={!!this.state.current.patient.continuous_exposure}
+                onChange={this.handleChange}
+                disabled={this.props.currentState.isolation}
+              />
+            </span>
+            <Form.Label className="input-label ml-2">
+              CONTINUOUS EXPOSURE{schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}
+            </Form.Label>
+            {this.props.currentState.isolation ? (
+              <ReactTooltip id="disabled-continuous-exposure" multiline={true} type="dark" effect="solid" place="right" className="tooltip-container">
+                <div>Continuous exposure is not relevant for cases in the isolation workflow.</div>
+              </ReactTooltip>
+            ) : (
+              <InfoTooltip tooltipTextKey="continuousExposure" location="right" />
+            )}
           </Form.Group>
         </Form.Row>
         <Form.Label className="input-label pb-1">EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)</Form.Label>
