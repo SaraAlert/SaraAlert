@@ -1,6 +1,8 @@
 spa-pr:
   assessments:
     dir: 'ltr'
+    shared:
+      privacy_info: 'Para privacidad y más información, visite %{privacy_policy_url}.'
     html:
       shared:
         email: 'Correo electrónico'
@@ -26,7 +28,7 @@ spa-pr:
           footer: >-
             No responda o reenvíe este correo electrónico, ni tampoco comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert
             y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en
-            contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.
+            contacto con su departamento de salud pública local.
         enrollment:
           subject: 'Inscripción de Sara Alert'
           header: 'Bienvenido al sistema Sara Alert'
@@ -59,9 +61,7 @@ spa-pr:
         # strings used for sms messages intentionally do not contain special characters so that they get encoded as GSM-7 rather than UCS-2 which results in
         # double the number of SMS segments
         prompt:
-          intro: >-
-            Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para %{name} a este numero de telefono. Para privacidad y mas informacion,
-            visite saraalert.org.
+          intro: 'Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para %{name} a este numero de telefono.'
           reminder: 'Este es el sistema Sara Alert recordandole que por favor responda a nuestros mensajes de reporte diario.'
           name: '%{name}'
           daily: 'Este es el informe diario de Sara Alert para: %{names}. %{experiencing_symptoms} Responda con "Si" o "No"'
