@@ -265,37 +265,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'address'
         patients = advanced_filter_address(patients, filter)
       when 'age'
-        # specific case where value is a range not a single value
-        if filter[:numberOption] == 'between'
-          # compute which bound is higher than the other
-          first_bound = filter[:value][:firstBound].to_i
-          second_bound = filter[:value][:secondBound].to_i
-          low_bound = [first_bound, second_bound].min
-          high_bound = [first_bound, second_bound].max + 1
-          # find monitorees who have a DOB between the low and high bounds of the age range
-          # low bound DOB is calculated by finding the date of youngest possible person of low bound age (i.e. current date - low bound age )
-          # high bound DOB is calculated by finding the date of the oldest possible person of the high bound age (i.e. current date - high bound age + 1)
-          # EXAMPLE:
-          # if today is 1/19/21, the youngest possible 20 year old turns 20 today, so that birthday is 1/19/2001 and
-          # the oldest possible 30 year old will be turning 31 tomorrow, so their birthday is 1/20/1990.
-          patients = patients.where('date_of_birth > ?', DateTime.now - high_bound.year).where('date_of_birth <= ?', DateTime.now - low_bound.year)
-        # all other cases with a single value age passed in
-        else
-          age = filter[:value].to_i
-          age_plus_1 = age + 1
-          case filter[:numberOption]
-          when 'equal'
-            patients = patients.where('date_of_birth > ?', DateTime.now - age_plus_1.year).where('date_of_birth <= ?', DateTime.now - age.year)
-          when 'less-than'
-            patients = patients.where('date_of_birth > ?', DateTime.now - age.year)
-          when 'less-than-equal'
-            patients = patients.where('date_of_birth > ?', DateTime.now - age_plus_1.year)
-          when 'greater-than-equal'
-            patients = patients.where('date_of_birth <= ?', DateTime.now - age.year)
-          when 'greater-than'
-            patients = patients.where('date_of_birth <= ?', DateTime.now - age_plus_1.year)
-          end
-        end
+        patients = advanced_filter_age(patients, filter)
       when 'assigned-user'
         if filter[:value].present?
           # Map multi-select type filter from { label, value } to values
@@ -397,6 +367,9 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
       when 'latest-report-relative'
         patients = advanced_filter_relative_date(patients, :latest_assessment_at, filter, tz_diff, :time)
       when 'manual-contact-attempts'
+        # do not filter out any patients if number value is blank
+        next if filter[:value].blank?
+
         # less/greater-than operators are flipped for where_assoc_count
         operator = :==
         operator = :> if filter[:numberOption] == 'less-than'
@@ -405,11 +378,11 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
         operator = :< if filter[:numberOption] == 'greater-than'
         case filter[:additionalFilterOption]
         when 'Successful'
-          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts, successful: true)
+          patients = patients.where_assoc_count(filter[:value].to_i, operator, :contact_attempts, successful: true)
         when 'Unsuccessful'
-          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts, successful: false)
+          patients = patients.where_assoc_count(filter[:value].to_i, operator, :contact_attempts, successful: false)
         when 'All'
-          patients = patients.where_assoc_count(filter[:value], operator, :contact_attempts)
+          patients = patients.where_assoc_count(filter[:value].to_i, operator, :contact_attempts)
         end
       when 'monitoring-plan'
         patients = patients.where(monitoring_plan: filter[:value].presence || [nil, ''])
@@ -490,6 +463,50 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     patients
   end
   # rubocop:enable Metrics/MethodLength
+
+  def advanced_filter_age(patients, filter)
+    # when the drop down option is blank, the filter should only return patients without a date_of_birth
+    return patients.where(date_of_birth: nil) if filter[:numberOption].blank?
+
+    # when a non-blank drop down option is selected and numerical input(s) are left blank, no patients should be filtered out
+    return patients if filter[:value].blank?
+
+    # specific case where value is a range not a single value
+    if filter[:numberOption] == 'between'
+      # do not filter out any patients unless both bounds are present
+      return patients if filter[:value][:firstBound].blank? || filter[:value][:secondBound].blank?
+
+      # compute which bound is higher than the other
+      first_bound = filter[:value][:firstBound].to_i
+      second_bound = filter[:value][:secondBound].to_i
+      low_bound = [first_bound, second_bound].min
+      high_bound = [first_bound, second_bound].max + 1
+      # find monitorees who have a DOB between the low and high bounds of the age range
+      # low bound DOB is calculated by finding the date of youngest possible person of low bound age (i.e. current date - low bound age )
+      # high bound DOB is calculated by finding the date of the oldest possible person of the high bound age (i.e. current date - high bound age + 1)
+      # EXAMPLE:
+      # if today is 1/19/21, the youngest possible 20 year old turns 20 today, so that birthday is 1/19/2001 and
+      # the oldest possible 30 year old will be turning 31 tomorrow, so their birthday is 1/20/1990.
+      patients = patients.where('date_of_birth > ?', DateTime.now - high_bound.year).where('date_of_birth <= ?', DateTime.now - low_bound.year)
+    # all other cases with a single value age passed in
+    else
+      age = filter[:value].to_i
+      age_plus_1 = age + 1
+      case filter[:numberOption]
+      when 'equal'
+        patients = patients.where('date_of_birth > ?', DateTime.now - age_plus_1.year).where('date_of_birth <= ?', DateTime.now - age.year)
+      when 'less-than'
+        patients = patients.where('date_of_birth > ?', DateTime.now - age.year)
+      when 'less-than-equal'
+        patients = patients.where('date_of_birth > ?', DateTime.now - age_plus_1.year)
+      when 'greater-than-equal'
+        patients = patients.where('date_of_birth <= ?', DateTime.now - age.year)
+      when 'greater-than'
+        patients = patients.where('date_of_birth <= ?', DateTime.now - age_plus_1.year)
+      end
+    end
+    patients
+  end
 
   def advanced_filter_preferred_contact_time(patients, filter)
     value = %w[0 1 2 3 4 5 6 7] if filter[:value] == 'Early Morning'
@@ -598,31 +615,50 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     filter[:value].each do |field|
       case field[:name]
       when 'address-foreign'
-        patients = patients.where('patients.foreign_address_line_1 like ?', "%#{field[:value]&.downcase}%").or(
-          patients.where('patients.foreign_address_line_2 like ?', "%#{field[:value]&.downcase}%").or(
-            patients.where('patients.foreign_address_line_3 like ?', "%#{field[:value]&.downcase}%").or(
-              patients.where('patients.foreign_address_city like ?', "%#{field[:value]&.downcase}%").or(
-                patients.where('patients.foreign_address_zip like ?', "%#{field[:value]&.downcase}%").or(
-                  patients.where('patients.foreign_address_state like ?', "%#{field[:value]&.downcase}%").or(
-                    patients.where('patients.foreign_address_country like ?', "%#{field[:value]&.downcase}%")
-                  )
-                )
-              )
-            )
-          )
-        )
+        patients = if field[:value].present?
+                     patients.where('patients.foreign_address_line_1 like ?', "%#{field[:value]&.downcase}%").or(
+                       patients.where('patients.foreign_address_line_2 like ?', "%#{field[:value]&.downcase}%").or(
+                         patients.where('patients.foreign_address_line_3 like ?', "%#{field[:value]&.downcase}%").or(
+                           patients.where('patients.foreign_address_city like ?', "%#{field[:value]&.downcase}%").or(
+                             patients.where('patients.foreign_address_zip like ?', "%#{field[:value]&.downcase}%").or(
+                               patients.where('patients.foreign_address_state like ?', "%#{field[:value]&.downcase}%").or(
+                                 patients.where('patients.foreign_address_country like ?', "%#{field[:value]&.downcase}%")
+                               )
+                             )
+                           )
+                         )
+                       )
+                     )
+                   else
+                     patients.where(foreign_address_line_1: nil).or(patients.where(foreign_address_line_1: ''))
+                             .where(foreign_address_line_2: nil).or(patients.where(foreign_address_line_2: ''))
+                             .where(foreign_address_line_3: nil).or(patients.where(foreign_address_line_3: ''))
+                             .where(foreign_address_city: nil).or(patients.where(foreign_address_city: ''))
+                             .where(foreign_address_zip: nil).or(patients.where(foreign_address_zip: ''))
+                             .where(foreign_address_state: nil).or(patients.where(foreign_address_state: ''))
+                             .where(foreign_address_country: nil).or(patients.where(foreign_address_country: ''))
+                   end
       when 'address-usa'
-        patients = patients.where('patients.address_line_1 like ?', "%#{field[:value]&.downcase}%").or(
-          patients.where('patients.address_line_2 like ?', "%#{field[:value]&.downcase}%").or(
-            patients.where('patients.address_city like ?', "%#{field[:value]&.downcase}%").or(
-              patients.where('patients.address_state like ?', "%#{field[:value]&.downcase}%").or(
-                patients.where('patients.address_zip like ?', "%#{field[:value]&.downcase}%").or(
-                  patients.where('patients.address_county like ?', "%#{field[:value]&.downcase}%")
-                )
-              )
-            )
-          )
-        )
+        patients = if field[:value].present?
+                     patients.where('patients.address_line_1 like ?', "%#{field[:value]&.downcase}%").or(
+                       patients.where('patients.address_line_2 like ?', "%#{field[:value]&.downcase}%").or(
+                         patients.where('patients.address_city like ?', "%#{field[:value]&.downcase}%").or(
+                           patients.where('patients.address_state like ?', "%#{field[:value]&.downcase}%").or(
+                             patients.where('patients.address_zip like ?', "%#{field[:value]&.downcase}%").or(
+                               patients.where('patients.address_county like ?', "%#{field[:value]&.downcase}%")
+                             )
+                           )
+                         )
+                       )
+                     )
+                   else
+                     patients.where(address_line_1: nil).or(patients.where(address_line_1: ''))
+                             .where(address_line_2: nil).or(patients.where(address_line_2: ''))
+                             .where(address_city: nil).or(patients.where(address_city: ''))
+                             .where(address_state: nil).or(patients.where(address_state: ''))
+                             .where(address_zip: nil).or(patients.where(address_zip: ''))
+                             .where(address_county: nil).or(patients.where(address_county: ''))
+                   end
       end
     end
 

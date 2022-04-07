@@ -29,9 +29,8 @@ const mockFilterOptions = [
   {
     name: 'water-consumption',
     title: 'Water Consumption (Number)',
-    description: 'All records with the specified number of water consumption',
+    description: 'All records with the specified number of water consumption per day',
     type: 'number',
-    allow_range: true,
   },
   {
     name: 'writing-utensil',

@@ -424,14 +424,15 @@ class AdvancedFilter extends React.Component {
    * @param {String} value - Value of the current number type statement
    * @param {String} additionalFilterOption - Current additionalFilterOption value
    */
-  // Change an index filter option for type number
   changeFilterNumberOption = (index, prevNumberOption, newNumberOption, value, additionalFilterOption) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     let newValue = value;
-    if (prevNumberOption === 'between' && newNumberOption !== 'between') {
-      newValue = 0;
-    } else if (prevNumberOption !== 'between' && newNumberOption === 'between') {
+    if (newNumberOption === '') {
+      newValue = null;
+    } else if (newNumberOption === 'between') {
       newValue = { firstBound: 0, secondBound: 0 };
+    } else if ((prevNumberOption === 'between' || prevNumberOption === '') && newNumberOption !== 'between') {
+      newValue = 0;
     }
     activeFilterOptions[parseInt(index)] = {
       filterOption: activeFilterOptions[parseInt(index)].filterOption,
@@ -936,7 +937,15 @@ class AdvancedFilter extends React.Component {
    * @param {String} additionalFilterOption - Selected option from additional list of options (if provided)
    */
   renderNumberStatement = (filter, index, value, numberOption, additionalFilterOption) => {
-    const betweenTooltipText = '"Between" is inclusive and will filter for values within the user-entered range, including the start and end values.';
+    let tooltipText;
+    if (numberOption === '') {
+      tooltipText = 'Leaving the operator blank will return monitorees with a blank value for this field.';
+    } else if (numberOption === 'between') {
+      tooltipText =
+        '"Between" is inclusive and will filter for values within the user-entered range, including the start and end values. Leaving either or both number fields blank will result in no monitorees being filtered out.';
+    } else {
+      tooltipText = 'Leaving the number field blank will result in no monitorees being filtered out.';
+    }
     return (
       <React.Fragment>
         <Form.Group className="form-group-inline py-0 my-0">
@@ -952,8 +961,9 @@ class AdvancedFilter extends React.Component {
             <option value="greater-than-equal">greater than or equal to</option>
             <option value="greater-than">greater than</option>
             {filter.allow_range && <option value="between">between</option>}
+            {filter.support_blank && <option></option>}
           </Form.Control>
-          {numberOption !== 'between' && (
+          {numberOption !== 'between' && numberOption !== '' && (
             <Form.Control
               className="advanced-filter-number-input"
               aria-label="Advanced Filter Number Input"
@@ -987,7 +997,7 @@ class AdvancedFilter extends React.Component {
             </React.Fragment>
           )}
         </Form.Group>
-        {numberOption === 'between' && this.renderStatementTooltip(filter.name, index, betweenTooltipText)}
+        {this.renderStatementTooltip(filter.name, index, tooltipText)}
       </React.Fragment>
     );
   };
