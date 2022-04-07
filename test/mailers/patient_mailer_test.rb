@@ -286,7 +286,8 @@ class PatientMailerTest < ActionMailer::TestCase
       ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
       @patient.update(primary_language: language.to_s)
       lang = Languages.supported_language?(language.to_s, :sms) ? language.to_s : 'eng'
-      contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: '-0')
+      contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: '-0') + ' ' +
+                 I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url'])
 
       # Assert correct REST call when messaging_service is NOT used falls back to from number
       allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
@@ -310,7 +311,8 @@ class PatientMailerTest < ActionMailer::TestCase
 
     test "enrollment sms text based message contents using messaging service in #{language}" do
       lang = Languages.supported_language?(language.to_s, :sms) ? language.to_s : 'eng'
-      contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: '-0')
+      contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: '-0') + ' ' +
+                 I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url'])
       @patient.update(primary_language: language.to_s)
 
       allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
@@ -339,7 +341,8 @@ class PatientMailerTest < ActionMailer::TestCase
       ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
       @patient.update(primary_language: language.to_s)
       lang = Languages.supported_language?(language.to_s, :sms) ? language.to_s : 'eng'
-      contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: '-0')
+      contents = I18n.t('assessments.twilio.sms.prompt.intro', locale: lang, name: '-0') + ' ' +
+                 I18n.t('assessments.shared.privacy_info', locale: lang, privacy_policy_url: ADMIN_OPTIONS['privacy_policy_url'])
 
       allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
         true
