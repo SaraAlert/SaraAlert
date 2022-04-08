@@ -39,6 +39,14 @@ function getSymptomsByType(symptoms, type) {
     });
 }
 
+function getIntValue(intString) {
+  return intString === '' ? null : parseInt(intString);
+}
+
+function getFloatValue(floatString) {
+  return floatString === '' ? null : _.endsWith(floatString, '.') ? floatString : parseFloat(floatString).toFixed(_.includes(floatString, '.') ? floatString.split('.')[1].length : 0);
+}
+
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -225,12 +233,12 @@ describe('SymptomsAssessment', () => {
     const intSymptoms = getSymptomsByType(newProps.symptoms, 'IntegerSymptom');
     const randomSympIndex = _.random(0, intSymptoms.length - 1);
     const matchingSympIndex = wrapper.state('reportState').symptoms.findIndex(s => s.name === intSymptoms[parseInt(randomSympIndex)].name);
-    const validValues = ['', 0, _.random(1, 1000), _.random(-1000, -1)];
-    const testValues = validValues.concat(_.random(0, 10, true), _.random(-10, 0, true), false, '45test', 'some string');
+    const validValues = ['', String(0), String(_.random(1, 1000)), String(_.random(-1000, -1))];
+    const testValues = validValues.concat(String(_.random(0, 10, true)), String(_.random(-10, 0, true)), false, '45test', 'some string');
 
     let current = null;
     _.shuffle(testValues).forEach(value => {
-      current = validValues.includes(value) ? value : current;
+      current = validValues.includes(value) ? getIntValue(value) : current;
       wrapper
         .find(Form.Control)
         .at(randomSympIndex)
@@ -246,12 +254,12 @@ describe('SymptomsAssessment', () => {
     const floatSymptoms = getSymptomsByType(newProps.symptoms, 'FloatSymptom');
     const randomSympIndex = _.random(0, floatSymptoms.length - 1);
     const matchingSympIndex = wrapper.state('reportState').symptoms.findIndex(s => s.name === floatSymptoms[parseInt(randomSympIndex)].name);
-    const validValues = ['', 0, _.random(1, 1000), _.random(-1000, -1), _.random(0, 10, true), _.random(-10, 0, true)];
+    const validValues = ['', String(0), String(_.random(1, 1000)), String(_.random(-1000, -1)), String(_.random(0, 10, true)), String(_.random(-10, 0, true))];
     const testValues = validValues.concat(false, '45test', 'some string');
 
     let current = null;
     _.shuffle(testValues).forEach(value => {
-      current = validValues.includes(value) ? value : current;
+      current = validValues.includes(value) ? getFloatValue(value) : current;
       wrapper
         .find(Form.Control)
         .at(intSymptoms.length + randomSympIndex)
@@ -274,12 +282,12 @@ describe('SymptomsAssessment', () => {
 
     numberSymptoms.forEach((numSymp, n_index) => {
       if (_.sample([true, false])) {
-        const random = numSymp.type === 'IntegerSymptom' ? _.random(-100000, 100000) : _.random(-10, 10, true);
+        const random = numSymp.type === 'IntegerSymptom' ? String(_.random(-100000, 100000)) : String(_.random(-10, 10, true));
         wrapper
           .find(Form.Control)
           .at(n_index)
           .simulate('change', { target: { id: `${numSymp.name}_idpre${newProps.idPre}`, value: random } });
-        numSymp.value = random;
+        numSymp.value = numSymp.type === 'IntegerSymptom' ? getIntValue(random) : getFloatValue(random);
       }
       wrapper
         .state('reportState')
@@ -297,7 +305,7 @@ describe('SymptomsAssessment', () => {
           .find(Form.Control)
           .at(n_index)
           .simulate('change', { target: { id: `${numSymp.name}_idpre${newProps.idPre}`, value: '' } });
-        numSymp.value = '';
+        numSymp.value = null;
       }
       wrapper
         .state('reportState')

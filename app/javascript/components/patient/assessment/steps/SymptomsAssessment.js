@@ -76,7 +76,7 @@ class SymptomsAssessment extends React.Component {
       // Value conversion necessary to determine if any changes have been made to the assessement
       // If value is empty, convert it to null
       // If value is not empty, convert the string to a float
-      value = value === '' ? null : value.endsWith('.') ? value : parseFloat(value).toFixed(value.split('.')[1].length);
+      value = value === '' ? null : _.endsWith(value, '.') ? value : parseFloat(value).toFixed(_.includes(value, '.') ? value.split('.')[1].length : 0);
       this.handleChange(event, value);
     }
   };
