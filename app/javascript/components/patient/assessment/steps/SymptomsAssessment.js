@@ -50,25 +50,33 @@ class SymptomsAssessment extends React.Component {
 
   handleIntChange = event => {
     const validInputs = ['', '-'];
-    const value = event?.target?.value;
+    let value = event?.target?.value;
     // Ensure (1) the value is defined or an empty string && meets the condintions of (2) or (3)
     //        (2.a) the value is a number & the user is prevented from inputting non-numerical characters after inputting a number (ex. '43test')
     //        (2.b) the value can be parsed as an integer
     //        (2.c) the user is prevented from inputting '.' characters (since parseInt() would allow that as an input)
     //        (3) if the value is not a valid number, check if it is an acceptable character input
     if (!_.isNil(value) && ((!isNaN(value) && !isNaN(parseInt(value)) && !String(value).includes('.')) || validInputs.includes(value))) {
+      // Value conversion necessary to determine if any changes have been made to the assessement
+      // If value is empty, convert it to null
+      // If value is not empty, convert the string to an integer
+      value = value === '' ? null : parseInt(value);
       this.handleChange(event, value);
     }
   };
 
   handleFloatChange = event => {
     const validInputs = ['', '.', '-', '-.'];
-    const value = event?.target?.value;
+    let value = event?.target?.value;
     // Ensure (1) the value is defined or an empty string && meets the condintions of (2) or (3)
     //        (2.a) the value is a number & the user is prevented from inputting non-numerical characters after inputting a number (ex. '4.3test')
     //        (2.b) the value can be parsed as an float
     //        (3) if the value is not a valid number, check if it is an acceptable character input
     if (!_.isNil(value) && ((!isNaN(value) && !isNaN(parseFloat(value))) || validInputs.includes(value))) {
+      // Value conversion necessary to determine if any changes have been made to the assessement
+      // If value is empty, convert it to null
+      // If value is not empty, convert the string to a float
+      value = value === '' ? null : value.endsWith('.') ? value : parseFloat(value).toFixed(value.split('.')[1].length);
       this.handleChange(event, value);
     }
   };
@@ -315,7 +323,7 @@ class SymptomsAssessment extends React.Component {
             </Form.Group>
           </Form.Row>
           <span data-for="disabled-assessment-submit" data-tip="">
-            <Form.Row className="pt-3">
+            <Form.Row className="mt-2">
               <Button
                 variant="primary"
                 block
