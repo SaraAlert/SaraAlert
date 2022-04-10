@@ -1019,6 +1019,24 @@ The `http://saraalert.org/StructureDefinition/user-defined-symptom-onset` extens
 }
 ```
 
+The `http://saraalert.org/StructureDefinition/contact-became-case-at` extension represents the date on which the monitoree moved from the exposure workflow to the isolation workflow. This field is read-only.
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/contact-became-case-at",
+  "valueDate": "2021-11-22"
+}
+```
+
+The `http://saraalert.org/StructureDefinition/enrolled-workflow` extension represents the workflow that the monitoree was enrolled in. This field is read-only.
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/enrolled-workflow",
+  "valueString": "Isolation"
+}
+```
+
 The complex `http://saraalert.org/StructureDefinition/transfer` extension represents a transfer that occurred for the monitoree. This field is read-only.
 
 ```json

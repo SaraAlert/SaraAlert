@@ -146,7 +146,9 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_datetime_extension(patient.last_assessment_reminder_sent, 'last-assessment-reminder-sent'),
         to_bool_extension(patient.pause_notifications, 'paused-notifications'),
         to_string_extension(patient.status_as_string, 'status'),
-        to_bool_extension(patient.user_defined_symptom_onset, 'user-defined-symptom-onset')
+        to_bool_extension(patient.user_defined_symptom_onset, 'user-defined-symptom-onset'),
+        to_contact_became_case_at_extension(patient),
+        to_string_extension(patient.enrolled_isolation ? 'Isolation' : 'Exposure', 'enrolled-workflow')
       ].reject(&:nil?)
     )
   end
@@ -1238,6 +1240,19 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         path: "#{base_path}.extension('#{ext_url}').valueCodeableConcept"
       }
     end
+  end
+
+  def to_contact_became_case_at_extension(patient)
+    contact_became_case_at =
+      if patient&.isolation && !patient&.enrolled_isolation
+        patient&.exposure_to_isolation_at&.strftime('%F')
+      elsif !patient&.isolation && !patient&.enrolled_isolation &&
+            (Patient::ISOLATION_CASE_STATUS.include?(patient&.case_status) ||
+            Patient::CONTACT_TO_CASE_MONITORING_REASONS.include?(patient&.monitoring_reason))
+        patient&.closed_at&.strftime('%F')
+      end
+
+    to_date_extension(contact_became_case_at, 'contact-became-case-at')
   end
 
   def str_ext_path(base_path, ext_id)
