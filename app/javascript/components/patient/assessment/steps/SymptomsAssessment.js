@@ -14,7 +14,7 @@ class SymptomsAssessment extends React.Component {
     this.state = {
       ...this.props,
       reportState: {
-        symptoms: _.cloneDeep(this.props.symptoms),
+        symptoms: this.stringifyNumberValues(_.cloneDeep(this.props.symptoms)),
         reported_at: props.assessment?.reported_at
           ? moment(props.assessment.reported_at).format('YYYY-MM-DD HH:mm Z')
           : moment.utc(moment()).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z'),
@@ -96,9 +96,19 @@ class SymptomsAssessment extends React.Component {
     this.setState({ selectedBoolSymptomCount: trueBoolSymptoms.length });
   };
 
+  stringifyNumberValues = symptoms => {
+    return symptoms.map(symp => {
+      if (symp.type === 'IntegerSymptom' || symp.type === 'FloatSymptom') {
+        symp.value = symp.value === null ? '' : String(symp.value);
+      }
+      return symp;
+    });
+  };
+
   hasChanges = () => {
+    // Stringify the numbers for comparison with existing values to avoid errors with non-numeric input
     return (
-      !_.isEqual(this.state.reportState.symptoms, this.props.symptoms) ||
+      !_.isEqual(this.state.reportState.symptoms, this.stringifyNumberValues(this.props.symptoms)) ||
       moment(this.props.assessment?.reported_at).format('YYYY-MM-DD HH:mm Z') !== this.state.reportState.reported_at
     );
   };
@@ -315,7 +325,7 @@ class SymptomsAssessment extends React.Component {
             </Form.Group>
           </Form.Row>
           <span data-for="disabled-assessment-submit" data-tip="">
-            <Form.Row className="pt-3">
+            <Form.Row className="mt-2">
               <Button
                 variant="primary"
                 block

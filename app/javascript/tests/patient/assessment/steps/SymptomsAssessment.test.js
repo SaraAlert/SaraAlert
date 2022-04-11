@@ -39,6 +39,13 @@ function getSymptomsByType(symptoms, type) {
     });
 }
 
+function stringifyValue(value) {
+  if (_.isBoolean(value)) {
+    return value;
+  }
+  return value === null ? '' : String(value);
+}
+
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -228,13 +235,14 @@ describe('SymptomsAssessment', () => {
     const validValues = ['', 0, _.random(1, 1000), _.random(-1000, -1)];
     const testValues = validValues.concat(_.random(0, 10, true), _.random(-10, 0, true), false, '45test', 'some string');
 
-    let current = null;
+    let current = '';
     _.shuffle(testValues).forEach(value => {
-      current = validValues.includes(value) ? value : current;
+      let stringValue = stringifyValue(value);
+      current = validValues.includes(value) ? stringValue : current;
       wrapper
         .find(Form.Control)
         .at(randomSympIndex)
-        .simulate('change', { target: { id: `${intSymptoms[parseInt(randomSympIndex)].name}_idpre${newProps.idPre}`, value: value } });
+        .simulate('change', { target: { id: `${intSymptoms[parseInt(randomSympIndex)].name}_idpre${newProps.idPre}`, value: stringValue } });
       expect(wrapper.state('reportState').symptoms[parseInt(matchingSympIndex)].value).toEqual(current);
       expect(wrapper.find(Form.Control).at(randomSympIndex).prop('value')).toEqual(current || '');
     });
@@ -249,13 +257,14 @@ describe('SymptomsAssessment', () => {
     const validValues = ['', 0, _.random(1, 1000), _.random(-1000, -1), _.random(0, 10, true), _.random(-10, 0, true)];
     const testValues = validValues.concat(false, '45test', 'some string');
 
-    let current = null;
+    let current = '';
     _.shuffle(testValues).forEach(value => {
-      current = validValues.includes(value) ? value : current;
+      let stringValue = stringifyValue(value);
+      current = validValues.includes(value) ? stringValue : current;
       wrapper
         .find(Form.Control)
         .at(intSymptoms.length + randomSympIndex)
-        .simulate('change', { target: { id: `${floatSymptoms[parseInt(randomSympIndex)].name}_idpre${newProps.idPre}`, value: value } });
+        .simulate('change', { target: { id: `${floatSymptoms[parseInt(randomSympIndex)].name}_idpre${newProps.idPre}`, value: stringValue } });
       expect(wrapper.state('reportState').symptoms[parseInt(matchingSympIndex)].value).toEqual(current);
       expect(
         wrapper
@@ -274,7 +283,7 @@ describe('SymptomsAssessment', () => {
 
     numberSymptoms.forEach((numSymp, n_index) => {
       if (_.sample([true, false])) {
-        const random = numSymp.type === 'IntegerSymptom' ? _.random(-100000, 100000) : _.random(-10, 10, true);
+        const random = stringifyValue(numSymp.type === 'IntegerSymptom' ? _.random(-100000, 100000) : _.random(-10, 10, true));
         wrapper
           .find(Form.Control)
           .at(n_index)
@@ -293,11 +302,12 @@ describe('SymptomsAssessment', () => {
 
     numberSymptoms.forEach((numSymp, n_index) => {
       if (_.sample([true, false])) {
+        const value = '';
         wrapper
           .find(Form.Control)
           .at(n_index)
-          .simulate('change', { target: { id: `${numSymp.name}_idpre${newProps.idPre}`, value: '' } });
-        numSymp.value = '';
+          .simulate('change', { target: { id: `${numSymp.name}_idpre${newProps.idPre}`, value: value } });
+        numSymp.value = value;
       }
       wrapper
         .state('reportState')
