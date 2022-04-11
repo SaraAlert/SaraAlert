@@ -106,6 +106,7 @@ class SymptomsAssessment extends React.Component {
   };
 
   hasChanges = () => {
+    // Stringify the numbers for comparison with existing values to avoid errors with non-numeric input
     return (
       !_.isEqual(this.state.reportState.symptoms, this.stringifyNumberValues(this.props.symptoms)) ||
       moment(this.props.assessment?.reported_at).format('YYYY-MM-DD HH:mm Z') !== this.state.reportState.reported_at
