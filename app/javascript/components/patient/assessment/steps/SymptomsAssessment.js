@@ -14,7 +14,7 @@ class SymptomsAssessment extends React.Component {
     this.state = {
       ...this.props,
       reportState: {
-        symptoms: _.cloneDeep(this.props.symptoms),
+        symptoms: this.stringifyNumberValues(_.cloneDeep(this.props.symptoms)),
         reported_at: props.assessment?.reported_at
           ? moment(props.assessment.reported_at).format('YYYY-MM-DD HH:mm Z')
           : moment.utc(moment()).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm Z'),
@@ -50,33 +50,25 @@ class SymptomsAssessment extends React.Component {
 
   handleIntChange = event => {
     const validInputs = ['', '-'];
-    let value = event?.target?.value;
+    const value = event?.target?.value;
     // Ensure (1) the value is defined or an empty string && meets the condintions of (2) or (3)
     //        (2.a) the value is a number & the user is prevented from inputting non-numerical characters after inputting a number (ex. '43test')
     //        (2.b) the value can be parsed as an integer
     //        (2.c) the user is prevented from inputting '.' characters (since parseInt() would allow that as an input)
     //        (3) if the value is not a valid number, check if it is an acceptable character input
     if (!_.isNil(value) && ((!isNaN(value) && !isNaN(parseInt(value)) && !String(value).includes('.')) || validInputs.includes(value))) {
-      // Value conversion necessary to determine if any changes have been made to the assessement
-      // If value is empty, convert it to null
-      // If value is not empty, convert the string to an integer
-      value = value === '' ? null : parseInt(value);
       this.handleChange(event, value);
     }
   };
 
   handleFloatChange = event => {
     const validInputs = ['', '.', '-', '-.'];
-    let value = event?.target?.value;
+    const value = event?.target?.value;
     // Ensure (1) the value is defined or an empty string && meets the condintions of (2) or (3)
     //        (2.a) the value is a number & the user is prevented from inputting non-numerical characters after inputting a number (ex. '4.3test')
     //        (2.b) the value can be parsed as an float
     //        (3) if the value is not a valid number, check if it is an acceptable character input
     if (!_.isNil(value) && ((!isNaN(value) && !isNaN(parseFloat(value))) || validInputs.includes(value))) {
-      // Value conversion necessary to determine if any changes have been made to the assessement
-      // If value is empty, convert it to null
-      // If value is not empty, convert the string to a float
-      value = value === '' ? null : _.endsWith(value, '.') ? value : parseFloat(value).toFixed(_.includes(value, '.') ? value.split('.')[1].length : 0);
       this.handleChange(event, value);
     }
   };
@@ -104,9 +96,18 @@ class SymptomsAssessment extends React.Component {
     this.setState({ selectedBoolSymptomCount: trueBoolSymptoms.length });
   };
 
+  stringifyNumberValues = symptoms => {
+    return symptoms.map(symp => {
+      if (symp.type === 'IntegerSymptom' || symp.type === 'FloatSymptom') {
+        symp.value = symp.value === null ? '' : String(symp.value);
+      }
+      return symp;
+    });
+  };
+
   hasChanges = () => {
     return (
-      !_.isEqual(this.state.reportState.symptoms, this.props.symptoms) ||
+      !_.isEqual(this.state.reportState.symptoms, this.stringifyNumberValues(this.props.symptoms)) ||
       moment(this.props.assessment?.reported_at).format('YYYY-MM-DD HH:mm Z') !== this.state.reportState.reported_at
     );
   };
