@@ -5,6 +5,9 @@ parent: API
 nav_order: 1
 ---
 
+# 1.44.0
+* Add support for case development fields, which are read-only: `enrolled-workflow` and `contact-became-case-at`.
+
 # 1.39.0
 * Add support for common exposure cohort data elements in the API
  

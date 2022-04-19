@@ -139,9 +139,7 @@ Because of the nature of this workflow, there is a lot of flexibility when imple
 
 Before going further, it is highly recommended to read the profile for this workflow detailed [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html). Specifically, the [worked example](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#worked-example) is particularly useful.
 
-Additionally, we have provided the following resources for this workflow:
-- Step-by-step process for using this new workflow with a local version of Sara Alert [here](walkthrough-testing-the-backend-services-workflow).
-- Example Ruby client for interacting with the API via this new workflow can be found [here](https://github.com/SaraAlert/saraalert-fhir-ig/tree/master/examples/ruby).
+Additionally, we have provided for this workflow an example Ruby client for interacting with the API [here](https://github.com/SaraAlert/saraalert-fhir-ig/tree/master/examples/ruby).
 
 #### Registration
 The registration step of this workflow requires more information up front. It is recommended that the details of this step in the process first be read in the formal SMART on FHIR profile [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#registering-a-smart-backend-service-communicating-public-keys).
