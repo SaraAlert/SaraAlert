@@ -341,13 +341,15 @@ See [System tests documentation](test/system/README.md) for more information.
 
 ### Jurisdiction and Symptom Configuration
 
-All jurisdictions, jurisdictional hierarchies, jurisdictional symptoms-to-be-monitored, and symptom thresholds are defined in the configuration file located at `config/sara/jurisdictions.yml`. See this file for more details about the structure and definition required by Sara Alert.
+All jurisdictions, jurisdictional hierarchies, jurisdictional symptoms-to-be-monitored, and symptom thresholds are defined in the configuration file located at `config/sara/jurisdictions.yml`.
 
 All jurisdiction custom messages are defined in the configuration file located at `config/sara/jurisdiction_messages.yml`. The structure of this file mimics both the `juristictions.yml` file and the locale files in `config/locales`. Only the email `info1` and SMS `intro` messages are customizable, and translations are accepted.
 
+See the [Jurisdiction Configuration README](config/sara/README.md) for more details about the structure and definition required by Sara Alert for both of these jurisdiciton files.
+
 #### Applying Changes
 
-You must run `bundle exec rake admin:import_or_update_jurisdictions` in order for changes made in the `config/sara/jurisdictions.yml` configuration to take effect.
+You must run `bundle exec rake admin:import_or_update_jurisdictions` in order for changes made in the `config/sara/jurisdictions.yml` configuration to take effect. In a production environment, THIS TASK MUST ALWAYS BE RUN IN BOTH THE ASSESSMENT CONATINER AND THE ENROLLMENT CONTAINER SO THAT THE JURISDICTION HIERARCHY IS CONSISTENT BETWEEN THE TWO. When the task is finished, it will output a SHA256 hash. After running the task in both Assessment and Enrollment, you must compare the two to ensure they match. Those hashes matching ensures that this rake task has been run the same number of times in Assessment and Enrollment and that the Jurisdiction hierachy matches.
 
 You must run `bundle exec rake admin:import_or_update_jurisdiction_messages` in order for changes made in the `config/sara/jurisdiction_messages.yml` configuration to take effect.
 
