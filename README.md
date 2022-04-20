@@ -351,7 +351,7 @@ See the [Jurisdiction Configuration README](config/sara/README.md) for more deta
 
 You must run `bundle exec rake admin:import_or_update_jurisdictions` in order for changes made in the `config/sara/jurisdictions.yml` configuration to take effect. In a production environment, THIS TASK MUST ALWAYS BE RUN IN BOTH THE ASSESSMENT CONATINER AND THE ENROLLMENT CONTAINER SO THAT THE JURISDICTION HIERARCHY IS CONSISTENT BETWEEN THE TWO. When the task is finished, it will output a SHA256 hash. After running the task in both Assessment and Enrollment, you must compare the two to ensure they match. Those hashes matching ensures that this rake task has been run the same number of times in Assessment and Enrollment and that the Jurisdiction hierachy matches.
 
-You must run `bundle exec rake admin:import_or_update_jurisdiction_messages` in order for changes made in the `config/sara/jurisdiction_messages.yml` configuration to take effect.
+You must run `bundle exec rake admin:import_or_update_jurisdiction_messages` in order for changes made in the `config/sara/jurisdiction_messages.yml` configuration to take effect. This task should also be run in both Assessment and Enrollment for the sake of consistency, but a thorough consistency check is not necessary, as it is only used in Enrollment.
 
 ## Reporting Issues
 
