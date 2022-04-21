@@ -3,3 +3,4 @@ test/**/*.xlsx filter=lfs diff=lfs merge=lfs -text
 public/**/*.xlsx filter=lfs diff=lfs merge=lfs -text
 *.rb diff=ruby
 *.rake diff=ruby
+resources/**/* filter=lfs diff=lfs merge=lfs -text
