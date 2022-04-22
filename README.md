@@ -353,6 +353,15 @@ You must run `bundle exec rake admin:import_or_update_jurisdictions` in order fo
 
 You must run `bundle exec rake admin:import_or_update_jurisdiction_messages` in order for changes made in the `config/sara/jurisdiction_messages.yml` configuration to take effect. This task should also be run in both Assessment and Enrollment for the sake of consistency, but a thorough consistency check is not necessary, as it is only used in Enrollment.
 
+## User Materials and Resources
+
+User materials and helpful resources for getting started with Sara Alert are located in the [user-materials directory](https://github.com/SaraAlert/SaraAlert/tree/master/user-materials) in this repository. These materials include:
+
+* User Guides
+* Quick Start Guides
+* The Sara Alert Data Dictionary
+* The Sara Alert Resource Glossary 
+
 ## Reporting Issues
 
 To report issues with the Sara Alert code, please submit tickets to [GitHub](https://github.com/SaraAlert/SaraAlert/issues).
