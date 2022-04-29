@@ -2,6 +2,6 @@
 
 # ApplicationMailer: base mailer
 class ApplicationMailer < ActionMailer::Base
-  default from: 'notifications@saraalert.org'
+  default from: ADMIN_OPTIONS['default_mailer']
   layout 'mailer'
 end

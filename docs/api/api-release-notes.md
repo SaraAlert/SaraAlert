@@ -134,7 +134,7 @@ nav_order: 1
           }
         ]
       }
-  Acceptable values for `valueString` are the same as what is accepted for Full Assigned Jurisdiction Path in the Sara Alert™ Import Format.  For full documentation of the Sara Alert™ Import Format, please see section 9.1.5 of the [Sara Alert™ User Guide](https://saraalert.org/wp-content/uploads/2020/10/Sara-Alert-User-Guide-v1.15.pdf).
+  Acceptable values for `valueString` are the same as what is accepted for Full Assigned Jurisdiction Path in the Sara Alert™ Import Format.  For full documentation of the Sara Alert™ Import Format, please see section 9.1.5 of the [Sara Alert™ User Guide](https://github.com/SaraAlert/SaraAlert/blob/master/user-materials/user-guides/Sara%20Alert%20User%20Guide_v1.44_GitHub.pdf).
 
 ***
 

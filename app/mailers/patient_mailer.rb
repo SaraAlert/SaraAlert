@@ -2,7 +2,7 @@
 
 # PatientMailer: mailers for monitorees
 class PatientMailer < ApplicationMailer
-  default from: 'notifications@saraalert.org'
+  default from: ADMIN_OPTIONS['default_mailer']
 
   def enrollment_email(patient)
     # Should not be sending enrollment email if no valid email

@@ -3,7 +3,7 @@
 # UserMailer: mailers for users
 class UserMailer < ApplicationMailer
   include Rails.application.routes.url_helpers
-  default from: 'notifications@saraalert.org'
+  default from: ADMIN_OPTIONS['default_mailer']
 
   def assessment_job_email(sent, not_sent, eligible)
     @sent = sent

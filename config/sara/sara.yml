@@ -4,6 +4,11 @@ version: v1.44
 # Base path (useful for WARP or similar environments)
 base_path: ''
 
+# The source email address from which system-generated emails should be sent. This includes
+# emails to users and to monitorees (UserMailer and PatientMailer). This value must be configured
+# to something besides than the default.
+default_mailer: <%= ENV['DEFAULT_MAILER'] || 'example@example.com' %>
+
 # How many days an enrolled monitoree should be monitored
 monitoring_period_days: <%= ENV["MONITORING_PERIOD_DAYS"] || 10 %>
 
