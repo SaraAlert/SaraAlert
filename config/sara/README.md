@@ -136,12 +136,8 @@ Jurisdiction messages may be configured in the `jurisdiction_messages.yml` file.
                 intro:
                   eng: |
                     You've been identified by State 1 DOH to be enrolled in Sara Alert to be monitored for COVID symptoms.
-
-                    For privacy and more info, visit saraalert.org.
                   spa: |
                     El State 1 DOH lo identifico para inscribirse en Sara Alert para ser monitoreado por sintomas de COVID.
-
-                    Para privacidad y mas informacion, visite saraalert.org.
 ```
 
 ### Jurisdiction Config Files In This Directory

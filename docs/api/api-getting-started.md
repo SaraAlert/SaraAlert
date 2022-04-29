@@ -66,10 +66,10 @@ Steps:
 #### Authorization
 Once a client application is registered, a user must authorize the client application to use the API and obtain an authorization code. This process is also described in detail [here](http://hl7.org/fhir/smart-app-launch/index.html#step-1-app-asks-for-authorization).
 
-1. The registered client application must build a request for an authorization code. The request parameters are detailed in the specification for this flow [here](http://hl7.org/fhir/smart-app-launch/index.html#step-1-app-asks-for-authorization). This will cause the app to be redirected to the authorization endpoint and require the user to login to Sara Alert. For example, the following (once populated with the appropriate params), would navigate the client application to the Sara Alert demo server's authorization endpoint:
+1. The registered client application must build a request for an authorization code. The request parameters are detailed in the specification for this flow [here](http://hl7.org/fhir/smart-app-launch/index.html#step-1-app-asks-for-authorization). This will cause the app to be redirected to the authorization endpoint and require the user to login to Sara Alert. For example, the following (once populated with the appropriate params), would navigate the client application to the Sara Alert authorization endpoint:
 
 	```
-	https://demo.saraalert.org/oauth/authorize?client_id=CLIENT_ID&redirect_uri=REDIRECT&response_type=code&scope=SCOPES&state=STATE&aud=AUD
+	<base-URL>/oauth/authorize?client_id=CLIENT_ID&redirect_uri=REDIRECT&response_type=code&scope=SCOPES&state=STATE&aud=AUD
 	```
 2. Once the end-user has authorized the request, Sara Alert will redirect back to the application using the redirect_uri given upon registration with the authorization code provided as a parameter.
 
@@ -183,8 +183,7 @@ Details about each of these steps and the expected parameter is clearly outlined
 	- The `client_id` referenced in the protocol documentation for both the `sub` and `iss` values should be the `client_id` issued to the client upon registration.
 	- The `aud` value that is expected in incoming JWT assertions is the Sara Alert token endpoint.
 		- Development: `http://localhost:3000/oauth/token`
-		- Demo: `https://demo.saraalert.org/oauth/token`
-		- Production: `https://sara.public.saraalert.org/oauth/token`
+		- Production: `<base-url>/oauth/token`
     - The `jti` value should be a string value that uniquely identifies the JWT among requests from the client application. Therefore how it is generated is up to the client application. It's even okay to make it as simple as a counter, but the client application must ensure it will never be used twice on two different JWTs. 
     - The `exp` value must be epoch time in *seconds* and should be no more than 5 minutes in the future. 
 2. Request a new access token via HTTP POST to the FHIR authorization server’s token endpoint URL which is again `<ENVIRONMENT_BASE_URL>/oauth/token`
